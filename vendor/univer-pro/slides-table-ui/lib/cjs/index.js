@@ -1,0 +1,8347 @@
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/license"),
+  t = require("@univerjs-pro/slides"),
+  n = require("@univerjs-pro/slides-table"),
+  r = require("@univerjs-pro/slides-ui"),
+  i = require("@univerjs/core"),
+  a = require("@univerjs/engine-render"),
+  o = require("@univerjs/ui"),
+  s = require("rxjs"),
+  c = require("@univerjs/icons"),
+  l = require("@univerjs-pro/shape-editor-ui"),
+  u = require("@univerjs/design"),
+  d = require("@univerjs/docs-ui"),
+  f = require("react"),
+  p = require("@univerjs/drawing"),
+  m = require("react/jsx-runtime"),
+  h = require("@univerjs/drawing-ui"),
+  g = require("@univerjs/protocol"),
+  _ = require("@univerjs-pro/docs-table");
+const v = "slides-table-ui.config",
+  y = {
+    floatingToolbar: false
+  };
+var b = "@univerjs-pro/slides-table-ui",
+  x = "1.0.0-insiders.20260907-70fc579";
+function S(var_core_value_sig9C3A) {
+  "@babel/helpers - typeof";
+
+  return S = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig9CCB) {
+    return typeof var_core_value_sig9CCB;
+  } : function (var_core_value_sigE718) {
+    return var_core_value_sigE718 && typeof Symbol == "function" && var_core_value_sigE718.constructor === Symbol && var_core_value_sigE718 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigE718;
+  }, S(var_core_value_sig9C3A);
+}
+function C(var_core_value_sig0321, var_core_value_sig51CF) {
+  if (S(var_core_value_sig0321) != "object" || !var_core_value_sig0321) return var_core_value_sig0321;
+  var var_core_value_sig3C61 = var_core_value_sig0321[Symbol.toPrimitive];
+  if (var_core_value_sig3C61 !== undefined) {
+    var var_core_value_sigDC70 = var_core_value_sig3C61.call(var_core_value_sig0321, var_core_value_sig51CF || "default");
+    if (S(var_core_value_sigDC70) != "object") return var_core_value_sigDC70;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig51CF === "string" ? String : Number)(var_core_value_sig0321);
+}
+function w(var_core_value_sigD10E) {
+  var var_core_value_sigBB93 = C(var_core_value_sigD10E, "string");
+  return S(var_core_value_sigBB93) == "symbol" ? var_core_value_sigBB93 : var_core_value_sigBB93 + "";
+}
+function T(var_core_value_sig4F88, var_core_value_sig486C, var_core_value_sig717C) {
+  return (var_core_value_sig486C = w(var_core_value_sig486C)) in var_core_value_sig4F88 ? Object.defineProperty(var_core_value_sig4F88, var_core_value_sig486C, {
+    value: var_core_value_sig717C,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig4F88[var_core_value_sig486C] = var_core_value_sig717C, var_core_value_sig4F88;
+}
+var E = class extends i.Disposable {
+  constructor(...var_core_value_sigAEC8) {
+    super(...var_core_value_sigAEC8), T(this, "_selection$", new s.BehaviorSubject(null)), T(this, "selection$", this._selection$["asObservable"]()), T(this, "_selection", null), T(this, "_tableInternalInteractionUntil", 0);
+  }
+  markTableInternalInteraction(var_core_value_sigB977 = 500, var_core_value_sig2949 = Date.now()) {
+    this._tableInternalInteractionUntil = Math.max(this._tableInternalInteractionUntil, var_core_value_sig2949 + var_core_value_sigB977);
+  }
+  isTableInternalInteractionActive(var_core_value_sig308A = Date.now()) {
+    return var_core_value_sig308A <= this._tableInternalInteractionUntil;
+  }
+  getSelection() {
+    return this._selection ? O(this._selection) : null;
+  }
+  clear() {
+    this._selection = null, this._selection$["next"](null);
+  }
+  selectCell(var_core_value_sig528D) {
+    let var_core_value_sigA309 = this._buildSelection(var_core_value_sig528D, "cell", {
+      startRow: var_core_value_sig528D.row,
+      endRow: var_core_value_sig528D.row,
+      startColumn: var_core_value_sig528D.column,
+      endColumn: var_core_value_sig528D.column
+    }, {
+      row: var_core_value_sig528D.row,
+      column: var_core_value_sig528D.column
+    }, {
+      row: var_core_value_sig528D.row,
+      column: var_core_value_sig528D.column
+    });
+    return this._selection = var_core_value_sigA309, this._selection$["next"](O(var_core_value_sigA309)), O(var_core_value_sigA309);
+  }
+  selectRange(var_core_value_sig9E20) {
+    let var_core_value_sig26BB = D(var_core_value_sig9E20),
+      var_core_value_sig19B4 = this._buildSelection(var_core_value_sig9E20, "range", var_core_value_sig26BB, {
+        row: var_core_value_sig26BB.startRow,
+        column: var_core_value_sig26BB.startColumn
+      }, {
+        row: var_core_value_sig26BB.endRow,
+        column: var_core_value_sig26BB.endColumn
+      });
+    return this._selection = var_core_value_sig19B4, this._selection$["next"](O(var_core_value_sig19B4)), O(var_core_value_sig19B4);
+  }
+  selectRows(var_core_value_sig218A) {
+    let var_core_value_sig14CB = Math.min(var_core_value_sig218A.startRow, var_core_value_sig218A.endRow),
+      var_core_value_sigFDEE = Math.max(var_core_value_sig218A.startRow, var_core_value_sig218A.endRow),
+      var_core_value_sigA676 = this._buildSelection(var_core_value_sig218A, "row", {
+        startRow: var_core_value_sig14CB,
+        endRow: var_core_value_sigFDEE,
+        startColumn: 0,
+        endColumn: Math.max(0, var_core_value_sig218A.columnCount - 1)
+      });
+    return this._selection = var_core_value_sigA676, this._selection$["next"](O(var_core_value_sigA676)), O(var_core_value_sigA676);
+  }
+  selectColumns(var_core_value_sigC27E) {
+    let var_core_value_sigA70D = Math.min(var_core_value_sigC27E.startColumn, var_core_value_sigC27E.endColumn),
+      var_core_value_sigCE10 = Math.max(var_core_value_sigC27E.startColumn, var_core_value_sigC27E.endColumn),
+      var_core_value_sigA386 = this._buildSelection(var_core_value_sigC27E, "column", {
+        startRow: 0,
+        endRow: Math.max(0, var_core_value_sigC27E.rowCount - 1),
+        startColumn: var_core_value_sigA70D,
+        endColumn: var_core_value_sigCE10
+      });
+    return this._selection = var_core_value_sigA386, this._selection$["next"](O(var_core_value_sigA386)), O(var_core_value_sigA386);
+  }
+  selectTable(var_core_value_sigCD82) {
+    let var_core_value_sig44DD = this._buildSelection(var_core_value_sigCD82, "table", {
+      startRow: 0,
+      endRow: Math.max(0, var_core_value_sigCD82.rowCount - 1),
+      startColumn: 0,
+      endColumn: Math.max(0, var_core_value_sigCD82.columnCount - 1)
+    });
+    return this._selection = var_core_value_sig44DD, this._selection$["next"](O(var_core_value_sig44DD)), O(var_core_value_sig44DD);
+  }
+  enterTextMode(var_core_value_sig96FA) {
+    let var_core_value_sigAB68 = this._buildSelection(var_core_value_sig96FA, "text", {
+      startRow: var_core_value_sig96FA.row,
+      endRow: var_core_value_sig96FA.row,
+      startColumn: var_core_value_sig96FA.column,
+      endColumn: var_core_value_sig96FA.column
+    }, {
+      row: var_core_value_sig96FA.row,
+      column: var_core_value_sig96FA.column
+    }, {
+      row: var_core_value_sig96FA.row,
+      column: var_core_value_sig96FA.column
+    });
+    return this._selection = var_core_value_sigAB68, this._selection$["next"](O(var_core_value_sigAB68)), O(var_core_value_sigAB68);
+  }
+  dispose() {
+    this._tableInternalInteractionUntil = 0, this._selection$["complete"](), super.dispose();
+  }
+  _buildSelection(var_core_value_sig040A, var_core_value_sig2AE0, var_core_value_sigC349, var_core_value_sig9D96, var_core_value_sig2776) {
+    let var_core_value_sig6FB2 = {
+      unitId: var_core_value_sig040A.unitId,
+      subUnitId: var_core_value_sig040A.subUnitId,
+      elementId: var_core_value_sig040A.elementId,
+      tableId: var_core_value_sig040A.tableId,
+      kind: var_core_value_sig2AE0,
+      ranges: [var_core_value_sigC349]
+    };
+    return var_core_value_sig9D96 && (var_core_value_sig6FB2.anchor = var_core_value_sig9D96), var_core_value_sig2776 && (var_core_value_sig6FB2.focus = var_core_value_sig2776), var_core_value_sig6FB2;
+  }
+};
+function D(var_core_value_sig23AE) {
+  return {
+    startRow: Math.min(var_core_value_sig23AE.startRow, var_core_value_sig23AE.endRow),
+    endRow: Math.max(var_core_value_sig23AE.startRow, var_core_value_sig23AE.endRow),
+    startColumn: Math.min(var_core_value_sig23AE.startColumn, var_core_value_sig23AE.endColumn),
+    endColumn: Math.max(var_core_value_sig23AE.startColumn, var_core_value_sig23AE.endColumn)
+  };
+}
+function O(var_core_value_sigCB54) {
+  let var_core_value_sigC7E1 = {
+    ...var_core_value_sigCB54,
+    ranges: var_core_value_sigCB54.ranges["map"](var_core_value_sigEB43 => ({
+      ...var_core_value_sigEB43
+    }))
+  };
+  return var_core_value_sigCB54.anchor && (var_core_value_sigC7E1.anchor = {
+    ...var_core_value_sigCB54.anchor
+  }), var_core_value_sigCB54.focus && (var_core_value_sigC7E1.focus = {
+    ...var_core_value_sigCB54.focus
+  }), var_core_value_sigC7E1;
+}
+const k = {
+  InsertRowAbove: "insert-row-above",
+  InsertRowBelow: "insert-row-below",
+  InsertColumnLeft: "insert-column-left",
+  InsertColumnRight: "insert-column-right",
+  DeleteRows: "delete-rows",
+  DeleteColumns: "delete-columns",
+  MergeCells: "merge-cells",
+  UnmergeCells: "unmerge-cells",
+  DistributeRows: "distribute-rows",
+  DistributeColumns: "distribute-columns"
+};
+function A(var_core_value_sig6575) {
+  let var_core_value_sigE901 = var_core_value_sig6575 == null ? undefined : var_core_value_sig6575.ranges[0];
+  return !var_core_value_sig6575 || !var_core_value_sigE901 ? null : {
+    unitId: var_core_value_sig6575.unitId,
+    subUnitId: var_core_value_sig6575.subUnitId,
+    elementId: var_core_value_sig6575.elementId,
+    tableId: var_core_value_sig6575.tableId,
+    range: (0, n.normalizeSlideTableCellRange)(var_core_value_sigE901)
+  };
+}
+function ee(var_core_value_sigB7EC, var_core_value_sigB018, var_core_value_sigE7BE) {
+  let var_core_value_sigC88E = !!A(var_core_value_sigB018);
+  return [I(k.InsertRowAbove, var_core_value_sigE7BE.insertRows, var_core_value_sigC88E), I(k.InsertRowBelow, var_core_value_sigE7BE.insertRows, var_core_value_sigC88E), I(k.InsertColumnLeft, var_core_value_sigE7BE.insertColumns, var_core_value_sigC88E), I(k.InsertColumnRight, var_core_value_sigE7BE.insertColumns, var_core_value_sigC88E), I(k.DeleteRows, var_core_value_sigE7BE.deleteRows, me(var_core_value_sigB7EC, var_core_value_sigB018)), I(k.DeleteColumns, var_core_value_sigE7BE.deleteColumns, he(var_core_value_sigB7EC, var_core_value_sigB018)), I(k.MergeCells, var_core_value_sigE7BE.mergeCells, fe(var_core_value_sigB018, var_core_value_sigB7EC)), I(k.UnmergeCells, var_core_value_sigE7BE.unmergeCells, pe(var_core_value_sigB7EC, var_core_value_sigB018)), I(k.DistributeRows, var_core_value_sigE7BE.updateTable, P(var_core_value_sigB7EC, var_core_value_sigB018)), I(k.DistributeColumns, var_core_value_sigE7BE.updateTable, F(var_core_value_sigB7EC, var_core_value_sigB018))];
+}
+function te(var_core_value_sigC4A6, var_core_value_sig1FE3, var_core_value_sigF003, var_core_value_sigE146) {
+  let var_core_value_sigF6D5 = A(var_core_value_sig1FE3);
+  if (!var_core_value_sigF6D5 || !var_core_value_sig1FE3) return null;
+  let {
+    unitId: var_core_value_sig3B2F,
+    subUnitId: var_core_value_sigE558,
+    elementId: var_core_value_sigA99D,
+    tableId: var_core_value_sigB23E,
+    range: var_core_value_sigDA56
+  } = var_core_value_sigF6D5;
+  switch (var_core_value_sigF003) {
+    case k.InsertRowAbove:
+      return {
+        commandId: var_core_value_sigE146.insertRows,
+        params: {
+          unitId: var_core_value_sig3B2F,
+          subUnitId: var_core_value_sigE558,
+          elementId: var_core_value_sigA99D,
+          tableId: var_core_value_sigB23E,
+          rowIndex: var_core_value_sigDA56.startRow,
+          count: _e(var_core_value_sigDA56)
+        }
+      };
+    case k.InsertRowBelow:
+      return {
+        commandId: var_core_value_sigE146.insertRows,
+        params: {
+          unitId: var_core_value_sig3B2F,
+          subUnitId: var_core_value_sigE558,
+          elementId: var_core_value_sigA99D,
+          tableId: var_core_value_sigB23E,
+          rowIndex: var_core_value_sigDA56.endRow + 1,
+          count: _e(var_core_value_sigDA56)
+        }
+      };
+    case k.InsertColumnLeft:
+      return {
+        commandId: var_core_value_sigE146.insertColumns,
+        params: {
+          unitId: var_core_value_sig3B2F,
+          subUnitId: var_core_value_sigE558,
+          elementId: var_core_value_sigA99D,
+          tableId: var_core_value_sigB23E,
+          columnIndex: var_core_value_sigDA56.startColumn,
+          count: ve(var_core_value_sigDA56)
+        }
+      };
+    case k.InsertColumnRight:
+      return {
+        commandId: var_core_value_sigE146.insertColumns,
+        params: {
+          unitId: var_core_value_sig3B2F,
+          subUnitId: var_core_value_sigE558,
+          elementId: var_core_value_sigA99D,
+          tableId: var_core_value_sigB23E,
+          columnIndex: var_core_value_sigDA56.endColumn + 1,
+          count: ve(var_core_value_sigDA56)
+        }
+      };
+    case k.DeleteRows:
+      return me(var_core_value_sigC4A6, var_core_value_sig1FE3) ? {
+        commandId: var_core_value_sigE146.deleteRows,
+        params: {
+          unitId: var_core_value_sig3B2F,
+          tableId: var_core_value_sigB23E,
+          startRow: var_core_value_sigDA56.startRow,
+          endRow: var_core_value_sigDA56.endRow
+        }
+      } : null;
+    case k.DeleteColumns:
+      return he(var_core_value_sigC4A6, var_core_value_sig1FE3) ? {
+        commandId: var_core_value_sigE146.deleteColumns,
+        params: {
+          unitId: var_core_value_sig3B2F,
+          tableId: var_core_value_sigB23E,
+          startColumn: var_core_value_sigDA56.startColumn,
+          endColumn: var_core_value_sigDA56.endColumn
+        }
+      } : null;
+    case k.MergeCells:
+      return fe(var_core_value_sig1FE3, var_core_value_sigC4A6) ? {
+        commandId: var_core_value_sigE146.mergeCells,
+        params: {
+          unitId: var_core_value_sig3B2F,
+          tableId: var_core_value_sigB23E,
+          range: var_core_value_sigDA56
+        }
+      } : null;
+    case k.UnmergeCells:
+      return pe(var_core_value_sigC4A6, var_core_value_sig1FE3) ? {
+        commandId: var_core_value_sigE146.unmergeCells,
+        params: {
+          unitId: var_core_value_sig3B2F,
+          tableId: var_core_value_sigB23E,
+          range: var_core_value_sigDA56
+        }
+      } : null;
+    case k.DistributeRows:
+      return ge(var_core_value_sigC4A6, var_core_value_sig1FE3, var_core_value_sigE146.updateTable, var_core_value_sig3B2F, var_core_value_sigB23E, var_core_value_sigDA56, "row");
+    case k.DistributeColumns:
+      return ge(var_core_value_sigC4A6, var_core_value_sig1FE3, var_core_value_sigE146.updateTable, var_core_value_sig3B2F, var_core_value_sigB23E, var_core_value_sigDA56, "column");
+  }
+}
+function j(var_core_value_sig8D74, var_core_value_sigC3E8, var_core_value_sig3FAF) {
+  let var_core_value_sigC00C = var_core_value_sig3FAF ? (0, n.normalizeSlideTableCellRange)(var_core_value_sig3FAF) : {
+    startRow: 0,
+    endRow: var_core_value_sig8D74.rows["length"] - 1,
+    startColumn: 0,
+    endColumn: var_core_value_sig8D74.columns["length"] - 1
+  };
+  if (var_core_value_sigC3E8 === "row") {
+    let var_core_value_sig4186 = i.Tools["deepClone"](var_core_value_sig8D74.rows),
+      var_core_value_sigF963 = Math.max(0, Math.min(var_core_value_sigC00C.startRow, var_core_value_sig4186.length - 1)),
+      var_core_value_sigB608 = Math.max(var_core_value_sigF963, Math.min(var_core_value_sigC00C.endRow, var_core_value_sig4186.length - 1)),
+      var_core_value_sigF866 = var_core_value_sig4186.slice(var_core_value_sigF963, var_core_value_sigB608 + 1),
+      var_core_value_sig5EFB = var_core_value_sigF866.reduce((var_core_value_sig32F8, var_core_value_sig5B67) => var_core_value_sig32F8 + (var_core_value_sig5B67.height ?? 24), 0) / Math.max(1, var_core_value_sigF866.length);
+    for (let var_core_value_sig1758 = var_core_value_sigF963; var_core_value_sig1758 <= var_core_value_sigB608; var_core_value_sig1758 += 1) var_core_value_sig4186[var_core_value_sig1758].height = var_core_value_sig5EFB;
+    return {
+      rows: var_core_value_sig4186
+    };
+  }
+  let var_core_value_sig080D = i.Tools["deepClone"](var_core_value_sig8D74.columns),
+    var_core_value_sigCDBC = Math.max(0, Math.min(var_core_value_sigC00C.startColumn, var_core_value_sig080D.length - 1)),
+    var_core_value_sig0F75 = Math.max(var_core_value_sigCDBC, Math.min(var_core_value_sigC00C.endColumn, var_core_value_sig080D.length - 1)),
+    var_core_value_sig4B7F = var_core_value_sig080D.slice(var_core_value_sigCDBC, var_core_value_sig0F75 + 1),
+    var_core_value_sig17D6 = var_core_value_sig4B7F.reduce((var_core_value_sig3A85, var_core_value_sig2682) => var_core_value_sig3A85 + var_core_value_sig2682.width, 0) / Math.max(1, var_core_value_sig4B7F.length);
+  for (let var_core_value_sig4BB5 = var_core_value_sigCDBC; var_core_value_sig4BB5 <= var_core_value_sig0F75; var_core_value_sig4BB5 += 1) var_core_value_sig080D[var_core_value_sig4BB5].width = var_core_value_sig17D6;
+  return {
+    columns: var_core_value_sig080D
+  };
+}
+function ne(var_core_value_sig8915, var_core_value_sigC88F, var_core_value_sig1AFA) {
+  let var_core_value_sigBCF5 = i.Tools["deepClone"](var_core_value_sig8915.rows);
+  return (0, n.iterateSelectedSlideTableCells)(var_core_value_sigBCF5, (0, n.normalizeSlideTableCellRange)(var_core_value_sigC88F), (var_core_value_sig6709, var_core_value_sig52CA, var_core_value_sigC030) => {
+    if (var_core_value_sig1AFA.axis === "vertical") {
+      var_core_value_sig6709.style = (0, n.mergeSlideTableCellStyle)(var_core_value_sig6709.style, {
+        verticalAlign: Te(var_core_value_sig1AFA.value)
+      });
+      return;
+    }
+    let var_core_value_sig88F6 = "SLIDE_TABLE_CELL_" + var_core_value_sig8915.id + "_" + var_core_value_sig52CA + "_" + var_core_value_sigC030;
+    var_core_value_sig6709.textData = ye(var_core_value_sig6709.textData, var_core_value_sig1AFA.value, var_core_value_sig88F6);
+  }), {
+    rows: var_core_value_sigBCF5
+  };
+}
+function M(var_core_value_sig988A, var_core_value_sigFC02, var_core_value_sigF71C) {
+  let var_core_value_sigE634 = i.Tools["deepClone"](var_core_value_sig988A.rows);
+  return (0, n.iterateSelectedSlideTableCells)(var_core_value_sigE634, (0, n.normalizeSlideTableCellRange)(var_core_value_sigFC02), (var_core_value_sig37DB, var_core_value_sig5542, var_core_value_sigE0A9) => {
+    var var_core_value_sigA73E;
+    let var_core_value_sig7620 = "SLIDE_TABLE_CELL_" + var_core_value_sig988A.id + "_" + var_core_value_sig5542 + "_" + var_core_value_sigE0A9,
+      var_core_value_sigB9FC = i.Tools["deepClone"](var_core_value_sig37DB.textData ?? we(var_core_value_sig7620)),
+      var_core_value_sig5055 = var_core_value_sigB9FC.body ?? {
+        dataStream: "\x0d\x0a",
+        paragraphs: [R()],
+        textRuns: []
+      },
+      var_core_value_sig3801 = (0, i.generateRandomId)(6);
+    var_core_value_sig37DB.textData = {
+      ...var_core_value_sigB9FC,
+      id: var_core_value_sigB9FC.id ?? var_core_value_sig7620,
+      body: {
+        ...var_core_value_sig5055,
+        paragraphs: ((var_core_value_sigA73E = var_core_value_sig5055.paragraphs) != null && var_core_value_sigA73E.length ? var_core_value_sig5055.paragraphs : [R()]).map(var_core_value_sig4805 => {
+          var var_core_value_sigE67E, var_core_value_sig2902;
+          if (var_core_value_sigF71C === null) {
+            let var_core_value_sig48BD = {
+              ...var_core_value_sig4805
+            };
+            return delete var_core_value_sig48BD.bullet, var_core_value_sig48BD;
+          }
+          return {
+            ...var_core_value_sig4805,
+            bullet: {
+              nestingLevel: ((var_core_value_sigE67E = var_core_value_sig4805.bullet) == null ? undefined : var_core_value_sigE67E.nestingLevel) ?? 0,
+              textStyle: ((var_core_value_sig2902 = var_core_value_sig4805.bullet) == null ? undefined : var_core_value_sig2902.listType) === var_core_value_sigF71C ? var_core_value_sig4805.bullet["textStyle"] : {
+                fs: 20
+              },
+              listId: var_core_value_sig3801,
+              listType: var_core_value_sigF71C
+            }
+          };
+        })
+      }
+    };
+  }), {
+    rows: var_core_value_sigE634
+  };
+}
+function re(var_core_value_sigF74F, var_core_value_sig89D7, var_core_value_sigF2B0) {
+  if (!var_core_value_sigF74F || !var_core_value_sig89D7) return {
+    active: false,
+    mixed: false
+  };
+  let var_core_value_sigD77A = (0, n.normalizeSlideTableCellRange)(var_core_value_sig89D7),
+    var_core_value_sigF2C2 = [];
+  for (let var_core_value_sig45F0 = var_core_value_sigD77A.startRow; var_core_value_sig45F0 <= var_core_value_sigD77A.endRow; var_core_value_sig45F0 += 1) for (let var_core_value_sig9989 = var_core_value_sigD77A.startColumn; var_core_value_sig9989 <= var_core_value_sigD77A.endColumn; var_core_value_sig9989 += 1) {
+    var var_core_value_sig2990;
+    let var_core_value_sig429F = ((var_core_value_sig2990 = var_core_value_sigF74F.rows[var_core_value_sig45F0]) == null || (var_core_value_sig2990 = var_core_value_sig2990.cells[var_core_value_sig9989]) == null || (var_core_value_sig2990 = var_core_value_sig2990.textData) == null || (var_core_value_sig2990 = var_core_value_sig2990.body) == null ? undefined : var_core_value_sig2990.paragraphs) ?? [];
+    var_core_value_sigF2C2.push(...(var_core_value_sig429F.length ? var_core_value_sig429F.map(var_core_value_sigC9E0 => {
+      var var_core_value_sig76BA;
+      let var_core_value_sigFBFA = (var_core_value_sig76BA = var_core_value_sigC9E0.bullet) == null ? undefined : var_core_value_sig76BA.listType;
+      return ie(var_core_value_sigFBFA) ? var_core_value_sigFBFA : undefined;
+    }) : [undefined]));
+  }
+  let var_core_value_sigD300 = var_core_value_sigF2C2.filter(var_core_value_sigBC91 => !!(var_core_value_sigBC91 != null && var_core_value_sigBC91.startsWith(var_core_value_sigF2B0))),
+    var_core_value_sig6F77 = var_core_value_sigF2C2.length > 0 && var_core_value_sigD300.length === var_core_value_sigF2C2.length;
+  return {
+    active: var_core_value_sig6F77,
+    mixed: var_core_value_sigD300.length > 0 && !var_core_value_sig6F77,
+    value: var_core_value_sig6F77 && var_core_value_sigD300.every(var_core_value_sigCB88 => var_core_value_sigCB88 === var_core_value_sigD300[0]) ? var_core_value_sigD300[0] : undefined
+  };
+}
+function ie(var_core_value_sigFA4B) {
+  return var_core_value_sigFA4B !== undefined && Object.values(i.PresetListType).some(var_core_value_sig8D65 => var_core_value_sig8D65 === var_core_value_sigFA4B);
+}
+function N(var_core_value_sig2AB0, var_core_value_sig853D, var_core_value_sigD1F0) {
+  return ae(var_core_value_sig2AB0, var_core_value_sig853D, var_core_value_sigD1F0 ? {
+    type: n.SlideTableFillTypeEnum["Solid"],
+    color: var_core_value_sigD1F0,
+    alpha: 1
+  } : undefined);
+}
+function ae(var_core_value_sig3D4E, var_core_value_sig79C0, var_core_value_sig173D) {
+  let var_core_value_sig6F1A = i.Tools["deepClone"](var_core_value_sig3D4E.rows);
+  return (0, n.iterateSelectedSlideTableCells)(var_core_value_sig6F1A, (0, n.normalizeSlideTableCellRange)(var_core_value_sig79C0), var_core_value_sig8122 => {
+    var_core_value_sig8122.style = (0, n.mergeSlideTableCellStyle)(var_core_value_sig8122.style, {
+      fill: var_core_value_sig173D
+    });
+  }), {
+    rows: var_core_value_sig6F1A
+  };
+}
+function oe(var_core_value_sig1802, var_core_value_sigCFA7, var_core_value_sig31C2) {
+  return se(var_core_value_sig1802, var_core_value_sigCFA7, var_core_value_sig31C2 ? {
+    type: "solid",
+    color: var_core_value_sig31C2,
+    opacity: 1
+  } : undefined);
+}
+function se(var_core_value_sigA677, var_core_value_sigC015, var_core_value_sigAEBC) {
+  let var_core_value_sig366A = i.Tools["deepClone"](var_core_value_sigA677.rows);
+  return (0, n.iterateSelectedSlideTableCells)(var_core_value_sig366A, (0, n.normalizeSlideTableCellRange)(var_core_value_sigC015), (var_core_value_sigEDC6, var_core_value_sig611A, var_core_value_sig6BD9) => {
+    let var_core_value_sig7E56 = "SLIDE_TABLE_CELL_" + var_core_value_sigA677.id + "_" + var_core_value_sig611A + "_" + var_core_value_sig6BD9;
+    var_core_value_sigEDC6.textData = be(var_core_value_sigEDC6.textData, var_core_value_sigAEBC, var_core_value_sig7E56);
+  }), {
+    rows: var_core_value_sig366A
+  };
+}
+function ce(var_core_value_sigA89C, var_core_value_sigDD3E, var_core_value_sig182B) {
+  let var_core_value_sig2A99 = i.Tools["deepClone"](var_core_value_sigA89C.rows);
+  return (0, n.iterateSelectedSlideTableCells)(var_core_value_sig2A99, (0, n.normalizeSlideTableCellRange)(var_core_value_sigDD3E), var_core_value_sig4161 => {
+    var var_core_value_sig7580;
+    let var_core_value_sig1F18 = ((var_core_value_sig7580 = var_core_value_sig4161.style) == null ? undefined : var_core_value_sig7580.borders) ?? {},
+      var_core_value_sigD5A0 = var_core_value_sig698E => ({
+        ...(0, n.getDefaultSlideTableBorder)(),
+        ...var_core_value_sig698E,
+        ...var_core_value_sig182B
+      });
+    var_core_value_sig4161.style = (0, n.mergeSlideTableCellStyle)(var_core_value_sig4161.style, {
+      borders: {
+        top: var_core_value_sigD5A0(var_core_value_sig1F18.top),
+        right: var_core_value_sigD5A0(var_core_value_sig1F18.right),
+        bottom: var_core_value_sigD5A0(var_core_value_sig1F18.bottom),
+        left: var_core_value_sigD5A0(var_core_value_sig1F18.left)
+      }
+    });
+  }), {
+    rows: var_core_value_sig2A99
+  };
+}
+function le(var_core_value_sig18A6, var_core_value_sigA98B, var_core_value_sig458C, var_core_value_sig8DEC) {
+  return {
+    rows: (0, n.buildBorderPresetPatch)(i.Tools["deepClone"](var_core_value_sig18A6.rows), var_core_value_sigA98B, var_core_value_sig458C, var_core_value_sig8DEC).rows
+  };
+}
+function ue(var_core_value_sig522F, var_core_value_sigD718, var_core_value_sig41CF) {
+  return L(var_core_value_sig522F, var_core_value_sigD718, {
+    ff: var_core_value_sig41CF
+  });
+}
+function de(var_core_value_sig1EFD, var_core_value_sig38BB, var_core_value_sig017C) {
+  return L(var_core_value_sig1EFD, var_core_value_sig38BB, {
+    fs: var_core_value_sig017C
+  });
+}
+function fe(var_core_value_sig44BC, var_core_value_sigAB7B) {
+  let var_core_value_sig55EE = A(var_core_value_sig44BC);
+  return !!var_core_value_sig55EE && (0, n.isSlideTableMultiCellRange)(var_core_value_sig55EE.range) && (!var_core_value_sigAB7B || !pe(var_core_value_sigAB7B, var_core_value_sig44BC));
+}
+function pe(var_core_value_sigE9F6, var_core_value_sig3BA9) {
+  let var_core_value_sigE230 = A(var_core_value_sig3BA9);
+  if (!var_core_value_sigE230 || !var_core_value_sigE9F6) return false;
+  let var_core_value_sig5AC8 = (0, n.normalizeSlideTableCellRange)(var_core_value_sigE230.range);
+  for (let var_core_value_sig81B2 = var_core_value_sig5AC8.startRow; var_core_value_sig81B2 <= var_core_value_sig5AC8.endRow; var_core_value_sig81B2 += 1) for (let var_core_value_sig2809 = var_core_value_sig5AC8.startColumn; var_core_value_sig2809 <= var_core_value_sig5AC8.endColumn; var_core_value_sig2809 += 1) {
+    let var_core_value_sigF62A = (0, n.findSlideTableMergeRange)(var_core_value_sigE9F6, var_core_value_sig81B2, var_core_value_sig2809);
+    if (var_core_value_sigF62A && (0, n.isSlideTableMultiCellRange)(var_core_value_sigF62A)) return true;
+  }
+  return false;
+}
+function me(var_core_value_sigE492, var_core_value_sig3465) {
+  let var_core_value_sig38DD = A(var_core_value_sig3465);
+  return !var_core_value_sig38DD || !var_core_value_sigE492 ? false : var_core_value_sigE492.rows["length"] > var_core_value_sig38DD.range["endRow"] - var_core_value_sig38DD.range["startRow"] + 1;
+}
+function he(var_core_value_sig89AE, var_core_value_sig3A69) {
+  let var_core_value_sigD64C = A(var_core_value_sig3A69);
+  return !var_core_value_sigD64C || !var_core_value_sig89AE ? false : var_core_value_sig89AE.columns["length"] > var_core_value_sigD64C.range["endColumn"] - var_core_value_sigD64C.range["startColumn"] + 1;
+}
+function P(var_core_value_sig3B0B, var_core_value_sig1E7C) {
+  let var_core_value_sigD3C4 = A(var_core_value_sig1E7C);
+  return !var_core_value_sigD3C4 || !var_core_value_sig3B0B ? false : var_core_value_sigD3C4.range["endRow"] - var_core_value_sigD3C4.range["startRow"] + 1 > 1;
+}
+function F(var_core_value_sigBC8B, var_core_value_sigEE2E) {
+  let var_core_value_sigCF06 = A(var_core_value_sigEE2E);
+  return !var_core_value_sigCF06 || !var_core_value_sigBC8B ? false : var_core_value_sigCF06.range["endColumn"] - var_core_value_sigCF06.range["startColumn"] + 1 > 1;
+}
+function I(var_core_value_sig6BCD, var_core_value_sigC664, var_core_value_sig1B7B) {
+  return {
+    id: var_core_value_sig6BCD,
+    commandId: var_core_value_sigC664,
+    enabled: var_core_value_sig1B7B
+  };
+}
+function ge(var_core_value_sig1F31, var_core_value_sigEA82, var_core_value_sig65BB, var_core_value_sig69B1, var_core_value_sigAEDE, var_core_value_sig139C, var_core_value_sigF2D6) {
+  return !var_core_value_sig1F31 || !(var_core_value_sigF2D6 === "row" ? P(var_core_value_sig1F31, var_core_value_sigEA82) : F(var_core_value_sig1F31, var_core_value_sigEA82)) ? null : {
+    commandId: var_core_value_sig65BB,
+    params: {
+      unitId: var_core_value_sig69B1,
+      tableId: var_core_value_sigAEDE,
+      patch: j(var_core_value_sig1F31, var_core_value_sigF2D6, var_core_value_sig139C)
+    }
+  };
+}
+function _e(var_core_value_sig810E) {
+  return var_core_value_sig810E.endRow - var_core_value_sig810E.startRow + 1;
+}
+function ve(var_core_value_sigABB1) {
+  return var_core_value_sigABB1.endColumn - var_core_value_sigABB1.startColumn + 1;
+}
+function ye(var_core_value_sig3F70, var_core_value_sig9F91, var_core_value_sigC9C8) {
+  var var_core_value_sigC444;
+  let var_core_value_sig4B40 = i.Tools["deepClone"](var_core_value_sig3F70 ?? we(var_core_value_sigC9C8)),
+    var_core_value_sig9F6D = var_core_value_sig4B40.body ?? {
+      dataStream: "\x0d\x0a",
+      paragraphs: [R()],
+      textRuns: []
+    },
+    var_core_value_sigE1A2 = (var_core_value_sigC444 = var_core_value_sig9F6D.paragraphs) != null && var_core_value_sigC444.length ? var_core_value_sig9F6D.paragraphs : [R()],
+    var_core_value_sig4767 = var_core_value_sig4B40.documentStyle ?? {};
+  return {
+    ...var_core_value_sig4B40,
+    id: var_core_value_sig4B40.id ?? var_core_value_sigC9C8,
+    body: {
+      ...var_core_value_sig9F6D,
+      dataStream: var_core_value_sig9F6D.dataStream ?? "\x0d\x0a",
+      paragraphs: var_core_value_sigE1A2.map(var_core_value_sigA0A5 => ({
+        ...var_core_value_sigA0A5,
+        paragraphStyle: {
+          ...var_core_value_sigA0A5.paragraphStyle,
+          horizontalAlign: var_core_value_sig9F91
+        }
+      }))
+    },
+    documentStyle: {
+      ...var_core_value_sig4767,
+      renderConfig: {
+        ...var_core_value_sig4767.renderConfig,
+        horizontalAlign: var_core_value_sig9F91
+      }
+    }
+  };
+}
+function be(var_core_value_sig2591, var_core_value_sig7C12, var_core_value_sig8EC5) {
+  var var_core_value_sig4B1B, var_core_value_sig14C3;
+  let var_core_value_sig95A8 = i.Tools["deepClone"](var_core_value_sig2591 ?? we(var_core_value_sig8EC5)),
+    var_core_value_sig3F90 = var_core_value_sig95A8.body ?? {
+      dataStream: "\x0d\x0a",
+      paragraphs: [R()],
+      textRuns: []
+    },
+    var_core_value_sigB489 = var_core_value_sig3F90.dataStream ?? "\x0d\x0a",
+    var_core_value_sig76E7 = Math.max(0, var_core_value_sigB489.length - 2),
+    var_core_value_sig7E7F = Se(var_core_value_sig7C12),
+    var_core_value_sig7947 = xe({
+      ...((var_core_value_sig4B1B = var_core_value_sig95A8.documentStyle) == null ? undefined : var_core_value_sig4B1B.textStyle)
+    }, var_core_value_sig7C12, var_core_value_sig7E7F),
+    var_core_value_sig7FEC = (var_core_value_sig3F90.textRuns ?? []).map(var_core_value_sig10AA => {
+      let var_core_value_sigE6D0 = xe({
+        ...var_core_value_sig10AA.ts
+      }, var_core_value_sig7C12, var_core_value_sig7E7F);
+      return {
+        ...var_core_value_sig10AA,
+        ts: var_core_value_sigE6D0
+      };
+    });
+  return var_core_value_sig7C12 && var_core_value_sig76E7 > 0 && var_core_value_sig7FEC.length === 0 && var_core_value_sig7FEC.push({
+    st: 0,
+    ed: var_core_value_sig76E7,
+    ts: {
+      ...(var_core_value_sig7E7F ? {
+        cl: {
+          rgb: var_core_value_sig7E7F
+        }
+      } : {}),
+      textFill: var_core_value_sig7C12
+    }
+  }), {
+    ...var_core_value_sig95A8,
+    id: var_core_value_sig95A8.id ?? var_core_value_sig8EC5,
+    body: {
+      ...var_core_value_sig3F90,
+      dataStream: var_core_value_sigB489,
+      paragraphs: (var_core_value_sig14C3 = var_core_value_sig3F90.paragraphs) != null && var_core_value_sig14C3.length ? var_core_value_sig3F90.paragraphs : [R()],
+      textRuns: var_core_value_sig7FEC
+    },
+    documentStyle: {
+      ...var_core_value_sig95A8.documentStyle,
+      textStyle: var_core_value_sig7947
+    }
+  };
+}
+function xe(var_core_value_sig73D2, var_core_value_sig6BDA, var_core_value_sig3A25) {
+  return var_core_value_sig6BDA ? var_core_value_sig73D2.textFill = var_core_value_sig6BDA : delete var_core_value_sig73D2.textFill, var_core_value_sig3A25 ? var_core_value_sig73D2.cl = {
+    rgb: var_core_value_sig3A25
+  } : delete var_core_value_sig73D2.cl, var_core_value_sig73D2;
+}
+function Se(var_core_value_sigCBAA) {
+  if (!var_core_value_sigCBAA || var_core_value_sigCBAA.type === "none") return (var_core_value_sigCBAA == null ? undefined : var_core_value_sigCBAA.type) === "none" ? "rgba(0, 0, 0, 0)" : undefined;
+  if (var_core_value_sigCBAA.type === "gradient") {
+    var var_core_value_sigC096;
+    return ((var_core_value_sigC096 = var_core_value_sigCBAA.gradient) == null || (var_core_value_sigC096 = var_core_value_sigC096.stops) == null || (var_core_value_sigC096 = var_core_value_sigC096[0]) == null ? undefined : var_core_value_sigC096.color) ?? var_core_value_sigCBAA.color;
+  }
+  return var_core_value_sigCBAA.color;
+}
+function L(var_core_value_sig6140, var_core_value_sigDD84, var_core_value_sig7BA5) {
+  let var_core_value_sig543F = i.Tools["deepClone"](var_core_value_sig6140.rows);
+  return (0, n.iterateSelectedSlideTableCells)(var_core_value_sig543F, (0, n.normalizeSlideTableCellRange)(var_core_value_sigDD84), (var_core_value_sig8E91, var_core_value_sig00BE, var_core_value_sig7BB5) => {
+    let var_core_value_sig6AAD = "SLIDE_TABLE_CELL_" + var_core_value_sig6140.id + "_" + var_core_value_sig00BE + "_" + var_core_value_sig7BB5;
+    var_core_value_sig8E91.textData = Ce(var_core_value_sig8E91.textData, var_core_value_sig7BA5, var_core_value_sig6AAD);
+  }), {
+    rows: var_core_value_sig543F
+  };
+}
+function Ce(var_core_value_sigBF30, var_core_value_sigAA0E, var_core_value_sig3747) {
+  var var_core_value_sig9B6A, var_core_value_sig7BFA;
+  let var_core_value_sig09FA = i.Tools["deepClone"](var_core_value_sigBF30 ?? we(var_core_value_sig3747)),
+    var_core_value_sig6881 = var_core_value_sig09FA.body ?? {
+      dataStream: "\x0d\x0a",
+      paragraphs: [R()],
+      textRuns: []
+    },
+    var_core_value_sigAB94 = var_core_value_sig6881.dataStream ?? "\x0d\x0a",
+    var_core_value_sigEE05 = Math.max(0, var_core_value_sigAB94.length - 2),
+    var_core_value_sig0F0E = (var_core_value_sig6881.textRuns ?? []).map(var_core_value_sig1157 => ({
+      ...var_core_value_sig1157,
+      ts: {
+        ...var_core_value_sig1157.ts,
+        ...var_core_value_sigAA0E
+      }
+    }));
+  return var_core_value_sigEE05 > 0 && var_core_value_sig0F0E.length === 0 && var_core_value_sig0F0E.push({
+    st: 0,
+    ed: var_core_value_sigEE05,
+    ts: var_core_value_sigAA0E
+  }), {
+    ...var_core_value_sig09FA,
+    id: var_core_value_sig09FA.id ?? var_core_value_sig3747,
+    body: {
+      ...var_core_value_sig6881,
+      dataStream: var_core_value_sigAB94,
+      paragraphs: (var_core_value_sig9B6A = var_core_value_sig6881.paragraphs) != null && var_core_value_sig9B6A.length ? var_core_value_sig6881.paragraphs : [R()],
+      textRuns: var_core_value_sig0F0E
+    },
+    documentStyle: {
+      ...var_core_value_sig09FA.documentStyle,
+      textStyle: {
+        ...((var_core_value_sig7BFA = var_core_value_sig09FA.documentStyle) == null ? undefined : var_core_value_sig7BFA.textStyle),
+        ...var_core_value_sigAA0E
+      }
+    }
+  };
+}
+function we(var_core_value_sig3A40) {
+  return {
+    id: var_core_value_sig3A40,
+    body: {
+      dataStream: "\x0d\x0a",
+      paragraphs: [R()],
+      textRuns: []
+    },
+    documentStyle: {}
+  };
+}
+function R() {
+  return {
+    startIndex: 0,
+    paragraphId: (0, i.createParagraphId)(new Set())
+  };
+}
+function Te(var_core_value_sig2377) {
+  return var_core_value_sig2377 === i.VerticalAlign["MIDDLE"] ? n.SlideTableVerticalAlignEnum["Middle"] : var_core_value_sig2377 === i.VerticalAlign["BOTTOM"] ? n.SlideTableVerticalAlignEnum["Bottom"] : n.SlideTableVerticalAlignEnum["Top"];
+}
+const Ee = {
+    insertRows: n.InsertSlideTableRowsCommand["id"],
+    insertColumns: n.InsertSlideTableColumnsCommand["id"],
+    deleteRows: n.DeleteSlideTableRowsCommand["id"],
+    deleteColumns: n.DeleteSlideTableColumnsCommand["id"],
+    mergeCells: n.MergeSlideTableCellsCommand["id"],
+    unmergeCells: n.UnmergeSlideTableCellsCommand["id"],
+    updateTable: n.UpdateSlideTableCommand["id"]
+  },
+  De = [{
+    title: "slides-table-ui.contextMenu.resetColor"
+  }, {
+    title: "white",
+    color: "white"
+  }, {
+    title: "gray.100",
+    color: "gray.100"
+  }, {
+    title: "primary.100",
+    color: "primary.100"
+  }, {
+    title: "blue.100",
+    color: "blue.100"
+  }, {
+    title: "green.100",
+    color: "green.100"
+  }, {
+    title: "yellow.100",
+    color: "yellow.100"
+  }, {
+    title: "red.100",
+    color: "red.100"
+  }],
+  Oe = [{
+    title: "slides-table-ui.contextMenu.resetColor"
+  }, {
+    title: "gray.900",
+    color: "gray.900"
+  }, {
+    title: "gray.500",
+    color: "gray.500"
+  }, {
+    title: "red.600",
+    color: "red.600"
+  }, {
+    title: "orange.600",
+    color: "orange.600"
+  }, {
+    title: "yellow.700",
+    color: "yellow.700"
+  }, {
+    title: "green.600",
+    color: "green.600"
+  }, {
+    title: "blue.600",
+    color: "blue.600"
+  }, {
+    title: "purple.600",
+    color: "purple.600"
+  }],
+  ke = z("slide.operation.slide-table-insert-row-above", k.InsertRowAbove),
+  Ae = z("slide.operation.slide-table-insert-row-below", k.InsertRowBelow),
+  je = z("slide.operation.slide-table-insert-column-left", k.InsertColumnLeft),
+  Me = z("slide.operation.slide-table-insert-column-right", k.InsertColumnRight),
+  Ne = z("slide.operation.slide-table-delete-rows", k.DeleteRows),
+  Pe = z("slide.operation.slide-table-delete-columns", k.DeleteColumns),
+  Fe = z("slide.operation.slide-table-merge-cells", k.MergeCells),
+  Ie = z("slide.operation.slide-table-unmerge-cells", k.UnmergeCells),
+  Le = z("slide.operation.slide-table-distribute-rows", k.DistributeRows),
+  Re = z("slide.operation.slide-table-distribute-columns", k.DistributeColumns),
+  ze = {
+    id: "slide.operation.slide-table-copy-table",
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sig4EEF => var_core_value_sig4EEF.get(i.ICommandService).executeCommand("slide.operation.copy-selection")
+  },
+  Be = {
+    id: "slide.operation.slide-table-cut-table",
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sigC58E => var_core_value_sigC58E.get(i.ICommandService).executeCommand("slide.operation.cut-selection")
+  },
+  Ve = {
+    id: "slide.operation.slide-table-delete-table",
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sig9063 => {
+      let var_core_value_sig99CE = var_core_value_sig9063.get(i.ICommandService),
+        var_core_value_sigFB15 = var_core_value_sig9063.get(t.ISlideDrawingService),
+        var_core_value_sig9AF5 = var_core_value_sig9063.get(r.ISlideDrawingStateService),
+        var_core_value_sigCD2E = var_core_value_sig9063.get(E),
+        var_core_value_sig60CE = var_core_value_sigCD2E.getSelection(),
+        var_core_value_sigFA1B = A(var_core_value_sig60CE),
+        var_core_value_sig5FEF = var_core_value_sig60CE && var_core_value_sigFA1B ? {
+          unitId: var_core_value_sigFA1B.unitId,
+          subUnitId: var_core_value_sig60CE.subUnitId,
+          tableId: var_core_value_sigFA1B.tableId,
+          elementId: var_core_value_sigFA1B.elementId
+        } : null;
+      if (!var_core_value_sig5FEF) {
+        let var_core_value_sigA694 = var_core_value_sig9AF5.getSnapshot(),
+          var_core_value_sig18E0 = var_core_value_sigA694.selectedIds["length"] === 1 ? var_core_value_sigA694.selectedIds[0] : undefined,
+          var_core_value_sig0428 = var_core_value_sigA694.context && var_core_value_sig18E0 ? var_core_value_sigFB15.getDrawingByParam({
+            ...var_core_value_sigA694.context,
+            drawingId: var_core_value_sig18E0
+          }) : null;
+        var_core_value_sigA694.context && var_core_value_sig18E0 && (var_core_value_sig0428 == null ? undefined : var_core_value_sig0428.element["type"]) === t.PageElementTypeEnum["Table"] && (var_core_value_sig5FEF = {
+          unitId: var_core_value_sigA694.context["unitId"],
+          subUnitId: var_core_value_sigA694.context["subUnitId"],
+          tableId: var_core_value_sig0428.element["tableId"],
+          elementId: var_core_value_sig18E0
+        });
+      }
+      if (!var_core_value_sig5FEF) return false;
+      let var_core_value_sigD48C = var_core_value_sig99CE.syncExecuteCommand(n.RemoveSlideTableCommand["id"], var_core_value_sig5FEF);
+      return var_core_value_sigD48C && (var_core_value_sigCD2E.clear(), var_core_value_sig9AF5.clearSelection()), var_core_value_sigD48C;
+    }
+  };
+function He(var_core_value_sig41E9, var_core_value_sig3807) {
+  return {
+    id: var_core_value_sig41E9,
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sigBE07 => {
+      let var_core_value_sig555F = var_core_value_sigBE07.get(t.ISlideDrawingService),
+        var_core_value_sig3D6F = var_core_value_sigBE07.get(r.ISlideDrawingStateService).getSnapshot(),
+        var_core_value_sig336C = var_core_value_sig3D6F.selectedIds["length"] === 1 ? var_core_value_sig3D6F.selectedIds[0] : undefined;
+      if (!var_core_value_sig3D6F.context || !var_core_value_sig336C) return false;
+      let var_core_value_sig6E68 = var_core_value_sig555F.getDrawingByParam({
+        ...var_core_value_sig3D6F.context,
+        drawingId: var_core_value_sig336C
+      });
+      if ((var_core_value_sig6E68 == null ? undefined : var_core_value_sig6E68.element["type"]) !== t.PageElementTypeEnum["Table"]) return false;
+      let var_core_value_sig8DFE = var_core_value_sig555F.getDrawingOrder(var_core_value_sig3D6F.context["unitId"], var_core_value_sig3D6F.context["subUnitId"]),
+        var_core_value_sig48EA = var_core_value_sig8DFE.indexOf(var_core_value_sig336C);
+      if (var_core_value_sig48EA < 0) return false;
+      let var_core_value_sig5E16 = [...var_core_value_sig8DFE];
+      if (var_core_value_sig3807 === i.ArrangeTypeEnum["forward"] && var_core_value_sig48EA < var_core_value_sig5E16.length - 1) [var_core_value_sig5E16[var_core_value_sig48EA], var_core_value_sig5E16[var_core_value_sig48EA + 1]] = [var_core_value_sig5E16[var_core_value_sig48EA + 1], var_core_value_sig5E16[var_core_value_sig48EA]];else {
+        if (var_core_value_sig3807 === i.ArrangeTypeEnum["backward"] && var_core_value_sig48EA > 0) [var_core_value_sig5E16[var_core_value_sig48EA], var_core_value_sig5E16[var_core_value_sig48EA - 1]] = [var_core_value_sig5E16[var_core_value_sig48EA - 1], var_core_value_sig5E16[var_core_value_sig48EA]];else {
+          if (var_core_value_sig3807 === i.ArrangeTypeEnum["front"] && var_core_value_sig48EA < var_core_value_sig5E16.length - 1) var_core_value_sig5E16.splice(var_core_value_sig48EA, 1), var_core_value_sig5E16.push(var_core_value_sig336C);else {
+            if (var_core_value_sig3807 === i.ArrangeTypeEnum["back"] && var_core_value_sig48EA > 0) var_core_value_sig5E16.splice(var_core_value_sig48EA, 1), var_core_value_sig5E16.unshift(var_core_value_sig336C);else return false;
+          }
+        }
+      }
+      return var_core_value_sigBE07.get(i.ICommandService).executeCommand(t.ReorderSlideElementsCommand["id"], {
+        unitId: var_core_value_sig3D6F.context["unitId"],
+        subUnitId: var_core_value_sig3D6F.context["subUnitId"],
+        drawingIds: var_core_value_sig5E16
+      });
+    }
+  };
+}
+const Ue = He("slide-table.operation.arrange-forward", i.ArrangeTypeEnum["forward"]),
+  We = He("slide-table.operation.arrange-backward", i.ArrangeTypeEnum["backward"]),
+  Ge = He("slide-table.operation.arrange-front", i.ArrangeTypeEnum["front"]),
+  Ke = He("slide-table.operation.arrange-back", i.ArrangeTypeEnum["back"]),
+  qe = ct("slide-table.operation.border-all", n.SlideTableBorderPresetEnum["All"]),
+  Je = ct("slide-table.operation.border-outer", n.SlideTableBorderPresetEnum["Outer"]),
+  Ye = ct("slide-table.operation.border-inner", n.SlideTableBorderPresetEnum["Inner"]),
+  Xe = ct("slide-table.operation.border-none", n.SlideTableBorderPresetEnum["None"]),
+  Ze = lt("slide-table.operation.align-left", {
+    axis: "horizontal",
+    value: i.HorizontalAlign["LEFT"]
+  }),
+  Qe = lt("slide-table.operation.align-center", {
+    axis: "horizontal",
+    value: i.HorizontalAlign["CENTER"]
+  }),
+  $e = lt("slide-table.operation.align-right", {
+    axis: "horizontal",
+    value: i.HorizontalAlign["RIGHT"]
+  }),
+  et = lt("slide-table.operation.align-top", {
+    axis: "vertical",
+    value: i.VerticalAlign["TOP"]
+  }),
+  tt = lt("slide-table.operation.align-middle", {
+    axis: "vertical",
+    value: i.VerticalAlign["MIDDLE"]
+  }),
+  nt = lt("slide-table.operation.align-bottom", {
+    axis: "vertical",
+    value: i.VerticalAlign["BOTTOM"]
+  }),
+  rt = De.map((var_core_value_sig5409, var_core_value_sig680F) => ut("slide-table.operation.background-color-" + var_core_value_sig680F, var_core_value_sig5409)),
+  it = Oe.map((var_core_value_sig2E36, var_core_value_sigBA94) => dt("slide-table.operation.text-color-" + var_core_value_sigBA94, var_core_value_sig2E36)),
+  at = [ke, Ae, je, Me, Ne, Pe, Fe, Ie, Le, Re, ze, Be, Ve, Ue, We, Ge, Ke, qe, Je, Ye, Xe, Ze, Qe, $e, et, tt, nt, ...rt, ...it];
+function ot(var_core_value_sigA847) {
+  return A(var_core_value_sigA847.getSelection());
+}
+function st(var_core_value_sig1AB4, var_core_value_sig7272, var_core_value_sig885F) {
+  return te(var_core_value_sig1AB4, var_core_value_sig7272, var_core_value_sig885F, Ee);
+}
+function z(var_core_value_sigB7C7, var_core_value_sig6934) {
+  return {
+    id: var_core_value_sigB7C7,
+    type: i.CommandType["OPERATION"],
+    handler(var_core_value_sig09F3) {
+      let var_core_value_sig4592 = var_core_value_sig09F3.get(E).getSelection(),
+        var_core_value_sigC5C4 = A(var_core_value_sig4592);
+      if (!var_core_value_sigC5C4) return false;
+      let var_core_value_sig1617 = st(var_core_value_sig09F3.get(n.SlideTableResourceService).getTable(var_core_value_sigC5C4.unitId, var_core_value_sigC5C4.tableId), var_core_value_sig4592, var_core_value_sig6934);
+      return var_core_value_sig1617 ? var_core_value_sig09F3.get(i.ICommandService).executeCommand(var_core_value_sig1617.commandId, var_core_value_sig1617.params) : false;
+    }
+  };
+}
+function ct(var_core_value_sig2842, var_core_value_sigA5A3) {
+  return {
+    id: var_core_value_sig2842,
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sig4169 => {
+      let var_core_value_sig6D19 = ot(var_core_value_sig4169.get(E));
+      if (!var_core_value_sig6D19) return false;
+      let var_core_value_sig279C = var_core_value_sig4169.get(n.SlideTableResourceService).getTable(var_core_value_sig6D19.unitId, var_core_value_sig6D19.tableId);
+      return var_core_value_sig279C ? var_core_value_sig4169.get(i.ICommandService).executeCommand(n.UpdateSlideTableCommand["id"], {
+        unitId: var_core_value_sig6D19.unitId,
+        tableId: var_core_value_sig6D19.tableId,
+        patch: le(var_core_value_sig279C, var_core_value_sig6D19.range, var_core_value_sigA5A3)
+      }) : false;
+    }
+  };
+}
+function lt(var_core_value_sig590F, var_core_value_sigECA2) {
+  return {
+    id: var_core_value_sig590F,
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sigAC51 => {
+      let var_core_value_sig8986 = ot(var_core_value_sigAC51.get(E));
+      if (!var_core_value_sig8986) return false;
+      let var_core_value_sigCAF7 = var_core_value_sigAC51.get(n.SlideTableResourceService).getTable(var_core_value_sig8986.unitId, var_core_value_sig8986.tableId);
+      return var_core_value_sigCAF7 ? var_core_value_sigAC51.get(i.ICommandService).executeCommand(n.UpdateSlideTableCommand["id"], {
+        unitId: var_core_value_sig8986.unitId,
+        tableId: var_core_value_sig8986.tableId,
+        patch: ne(var_core_value_sigCAF7, var_core_value_sig8986.range, var_core_value_sigECA2)
+      }) : false;
+    }
+  };
+}
+function ut(var_core_value_sigCAC4, var_core_value_sig2017) {
+  return {
+    id: var_core_value_sigCAC4,
+    title: var_core_value_sig2017.title,
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sigED1C => {
+      let var_core_value_sig726E = ot(var_core_value_sigED1C.get(E));
+      if (!var_core_value_sig726E) return false;
+      let var_core_value_sig2CD3 = var_core_value_sigED1C.get(n.SlideTableResourceService).getTable(var_core_value_sig726E.unitId, var_core_value_sig726E.tableId);
+      return var_core_value_sig2CD3 ? var_core_value_sigED1C.get(i.ICommandService).executeCommand(n.UpdateSlideTableCommand["id"], {
+        unitId: var_core_value_sig726E.unitId,
+        tableId: var_core_value_sig726E.tableId,
+        patch: N(var_core_value_sig2CD3, var_core_value_sig726E.range, ft(var_core_value_sigED1C, var_core_value_sig2017.color))
+      }) : false;
+    }
+  };
+}
+function dt(var_core_value_sig49A4, var_core_value_sigA166) {
+  return {
+    id: var_core_value_sig49A4,
+    title: var_core_value_sigA166.title,
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sig038E => {
+      let var_core_value_sigAA1E = ot(var_core_value_sig038E.get(E));
+      if (!var_core_value_sigAA1E) return false;
+      let var_core_value_sigC9F5 = var_core_value_sig038E.get(n.SlideTableResourceService).getTable(var_core_value_sigAA1E.unitId, var_core_value_sigAA1E.tableId);
+      return var_core_value_sigC9F5 ? var_core_value_sig038E.get(i.ICommandService).executeCommand(n.UpdateSlideTableCommand["id"], {
+        unitId: var_core_value_sigAA1E.unitId,
+        tableId: var_core_value_sigAA1E.tableId,
+        patch: oe(var_core_value_sigC9F5, var_core_value_sigAA1E.range, ft(var_core_value_sig038E, var_core_value_sigA166.color))
+      }) : false;
+    }
+  };
+}
+function ft(var_core_value_sigEB84, var_core_value_sig3B17) {
+  if (!var_core_value_sig3B17) return;
+  let var_core_value_sig7868 = var_core_value_sigEB84.get(i.ThemeService);
+  return var_core_value_sig7868.isValidThemeColor(var_core_value_sig3B17) ? var_core_value_sig7868.getColorFromTheme(var_core_value_sig3B17) : var_core_value_sig3B17;
+}
+function pt(var_core_value_sig9AFE) {
+  let var_core_value_sig244E = var_core_value_sig9AFE.get(E).getSelection(),
+    var_core_value_sigD4E9 = A(var_core_value_sig244E);
+  return fe(var_core_value_sig244E, var_core_value_sigD4E9 ? var_core_value_sig9AFE.get(n.SlideTableResourceService).getTable(var_core_value_sigD4E9.unitId, var_core_value_sigD4E9.tableId) : null);
+}
+function mt(var_core_value_sig969F) {
+  let var_core_value_sig6C52 = var_core_value_sig969F.get(E).getSelection(),
+    var_core_value_sig3A44 = A(var_core_value_sig6C52);
+  return pe(var_core_value_sig3A44 ? var_core_value_sig969F.get(n.SlideTableResourceService).getTable(var_core_value_sig3A44.unitId, var_core_value_sig3A44.tableId) : null, var_core_value_sig6C52);
+}
+function ht(var_core_value_sig9631) {
+  let var_core_value_sig8407 = var_core_value_sig9631.get(E).getSelection(),
+    var_core_value_sig635F = A(var_core_value_sig8407);
+  return me(var_core_value_sig635F ? var_core_value_sig9631.get(n.SlideTableResourceService).getTable(var_core_value_sig635F.unitId, var_core_value_sig635F.tableId) : null, var_core_value_sig8407);
+}
+function gt(var_core_value_sig79E0) {
+  let var_core_value_sig1E28 = var_core_value_sig79E0.get(E).getSelection(),
+    var_core_value_sigEEC3 = A(var_core_value_sig1E28);
+  return he(var_core_value_sigEEC3 ? var_core_value_sig79E0.get(n.SlideTableResourceService).getTable(var_core_value_sigEEC3.unitId, var_core_value_sigEEC3.tableId) : null, var_core_value_sig1E28);
+}
+function _t(var_core_value_sigFAEC) {
+  let var_core_value_sig1282 = var_core_value_sigFAEC.get(E).getSelection(),
+    var_core_value_sig80D0 = A(var_core_value_sig1282);
+  return P(var_core_value_sig80D0 ? var_core_value_sigFAEC.get(n.SlideTableResourceService).getTable(var_core_value_sig80D0.unitId, var_core_value_sig80D0.tableId) : null, var_core_value_sig1282);
+}
+function vt(var_core_value_sig6CEE) {
+  let var_core_value_sig4B27 = var_core_value_sig6CEE.get(E).getSelection(),
+    var_core_value_sig153F = A(var_core_value_sig4B27);
+  return F(var_core_value_sig153F ? var_core_value_sig6CEE.get(n.SlideTableResourceService).getTable(var_core_value_sig153F.unitId, var_core_value_sig153F.tableId) : null, var_core_value_sig4B27);
+}
+function yt(var_core_value_sigC847) {
+  return var_core_value_sigC847.key["length"] === 1 && !var_core_value_sigC847.altKey && !var_core_value_sigC847.ctrlKey && !var_core_value_sigC847.metaKey;
+}
+function bt(var_core_value_sig114E) {
+  return var_core_value_sig114E === "insertText" || var_core_value_sig114E === "insertCompositionText";
+}
+function xt(var_core_value_sig88EA) {
+  if (typeof HTMLElement > "u" || !(var_core_value_sig88EA instanceof HTMLElement)) return false;
+  let var_core_value_sig4E97 = var_core_value_sig88EA.tagName["toLowerCase"]();
+  return var_core_value_sig4E97 === "input" || var_core_value_sig4E97 === "textarea" || var_core_value_sig4E97 === "select" || Ct(var_core_value_sig88EA);
+}
+function St(var_core_value_sigBE44) {
+  return typeof HTMLElement > "u" || !(var_core_value_sigBE44 instanceof HTMLElement) || !Ct(var_core_value_sigBE44) ? false : var_core_value_sigBE44.dataset["uComp"] === "editor" || var_core_value_sigBE44.id["startsWith"]("__editor_");
+}
+function Ct(var_core_value_sigE675) {
+  return var_core_value_sigE675.isContentEditable || var_core_value_sigE675.getAttribute("contenteditable") === "true";
+}
+var wt = class extends i.Disposable {
+  constructor() {
+    super(), T(this, "_handler", null), T(this, "_inputHandler", null), this._initNativeInputListeners();
+  }
+  setHandler(var_core_value_sig7EEA) {
+    return this._handler = var_core_value_sig7EEA, (0, i.toDisposable)(() => {
+      this._handler === var_core_value_sig7EEA && (this._handler = null);
+    });
+  }
+  setInputHandler(var_core_value_sig59CE) {
+    return this._inputHandler = var_core_value_sig59CE, (0, i.toDisposable)(() => {
+      this._inputHandler === var_core_value_sig59CE && (this._inputHandler = null);
+    });
+  }
+  handle(var_core_value_sig33C8) {
+    var var_core_value_sig957F;
+    return ((var_core_value_sig957F = this._handler) == null ? undefined : var_core_value_sig957F.call(this, var_core_value_sig33C8)) ?? false;
+  }
+  handleInput(var_core_value_sig803B) {
+    var var_core_value_sig5830;
+    return ((var_core_value_sig5830 = this._inputHandler) == null ? undefined : var_core_value_sig5830.call(this, var_core_value_sig803B)) ?? false;
+  }
+  _initNativeInputListeners() {
+    if (typeof document > "u") return;
+    let var_core_value_sig4A7C = var_core_value_sig2DAB => {
+        !this.canHandleNativeInput(var_core_value_sig2DAB) || var_core_value_sig2DAB.isComposing || !yt(var_core_value_sig2DAB) || this.handleInput({
+          kind: "text",
+          text: var_core_value_sig2DAB.key
+        }) && (var_core_value_sig2DAB.preventDefault(), var_core_value_sig2DAB.stopPropagation());
+      },
+      var_core_value_sigF975 = var_core_value_sig877E => {
+        !this.canHandleNativeInput(var_core_value_sig877E) || !var_core_value_sig877E.data || !bt(var_core_value_sig877E.inputType) || this.handleInput({
+          kind: "text",
+          text: var_core_value_sig877E.data
+        }) && (var_core_value_sig877E.preventDefault(), var_core_value_sig877E.stopPropagation());
+      },
+      var_core_value_sigCDAF = var_core_value_sig20C8 => {
+        this.canHandleNativeInput(var_core_value_sig20C8, {
+          allowDocsEditor: true
+        }) && this.handleInput({
+          kind: "composition-start"
+        });
+      },
+      var_core_value_sigA298 = var_core_value_sigE9A7 => {
+        !this.canHandleNativeInput(var_core_value_sigE9A7) || !var_core_value_sigE9A7.data || this.handleInput({
+          kind: "composition",
+          text: var_core_value_sigE9A7.data
+        }) && (var_core_value_sigE9A7.preventDefault(), var_core_value_sigE9A7.stopPropagation());
+      };
+    document.addEventListener("keydown", var_core_value_sig4A7C, true), document.addEventListener("beforeinput", var_core_value_sigF975, true), document.addEventListener("compositionstart", var_core_value_sigCDAF, true), document.addEventListener("compositionend", var_core_value_sigA298, true), this.disposeWithMe((0, i.toDisposable)(() => {
+      document.removeEventListener("keydown", var_core_value_sig4A7C, true), document.removeEventListener("beforeinput", var_core_value_sigF975, true), document.removeEventListener("compositionstart", var_core_value_sigCDAF, true), document.removeEventListener("compositionend", var_core_value_sigA298, true);
+    }));
+  }
+};
+function B(var_core_value_sig4346, var_core_value_sigB49C) {
+  return function (var_core_value_sig0B40, var_core_value_sig330B) {
+    var_core_value_sigB49C(var_core_value_sig0B40, var_core_value_sig330B, var_core_value_sig4346);
+  };
+}
+function V(var_core_value_sigA044, var_core_value_sigD2F3, var_core_value_sig27CD, var_core_value_sig8977) {
+  var var_core_value_sigE931 = arguments.length,
+    var_core_value_sig9F9C = var_core_value_sigE931 < 3 ? var_core_value_sigD2F3 : var_core_value_sig8977 === null ? var_core_value_sig8977 = Object.getOwnPropertyDescriptor(var_core_value_sigD2F3, var_core_value_sig27CD) : var_core_value_sig8977,
+    var_core_value_sig0728;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig9F9C = Reflect.decorate(var_core_value_sigA044, var_core_value_sigD2F3, var_core_value_sig27CD, var_core_value_sig8977);else {
+    for (var var_core_value_sigDC83 = var_core_value_sigA044.length - 1; var_core_value_sigDC83 >= 0; var_core_value_sigDC83--) (var_core_value_sig0728 = var_core_value_sigA044[var_core_value_sigDC83]) && (var_core_value_sig9F9C = (var_core_value_sigE931 < 3 ? var_core_value_sig0728(var_core_value_sig9F9C) : var_core_value_sigE931 > 3 ? var_core_value_sig0728(var_core_value_sigD2F3, var_core_value_sig27CD, var_core_value_sig9F9C) : var_core_value_sig0728(var_core_value_sigD2F3, var_core_value_sig27CD)) || var_core_value_sig9F9C);
+  }
+  return var_core_value_sigE931 > 3 && var_core_value_sig9F9C && Object.defineProperty(var_core_value_sigD2F3, var_core_value_sig27CD, var_core_value_sig9F9C), var_core_value_sig9F9C;
+}
+let Tt = class extends wt {
+  constructor(var_core_value_sig3625) {
+    super(), this._contextService = var_core_value_sig3625;
+  }
+  canHandleNativeInput(var_core_value_sig0B4E, var_core_value_sig0E9F) {
+    return !this._contextService["getContextValue"](i.FOCUSING_SLIDE) || !this._contextService["getContextValue"]("FOCUSING_SLIDE_TABLE") ? false : var_core_value_sig0E9F != null && var_core_value_sig0E9F.allowDocsEditor && St(var_core_value_sig0B4E.target) ? true : !xt(var_core_value_sig0B4E.target);
+  }
+};
+Tt = V([B(0, i.IContextService)], Tt);
+const Et = [{
+  key: "arrow-left",
+  action: "move-left"
+}, {
+  key: "arrow-right",
+  action: "move-right"
+}, {
+  key: "arrow-up",
+  action: "move-up"
+}, {
+  key: "arrow-down",
+  action: "move-down"
+}, {
+  key: "shift-arrow-left",
+  action: "extend-left"
+}, {
+  key: "shift-arrow-right",
+  action: "extend-right"
+}, {
+  key: "shift-arrow-up",
+  action: "extend-up"
+}, {
+  key: "shift-arrow-down",
+  action: "extend-down"
+}, {
+  key: "tab",
+  action: "tab-forward"
+}, {
+  key: "shift-tab",
+  action: "tab-backward"
+}, {
+  key: "enter",
+  action: "edit-cell"
+}, {
+  key: "f2",
+  action: "edit-cell"
+}, {
+  key: "delete",
+  action: "clear-cells"
+}, {
+  key: "backspace",
+  action: "clear-cells"
+}];
+function Dt(var_core_value_sig56A8) {
+  return Et.map(var_core_value_sigE5BA => ({
+    action: var_core_value_sigE5BA.action,
+    binding: var_core_value_sig56A8[var_core_value_sigE5BA.key]
+  }));
+}
+function Ot(var_core_value_sigF487) {
+  switch (var_core_value_sigF487) {
+    case "move-left":
+      return {
+        rowDelta: 0,
+        columnDelta: -1,
+        extend: false
+      };
+    case "move-right":
+      return {
+        rowDelta: 0,
+        columnDelta: 1,
+        extend: false
+      };
+    case "move-up":
+      return {
+        rowDelta: -1,
+        columnDelta: 0,
+        extend: false
+      };
+    case "move-down":
+      return {
+        rowDelta: 1,
+        columnDelta: 0,
+        extend: false
+      };
+    case "extend-left":
+      return {
+        rowDelta: 0,
+        columnDelta: -1,
+        extend: true
+      };
+    case "extend-right":
+      return {
+        rowDelta: 0,
+        columnDelta: 1,
+        extend: true
+      };
+    case "extend-up":
+      return {
+        rowDelta: -1,
+        columnDelta: 0,
+        extend: true
+      };
+    case "extend-down":
+      return {
+        rowDelta: 1,
+        columnDelta: 0,
+        extend: true
+      };
+    case "tab-forward":
+      return {
+        rowDelta: 0,
+        columnDelta: 1,
+        extend: false,
+        wrap: true
+      };
+    case "tab-backward":
+      return {
+        rowDelta: 0,
+        columnDelta: -1,
+        extend: false,
+        wrap: true
+      };
+    default:
+      return null;
+  }
+}
+function kt(var_core_value_sigC62E, var_core_value_sigCD50, var_core_value_sig51C4, var_core_value_sigEECD) {
+  return var_core_value_sigCD50.wrap ? jt(var_core_value_sigC62E, var_core_value_sigCD50, var_core_value_sig51C4, var_core_value_sigEECD) : {
+    row: Math.min(Math.max(0, var_core_value_sigC62E.row + var_core_value_sigCD50.rowDelta), Math.max(0, var_core_value_sig51C4 - 1)),
+    column: Math.min(Math.max(0, var_core_value_sigC62E.column + var_core_value_sigCD50.columnDelta), Math.max(0, var_core_value_sigEECD - 1))
+  };
+}
+function At(var_core_value_sigB655, var_core_value_sigF30A, var_core_value_sigD81A) {
+  let var_core_value_sigBE17 = Math.max(1, var_core_value_sigF30A),
+    var_core_value_sigBB5E = Math.max(1, var_core_value_sigD81A),
+    var_core_value_sigB440 = var_core_value_sigB655.row * var_core_value_sigBB5E + var_core_value_sigB655.column,
+    var_core_value_sig9D0F = var_core_value_sigBE17 * var_core_value_sigBB5E - 1,
+    var_core_value_sig0354 = Math.min(var_core_value_sig9D0F, Math.max(0, var_core_value_sigB440));
+  return {
+    row: Math.floor(var_core_value_sig0354 / var_core_value_sigBB5E),
+    column: var_core_value_sig0354 % var_core_value_sigBB5E
+  };
+}
+function jt(var_core_value_sig12F4, var_core_value_sigDCEC, var_core_value_sigB5C8, var_core_value_sig8320) {
+  let var_core_value_sig1C1B = Math.max(1, var_core_value_sigB5C8),
+    var_core_value_sig70FD = Math.max(1, var_core_value_sig8320);
+  if (var_core_value_sigDCEC.columnDelta !== 0 && var_core_value_sigDCEC.rowDelta === 0) {
+    let var_core_value_sig4A83 = var_core_value_sig1C1B * var_core_value_sig70FD,
+      var_core_value_sig58AA = At(var_core_value_sig12F4, var_core_value_sig1C1B, var_core_value_sig70FD),
+      var_core_value_sig84C4 = Mt(var_core_value_sig58AA.row * var_core_value_sig70FD + var_core_value_sig58AA.column + var_core_value_sigDCEC.columnDelta, var_core_value_sig4A83);
+    return {
+      row: Math.floor(var_core_value_sig84C4 / var_core_value_sig70FD),
+      column: var_core_value_sig84C4 % var_core_value_sig70FD
+    };
+  }
+  return {
+    row: Mt(var_core_value_sig12F4.row + var_core_value_sigDCEC.rowDelta, var_core_value_sig1C1B),
+    column: Mt(var_core_value_sig12F4.column + var_core_value_sigDCEC.columnDelta, var_core_value_sig70FD)
+  };
+}
+function Mt(var_core_value_sig988F, var_core_value_sig50A1) {
+  return (var_core_value_sig988F % var_core_value_sig50A1 + var_core_value_sig50A1) % var_core_value_sig50A1;
+}
+const Nt = {
+    id: "slide-table.operation.keyboard",
+    type: i.CommandType["OPERATION"],
+    handler: (var_core_value_sig71D2, var_core_value_sigC113) => var_core_value_sigC113 != null && var_core_value_sigC113.action ? var_core_value_sig71D2.get(Tt).handle(var_core_value_sigC113.action) : false
+  },
+  Pt = [Nt],
+  Ft = Dt({
+    "arrow-left": o.KeyCode["ARROW_LEFT"],
+    "arrow-right": o.KeyCode["ARROW_RIGHT"],
+    "arrow-up": o.KeyCode["ARROW_UP"],
+    "arrow-down": o.KeyCode["ARROW_DOWN"],
+    "shift-arrow-left": o.KeyCode["ARROW_LEFT"] | o.MetaKeys["SHIFT"],
+    "shift-arrow-right": o.KeyCode["ARROW_RIGHT"] | o.MetaKeys["SHIFT"],
+    "shift-arrow-up": o.KeyCode["ARROW_UP"] | o.MetaKeys["SHIFT"],
+    "shift-arrow-down": o.KeyCode["ARROW_DOWN"] | o.MetaKeys["SHIFT"],
+    tab: o.KeyCode["TAB"],
+    "shift-tab": o.KeyCode["TAB"] | o.MetaKeys["SHIFT"],
+    enter: o.KeyCode["ENTER"],
+    f2: o.KeyCode["F2"],
+    delete: o.KeyCode["DELETE"],
+    backspace: o.KeyCode["BACKSPACE"]
+  }).map(({
+    binding: var_core_value_sig2326,
+    action: var_core_value_sig9007
+  }) => Lt(var_core_value_sig2326, var_core_value_sig9007)),
+  It = [o.KeyCode["DELETE"], o.KeyCode["BACKSPACE"]].map(var_core_value_sig8726 => ({
+    id: Ve.id,
+    binding: var_core_value_sig8726,
+    priority: 130,
+    preconditions: zt
+  }));
+function Lt(var_core_value_sig4358, var_core_value_sig9574) {
+  return {
+    id: Nt.id,
+    binding: var_core_value_sig4358,
+    priority: 130,
+    preconditions: Rt,
+    staticParameters: {
+      action: var_core_value_sig9574
+    }
+  };
+}
+function Rt(var_core_value_sigD610) {
+  return !!(var_core_value_sigD610.getContextValue(i.FOCUSING_SLIDE) && var_core_value_sigD610.getContextValue("FOCUSING_SLIDE_TABLE"));
+}
+function zt(var_core_value_sigAF55) {
+  return !!(var_core_value_sigAF55.getContextValue(i.FOCUSING_SLIDE) && var_core_value_sigAF55.getContextValue(i.FOCUSING_COMMON_DRAWINGS) && var_core_value_sigAF55.getContextValue("FOCUSING_SLIDE_TABLE_OBJECT") && !var_core_value_sigAF55.getContextValue(i.EDITOR_ACTIVATED));
+}
+let H = class extends i.Disposable {
+  constructor(var_core_value_sigB6F7) {
+    super(), T(this, "_enabled$", undefined), T(this, "_fallbackVisible$", new s["BehaviorSubject"](false)), T(this, "_fallbackVisibleSources", new Set()), T(this, "enabled$", undefined), T(this, "visible$", undefined);
+    let var_core_value_sigB495 = var_core_value_sigB6F7.getConfig(v);
+    this._enabled$ = new s["BehaviorSubject"]((var_core_value_sigB495 == null ? undefined : var_core_value_sigB495.floatingToolbar) ?? false), this.enabled$ = this._enabled$["asObservable"](), this.visible$ = (0, s.combineLatest)([this._enabled$, this._fallbackVisible$]).pipe((0, s.map)(([var_core_value_sigBECE, var_core_value_sig1B22]) => var_core_value_sigBECE || var_core_value_sig1B22));
+  }
+  getEnabled() {
+    return this._enabled$["getValue"]();
+  }
+  setEnabled(var_core_value_sig70D0) {
+    this.getEnabled() !== var_core_value_sig70D0 && this._enabled$["next"](var_core_value_sig70D0);
+  }
+  getVisible() {
+    return this.getEnabled() || this._fallbackVisible$["getValue"]();
+  }
+  setFallbackVisible(var_core_value_sig2A8A, var_core_value_sig3782 = "default") {
+    var_core_value_sig2A8A ? this._fallbackVisibleSources["add"](var_core_value_sig3782) : this._fallbackVisibleSources["delete"](var_core_value_sig3782);
+    let var_core_value_sigD22E = this._fallbackVisibleSources["size"] > 0;
+    this._fallbackVisible$["getValue"]() !== var_core_value_sigD22E && this._fallbackVisible$["next"](var_core_value_sigD22E);
+  }
+  toggle() {
+    this.setEnabled(!this.getEnabled());
+  }
+  dispose() {
+    this._enabled$["complete"](), this._fallbackVisibleSources["clear"](), this._fallbackVisible$["complete"](), super.dispose();
+  }
+};
+H = V([B(0, i.IConfigService)], H);
+const Bt = {
+    id: "slides-table-ui.operation.toggle-floating-toolbar",
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sig7409 => (var_core_value_sig7409.get(H).toggle(), true)
+  },
+  Vt = "#FFFFFF",
+  Ht = "#111827",
+  Ut = ["backgroundColor", "backgroundFill", "borderColor", "borderDash", "borderWidth", "bold", "fontFamily", "fontSize", "horizontalAlign", "italic", "strike", "textBackgroundColor", "textColor", "textFill", "underline", "verticalAlign"];
+function Wt() {
+  return {
+    backgroundColor: Vt,
+    backgroundFill: {
+      type: n.SlideTableFillTypeEnum["Solid"],
+      color: Vt,
+      alpha: 1
+    },
+    borderColor: "#1F1F1F",
+    borderDash: n.SlideTableBorderDashEnum["Solid"],
+    borderWidth: 1,
+    bold: false,
+    fontFamily: i.DEFAULT_STYLES["ff"],
+    fontSize: i.DEFAULT_STYLES["fs"],
+    horizontalAlign: i.HorizontalAlign["LEFT"],
+    italic: false,
+    strike: false,
+    textBackgroundColor: i.DEFAULT_STYLES["bg"].rgb,
+    textColor: Ht,
+    textFill: {
+      type: "solid",
+      color: Ht,
+      opacity: 1
+    },
+    underline: false,
+    verticalAlign: i.VerticalAlign["MIDDLE"],
+    mixed: {}
+  };
+}
+function Gt(var_core_value_sigD106, var_core_value_sig7552) {
+  let var_core_value_sig56D1 = Wt();
+  if (!var_core_value_sigD106 || !var_core_value_sig7552) return var_core_value_sig56D1;
+  let var_core_value_sig3D12 = Math.min(var_core_value_sig7552.startRow, var_core_value_sig7552.endRow),
+    var_core_value_sig8952 = Math.max(var_core_value_sig7552.startRow, var_core_value_sig7552.endRow),
+    var_core_value_sigB409 = Math.min(var_core_value_sig7552.startColumn, var_core_value_sig7552.endColumn),
+    var_core_value_sig3D2F = Math.max(var_core_value_sig7552.startColumn, var_core_value_sig7552.endColumn),
+    var_core_value_sigDBDA = Kt(var_core_value_sigD106, var_core_value_sig3D12, var_core_value_sigB409, var_core_value_sig56D1);
+  for (let var_core_value_sig3455 = var_core_value_sig3D12; var_core_value_sig3455 <= var_core_value_sig8952; var_core_value_sig3455++) for (let var_core_value_sig7F72 = var_core_value_sigB409; var_core_value_sig7F72 <= var_core_value_sig3D2F; var_core_value_sig7F72++) {
+    let var_core_value_sig8178 = Kt(var_core_value_sigD106, var_core_value_sig3455, var_core_value_sig7F72, var_core_value_sig56D1);
+    for (let var_core_value_sigF602 of Ut) Xt(var_core_value_sigDBDA[var_core_value_sigF602], var_core_value_sig8178[var_core_value_sigF602]) || (var_core_value_sigDBDA.mixed[var_core_value_sigF602] = true);
+  }
+  return var_core_value_sigDBDA;
+}
+function Kt(var_core_value_sig1EFA, var_core_value_sig7CF4, var_core_value_sigE956, var_core_value_sig189D) {
+  var var_core_value_sigE26F;
+  let var_core_value_sig8212 = (var_core_value_sigE26F = var_core_value_sig1EFA.rows[var_core_value_sig7CF4]) == null ? undefined : var_core_value_sigE26F.cells[var_core_value_sigE956];
+  return {
+    ...qt(var_core_value_sig8212, var_core_value_sig189D),
+    ...Yt(var_core_value_sig8212 == null ? undefined : var_core_value_sig8212.textData, var_core_value_sig189D),
+    mixed: {}
+  };
+}
+function qt(var_core_value_sig9A60, var_core_value_sig5EF5) {
+  let var_core_value_sig5324 = var_core_value_sig9A60 == null ? undefined : var_core_value_sig9A60.style,
+    var_core_value_sig0130 = Jt(var_core_value_sig5324 == null ? undefined : var_core_value_sig5324.borders);
+  return {
+    backgroundColor: en(var_core_value_sig5324 == null ? undefined : var_core_value_sig5324.fill, var_core_value_sig5EF5.backgroundColor),
+    backgroundFill: (var_core_value_sig5324 == null ? undefined : var_core_value_sig5324.fill) ?? var_core_value_sig5EF5.backgroundFill,
+    borderColor: (var_core_value_sig0130 == null ? undefined : var_core_value_sig0130.color) ?? var_core_value_sig5EF5.borderColor,
+    borderDash: (var_core_value_sig0130 == null ? undefined : var_core_value_sig0130.dash) ?? var_core_value_sig5EF5.borderDash,
+    borderWidth: (var_core_value_sig0130 == null ? undefined : var_core_value_sig0130.width) ?? var_core_value_sig5EF5.borderWidth,
+    verticalAlign: nn(var_core_value_sig5324 == null ? undefined : var_core_value_sig5324.verticalAlign) ?? var_core_value_sig5EF5.verticalAlign
+  };
+}
+function Jt(var_core_value_sig5838) {
+  return (var_core_value_sig5838 == null ? undefined : var_core_value_sig5838.top) ?? (var_core_value_sig5838 == null ? undefined : var_core_value_sig5838.left) ?? (var_core_value_sig5838 == null ? undefined : var_core_value_sig5838.right) ?? (var_core_value_sig5838 == null ? undefined : var_core_value_sig5838.bottom);
+}
+function Yt(var_core_value_sigB9FE, var_core_value_sig41A5) {
+  let var_core_value_sig6D3D = Zt(var_core_value_sigB9FE);
+  return {
+    bold: var_core_value_sig6D3D.bold ?? var_core_value_sig41A5.bold,
+    fontFamily: var_core_value_sig6D3D.fontFamily ?? var_core_value_sig41A5.fontFamily,
+    fontSize: var_core_value_sig6D3D.fontSize ?? var_core_value_sig41A5.fontSize,
+    horizontalAlign: Qt(var_core_value_sigB9FE) ?? var_core_value_sig41A5.horizontalAlign,
+    italic: var_core_value_sig6D3D.italic ?? var_core_value_sig41A5.italic,
+    strike: var_core_value_sig6D3D.strike ?? var_core_value_sig41A5.strike,
+    textBackgroundColor: var_core_value_sig6D3D.textBackgroundColor ?? var_core_value_sig41A5.textBackgroundColor,
+    textColor: var_core_value_sig6D3D.textColor ?? tn(var_core_value_sig6D3D.textFill, var_core_value_sig41A5.textColor),
+    textFill: var_core_value_sig6D3D.textFill ?? var_core_value_sig41A5.textFill,
+    underline: var_core_value_sig6D3D.underline ?? var_core_value_sig41A5.underline
+  };
+}
+function Xt(var_core_value_sigB191, var_core_value_sig949D) {
+  return typeof var_core_value_sigB191 == "object" || typeof var_core_value_sig949D == "object" ? JSON.stringify(var_core_value_sigB191) === JSON.stringify(var_core_value_sig949D) : var_core_value_sigB191 === var_core_value_sig949D;
+}
+function Zt(var_core_value_sig4113) {
+  var var_core_value_sigEC12, var_core_value_sigC932, var_core_value_sigDE39, var_core_value_sig1529, var_core_value_sigAFD8, var_core_value_sig6017;
+  let var_core_value_sigC66C = var_core_value_sig4113 == null || (var_core_value_sigEC12 = var_core_value_sig4113.documentStyle) == null ? undefined : var_core_value_sigEC12.textStyle,
+    var_core_value_sigC5AC = var_core_value_sig4113 == null || (var_core_value_sigC932 = var_core_value_sig4113.body) == null || (var_core_value_sigC932 = var_core_value_sigC932.textRuns) == null || (var_core_value_sigC932 = var_core_value_sigC932.find(var_core_value_sig5CEF => var_core_value_sig5CEF.ts)) == null ? undefined : var_core_value_sigC932.ts,
+    var_core_value_sig5880 = {
+      ...var_core_value_sigC66C,
+      ...var_core_value_sigC5AC
+    };
+  return {
+    bold: var_core_value_sig5880.bl === i.BooleanNumber["TRUE"],
+    fontFamily: typeof var_core_value_sig5880.ff == "string" ? var_core_value_sig5880.ff : undefined,
+    fontSize: typeof var_core_value_sig5880.fs == "number" ? var_core_value_sig5880.fs : undefined,
+    italic: var_core_value_sig5880.it === i.BooleanNumber["TRUE"],
+    strike: ((var_core_value_sigDE39 = var_core_value_sig5880.st) == null ? undefined : var_core_value_sigDE39.s) === i.BooleanNumber["TRUE"],
+    textBackgroundColor: typeof ((var_core_value_sig1529 = var_core_value_sig5880.bg) == null ? undefined : var_core_value_sig1529.rgb) == "string" ? var_core_value_sig5880.bg["rgb"] : undefined,
+    textColor: ((var_core_value_sigAFD8 = var_core_value_sig5880.cl) == null ? undefined : var_core_value_sigAFD8.rgb) ?? tn(var_core_value_sig5880.textFill, undefined),
+    textFill: var_core_value_sig5880.textFill,
+    underline: ((var_core_value_sig6017 = var_core_value_sig5880.ul) == null ? undefined : var_core_value_sig6017.s) === i.BooleanNumber["TRUE"]
+  };
+}
+function Qt(var_core_value_sigF7E2) {
+  var var_core_value_sigDEEA, var_core_value_sig49D1;
+  let var_core_value_sigEDEC = var_core_value_sigF7E2 == null || (var_core_value_sigDEEA = var_core_value_sigF7E2.documentStyle) == null || (var_core_value_sigDEEA = var_core_value_sigDEEA.renderConfig) == null ? undefined : var_core_value_sigDEEA.horizontalAlign;
+  return var_core_value_sigEDEC === undefined ? var_core_value_sigF7E2 == null || (var_core_value_sig49D1 = var_core_value_sigF7E2.body) == null || (var_core_value_sig49D1 = var_core_value_sig49D1.paragraphs) == null || (var_core_value_sig49D1 = var_core_value_sig49D1.find(var_core_value_sig43D5 => {
+    var var_core_value_sig1395;
+    return ((var_core_value_sig1395 = var_core_value_sig43D5.paragraphStyle) == null ? undefined : var_core_value_sig1395.horizontalAlign) !== undefined;
+  })) == null || (var_core_value_sig49D1 = var_core_value_sig49D1.paragraphStyle) == null ? undefined : var_core_value_sig49D1.horizontalAlign : var_core_value_sigEDEC;
+}
+function $t(var_core_value_sig4F7B) {
+  var var_core_value_sig8269, var_core_value_sigB092;
+  return !var_core_value_sig4F7B || var_core_value_sig4F7B.type === n.SlideTableFillTypeEnum["None"] ? "none" : var_core_value_sig4F7B.type === n.SlideTableFillTypeEnum["Picture"] || (var_core_value_sig8269 = var_core_value_sig4F7B.picture) != null && var_core_value_sig8269.source || var_core_value_sig4F7B.picture ? "picture" : var_core_value_sig4F7B.type === n.SlideTableFillTypeEnum["Gradient"] || (var_core_value_sigB092 = var_core_value_sig4F7B.gradient) != null && (var_core_value_sigB092 = var_core_value_sigB092.stops) != null && var_core_value_sigB092.length ? "gradient" : "solid";
+}
+function en(var_core_value_sigC04F, var_core_value_sig8B16) {
+  var var_core_value_sig9640;
+  return (var_core_value_sigC04F == null ? undefined : var_core_value_sigC04F.type) === n.SlideTableFillTypeEnum["None"] ? var_core_value_sig8B16 : (var_core_value_sigC04F == null || (var_core_value_sig9640 = var_core_value_sigC04F.gradient) == null || (var_core_value_sig9640 = var_core_value_sig9640.stops) == null || (var_core_value_sig9640 = var_core_value_sig9640[0]) == null ? undefined : var_core_value_sig9640.color) ?? (var_core_value_sigC04F == null ? undefined : var_core_value_sigC04F.color) ?? var_core_value_sig8B16;
+}
+function tn(var_core_value_sig34AB, var_core_value_sig0BE5) {
+  var var_core_value_sig2F9D;
+  return (var_core_value_sig34AB == null ? undefined : var_core_value_sig34AB.type) === "none" ? "rgba(0, 0, 0, 0)" : (var_core_value_sig34AB == null || (var_core_value_sig2F9D = var_core_value_sig34AB.gradient) == null || (var_core_value_sig2F9D = var_core_value_sig2F9D.stops) == null || (var_core_value_sig2F9D = var_core_value_sig2F9D[0]) == null ? undefined : var_core_value_sig2F9D.color) ?? (var_core_value_sig34AB == null ? undefined : var_core_value_sig34AB.color) ?? var_core_value_sig0BE5 ?? "#111827";
+}
+function nn(var_core_value_sig9511) {
+  if (var_core_value_sig9511 === n.SlideTableVerticalAlignEnum["Top"]) return i.VerticalAlign["TOP"];
+  if (var_core_value_sig9511 === n.SlideTableVerticalAlignEnum["Bottom"]) return i.VerticalAlign["BOTTOM"];
+  if (var_core_value_sig9511 === n.SlideTableVerticalAlignEnum["Middle"]) return i.VerticalAlign["MIDDLE"];
+}
+function rn(var_core_value_sigAFDD, var_core_value_sig431B) {
+  var var_core_value_sig3073, var_core_value_sig4C99, var_core_value_sigDDD2;
+  return {
+    type: (var_core_value_sigAFDD == null || (var_core_value_sig3073 = var_core_value_sigAFDD.gradient) == null ? undefined : var_core_value_sig3073.type) ?? "linear",
+    angle: (var_core_value_sigAFDD == null || (var_core_value_sig4C99 = var_core_value_sigAFDD.gradient) == null ? undefined : var_core_value_sig4C99.angle) ?? 0,
+    stops: var_core_value_sigAFDD != null && (var_core_value_sigDDD2 = var_core_value_sigAFDD.gradient) != null && (var_core_value_sigDDD2 = var_core_value_sigDDD2.stops) != null && var_core_value_sigDDD2.length ? var_core_value_sigAFDD.gradient["stops"].map(var_core_value_sig9FA0 => ({
+      color: var_core_value_sig9FA0.color,
+      offset: var_core_value_sig9FA0.offset,
+      opacity: var_core_value_sig9FA0.opacity
+    })) : [{
+      color: (var_core_value_sigAFDD == null ? undefined : var_core_value_sigAFDD.color) ?? var_core_value_sig431B,
+      offset: 0,
+      opacity: (var_core_value_sigAFDD == null ? undefined : var_core_value_sigAFDD.alpha) ?? 1
+    }, {
+      color: "#000000",
+      offset: 100,
+      opacity: 1
+    }]
+  };
+}
+function an(var_core_value_sig6D5F) {
+  let var_core_value_sigB80D = var_core_value_sig6D5F.stops[0];
+  return {
+    type: n.SlideTableFillTypeEnum["Gradient"],
+    color: (var_core_value_sigB80D == null ? undefined : var_core_value_sigB80D.color) ?? "#FFFFFF",
+    alpha: (var_core_value_sigB80D == null ? undefined : var_core_value_sigB80D.opacity) ?? 1,
+    picture: undefined,
+    gradient: {
+      type: var_core_value_sig6D5F.type,
+      angle: var_core_value_sig6D5F.angle,
+      stops: var_core_value_sig6D5F.stops["map"](var_core_value_sig055E => ({
+        color: var_core_value_sig055E.color,
+        offset: var_core_value_sig055E.offset,
+        opacity: var_core_value_sig055E.opacity
+      }))
+    }
+  };
+}
+function on(var_core_value_sigE0A2, var_core_value_sig8F71) {
+  var var_core_value_sig9016, var_core_value_sigB043;
+  if ((var_core_value_sigE0A2 == null ? undefined : var_core_value_sigE0A2.type) === "none") return {
+    backgroundColor: "transparent",
+    backgroundImage: "linear-gradient(135deg, transparent 45%, #ef4444 45%, #ef4444 55%, transparent 55%)"
+  };
+  let var_core_value_sig554B = var_core_value_sigE0A2 == null || (var_core_value_sig9016 = var_core_value_sigE0A2.picture) == null ? undefined : var_core_value_sig9016.source;
+  return var_core_value_sig554B && /^(?:data:|https?:)/["test"](var_core_value_sig554B) ? {
+    backgroundImage: 'url("' + var_core_value_sig554B + "\x22)",
+    backgroundPosition: "center",
+    backgroundSize: "cover"
+  } : var_core_value_sigE0A2 != null && (var_core_value_sigB043 = var_core_value_sigE0A2.gradient) != null && (var_core_value_sigB043 = var_core_value_sigB043.stops) != null && var_core_value_sigB043.length ? {
+    backgroundImage: sn(rn(var_core_value_sigE0A2, var_core_value_sig8F71))
+  } : {
+    backgroundColor: (var_core_value_sigE0A2 == null ? undefined : var_core_value_sigE0A2.color) ?? var_core_value_sig8F71
+  };
+}
+function sn(var_core_value_sig33F0) {
+  let var_core_value_sigC9BF = var_core_value_sig33F0.stops["map"](var_core_value_sig7C77 => cn(var_core_value_sig7C77.color, var_core_value_sig7C77.opacity ?? 1) + "\x20" + var_core_value_sig7C77.offset + "%").join(",\x20");
+  return var_core_value_sig33F0.type === "radial" || var_core_value_sig33F0.type === "diamond" ? "radial-gradient(circle, " + var_core_value_sigC9BF + ")" : "linear-gradient(" + ((var_core_value_sig33F0.angle ?? 0) + 90) % 360 + "deg, " + var_core_value_sigC9BF + ")";
+}
+function cn(var_core_value_sigE1AD, var_core_value_sig90FF) {
+  if (var_core_value_sig90FF >= 1) return var_core_value_sigE1AD;
+  let var_core_value_sigA7F6 = new i.ColorKit(var_core_value_sigE1AD);
+  return var_core_value_sigA7F6.isValid ? var_core_value_sigA7F6.setAlpha(var_core_value_sig90FF).toRgbString() : var_core_value_sigE1AD;
+}
+function ln(var_core_value_sig5A0F, var_core_value_sigCDF5) {
+  return var_core_value_sig5A0F.some(var_core_value_sig9578 => var_core_value_sig9578.value === var_core_value_sigCDF5) ? var_core_value_sig5A0F : [{
+    label: var_core_value_sigCDF5,
+    value: var_core_value_sigCDF5
+  }, ...var_core_value_sig5A0F];
+}
+const un = {
+  MergeCells: "merge-cells",
+  UnmergeCells: "unmerge-cells",
+  SetCellStyle: "set-cell-style",
+  SetBorderPreset: "set-border-preset"
+};
+function dn(var_core_value_sig3802, var_core_value_sigB642) {
+  return [{
+    id: un.MergeCells,
+    commandId: var_core_value_sigB642.mergeCells,
+    enabled: xn(var_core_value_sig3802)
+  }, {
+    id: un.UnmergeCells,
+    commandId: var_core_value_sigB642.unmergeCells,
+    enabled: bn(var_core_value_sig3802)
+  }, {
+    id: un.SetCellStyle,
+    commandId: var_core_value_sigB642.setCellStyle,
+    enabled: bn(var_core_value_sig3802)
+  }, {
+    id: un.SetBorderPreset,
+    commandId: var_core_value_sigB642.setBorderPreset,
+    enabled: bn(var_core_value_sig3802)
+  }];
+}
+function fn(var_core_value_sig9026) {
+  let var_core_value_sigDCD6 = U(var_core_value_sig9026);
+  return !var_core_value_sig9026 || !var_core_value_sigDCD6 ? null : {
+    unitId: var_core_value_sig9026.unitId,
+    tableId: var_core_value_sig9026.tableId,
+    range: var_core_value_sigDCD6
+  };
+}
+function pn(var_core_value_sig048B) {
+  let var_core_value_sig1334 = U(var_core_value_sig048B);
+  return !var_core_value_sig048B || !var_core_value_sig1334 ? null : {
+    unitId: var_core_value_sig048B.unitId,
+    tableId: var_core_value_sig048B.tableId,
+    range: var_core_value_sig1334
+  };
+}
+function mn(var_core_value_sig2605, var_core_value_sig5F20, var_core_value_sig019C) {
+  if (!var_core_value_sig2605 || !var_core_value_sig5F20) return null;
+  if (var_core_value_sig5F20.action === "unmerge") {
+    let var_core_value_sigA2D3 = pn({
+      ...var_core_value_sig2605,
+      ranges: [var_core_value_sig5F20.range],
+      anchor: {
+        row: var_core_value_sig5F20.range["startRow"],
+        column: var_core_value_sig5F20.range["startColumn"]
+      },
+      focus: {
+        row: var_core_value_sig5F20.range["startRow"],
+        column: var_core_value_sig5F20.range["startColumn"]
+      }
+    });
+    return var_core_value_sigA2D3 ? {
+      commandId: var_core_value_sig019C.unmergeCells,
+      params: var_core_value_sigA2D3
+    } : null;
+  }
+  let var_core_value_sigB296 = fn({
+    ...var_core_value_sig2605,
+    ranges: [var_core_value_sig5F20.range]
+  });
+  return var_core_value_sigB296 ? {
+    commandId: var_core_value_sig019C.mergeCells,
+    params: var_core_value_sigB296
+  } : null;
+}
+function hn(var_core_value_sig7949, var_core_value_sig2DD9, var_core_value_sigCD501) {
+  let var_core_value_sigD362 = U(var_core_value_sig2DD9);
+  return !var_core_value_sig2DD9 || !var_core_value_sigD362 || !var_core_value_sig7949 ? null : var_core_value_sig2DD9.kind === "row" ? var_core_value_sig7949.rows["length"] <= var_core_value_sigD362.endRow - var_core_value_sigD362.startRow + 1 ? null : {
+    commandId: var_core_value_sigCD501.deleteRows,
+    params: {
+      unitId: var_core_value_sig2DD9.unitId,
+      tableId: var_core_value_sig2DD9.tableId,
+      startRow: var_core_value_sigD362.startRow,
+      endRow: var_core_value_sigD362.endRow
+    },
+    kind: "row"
+  } : var_core_value_sig2DD9.kind === "column" ? var_core_value_sig7949.columns["length"] <= var_core_value_sigD362.endColumn - var_core_value_sigD362.startColumn + 1 ? null : {
+    commandId: var_core_value_sigCD501.deleteColumns,
+    params: {
+      unitId: var_core_value_sig2DD9.unitId,
+      tableId: var_core_value_sig2DD9.tableId,
+      startColumn: var_core_value_sigD362.startColumn,
+      endColumn: var_core_value_sigD362.endColumn
+    },
+    kind: "column"
+  } : null;
+}
+function gn(var_core_value_sigC433, var_core_value_sigF543) {
+  let var_core_value_sig0806 = U(var_core_value_sigC433);
+  return !var_core_value_sigC433 || !var_core_value_sig0806 ? null : {
+    unitId: var_core_value_sigC433.unitId,
+    tableId: var_core_value_sigC433.tableId,
+    range: var_core_value_sig0806,
+    style: var_core_value_sigF543
+  };
+}
+function _n(var_core_value_sigE224, var_core_value_sig773E, var_core_value_sig83A7) {
+  let var_core_value_sigFE18 = U(var_core_value_sigE224);
+  return !var_core_value_sigE224 || !var_core_value_sigFE18 ? null : {
+    unitId: var_core_value_sigE224.unitId,
+    tableId: var_core_value_sigE224.tableId,
+    range: var_core_value_sigFE18,
+    preset: var_core_value_sig773E,
+    ...(var_core_value_sig83A7 ? {
+      border: var_core_value_sig83A7
+    } : {})
+  };
+}
+function vn(var_core_value_sig816B, var_core_value_sigA89B) {
+  let var_core_value_sig5020 = U(var_core_value_sigA89B);
+  if (!var_core_value_sig5020) return null;
+  let var_core_value_sig8FB1 = var_core_value_sig816B ? yn(var_core_value_sig816B, var_core_value_sig5020) : null;
+  return var_core_value_sig8FB1 ? {
+    action: "unmerge",
+    range: var_core_value_sig8FB1
+  } : (0, n.isSlideTableMultiCellRange)(var_core_value_sig5020) ? {
+    action: "merge",
+    range: var_core_value_sig5020
+  } : null;
+}
+function yn(var_core_value_sig3D4B, var_core_value_sigCD77) {
+  let var_core_value_sig9F28 = (0, n.normalizeSlideTableCellRange)(var_core_value_sigCD77);
+  for (let var_core_value_sigC218 = var_core_value_sig9F28.startRow; var_core_value_sigC218 <= var_core_value_sig9F28.endRow; var_core_value_sigC218 += 1) for (let var_core_value_sig7B2A = var_core_value_sig9F28.startColumn; var_core_value_sig7B2A <= var_core_value_sig9F28.endColumn; var_core_value_sig7B2A += 1) {
+    let var_core_value_sigE9ED = (0, n.findSlideTableMergeRange)(var_core_value_sig3D4B, var_core_value_sigC218, var_core_value_sig7B2A);
+    if (var_core_value_sigE9ED && (0, n.isSlideTableMultiCellRange)(var_core_value_sigE9ED)) return var_core_value_sigE9ED;
+  }
+  return null;
+}
+function bn(var_core_value_sig8A50) {
+  return !!U(var_core_value_sig8A50);
+}
+function xn(var_core_value_sig8AF9) {
+  let var_core_value_sigCF44 = U(var_core_value_sig8AF9);
+  return var_core_value_sigCF44 ? var_core_value_sigCF44.startRow !== var_core_value_sigCF44.endRow || var_core_value_sigCF44.startColumn !== var_core_value_sigCF44.endColumn : false;
+}
+function U(var_core_value_sig020B) {
+  return (var_core_value_sig020B == null ? undefined : var_core_value_sig020B.ranges[0]) ?? null;
+}
+function Sn(var_core_value_sig091A) {
+  return dn(var_core_value_sig091A, {
+    mergeCells: n.MergeSlideTableCellsCommand["id"],
+    unmergeCells: n.UnmergeSlideTableCellsCommand["id"],
+    setCellStyle: n.UpdateSlideTableCommand["id"],
+    setBorderPreset: n.UpdateSlideTableCommand["id"]
+  });
+}
+function Cn(var_core_value_sigC45A, var_core_value_sig8A05) {
+  return {
+    actions: Sn(var_core_value_sig8A05),
+    mergeState: vn(var_core_value_sigC45A, var_core_value_sig8A05),
+    values: Gt(var_core_value_sigC45A, var_core_value_sig8A05 == null ? undefined : var_core_value_sig8A05.ranges[0])
+  };
+}
+function wn(var_core_value_sig431F, var_core_value_sig855C, var_core_value_sig222E) {
+  return !var_core_value_sig431F || !var_core_value_sig855C || !var_core_value_sig222E ? null : mn(var_core_value_sig431F, {
+    action: var_core_value_sig855C,
+    range: var_core_value_sig222E
+  }, {
+    mergeCells: n.MergeSlideTableCellsCommand["id"],
+    unmergeCells: n.UnmergeSlideTableCellsCommand["id"]
+  });
+}
+function Tn(var_core_value_sig3A07, var_core_value_sigE7EB) {
+  return hn(var_core_value_sig3A07, var_core_value_sigE7EB, {
+    deleteRows: n.DeleteSlideTableRowsCommand["id"],
+    deleteColumns: n.DeleteSlideTableColumnsCommand["id"]
+  });
+}
+function W(var_core_value_sig6125) {
+  let var_core_value_sig5781 = (0, f.useRef)(false),
+    var_core_value_sig13AB = (0, f.useRef)(null),
+    var_core_value_sig7A4A = (0, o.useDependency)(E);
+  return (0, f.useEffect)(() => () => {
+    var_core_value_sig13AB.current && clearTimeout(var_core_value_sig13AB.current);
+  }, []), var_core_value_sig6125.children({
+    handleOpenChange: var_core_value_sigADEC => {
+      !var_core_value_sigADEC && var_core_value_sig5781.current || var_core_value_sig6125.onOpenChange(var_core_value_sigADEC);
+    },
+    markInternalInteraction: () => {
+      var_core_value_sig7A4A.markTableInternalInteraction(), var_core_value_sig5781.current = true, var_core_value_sig13AB.current && clearTimeout(var_core_value_sig13AB.current), var_core_value_sig13AB.current = setTimeout(() => {
+        var_core_value_sig5781.current = false, var_core_value_sig13AB.current = null;
+      }, 500);
+    }
+  });
+}
+const En = {
+  none: "none",
+  solid: "solid",
+  gradient: "gradient",
+  picture: "picture"
+};
+function Dn(var_core_value_sigB7E2) {
+  var var_core_value_sigD477, var_core_value_sig6149;
+  let {
+      children: var_core_value_sigEB82,
+      color: var_core_value_sig843F,
+      gradientValue: var_core_value_sig9FB7,
+      previewStyle: var_core_value_sigB7A4,
+      showPreview: var_core_value_sigB643 = true,
+      tableFill: var_core_value_sig295F,
+      textFill: var_core_value_sigE36B,
+      open: var_core_value_sigDA3B,
+      value: var_core_value_sig9E32,
+      onOpenChange: var_core_value_sig26EC,
+      onTableFillChange: var_core_value_sigF226,
+      onTextFillChange: var_core_value_sig4773
+    } = var_core_value_sigB7E2,
+    var_core_value_sigF92F = (0, o.useDependency)(i.LocaleService),
+    var_core_value_sig2346 = {
+      noFill: var_core_value_sigF92F.t("slides-table-ui.shapePanel.fill.noFill"),
+      solidFill: var_core_value_sigF92F.t("slides-table-ui.shapePanel.fill.solidFill"),
+      gradientFill: var_core_value_sigF92F.t("slides-table-ui.shapePanel.fill.gradientFill"),
+      pictureFill: var_core_value_sigF92F.t("slides-table-ui.shapePanel.fill.pictureFill"),
+      color: var_core_value_sigF92F.t("slides-table-ui.shapePanel.fill.color"),
+      transparency: var_core_value_sigF92F.t("slides-table-ui.shapePanel.fill.transparency"),
+      pictureSource: var_core_value_sigF92F.t("slides-table-ui.shapePanel.fill.picture.source"),
+      pictureInsert: var_core_value_sigF92F.t("slides-table-ui.shapePanel.fill.picture.insert")
+    },
+    var_core_value_sig579A = (var_core_value_sig295F == null || (var_core_value_sigD477 = var_core_value_sig295F.picture) == null ? undefined : var_core_value_sigD477.opacity) ?? (var_core_value_sig295F == null ? undefined : var_core_value_sig295F.alpha) ?? (var_core_value_sigE36B == null || (var_core_value_sig6149 = var_core_value_sigE36B.picture) == null ? undefined : var_core_value_sig6149.opacity) ?? (var_core_value_sigE36B == null ? undefined : var_core_value_sigE36B.opacity) ?? 1,
+    var_core_value_sig7E16 = var_core_value_sig3D8E => var_core_value_sigF226 == null ? undefined : var_core_value_sigF226(var_core_value_sig3D8E),
+    var_core_value_sigA691 = var_core_value_sig37E5 => var_core_value_sig4773 == null ? undefined : var_core_value_sig4773(var_core_value_sig37E5);
+  return (0, m.jsx)(W, {
+    onOpenChange: var_core_value_sig26EC,
+    children: ({
+      handleOpenChange: var_core_value_sigF079,
+      markInternalInteraction: var_core_value_sigFCA0
+    }) => (0, m.jsx)(u.Dropdown, {
+      overlay: (0, m.jsx)("div", {
+        className: (0, u.clsx)("\n univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-shadow-lg\n dark:!univer-border-gray-700 dark:!univer-bg-gray-900\n", "univer-w-[280px] univer-p-3", u.borderClassName),
+        "data-u-comp": "slide-table-floating-toolbar-popup",
+        onMouseDown: var_core_value_sig06CD => {
+          var_core_value_sigFCA0(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sig06CD);
+        },
+        onPointerDown: var_core_value_sigA5F1 => {
+          var_core_value_sigFCA0(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sigA5F1);
+        },
+        children: (0, m.jsx)(l.FillStyleTabsEditor, {
+          compact: true,
+          direction: var_core_value_sigF92F.getDirection(),
+          keepColorPickerOpenOnChange: true,
+          value: var_core_value_sig9E32,
+          typeValues: En,
+          color: var_core_value_sig843F,
+          transparency: Math.round((1 - var_core_value_sig579A) * 100),
+          gradientValue: var_core_value_sig9FB7,
+          labels: var_core_value_sig2346,
+          tabLabels: var_core_value_sig2346,
+          onChange: var_core_value_sig97A2 => {
+            if (var_core_value_sig97A2 === "none") var_core_value_sig7E16({
+              ...var_core_value_sig295F,
+              type: n.SlideTableFillTypeEnum["None"],
+              gradient: undefined,
+              picture: undefined
+            }), var_core_value_sigA691({
+              ...var_core_value_sigE36B,
+              type: "none"
+            });else {
+              if (var_core_value_sig97A2 === "solid") var_core_value_sig7E16({
+                ...var_core_value_sig295F,
+                type: n.SlideTableFillTypeEnum["Solid"],
+                color: var_core_value_sig843F,
+                alpha: var_core_value_sig579A,
+                gradient: undefined,
+                picture: undefined
+              }), var_core_value_sigA691({
+                ...var_core_value_sigE36B,
+                type: "solid",
+                color: var_core_value_sig843F,
+                opacity: var_core_value_sig579A
+              });else {
+                if (var_core_value_sig97A2 === "gradient") var_core_value_sig7E16(an(var_core_value_sig9FB7)), var_core_value_sigA691(jn(var_core_value_sig9FB7));else {
+                  if (var_core_value_sig97A2 === "picture") {
+                    var var_core_value_sig07E9, var_core_value_sig4F59;
+                    var_core_value_sig7E16({
+                      ...var_core_value_sig295F,
+                      type: n.SlideTableFillTypeEnum["Picture"],
+                      color: var_core_value_sig843F,
+                      alpha: var_core_value_sig579A,
+                      gradient: undefined,
+                      picture: {
+                        ...(var_core_value_sig295F == null ? undefined : var_core_value_sig295F.picture),
+                        opacity: var_core_value_sig579A,
+                        mode: (var_core_value_sig295F == null || (var_core_value_sig07E9 = var_core_value_sig295F.picture) == null ? undefined : var_core_value_sig07E9.mode) ?? n.SlideTablePictureFillModeEnum["Stretch"]
+                      }
+                    }), var_core_value_sigA691({
+                      ...var_core_value_sigE36B,
+                      type: "picture",
+                      color: var_core_value_sig843F,
+                      opacity: var_core_value_sig579A,
+                      picture: {
+                        ...(var_core_value_sigE36B == null ? undefined : var_core_value_sigE36B.picture),
+                        opacity: var_core_value_sig579A,
+                        mode: (var_core_value_sigE36B == null || (var_core_value_sig4F59 = var_core_value_sigE36B.picture) == null ? undefined : var_core_value_sig4F59.mode) ?? n.SlideTablePictureFillModeEnum["Stretch"]
+                      }
+                    });
+                  }
+                }
+              }
+            }
+          },
+          onColorChange: var_core_value_sigF564 => {
+            var_core_value_sig7E16({
+              ...var_core_value_sig295F,
+              type: n.SlideTableFillTypeEnum["Solid"],
+              color: var_core_value_sigF564,
+              alpha: var_core_value_sig579A,
+              gradient: undefined,
+              picture: undefined
+            }), var_core_value_sigA691({
+              ...var_core_value_sigE36B,
+              type: "solid",
+              color: var_core_value_sigF564,
+              opacity: var_core_value_sig579A
+            });
+          },
+          onTransparencyChange: var_core_value_sig8CFA => {
+            let var_core_value_sig2E11 = (100 - Math.max(0, Math.min(100, var_core_value_sig8CFA))) / 100;
+            if (var_core_value_sig9E32 === "picture") {
+              var var_core_value_sig5B69, var_core_value_sigB098;
+              var_core_value_sig7E16({
+                ...var_core_value_sig295F,
+                type: n.SlideTableFillTypeEnum["Picture"],
+                picture: {
+                  ...(var_core_value_sig295F == null ? undefined : var_core_value_sig295F.picture),
+                  opacity: var_core_value_sig2E11,
+                  mode: (var_core_value_sig295F == null || (var_core_value_sig5B69 = var_core_value_sig295F.picture) == null ? undefined : var_core_value_sig5B69.mode) ?? n.SlideTablePictureFillModeEnum["Stretch"]
+                }
+              }), var_core_value_sigA691({
+                ...var_core_value_sigE36B,
+                type: "picture",
+                picture: {
+                  ...(var_core_value_sigE36B == null ? undefined : var_core_value_sigE36B.picture),
+                  opacity: var_core_value_sig2E11,
+                  mode: (var_core_value_sigE36B == null || (var_core_value_sigB098 = var_core_value_sigE36B.picture) == null ? undefined : var_core_value_sigB098.mode) ?? "stretch"
+                }
+              });
+              return;
+            }
+            var_core_value_sig7E16({
+              ...var_core_value_sig295F,
+              type: n.SlideTableFillTypeEnum["Solid"],
+              color: var_core_value_sig843F,
+              alpha: var_core_value_sig2E11,
+              gradient: undefined,
+              picture: undefined
+            }), var_core_value_sigA691({
+              ...var_core_value_sigE36B,
+              type: "solid",
+              color: var_core_value_sig843F,
+              opacity: var_core_value_sig2E11
+            });
+          },
+          onGradientChange: var_core_value_sigCE71 => {
+            var_core_value_sig7E16(an(var_core_value_sigCE71)), var_core_value_sigA691(jn(var_core_value_sigCE71));
+          },
+          pictureFillEditor: var_core_value_sigF226 ? (0, m.jsx)(On, {
+            fill: var_core_value_sig295F,
+            labels: var_core_value_sig2346,
+            onChange: var_core_value_sig7E16
+          }) : (0, m.jsx)(kn, {
+            fallbackColor: var_core_value_sig843F,
+            fill: var_core_value_sigE36B,
+            labels: var_core_value_sig2346,
+            onChange: var_core_value_sigA691
+          })
+        })
+      }),
+      open: var_core_value_sigDA3B,
+      onOpenChange: var_core_value_sigF079,
+      children: (0, m.jsx)("span", {
+        children: (0, m.jsx)(u.Tooltip, {
+          title: var_core_value_sigB7E2.label ?? var_core_value_sigF92F.t("slides-table-ui.editorToolbar.tableBackgroundColor"),
+          placement: "bottom",
+          children: (0, m.jsxs)(u.Button, {
+            size: "small",
+            variant: "ghost",
+            "aria-expanded": var_core_value_sigDA3B,
+            "aria-label": var_core_value_sigB7E2.label ?? var_core_value_sigF92F.t("slides-table-ui.editorToolbar.tableBackgroundColor"),
+            className: (0, u.clsx)({
+              "univer-bg-gray-100\x20univer-text-primary-600\x20dark:!univer-bg-gray-700\x20dark:!univer-text-primary-300": var_core_value_sigDA3B
+            }),
+            title: var_core_value_sigB7E2.label ?? var_core_value_sigF92F.t("slides-table-ui.editorToolbar.tableBackgroundColor"),
+            type: "button",
+            onMouseDown: l.keepFloatingToolbarPanelInteraction,
+            onPointerDown: l.keepFloatingToolbarPanelInteraction,
+            children: [var_core_value_sigB7E2.mixed ? (0, m.jsx)("span", {
+              "aria-hidden": "true",
+              children: "—"
+            }) : var_core_value_sigEB82, var_core_value_sigB7E2.label && (0, m.jsx)("span", {
+              className: "univer-min-w-0\x20univer-flex-1\x20univer-truncate\x20univer-text-left\x20rtl:univer-text-right",
+              children: var_core_value_sigB7E2.label
+            }), var_core_value_sigB643 && !var_core_value_sigB7E2.mixed ? (0, m.jsx)("span", {
+              className: "univer-h-3 univer-w-3 univer-rounded-sm univer-border univer-border-solid univer-border-gray-300 dark:!univer-border-gray-600",
+              style: var_core_value_sigB7A4
+            }) : null, (0, m.jsx)(c.MoreDownIcon, {
+              className: "univer-text-xs"
+            })]
+          })
+        })
+      })
+    })
+  });
+}
+function On(var_core_value_sig3C23) {
+  let {
+      fill: var_core_value_sigDAE6,
+      labels: var_core_value_sigDD81,
+      onChange: var_core_value_sig3870
+    } = var_core_value_sig3C23,
+    var_core_value_sig13D1 = (0, o.useDependency)(i.IImageIoService),
+    var_core_value_sigECFC = (0, f.useRef)(null),
+    var_core_value_sig5E62 = var_core_value_sigDAE6 == null ? undefined : var_core_value_sigDAE6.picture,
+    var_core_value_sig3B89 = (var_core_value_sig5E62 == null ? undefined : var_core_value_sig5E62.opacity) ?? (var_core_value_sigDAE6 == null ? undefined : var_core_value_sigDAE6.alpha) ?? 1,
+    var_core_value_sig4B55 = var_core_value_sig5E62 != null && var_core_value_sig5E62.source && /^(?:data:|https?:)/["test"](var_core_value_sig5E62.source) ? var_core_value_sig5E62.source : undefined;
+  return (0, m.jsxs)("div", {
+    className: "univer-flex univer-flex-col univer-gap-2",
+    children: [(0, m.jsxs)("div", {
+      className: "univer-flex univer-items-center univer-justify-between univer-gap-3",
+      children: [(0, m.jsx)("span", {
+        className: "univer-shrink-0\x20univer-text-xs\x20univer-text-gray-600\x20dark:!univer-text-gray-200",
+        children: var_core_value_sigDD81.pictureSource
+      }), (0, m.jsx)("input", {
+        ref: var_core_value_sigECFC,
+        type: "file",
+        accept: "image/*",
+        className: "univer-hidden",
+        onChange: async var_core_value_sigC84D => {
+          var var_core_value_sigF2BC;
+          let var_core_value_sigD37B = (var_core_value_sigF2BC = var_core_value_sigC84D.target["files"]) == null ? undefined : var_core_value_sigF2BC[0];
+          if (!var_core_value_sigD37B) return;
+          var_core_value_sigC84D.target["value"] = "";
+          let var_core_value_sigFA28 = await var_core_value_sig13D1.saveImage(var_core_value_sigD37B);
+          if (var_core_value_sigFA28 == null) return;
+          let {
+            imageSourceType: var_core_value_sig93BE,
+            source: var_core_value_sigABEC,
+            base64Cache: var_core_value_sig2712
+          } = var_core_value_sigFA28;
+          if (var_core_value_sig2712) {
+            let {
+              image: var_core_value_sig21D8
+            } = await (0, p.getImageSize)(var_core_value_sig2712);
+            var_core_value_sig13D1.addImageSourceCache(var_core_value_sigABEC, var_core_value_sig93BE, var_core_value_sig21D8);
+          }
+          var_core_value_sig3870({
+            ...var_core_value_sigDAE6,
+            type: n.SlideTableFillTypeEnum["Picture"],
+            gradient: undefined,
+            picture: {
+              ...var_core_value_sig5E62,
+              source: var_core_value_sigABEC,
+              sourceType: var_core_value_sig93BE,
+              opacity: var_core_value_sig3B89,
+              mode: (var_core_value_sig5E62 == null ? undefined : var_core_value_sig5E62.mode) ?? n.SlideTablePictureFillModeEnum["Stretch"]
+            }
+          });
+        }
+      }), (0, m.jsx)(u.Button, {
+        size: "small",
+        type: "button",
+        onClick: () => {
+          var var_core_value_sig0B9E;
+          return (var_core_value_sig0B9E = var_core_value_sigECFC.current) == null ? undefined : var_core_value_sig0B9E.click();
+        },
+        children: var_core_value_sigDD81.pictureInsert
+      })]
+    }), var_core_value_sig4B55 && (0, m.jsx)("img", {
+      src: var_core_value_sig4B55,
+      alt: "",
+      className: "univer-h-14 univer-w-full univer-rounded univer-object-cover"
+    }), (0, m.jsx)(An, {
+      label: var_core_value_sigDD81.transparency,
+      opacity: var_core_value_sig3B89,
+      onChange: var_core_value_sigC545 => var_core_value_sig3870({
+        ...var_core_value_sigDAE6,
+        picture: {
+          ...var_core_value_sig5E62,
+          opacity: var_core_value_sigC545,
+          mode: (var_core_value_sig5E62 == null ? undefined : var_core_value_sig5E62.mode) ?? n.SlideTablePictureFillModeEnum["Stretch"]
+        }
+      })
+    })]
+  });
+}
+function kn(var_core_value_sig9E69) {
+  let {
+      fallbackColor: var_core_value_sig432A,
+      fill: var_core_value_sig3B51,
+      labels: var_core_value_sig542D,
+      onChange: var_core_value_sigB225
+    } = var_core_value_sig9E69,
+    var_core_value_sig8AAB = (0, o.useDependency)(i.IImageIoService),
+    var_core_value_sigE82A = (0, f.useRef)(null),
+    var_core_value_sigB2CF = var_core_value_sig3B51 == null ? undefined : var_core_value_sig3B51.picture,
+    var_core_value_sig5955 = (var_core_value_sigB2CF == null ? undefined : var_core_value_sigB2CF.opacity) ?? (var_core_value_sig3B51 == null ? undefined : var_core_value_sig3B51.opacity) ?? 1,
+    var_core_value_sigF829 = var_core_value_sigB2CF != null && var_core_value_sigB2CF.source && /^(?:data:|https?:)/["test"](var_core_value_sigB2CF.source) ? var_core_value_sigB2CF.source : undefined;
+  return (0, m.jsxs)("div", {
+    className: "univer-flex univer-flex-col univer-gap-2",
+    children: [(0, m.jsxs)("div", {
+      className: "univer-flex univer-items-center univer-justify-between univer-gap-3",
+      children: [(0, m.jsx)("span", {
+        className: "univer-shrink-0 univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",
+        children: var_core_value_sig542D.pictureSource
+      }), (0, m.jsx)("input", {
+        ref: var_core_value_sigE82A,
+        type: "file",
+        accept: "image/*",
+        className: "univer-hidden",
+        onChange: async var_core_value_sig12A7 => {
+          var var_core_value_sig6F4E;
+          let var_core_value_sigA021 = (var_core_value_sig6F4E = var_core_value_sig12A7.target["files"]) == null ? undefined : var_core_value_sig6F4E[0];
+          if (!var_core_value_sigA021) return;
+          var_core_value_sig12A7.target["value"] = "";
+          let var_core_value_sig49D9 = await var_core_value_sig8AAB.saveImage(var_core_value_sigA021);
+          if (var_core_value_sig49D9 == null) return;
+          let {
+            imageSourceType: var_core_value_sig320C,
+            source: var_core_value_sigE7F0,
+            base64Cache: var_core_value_sigE837
+          } = var_core_value_sig49D9;
+          var_core_value_sigB225({
+            ...var_core_value_sig3B51,
+            type: "picture",
+            color: (var_core_value_sig3B51 == null ? undefined : var_core_value_sig3B51.color) ?? var_core_value_sig432A,
+            picture: {
+              ...var_core_value_sigB2CF,
+              source: var_core_value_sigE837 || var_core_value_sigE7F0,
+              sourceType: var_core_value_sig320C,
+              opacity: var_core_value_sig5955,
+              mode: (var_core_value_sigB2CF == null ? undefined : var_core_value_sigB2CF.mode) ?? "stretch"
+            }
+          });
+        }
+      }), (0, m.jsx)(u.Button, {
+        size: "small",
+        type: "button",
+        onClick: () => {
+          var var_core_value_sig34F4;
+          return (var_core_value_sig34F4 = var_core_value_sigE82A.current) == null ? undefined : var_core_value_sig34F4.click();
+        },
+        children: var_core_value_sig542D.pictureInsert
+      })]
+    }), var_core_value_sigF829 && (0, m.jsx)("img", {
+      src: var_core_value_sigF829,
+      alt: "",
+      className: "univer-h-14 univer-w-full univer-rounded univer-object-cover"
+    }), (0, m.jsx)(An, {
+      label: var_core_value_sig542D.transparency,
+      opacity: var_core_value_sig5955,
+      onChange: var_core_value_sigA45D => var_core_value_sigB225({
+        ...var_core_value_sig3B51,
+        type: "picture",
+        color: (var_core_value_sig3B51 == null ? undefined : var_core_value_sig3B51.color) ?? var_core_value_sig432A,
+        picture: {
+          ...var_core_value_sigB2CF,
+          opacity: var_core_value_sigA45D,
+          mode: (var_core_value_sigB2CF == null ? undefined : var_core_value_sigB2CF.mode) ?? "stretch"
+        }
+      })
+    })]
+  });
+}
+function An(var_core_value_sig2900) {
+  return (0, m.jsxs)("div", {
+    className: "univer-flex univer-items-center univer-justify-between univer-gap-3",
+    children: [(0, m.jsx)("span", {
+      className: "univer-shrink-0\x20univer-text-xs\x20univer-text-gray-600\x20dark:!univer-text-gray-200",
+      children: var_core_value_sig2900.label
+    }), (0, m.jsx)("div", {
+      className: "univer-w-20",
+      children: (0, m.jsx)(u.InputNumber, {
+        className: "univer-w-full",
+        value: Math.round((1 - var_core_value_sig2900.opacity) * 100),
+        min: 0,
+        max: 100,
+        step: 10,
+        formatter: var_core_value_sig1BC7 => var_core_value_sig1BC7 + "%",
+        parser: var_core_value_sig4956 => (var_core_value_sig4956 == null ? undefined : var_core_value_sig4956.replace("%", "")) || "",
+        onChange: var_core_value_sigCC9E => {
+          let var_core_value_sig444C = Math.max(0, Math.min(100, var_core_value_sigCC9E ?? 0));
+          var_core_value_sig2900.onChange((100 - var_core_value_sig444C) / 100);
+        }
+      })
+    })]
+  });
+}
+function jn(var_core_value_sig51D8) {
+  var var_core_value_sig8693;
+  return {
+    type: "gradient",
+    color: ((var_core_value_sig8693 = var_core_value_sig51D8.stops[0]) == null ? undefined : var_core_value_sig8693.color) ?? "#111827",
+    gradient: {
+      type: var_core_value_sig51D8.type,
+      angle: var_core_value_sig51D8.angle,
+      stops: var_core_value_sig51D8.stops["map"](var_core_value_sigE42E => ({
+        offset: var_core_value_sigE42E.offset,
+        color: var_core_value_sigE42E.color,
+        opacity: var_core_value_sigE42E.opacity
+      }))
+    }
+  };
+}
+const Mn = o.FONT_SIZE_LIST["map"](var_core_value_sigAACD => ({
+    label: var_core_value_sigAACD.label,
+    value: String(var_core_value_sigAACD.value)
+  })),
+  Nn = [0, 1, 2, 3, 4, 6],
+  Pn = [{
+    labelKey: "slides-table-ui.editorToolbar.borderStyleSolid",
+    value: n.SlideTableBorderDashEnum["Solid"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderStyleDash",
+    value: n.SlideTableBorderDashEnum["Dash"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderStyleDot",
+    value: n.SlideTableBorderDashEnum["Dot"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderStyleDashDot",
+    value: n.SlideTableBorderDashEnum["DashDot"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.noBorder",
+    value: n.SlideTableBorderDashEnum["None"]
+  }],
+  Fn = [{
+    labelKey: "slides-table-ui.editorToolbar.borderPresetAll",
+    preset: n.SlideTableBorderPresetEnum["All"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderPresetInner",
+    preset: n.SlideTableBorderPresetEnum["Inner"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderPresetOuter",
+    preset: n.SlideTableBorderPresetEnum["Outer"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderPresetTop",
+    preset: n.SlideTableBorderPresetEnum["Top"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderPresetBottom",
+    preset: n.SlideTableBorderPresetEnum["Bottom"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderPresetLeft",
+    preset: n.SlideTableBorderPresetEnum["Left"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderPresetRight",
+    preset: n.SlideTableBorderPresetEnum["Right"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderPresetInnerHorizontal",
+    preset: n.SlideTableBorderPresetEnum["InnerHorizontal"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.borderPresetInnerVertical",
+    preset: n.SlideTableBorderPresetEnum["InnerVertical"]
+  }, {
+    labelKey: "slides-table-ui.editorToolbar.noBorder",
+    preset: n.SlideTableBorderPresetEnum["None"]
+  }],
+  In = {
+    [n.SlideTableBorderPresetEnum["All"]]: c.AllBorderIcon,
+    [n.SlideTableBorderPresetEnum["Inner"]]: c.InnerBorderDoubleIcon,
+    [n.SlideTableBorderPresetEnum["Outer"]]: c.OuterBorderDoubleIcon,
+    [n.SlideTableBorderPresetEnum["Top"]]: c.UpBorderDoubleIcon,
+    [n.SlideTableBorderPresetEnum["Bottom"]]: c.DownBorderDoubleIcon,
+    [n.SlideTableBorderPresetEnum["Left"]]: c.LeftBorderDoubleIcon,
+    [n.SlideTableBorderPresetEnum["Right"]]: c.RightBorderDoubleIcon,
+    [n.SlideTableBorderPresetEnum["InnerHorizontal"]]: c.HorizontalBorderDoubleIcon,
+    [n.SlideTableBorderPresetEnum["InnerVertical"]]: c.VerticalBorderDoubleIcon,
+    [n.SlideTableBorderPresetEnum["None"]]: c.NoBorderIcon
+  },
+  Ln = {
+    colorChannel1: "#9ca3af"
+  },
+  Rn = "\n univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-shadow-lg\n dark:!univer-border-gray-700 dark:!univer-bg-gray-900\n";
+function zn(var_core_value_sig895A) {
+  return (0, m.jsx)("div", {
+    className: "univer-flex univer-h-7 univer-flex-nowrap univer-items-center univer-gap-1 univer-px-1",
+    children: var_core_value_sig895A.children
+  });
+}
+function Bn(var_core_value_sigA764) {
+  return (0, m.jsx)(u.Tooltip, {
+    title: var_core_value_sigA764.title,
+    placement: "bottom",
+    children: (0, m.jsx)("span", {
+      children: (0, m.jsx)(u.Button, {
+        size: "small",
+        variant: "ghost",
+        type: "button",
+        "data-toolbar-item": var_core_value_sigA764["data-toolbar-item"],
+        "aria-label": var_core_value_sigA764.title,
+        title: var_core_value_sigA764.title,
+        onClick: var_core_value_sigF039 => {
+          var_core_value_sigF039.preventDefault(), var_core_value_sigA764.onClick();
+        },
+        onMouseDown: l.keepFloatingToolbarPanelInteraction,
+        onPointerDown: l.keepFloatingToolbarPanelInteraction,
+        children: var_core_value_sigA764.children
+      })
+    })
+  });
+}
+function Vn(var_core_value_sigC3D9) {
+  return (0, m.jsx)(u.Tooltip, {
+    title: var_core_value_sigC3D9.title,
+    placement: "bottom",
+    children: (0, m.jsx)(u.Button, {
+      size: "small",
+      variant: "ghost",
+      type: "button",
+      "aria-label": var_core_value_sigC3D9.title,
+      className: (0, u.clsx)({
+        "univer-bg-primary-50\x20univer-text-primary-600\x20dark:!univer-bg-gray-800\x20dark:!univer-text-primary-300": var_core_value_sigC3D9.active
+      }),
+      onClick: var_core_value_sigA321 => {
+        var_core_value_sigA321.preventDefault(), var_core_value_sigC3D9.onClick();
+      },
+      onMouseDown: l.keepFloatingToolbarPanelInteraction,
+      onPointerDown: l.keepFloatingToolbarPanelInteraction,
+      children: var_core_value_sigC3D9.children
+    })
+  });
+}
+function Hn(var_core_value_sigA6C0) {
+  let var_core_value_sigFF70 = (0, o.useDependency)(i.LocaleService);
+  return (0, m.jsx)(W, {
+    onOpenChange: var_core_value_sigA6C0.onOpenChange,
+    children: ({
+      handleOpenChange: var_core_value_sigBF4C,
+      markInternalInteraction: var_core_value_sig3457
+    }) => (0, m.jsx)(u.Dropdown, {
+      open: var_core_value_sigA6C0.open,
+      onOpenChange: var_core_value_sigBF4C,
+      overlay: (0, m.jsxs)("section", {
+        className: (0, u.clsx)(Rn, "univer-grid\x20univer-gap-2\x20univer-p-2", u.borderClassName),
+        "data-u-comp": "slide-table-floating-toolbar-popup",
+        onMouseDown: var_core_value_sig2B65 => {
+          var_core_value_sig3457(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sig2B65);
+        },
+        onPointerDown: var_core_value_sigD7EA => {
+          var_core_value_sig3457(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sigD7EA);
+        },
+        children: [(0, m.jsxs)("div", {
+          className: "univer-flex univer-items-center univer-gap-2",
+          children: [(0, m.jsx)(Vn, {
+            active: !var_core_value_sigA6C0.values["mixed"].bold && var_core_value_sigA6C0.values["bold"],
+            title: var_core_value_sigFF70.t("slides-table-ui.editorToolbar.bold"),
+            onClick: () => var_core_value_sigA6C0.onToggleStyle({
+              bl: var_core_value_sigA6C0.values["mixed"].bold || !var_core_value_sigA6C0.values["bold"] ? i.BooleanNumber["TRUE"] : i.BooleanNumber["FALSE"]
+            }),
+            children: (0, m.jsx)(c.BoldIcon, {})
+          }), (0, m.jsx)(Vn, {
+            active: !var_core_value_sigA6C0.values["mixed"].italic && var_core_value_sigA6C0.values["italic"],
+            title: var_core_value_sigFF70.t("slides-table-ui.editorToolbar.italic"),
+            onClick: () => var_core_value_sigA6C0.onToggleStyle({
+              it: var_core_value_sigA6C0.values["mixed"].italic || !var_core_value_sigA6C0.values["italic"] ? i.BooleanNumber["TRUE"] : i.BooleanNumber["FALSE"]
+            }),
+            children: (0, m.jsx)(c.ItalicIcon, {})
+          }), (0, m.jsx)(Vn, {
+            active: !var_core_value_sigA6C0.values["mixed"].underline && var_core_value_sigA6C0.values["underline"],
+            title: var_core_value_sigFF70.t("slides-table-ui.editorToolbar.underline"),
+            onClick: () => var_core_value_sigA6C0.onToggleStyle({
+              ul: {
+                s: var_core_value_sigA6C0.values["mixed"].underline || !var_core_value_sigA6C0.values["underline"] ? i.BooleanNumber["TRUE"] : i.BooleanNumber["FALSE"]
+              }
+            }),
+            children: (0, m.jsx)(c.UnderlineIcon, {})
+          }), (0, m.jsx)(Vn, {
+            active: !var_core_value_sigA6C0.values["mixed"].strike && var_core_value_sigA6C0.values["strike"],
+            title: var_core_value_sigFF70.t("slides-table-ui.editorToolbar.strikethrough"),
+            onClick: () => var_core_value_sigA6C0.onToggleStyle({
+              st: {
+                s: var_core_value_sigA6C0.values["mixed"].strike || !var_core_value_sigA6C0.values["strike"] ? i.BooleanNumber["TRUE"] : i.BooleanNumber["FALSE"]
+              }
+            }),
+            children: (0, m.jsx)(c.StrikethroughIcon, {})
+          })]
+        }), (0, m.jsx)(u.Separator, {}), (0, m.jsx)("div", {
+          className: "univer-flex univer-items-center univer-gap-2",
+          children: var_core_value_sigA6C0.horizontalAlignOptions["map"](var_core_value_sigB33B => (0, m.jsx)(Vn, {
+            active: !var_core_value_sigA6C0.values["mixed"].horizontalAlign && var_core_value_sigA6C0.values["horizontalAlign"] === var_core_value_sigB33B.value,
+            title: var_core_value_sigFF70.t(var_core_value_sigB33B.labelKey),
+            onClick: () => var_core_value_sigA6C0.onHorizontalAlign(var_core_value_sigB33B.value),
+            children: var_core_value_sigB33B.icon
+          }, var_core_value_sigB33B.value))
+        }), (0, m.jsx)(u.Separator, {}), (0, m.jsx)("div", {
+          className: "univer-flex univer-items-center univer-gap-2",
+          children: var_core_value_sigA6C0.verticalAlignOptions["map"](var_core_value_sig24B9 => (0, m.jsx)(Vn, {
+            active: !var_core_value_sigA6C0.values["mixed"].verticalAlign && var_core_value_sigA6C0.values["verticalAlign"] === var_core_value_sig24B9.value,
+            title: var_core_value_sigFF70.t(var_core_value_sig24B9.labelKey),
+            onClick: () => var_core_value_sigA6C0.onVerticalAlign(var_core_value_sig24B9.value),
+            children: var_core_value_sig24B9.icon
+          }, var_core_value_sig24B9.value))
+        })]
+      }),
+      children: (0, m.jsx)("span", {
+        children: (0, m.jsx)(u.Tooltip, {
+          title: var_core_value_sigFF70.t("slides-table-ui.editorToolbar.textFormat"),
+          placement: "bottom",
+          children: (0, m.jsxs)(u.Button, {
+            size: "small",
+            variant: "ghost",
+            type: "button",
+            "aria-expanded": var_core_value_sigA6C0.open,
+            "aria-label": var_core_value_sigFF70.t("slides-table-ui.editorToolbar.textFormat"),
+            className: (0, u.clsx)({
+              "univer-bg-gray-100\x20univer-text-primary-600\x20dark:!univer-bg-gray-700\x20dark:!univer-text-primary-300": var_core_value_sigA6C0.open
+            }),
+            onMouseDown: l.keepFloatingToolbarPanelInteraction,
+            onPointerDown: l.keepFloatingToolbarPanelInteraction,
+            children: [(0, m.jsx)(c.TextIcon, {}), (0, m.jsx)(c.MoreDownIcon, {
+              className: "univer-text-xs"
+            })]
+          })
+        })
+      })
+    })
+  });
+}
+function Un(var_core_value_sigB469) {
+  let var_core_value_sig0276 = (0, o.useDependency)(i.LocaleService);
+  return (0, m.jsx)(W, {
+    onOpenChange: var_core_value_sigB469.onOpenChange,
+    children: ({
+      handleOpenChange: var_core_value_sig4A08,
+      markInternalInteraction: var_core_value_sig1BC4
+    }) => (0, m.jsx)(u.Dropdown, {
+      open: var_core_value_sigB469.open,
+      onOpenChange: var_core_value_sig4A08,
+      overlay: (0, m.jsx)("section", {
+        className: (0, u.clsx)(Rn, u.borderClassName),
+        "data-u-comp": "slide-table-floating-toolbar-popup",
+        onMouseDown: var_core_value_sigE627 => {
+          var_core_value_sig1BC4(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sigE627);
+        },
+        onPointerDown: var_core_value_sigEF3E => {
+          var_core_value_sig1BC4(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sigEF3E);
+        },
+        children: var_core_value_sigB469.children
+      }),
+      children: (0, m.jsx)("span", {
+        className: (0, u.clsx)({
+          "[&>span]:univer-h-full\x20[&>span]:univer-w-full\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-h-full\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-w-full": var_core_value_sigB469.ribbon
+        }),
+        children: (0, m.jsx)(u.Tooltip, {
+          title: var_core_value_sigB469.label ?? var_core_value_sig0276.t("slides-table-ui.editorToolbar.tableTheme"),
+          placement: "bottom",
+          children: (0, m.jsxs)(u.Button, {
+            size: "small",
+            variant: "ghost",
+            type: "button",
+            "data-toolbar-item": "table-theme",
+            "aria-expanded": var_core_value_sigB469.open,
+            "aria-label": var_core_value_sigB469.label ?? var_core_value_sig0276.t("slides-table-ui.editorToolbar.tableTheme"),
+            title: var_core_value_sigB469.label ?? var_core_value_sig0276.t("slides-table-ui.editorToolbar.tableTheme"),
+            className: (0, u.clsx)({
+              "[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-h-full\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-w-full\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-min-w-28\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-flex-col\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-gap-1\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-px-1.5\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-py-1": var_core_value_sigB469.ribbon,
+              "univer-bg-gray-100\x20univer-text-primary-600\x20dark:!univer-bg-gray-700\x20dark:!univer-text-primary-300": var_core_value_sigB469.open
+            }),
+            onMouseDown: l.keepFloatingToolbarPanelInteraction,
+            onPointerDown: l.keepFloatingToolbarPanelInteraction,
+            children: [(0, m.jsx)("span", {
+              className: (0, u.clsx)("univer-flex univer-items-center univer-justify-center", {
+                "[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-text-3xl": var_core_value_sigB469.ribbon
+              }),
+              children: var_core_value_sigB469.icon ?? (0, m.jsx)(c.PaintBucketDoubleIcon, {})
+            }), (0, m.jsxs)("span", {
+              className: (0, u.clsx)("univer-flex univer-min-w-0 univer-items-center univer-gap-0.5", {
+                "[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-w-full\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-justify-center": var_core_value_sigB469.ribbon
+              }),
+              children: [var_core_value_sigB469.label && (0, m.jsx)("span", {
+                className: (0, u.clsx)("univer-min-w-0 univer-flex-1 univer-truncate univer-text-left rtl:univer-text-right", {
+                  "[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-flex-none\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-text-xs": var_core_value_sigB469.ribbon
+                }),
+                children: var_core_value_sigB469.label
+              }), (0, m.jsx)(c.MoreDownIcon, {
+                className: "univer-text-xs"
+              })]
+            })]
+          })
+        })
+      })
+    })
+  });
+}
+function Wn(var_core_value_sigFA20) {
+  let var_core_value_sig2752 = (0, o.useDependency)(i.LocaleService),
+    var_core_value_sig0E1A = Pn.find(var_core_value_sig9EAB => var_core_value_sig9EAB.value === var_core_value_sigFA20.dash) ?? Pn[0];
+  return (0, m.jsx)(W, {
+    onOpenChange: var_core_value_sigFA20.onOpenChange,
+    children: ({
+      handleOpenChange: var_core_value_sigA5C3,
+      markInternalInteraction: var_core_value_sig3A1E
+    }) => (0, m.jsx)(u.Dropdown, {
+      open: var_core_value_sigFA20.open,
+      onOpenChange: var_core_value_sigA5C3,
+      overlay: (0, m.jsxs)("section", {
+        className: (0, u.clsx)(Rn, "univer-grid univer-gap-2 univer-p-2", u.borderClassName),
+        "data-u-comp": "slide-table-floating-toolbar-popup",
+        dir: var_core_value_sigFA20.direction,
+        onMouseDown: var_core_value_sig273D => {
+          var_core_value_sig3A1E(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sig273D);
+        },
+        onPointerDown: var_core_value_sig9A0D => {
+          var_core_value_sig3A1E(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sig9A0D);
+        },
+        children: [(0, m.jsx)("div", {
+          className: "univer-grid\x20univer-grid-cols-5\x20univer-gap-1",
+          children: var_core_value_sigFA20.presets["map"](({
+            labelKey: var_core_value_sigA319,
+            preset: var_core_value_sig2D58
+          }) => {
+            let var_core_value_sig223F = In[var_core_value_sig2D58];
+            return (0, m.jsx)(u.Tooltip, {
+              title: var_core_value_sig2752.t(var_core_value_sigA319),
+              placement: "bottom",
+              children: (0, m.jsx)(u.Button, {
+                size: "icon",
+                variant: "ghost",
+                type: "button",
+                "aria-label": var_core_value_sig2752.t(var_core_value_sigA319),
+                onClick: () => {
+                  var_core_value_sigFA20.onSelectPreset(var_core_value_sig2D58), var_core_value_sigFA20.onOpenChange(false);
+                },
+                onMouseDown: l.keepFloatingToolbarPanelInteraction,
+                onPointerDown: l.keepFloatingToolbarPanelInteraction,
+                children: (0, m.jsx)(var_core_value_sig223F, {
+                  className: "univer-size-4 univer-text-current",
+                  extend: Ln
+                })
+              })
+            }, var_core_value_sig2D58);
+          })
+        }), (0, m.jsx)(u.Separator, {}), (0, m.jsxs)("div", {
+          className: "univer-flex univer-items-center univer-gap-2",
+          children: [(0, m.jsx)(Gn, {
+            title: var_core_value_sig2752.t("slides-table-ui.editorToolbar.tableBorderColor"),
+            direction: var_core_value_sigFA20.direction,
+            color: var_core_value_sigFA20.color,
+            onChange: var_core_value_sigFA20.onChangeColor,
+            children: (0, m.jsx)(c.PaintBucketDoubleIcon, {
+              extend: {
+                colorChannel1: var_core_value_sigFA20.color
+              }
+            })
+          }), (0, m.jsx)(qn, {
+            title: var_core_value_sig2752.t("slides-table-ui.editorToolbar.borderWidth"),
+            direction: var_core_value_sigFA20.direction,
+            value: String(var_core_value_sigFA20.width),
+            options: Nn.map(var_core_value_sigD749 => ({
+              label: var_core_value_sigD749 === 0 ? var_core_value_sig2752.t("slides-table-ui.editorToolbar.noBorder") : var_core_value_sigD749 + "px",
+              value: String(var_core_value_sigD749),
+              icon: (0, m.jsx)("span", {
+                className: "univer-block univer-w-5 univer-rounded-full univer-bg-current",
+                style: {
+                  height: Math.max(1, var_core_value_sigD749 || 1)
+                }
+              })
+            })),
+            onChange: var_core_value_sigCFFA => var_core_value_sigFA20.onChangeWidth(Number(var_core_value_sigCFFA)),
+            children: (0, m.jsxs)("span", {
+              className: "univer-text-xs",
+              children: [var_core_value_sigFA20.width, "px"]
+            })
+          }), (0, m.jsx)(qn, {
+            title: var_core_value_sig2752.t("slides-table-ui.editorToolbar.borderStyle"),
+            direction: var_core_value_sigFA20.direction,
+            value: var_core_value_sigFA20.dash,
+            options: Pn.map(var_core_value_sig58C1 => ({
+              label: var_core_value_sig2752.t(var_core_value_sig58C1.labelKey),
+              value: var_core_value_sig58C1.value,
+              icon: (0, m.jsx)(Yn, {
+                dash: var_core_value_sig58C1.value
+              })
+            })),
+            onChange: var_core_value_sigFA20.onChangeDash,
+            children: var_core_value_sig0E1A ? (0, m.jsx)(Yn, {
+              dash: var_core_value_sig0E1A.value
+            }) : (0, m.jsx)(c.AllBorderIcon, {})
+          })]
+        })]
+      }),
+      children: (0, m.jsx)("span", {
+        children: (0, m.jsx)(u.Tooltip, {
+          title: var_core_value_sigFA20.label ?? var_core_value_sig2752.t("slides-table-ui.editorToolbar.border"),
+          placement: "bottom",
+          children: (0, m.jsxs)(u.Button, {
+            size: "small",
+            variant: "ghost",
+            type: "button",
+            "aria-expanded": var_core_value_sigFA20.open,
+            "aria-label": var_core_value_sigFA20.label ?? var_core_value_sig2752.t("slides-table-ui.editorToolbar.border"),
+            title: var_core_value_sigFA20.label ?? var_core_value_sig2752.t("slides-table-ui.editorToolbar.border"),
+            className: (0, u.clsx)({
+              "univer-bg-gray-100\x20univer-text-primary-600\x20dark:!univer-bg-gray-700\x20dark:!univer-text-primary-300": var_core_value_sigFA20.open
+            }),
+            onMouseDown: l.keepFloatingToolbarPanelInteraction,
+            onPointerDown: l.keepFloatingToolbarPanelInteraction,
+            children: [var_core_value_sigFA20.mixed ? (0, m.jsx)("span", {
+              "aria-hidden": "true",
+              children: "—"
+            }) : (0, m.jsx)(c.AllBorderIcon, {}), var_core_value_sigFA20.label && (0, m.jsx)("span", {
+              className: "univer-min-w-0 univer-flex-1 univer-truncate univer-text-left rtl:univer-text-right",
+              children: var_core_value_sigFA20.label
+            }), (0, m.jsx)(c.MoreDownIcon, {
+              className: "univer-text-xs"
+            })]
+          })
+        })
+      })
+    })
+  });
+}
+function Gn(var_core_value_sig6A48) {
+  let {
+      children: var_core_value_sig2D2A,
+      color: var_core_value_sig1D22,
+      onChange: var_core_value_sig91FE
+    } = var_core_value_sig6A48,
+    [var_core_value_sig528C, var_core_value_sig749D] = (0, f.useState)(false),
+    var_core_value_sig1FB8 = var_core_value_sig6A48.open ?? var_core_value_sig528C;
+  return (0, m.jsx)(W, {
+    onOpenChange: var_core_value_sig6A48.onOpenChange ?? var_core_value_sig749D,
+    children: ({
+      handleOpenChange: var_core_value_sigDC92,
+      markInternalInteraction: var_core_value_sig3515
+    }) => (0, m.jsx)(u.Dropdown, {
+      overlay: (0, m.jsx)("div", {
+        className: (0, u.clsx)(Rn, "univer-p-3", u.borderClassName),
+        "data-u-comp": "slide-table-floating-toolbar-popup",
+        dir: var_core_value_sig6A48.direction,
+        onMouseDown: var_core_value_sig5090 => {
+          var_core_value_sig3515(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sig5090);
+        },
+        onPointerDown: var_core_value_sigC368 => {
+          var_core_value_sig3515(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sigC368);
+        },
+        children: (0, m.jsx)(u.ColorPicker, {
+          value: var_core_value_sig1D22,
+          onChange: var_core_value_sig91FE
+        })
+      }),
+      open: var_core_value_sig1FB8,
+      onOpenChange: var_core_value_sigDC92,
+      children: (0, m.jsx)("span", {
+        children: (0, m.jsx)(u.Tooltip, {
+          title: var_core_value_sig6A48.title,
+          placement: "bottom",
+          children: (0, m.jsxs)(u.Button, {
+            size: "small",
+            variant: "ghost",
+            "aria-expanded": var_core_value_sig1FB8,
+            "aria-label": var_core_value_sig6A48.title,
+            className: (0, u.clsx)({
+              "univer-bg-gray-100\x20univer-text-primary-600\x20dark:!univer-bg-gray-700\x20dark:!univer-text-primary-300": var_core_value_sig1FB8
+            }),
+            title: var_core_value_sig6A48.title,
+            type: "button",
+            onMouseDown: l.keepFloatingToolbarPanelInteraction,
+            onPointerDown: l.keepFloatingToolbarPanelInteraction,
+            children: [var_core_value_sig2D2A, (0, m.jsx)("span", {
+              className: "univer-h-3 univer-w-3 univer-rounded-sm univer-border univer-border-solid univer-border-gray-300 dark:!univer-border-gray-600",
+              style: {
+                backgroundColor: var_core_value_sig1D22
+              }
+            }), (0, m.jsx)(c.MoreDownIcon, {
+              className: "univer-text-xs"
+            })]
+          })
+        })
+      })
+    })
+  });
+}
+function Kn(var_core_value_sig032D) {
+  return (0, m.jsx)(W, {
+    onOpenChange: var_core_value_sig032D.onOpenChange,
+    children: ({
+      handleOpenChange: var_core_value_sigC2A0,
+      markInternalInteraction: var_core_value_sig7C65
+    }) => (0, m.jsx)(u.Dropdown, {
+      open: var_core_value_sig032D.open,
+      onOpenChange: var_core_value_sigC2A0,
+      overlay: (0, m.jsx)("div", {
+        className: (0, u.clsx)(Rn, "univer-p-3", u.borderClassName),
+        "data-u-comp": "slide-table-floating-toolbar-popup",
+        onMouseDown: var_core_value_sigAD56 => {
+          var_core_value_sig7C65(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sigAD56);
+        },
+        onPointerDown: var_core_value_sigDB4A => {
+          var_core_value_sig7C65(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sigDB4A);
+        },
+        children: (0, m.jsx)(u.ColorPicker, {
+          value: var_core_value_sig032D.color,
+          onChange: var_core_value_sig032D.onChange
+        })
+      }),
+      children: (0, m.jsx)("span", {
+        children: (0, m.jsx)(u.Tooltip, {
+          title: var_core_value_sig032D.title,
+          placement: "bottom",
+          children: (0, m.jsxs)(u.Button, {
+            size: "small",
+            variant: "ghost",
+            type: "button",
+            "data-toolbar-item": var_core_value_sig032D["data-toolbar-item"],
+            "aria-expanded": var_core_value_sig032D.open,
+            "aria-label": var_core_value_sig032D.title,
+            className: (0, u.clsx)({
+              "univer-bg-gray-100\x20dark:!univer-bg-gray-700": var_core_value_sig032D.open
+            }),
+            onMouseDown: l.keepFloatingToolbarPanelInteraction,
+            onPointerDown: l.keepFloatingToolbarPanelInteraction,
+            children: [var_core_value_sig032D.mixed ? (0, m.jsx)("span", {
+              "aria-hidden": "true",
+              children: "—"
+            }) : var_core_value_sig032D.icon === "font" ? (0, m.jsx)(c.FontColorDoubleIcon, {
+              className: "univer-fill-primary-600",
+              extend: {
+                colorChannel1: var_core_value_sig032D.color
+              }
+            }) : (0, m.jsx)(c.PaintBucketDoubleIcon, {
+              className: "univer-fill-primary-600",
+              extend: {
+                colorChannel1: "var(--univer-primary-600)"
+              }
+            }), (0, m.jsx)(c.MoreDownIcon, {
+              className: "univer-text-xs"
+            })]
+          })
+        })
+      })
+    })
+  });
+}
+function qn(var_core_value_sig27FA) {
+  let {
+      children: var_core_value_sig533B,
+      direction: var_core_value_sig6434,
+      title: var_core_value_sig398A,
+      value: var_core_value_sig1760,
+      open: var_core_value_sig7C7A,
+      options: var_core_value_sig78E8,
+      onChange: var_core_value_sigF002,
+      onOpenChange: var_core_value_sig715D
+    } = var_core_value_sig27FA,
+    [var_core_value_sigEB90, var_core_value_sig9506] = (0, f.useState)(false),
+    var_core_value_sigC460 = var_core_value_sig7C7A ?? var_core_value_sigEB90,
+    var_core_value_sig00D0 = var_core_value_sig715D ?? var_core_value_sig9506,
+    var_core_value_sig2880 = var_core_value_sig78E8.find(var_core_value_sig7F05 => var_core_value_sig7F05.value === var_core_value_sig1760) ?? var_core_value_sig78E8[0];
+  return var_core_value_sig2880 ? (0, m.jsx)(W, {
+    onOpenChange: var_core_value_sig00D0,
+    children: ({
+      handleOpenChange: var_core_value_sig41F3,
+      markInternalInteraction: var_core_value_sigF455
+    }) => (0, m.jsx)(u.Dropdown, {
+      open: var_core_value_sigC460,
+      onOpenChange: var_core_value_sig41F3,
+      overlay: (0, m.jsx)("div", {
+        className: (0, u.clsx)(Rn, "univer-min-w-32\x20univer-p-1", u.borderClassName),
+        dir: var_core_value_sig6434,
+        onMouseDown: var_core_value_sig6418 => {
+          var_core_value_sigF455(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sig6418);
+        },
+        onPointerDown: var_core_value_sig1896 => {
+          var_core_value_sigF455(), (0, l.keepFloatingToolbarPanelInteraction)(var_core_value_sig1896);
+        },
+        children: var_core_value_sig78E8.map(var_core_value_sig0285 => (0, m.jsxs)(u.Button, {
+          size: "middle",
+          variant: "ghost",
+          type: "button",
+          onClick: () => {
+            var_core_value_sigF002(var_core_value_sig0285.value), var_core_value_sig00D0(false);
+          },
+          onMouseDown: l.keepFloatingToolbarPanelInteraction,
+          onPointerDown: l.keepFloatingToolbarPanelInteraction,
+          className: (0, u.clsx)("univer-w-full univer-justify-start rtl:univer-justify-end", {
+            "univer-bg-primary-50\x20univer-text-primary-600\x20dark:!univer-bg-gray-800\x20dark:!univer-text-primary-300": var_core_value_sig0285.value === var_core_value_sig1760
+          }),
+          children: [(0, m.jsx)("span", {
+            className: "univer-flex univer-size-4 univer-items-center univer-justify-center",
+            children: var_core_value_sig0285.icon
+          }), (0, m.jsx)("span", {
+            className: "univer-flex-1",
+            children: var_core_value_sig0285.label
+          })]
+        }, var_core_value_sig0285.value))
+      }),
+      children: (0, m.jsx)("span", {
+        children: (0, m.jsx)(u.Tooltip, {
+          title: var_core_value_sig398A,
+          placement: "bottom",
+          children: (0, m.jsxs)(u.Button, {
+            size: "small",
+            variant: "ghost",
+            type: "button",
+            "aria-expanded": var_core_value_sigC460,
+            "aria-label": var_core_value_sig398A,
+            title: var_core_value_sig398A,
+            className: (0, u.clsx)({
+              "univer-bg-gray-100\x20univer-text-primary-600\x20dark:!univer-bg-gray-700\x20dark:!univer-text-primary-300": var_core_value_sigC460
+            }),
+            onMouseDown: l.keepFloatingToolbarPanelInteraction,
+            onPointerDown: l.keepFloatingToolbarPanelInteraction,
+            children: [var_core_value_sig533B ?? var_core_value_sig2880.icon, (0, m.jsx)(c.MoreDownIcon, {
+              className: "univer-text-xs"
+            })]
+          })
+        })
+      })
+    })
+  }) : null;
+}
+function Jn(var_core_value_sig76AC) {
+  return (0, m.jsx)(u.Tooltip, {
+    title: var_core_value_sig76AC.title,
+    placement: "bottom",
+    children: (0, m.jsx)("span", {
+      onMouseDown: l.keepFloatingToolbarPanelInteraction,
+      onPointerDown: l.keepFloatingToolbarPanelInteraction,
+      children: (0, m.jsx)(u.Select, {
+        borderless: true,
+        className: (0, u.clsx)("!univer-h-6 !univer-min-w-0 !univer-rounded-md !univer-border-transparent !univer-bg-transparent !univer-px-1.5", var_core_value_sig76AC.widthClassName),
+        value: var_core_value_sig76AC.value,
+        options: var_core_value_sig76AC.options,
+        onChange: var_core_value_sig76AC.onChange
+      })
+    })
+  });
+}
+function Yn(var_core_value_sigEA39) {
+  let var_core_value_sig252C = (0, o.useDependency)(i.LocaleService),
+    var_core_value_sig87EA = var_core_value_sigEA39.dash === "dot" ? "1 3" : var_core_value_sigEA39.dash === "dash" ? "4 3" : var_core_value_sigEA39.dash === "dashDot" ? "4 2 1 2" : undefined;
+  return var_core_value_sigEA39.dash === "none" ? (0, m.jsx)("span", {
+    className: "univer-text-xs",
+    children: var_core_value_sig252C.t("slides-table-ui.editorToolbar.none")
+  }) : (0, m.jsx)("svg", {
+    "aria-hidden": "true",
+    height: "16",
+    viewBox: "0 0 24 16",
+    width: "24",
+    children: (0, m.jsx)("path", {
+      d: "M3 8H21",
+      stroke: "currentColor",
+      strokeDasharray: var_core_value_sig87EA,
+      strokeLinecap: "round",
+      strokeWidth: "2"
+    })
+  });
+}
+const Xn = ["bestMatch", "light", "medium", "minimal"],
+  Zn = {
+    bestMatch: "slides-table-ui.editorToolbar.bestMatch",
+    light: "slides-table-ui.editorToolbar.light",
+    medium: "slides-table-ui.editorToolbar.medium",
+    minimal: "slides-table-ui.editorToolbar.minimal"
+  },
+  Qn = [{
+    key: "firstRow",
+    labelKey: "slides-table-ui.editorToolbar.headerRow"
+  }, {
+    key: "lastRow",
+    labelKey: "slides-table-ui.editorToolbar.footerRow"
+  }, {
+    key: "bandRow",
+    labelKey: "slides-table-ui.editorToolbar.bandedRows"
+  }, {
+    key: "firstCol",
+    labelKey: "slides-table-ui.editorToolbar.firstColumn"
+  }, {
+    key: "lastCol",
+    labelKey: "slides-table-ui.editorToolbar.lastColumn"
+  }, {
+    key: "bandCol",
+    labelKey: "slides-table-ui.editorToolbar.bandedColumns"
+  }];
+function $n(var_core_value_sig4325) {
+  let {
+      currentOptions: var_core_value_sigAB8D,
+      currentStyleId: var_core_value_sig4B86,
+      direction: var_core_value_sigA6B6 = "ltr",
+      palette: var_core_value_sig240E,
+      showOptions: var_core_value_sig1FDB = true,
+      showThemes: var_core_value_sig6B7D = true,
+      onApplyTheme: var_core_value_sigDE46,
+      onChangeOptions: var_core_value_sigF30E
+    } = var_core_value_sig4325,
+    var_core_value_sig0D1B = (0, o.useDependency)(i.LocaleService),
+    var_core_value_sigA5A1 = (0, n.buildDefaultSlideTableThemes)(var_core_value_sig240E),
+    var_core_value_sig0C3A = var_core_value_sig6E78 => {
+      var_core_value_sigF30E({
+        ...var_core_value_sigAB8D,
+        [var_core_value_sig6E78]: !var_core_value_sigAB8D[var_core_value_sig6E78]
+      });
+    };
+  return (0, m.jsxs)("div", {
+    className: "univer-flex univer-max-h-[420px] univer-w-[420px] univer-flex-col univer-text-gray-900 dark:!univer-text-gray-100",
+    "data-u-comp": "slide-table-theme-gallery",
+    dir: var_core_value_sigA6B6,
+    style: {
+      direction: var_core_value_sigA6B6
+    },
+    children: [var_core_value_sig1FDB && (0, m.jsxs)("div", {
+      className: "univer-sticky\x20univer-top-0\x20univer-z-10\x20univer-bg-gray-0\x20univer-p-2\x20dark:!univer-bg-gray-900",
+      children: [(0, m.jsxs)("div", {
+        className: "univer-mb-2\x20univer-flex\x20univer-items-center\x20univer-justify-between",
+        children: [(0, m.jsx)("div", {
+          className: "univer-text-sm univer-font-medium",
+          children: var_core_value_sig0D1B.t("slides-table-ui.editorToolbar.tableTheme")
+        }), (0, m.jsx)("div", {
+          className: "univer-text-xs\x20univer-text-gray-500\x20dark:!univer-text-gray-400",
+          children: var_core_value_sig0D1B.t("slides-table-ui.editorToolbar.tableLook")
+        })]
+      }), (0, m.jsx)("div", {
+        className: "univer-grid univer-grid-cols-3 univer-gap-1",
+        children: Qn.map(var_core_value_sigB3EE => (0, m.jsx)(er, {
+          active: !!var_core_value_sigAB8D[var_core_value_sigB3EE.key],
+          label: var_core_value_sig0D1B.t(var_core_value_sigB3EE.labelKey),
+          onClick: () => var_core_value_sig0C3A(var_core_value_sigB3EE.key)
+        }, var_core_value_sigB3EE.key))
+      })]
+    }), var_core_value_sig6B7D && (0, m.jsx)("div", {
+      className: "univer-overflow-y-auto univer-p-2 univer-pt-1",
+      children: Xn.map(var_core_value_sigC50A => {
+        let var_core_value_sig11D0 = n.DEFAULT_SLIDE_TABLE_THEME_PRESETS["filter"](var_core_value_sig777D => var_core_value_sig777D.group === var_core_value_sigC50A);
+        return var_core_value_sig11D0.length ? (0, m.jsxs)("div", {
+          className: "univer-mb-3 last:univer-mb-0",
+          children: [(0, m.jsx)("div", {
+            className: "univer-mb-1 univer-text-xs univer-font-medium univer-text-gray-500 dark:!univer-text-gray-400",
+            children: var_core_value_sig0D1B.t(Zn[var_core_value_sigC50A])
+          }), (0, m.jsx)("div", {
+            className: "univer-grid univer-grid-cols-4 univer-gap-2",
+            children: var_core_value_sig11D0.map((var_core_value_sig3F4C, var_core_value_sigD65A) => {
+              if (!var_core_value_sigA5A1[var_core_value_sig3F4C.id]) return null;
+              let var_core_value_sig5A13 = var_core_value_sigAB8D,
+                var_core_value_sigF593 = var_core_value_sig4B86 === var_core_value_sig3F4C.id,
+                var_core_value_sig3607 = var_core_value_sig0D1B.t(Zn[var_core_value_sigC50A]) + "\x20" + (var_core_value_sigD65A + 1);
+              return (0, m.jsxs)("button", {
+                type: "button",
+                "aria-label": var_core_value_sig3607,
+                title: var_core_value_sig3607,
+                className: (0, u.clsx)("univer-relative univer-rounded-md univer-border univer-border-solid univer-border-transparent univer-bg-transparent univer-p-1 univer-transition-colors hover:univer-border-primary-300 hover:univer-bg-primary-50 dark:hover:!univer-bg-gray-800", {
+                  "univer-border-primary-600\x20univer-bg-primary-50\x20univer-shadow-sm\x20dark:!univer-bg-gray-800": var_core_value_sigF593
+                }),
+                onClick: () => var_core_value_sigDE46(var_core_value_sig3F4C.id),
+                children: [var_core_value_sigF593 && (0, m.jsx)("span", {
+                  className: "univer-absolute\x20univer-right-0.5\x20univer-top-0.5\x20univer-flex\x20univer-size-4\x20univer-items-center\x20univer-justify-center\x20univer-rounded-full\x20univer-bg-primary-600\x20univer-text-gray-0\x20univer-shadow-sm\x20rtl:univer-left-0.5\x20rtl:univer-right-auto",
+                  children: (0, m.jsx)(c.CheckMarkIcon, {
+                    className: "univer-size-3"
+                  })
+                }), (0, m.jsx)(tr, {
+                  styleId: var_core_value_sig3F4C.id,
+                  options: var_core_value_sig5A13,
+                  direction: var_core_value_sigA6B6,
+                  palette: var_core_value_sig240E
+                })]
+              }, var_core_value_sig3F4C.id);
+            })
+          })]
+        }, var_core_value_sigC50A) : null;
+      })
+    })]
+  });
+}
+function er(var_core_value_sig5A20) {
+  return (0, m.jsx)("div", {
+    "aria-pressed": var_core_value_sig5A20.active,
+    role: "button",
+    tabIndex: 0,
+    className: (0, u.clsx)("univer-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-rounded-md\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-px-2\x20univer-py-1.5\x20univer-text-xs\x20univer-transition-colors\x20hover:univer-border-primary-300\x20hover:univer-bg-primary-50\x20focus-visible:univer-outline\x20focus-visible:univer-outline-2\x20focus-visible:univer-outline-offset-1\x20focus-visible:univer-outline-primary-500\x20dark:!univer-border-gray-700\x20dark:!univer-bg-gray-900\x20dark:hover:!univer-bg-gray-800", {
+      "univer-border-primary-600\x20univer-bg-primary-50\x20univer-text-primary-600\x20dark:!univer-border-primary-500\x20dark:!univer-bg-gray-800\x20dark:!univer-text-primary-300": var_core_value_sig5A20.active
+    }),
+    onClick: var_core_value_sig5A20.onClick,
+    onKeyDown: var_core_value_sigB8ED => {
+      (var_core_value_sigB8ED.key === "Enter" || var_core_value_sigB8ED.key === "\x20") && (var_core_value_sigB8ED.preventDefault(), var_core_value_sig5A20.onClick());
+    },
+    children: (0, m.jsx)(u.Checkbox, {
+      checked: var_core_value_sig5A20.active,
+      className: "univer-pointer-events-none\x20univer-w-full\x20univer-min-w-0\x20univer-text-xs",
+      contentClassName: (0, u.clsx)("univer-truncate", var_core_value_sig5A20.active && "!univer-text-primary-600 dark:!univer-text-primary-300"),
+      onChange: () => undefined,
+      children: var_core_value_sig5A20.label
+    })
+  });
+}
+function tr(var_core_value_sig4037) {
+  return (0, m.jsx)("span", {
+    className: "univer-grid univer-h-11 univer-w-20 univer-grid-cols-5 univer-overflow-hidden univer-rounded-sm",
+    children: (0, n.resolveSlideTableRenderModel)({
+      id: "theme-preview",
+      rev: 0,
+      styleId: var_core_value_sig4037.styleId,
+      options: var_core_value_sig4037.options,
+      columns: Array.from({
+        length: 5
+      }, () => ({
+        width: 1
+      })),
+      rows: Array.from({
+        length: 4
+      }, () => ({
+        height: 1,
+        cells: Array.from({
+          length: 5
+        }, () => ({}))
+      }))
+    }, {
+      themes: (0, n.buildDefaultSlideTableThemes)(var_core_value_sig4037.palette)
+    }).cells["map"](var_core_value_sig8EAE => {
+      var var_core_value_sig1CDD, var_core_value_sig0DB1, var_core_value_sig68A2, var_core_value_sigCC17, var_core_value_sig32AE, var_core_value_sigC753, var_core_value_sigFFD1, var_core_value_sig81AE, var_core_value_sigF79F, var_core_value_sig0E54;
+      let var_core_value_sig3B171 = ((var_core_value_sig1CDD = var_core_value_sig8EAE.style["borders"]) == null ? undefined : var_core_value_sig1CDD.right) ?? ((var_core_value_sig0DB1 = var_core_value_sig8EAE.style["borders"]) == null ? undefined : var_core_value_sig0DB1.bottom) ?? ((var_core_value_sig68A2 = var_core_value_sig8EAE.style["borders"]) == null ? undefined : var_core_value_sig68A2.top) ?? ((var_core_value_sigCC17 = var_core_value_sig8EAE.style["borders"]) == null ? undefined : var_core_value_sigCC17.left),
+        var_core_value_sig6C4A = (var_core_value_sig32AE = var_core_value_sig8EAE.style["borders"]) == null ? undefined : var_core_value_sig32AE.top,
+        var_core_value_sig73D9 = (var_core_value_sigC753 = var_core_value_sig8EAE.style["borders"]) == null ? undefined : var_core_value_sigC753.right,
+        var_core_value_sigEAF8 = (var_core_value_sigFFD1 = var_core_value_sig8EAE.style["borders"]) == null ? undefined : var_core_value_sigFFD1.bottom,
+        var_core_value_sig0455 = (var_core_value_sig81AE = var_core_value_sig8EAE.style["borders"]) == null ? undefined : var_core_value_sig81AE.left,
+        var_core_value_sig737C = var_core_value_sig4037.direction === "rtl";
+      return (0, m.jsx)("span", {
+        style: {
+          background: ((var_core_value_sigF79F = var_core_value_sig8EAE.style["fill"]) == null ? undefined : var_core_value_sigF79F.type) === n.SlideTableFillTypeEnum["None"] ? "transparent" : ((var_core_value_sig0E54 = var_core_value_sig8EAE.style["fill"]) == null ? undefined : var_core_value_sig0E54.color) ?? "transparent",
+          borderTop: var_core_value_sig8EAE.row === 0 ? "1px solid " + ((var_core_value_sig6C4A == null ? undefined : var_core_value_sig6C4A.color) ?? (var_core_value_sig3B171 == null ? undefined : var_core_value_sig3B171.color) ?? "transparent") : undefined,
+          borderRight: var_core_value_sig737C ? var_core_value_sig8EAE.column === 0 ? "1px solid " + ((var_core_value_sig0455 == null ? undefined : var_core_value_sig0455.color) ?? (var_core_value_sig3B171 == null ? undefined : var_core_value_sig3B171.color) ?? "transparent") : undefined : "1px\x20solid\x20" + ((var_core_value_sig73D9 == null ? undefined : var_core_value_sig73D9.color) ?? (var_core_value_sig3B171 == null ? undefined : var_core_value_sig3B171.color) ?? "transparent"),
+          borderBottom: "1px solid " + ((var_core_value_sigEAF8 == null ? undefined : var_core_value_sigEAF8.color) ?? (var_core_value_sig3B171 == null ? undefined : var_core_value_sig3B171.color) ?? "transparent"),
+          borderLeft: var_core_value_sig737C ? "1px solid " + ((var_core_value_sig73D9 == null ? undefined : var_core_value_sig73D9.color) ?? (var_core_value_sig3B171 == null ? undefined : var_core_value_sig3B171.color) ?? "transparent") : var_core_value_sig8EAE.column === 0 ? "1px solid " + ((var_core_value_sig0455 == null ? undefined : var_core_value_sig0455.color) ?? (var_core_value_sig3B171 == null ? undefined : var_core_value_sig3B171.color) ?? "transparent") : undefined
+        }
+      }, var_core_value_sig8EAE.row + ":" + var_core_value_sig8EAE.column);
+    })
+  });
+}
+const nr = "slides-table-ui.table-design.styles-control",
+  rr = "slides-table-ui.table-design.cell-style-control",
+  ir = "slides-table-ui.table-design.text-control";
+function ar(var_core_value_sig5F5F) {
+  return var_core_value_sig5F5F.element["type"] === t.PageElementTypeEnum["Table"];
+}
+function or() {
+  let var_core_value_sig801E = (0, o.useDependency)(i.IConfigService),
+    var_core_value_sigD8A7 = (0, o.useDependency)(t.ISlideDrawingService),
+    var_core_value_sig7D2D = (0, o.useDependency)(r.ISlideDrawingStateService),
+    var_core_value_sig5BC4 = (0, o.useDependency)(n.SlideTableModelService),
+    var_core_value_sigE445 = (0, o.useDependency)(n.SlideTableResourceService),
+    var_core_value_sig5C54 = (0, o.useDependency)(E),
+    var_core_value_sigD167 = () => {
+      var var_core_value_sig5AF5;
+      let var_core_value_sig9DE4 = var_core_value_sig7D2D.getSnapshot(),
+        var_core_value_sig77FA = var_core_value_sig9DE4.context;
+      if (!var_core_value_sig77FA || var_core_value_sig9DE4.selectedIds["length"] !== 1) return null;
+      let var_core_value_sigA4A7 = var_core_value_sigD8A7.getDrawingByParam({
+        unitId: var_core_value_sig77FA.unitId,
+        subUnitId: var_core_value_sig77FA.subUnitId,
+        drawingId: var_core_value_sig9DE4.selectedIds[0]
+      });
+      if (!var_core_value_sigA4A7 || !ar(var_core_value_sigA4A7)) return null;
+      let var_core_value_sigA4DF = var_core_value_sigE445.getTable(var_core_value_sigA4A7.unitId, var_core_value_sigA4A7.element["tableId"]);
+      if (!var_core_value_sigA4DF) return null;
+      let var_core_value_sigCC9D = var_core_value_sig5C54.getSelection(),
+        var_core_value_sig90F5 = (var_core_value_sigCC9D == null ? undefined : var_core_value_sigCC9D.unitId) === var_core_value_sigA4A7.unitId && var_core_value_sigCC9D.subUnitId === var_core_value_sigA4A7.subUnitId && var_core_value_sigCC9D.elementId === var_core_value_sigA4A7.drawingId && var_core_value_sigCC9D.tableId === var_core_value_sigA4A7.element["tableId"] ? var_core_value_sigCC9D : null,
+        var_core_value_sigD2BA = var_core_value_sig801E.getConfig(r.SLIDES_UI_PLUGIN_CONFIG_KEY);
+      return {
+        drawing: var_core_value_sigA4A7,
+        editable: (var_core_value_sigD2BA == null || (var_core_value_sig5AF5 = var_core_value_sigD2BA.editor) == null ? undefined : var_core_value_sig5AF5.enabled) !== false,
+        selection: var_core_value_sig90F5,
+        table: var_core_value_sigA4DF
+      };
+    };
+  return (0, o.useObservable)(() => (0, s.merge)(var_core_value_sig7D2D.state$, var_core_value_sig5C54.selection$, var_core_value_sig5BC4.tableChange$).pipe((0, s.startWith)(undefined), (0, s.map)(var_core_value_sigD167)), var_core_value_sigD167(), false, [var_core_value_sigD8A7, var_core_value_sig7D2D, var_core_value_sig5BC4, var_core_value_sigE445, var_core_value_sig5C54]);
+}
+function sr(var_core_value_sig2DA0) {
+  let var_core_value_sig51DC = (0, o.useDependency)(E);
+  return (0, m.jsx)("fieldset", {
+    disabled: var_core_value_sig2DA0.disabled,
+    className: "univer-m-0 univer-flex univer-h-full univer-items-center univer-gap-1 univer-border-none univer-p-0 disabled:univer-cursor-not-allowed disabled:univer-opacity-50",
+    onMouseDownCapture: () => var_core_value_sig51DC.markTableInternalInteraction(),
+    onPointerDownCapture: () => var_core_value_sig51DC.markTableInternalInteraction(),
+    onMouseDown: l.keepFloatingToolbarPanelInteraction,
+    onPointerDown: l.keepFloatingToolbarPanelInteraction,
+    children: var_core_value_sig2DA0.children
+  });
+}
+function cr() {
+  var var_core_value_sigEE01;
+  let var_core_value_sig80BD = (0, o.useDependency)(i.ICommandService),
+    var_core_value_sigF6A6 = (0, o.useDependency)(i.LocaleService),
+    var_core_value_sigE59D = (0, o.useDependency)(i.ThemeService),
+    var_core_value_sig3D65 = or(),
+    [var_core_value_sig4D17, var_core_value_sigE1B9] = (0, f.useState)(false),
+    var_core_value_sig21BB = (0, f.useMemo)(() => (0, n.resolveSlideTableThemePalette)(var_core_value_sigB512 => var_core_value_sigE59D.getColorFromTheme(var_core_value_sigB512)), [var_core_value_sigE59D]),
+    var_core_value_sig64BA = !(var_core_value_sig3D65 != null && var_core_value_sig3D65.editable) || ((var_core_value_sigEE01 = var_core_value_sig3D65.selection) == null ? undefined : var_core_value_sigEE01.kind) === "text",
+    var_core_value_sig975D = var_core_value_sigCD3A => {
+      !var_core_value_sig3D65 || var_core_value_sig64BA || var_core_value_sig80BD.executeCommand(n.UpdateSlideTableCommand["id"], {
+        unitId: var_core_value_sig3D65.drawing["unitId"],
+        tableId: var_core_value_sig3D65.table["id"],
+        patch: {
+          styleId: var_core_value_sigCD3A
+        }
+      });
+    };
+  return (0, m.jsx)(sr, {
+    disabled: var_core_value_sig64BA,
+    children: (0, m.jsx)(Un, {
+      icon: (0, m.jsx)(c.PaintIcon, {
+        className: "[[data-u-comp='ribbon-grid-toolbar']_&]:!univer-size-8"
+      }),
+      label: var_core_value_sigF6A6.t("slides-table-ui.editorToolbar.tableTheme"),
+      ribbon: true,
+      open: var_core_value_sig4D17,
+      onOpenChange: var_core_value_sigE1B9,
+      children: var_core_value_sig3D65 ? (0, m.jsx)($n, {
+        currentStyleId: var_core_value_sig3D65.table["styleId"],
+        currentOptions: var_core_value_sig3D65.table["options"] ?? {},
+        direction: var_core_value_sigF6A6.getDirection(),
+        palette: var_core_value_sig21BB,
+        onApplyTheme: var_core_value_sig519D => {
+          var_core_value_sig975D(var_core_value_sig519D), var_core_value_sigE1B9(false);
+        },
+        onChangeOptions: var_core_value_sigC7E7 => {
+          !var_core_value_sig3D65 || var_core_value_sig64BA || var_core_value_sig80BD.executeCommand(n.UpdateSlideTableCommand["id"], {
+            unitId: var_core_value_sig3D65.drawing["unitId"],
+            tableId: var_core_value_sig3D65.table["id"],
+            patch: {
+              options: var_core_value_sigC7E7
+            }
+          });
+        }
+      }) : null
+    })
+  });
+}
+function lr(var_core_value_sig3C3D) {
+  let var_core_value_sigD33D = (0, o.useDependency)(i.ICommandService),
+    var_core_value_sig71B9 = (0, o.useDependency)(n.SlideTableResourceService);
+  return var_core_value_sig6E1C => {
+    var var_core_value_sigFABC;
+    let var_core_value_sig413D = var_core_value_sig3C3D == null || (var_core_value_sigFABC = var_core_value_sig3C3D.selection) == null ? undefined : var_core_value_sigFABC.ranges[0];
+    if (!var_core_value_sig3C3D || !var_core_value_sig413D) return;
+    let var_core_value_sig5BCE = var_core_value_sig71B9.getTable(var_core_value_sig3C3D.drawing["unitId"], var_core_value_sig3C3D.table["id"]);
+    var_core_value_sig5BCE && var_core_value_sigD33D.executeCommand(n.UpdateSlideTableCommand["id"], {
+      unitId: var_core_value_sig3C3D.drawing["unitId"],
+      tableId: var_core_value_sig3C3D.table["id"],
+      patch: var_core_value_sig6E1C(var_core_value_sig5BCE, var_core_value_sig413D)
+    });
+  };
+}
+function ur() {
+  let var_core_value_sig248C = (0, o.useDependency)(i.LocaleService),
+    var_core_value_sig8DE6 = (0, o.useObservable)(var_core_value_sig248C.direction$, var_core_value_sig248C.getDirection()),
+    var_core_value_sig55C6 = or(),
+    var_core_value_sig2C60 = lr(var_core_value_sig55C6),
+    [var_core_value_sig2914, var_core_value_sig7FD9] = (0, f.useState)(null),
+    var_core_value_sig7A3D = Cn(var_core_value_sig55C6 == null ? undefined : var_core_value_sig55C6.table, (var_core_value_sig55C6 == null ? undefined : var_core_value_sig55C6.selection) ?? null).values;
+  return (0, m.jsx)(sr, {
+    disabled: !(var_core_value_sig55C6 != null && var_core_value_sig55C6.editable) || !var_core_value_sig55C6.selection || var_core_value_sig55C6.selection["kind"] === "text",
+    children: (0, m.jsxs)("div", {
+      className: "univer-flex univer-h-full univer-w-full univer-items-center univer-gap-2 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid-rows-2 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-content-center [[data-u-comp='ribbon-grid-toolbar']_&]:univer-justify-items-stretch [[data-u-comp='ribbon-grid-toolbar']_&]:univer-gap-y-2",
+      children: [(0, m.jsx)(Dn, {
+        color: var_core_value_sig7A3D.backgroundColor,
+        value: $t(var_core_value_sig7A3D.backgroundFill),
+        gradientValue: rn(var_core_value_sig7A3D.backgroundFill, var_core_value_sig7A3D.backgroundColor),
+        previewStyle: on(var_core_value_sig7A3D.backgroundFill, var_core_value_sig7A3D.backgroundColor),
+        showPreview: false,
+        tableFill: var_core_value_sig7A3D.backgroundFill,
+        mixed: !!var_core_value_sig7A3D.mixed["backgroundFill"],
+        open: var_core_value_sig2914 === "background",
+        onOpenChange: var_core_value_sig8EF0 => var_core_value_sig7FD9(var_core_value_sig8EF0 ? "background" : null),
+        onTableFillChange: var_core_value_sig78AC => var_core_value_sig2C60((var_core_value_sigF2E6, var_core_value_sig34C8) => ae(var_core_value_sigF2E6, var_core_value_sig34C8, var_core_value_sig78AC)),
+        children: (0, m.jsx)(c.ShapeBackgroundColorDoubleIcon, {
+          extend: {
+            colorChannel1: var_core_value_sig7A3D.backgroundColor
+          }
+        })
+      }), (0, m.jsx)(Wn, {
+        direction: var_core_value_sig8DE6,
+        color: var_core_value_sig7A3D.borderColor,
+        width: var_core_value_sig7A3D.borderWidth,
+        dash: var_core_value_sig7A3D.borderDash ?? n.SlideTableBorderDashEnum["Solid"],
+        presets: Fn,
+        open: var_core_value_sig2914 === "border",
+        mixed: !!(var_core_value_sig7A3D.mixed["borderColor"] || var_core_value_sig7A3D.mixed["borderWidth"] || var_core_value_sig7A3D.mixed["borderDash"]),
+        onOpenChange: var_core_value_sig4CEF => var_core_value_sig7FD9(var_core_value_sig4CEF ? "border" : null),
+        onSelectPreset: var_core_value_sigD57D => var_core_value_sig2C60((var_core_value_sigB744, var_core_value_sigEAE2) => le(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigD57D)),
+        onChangeColor: var_core_value_sig2CC7 => var_core_value_sig2C60((var_core_value_sigE68A, var_core_value_sig3E68) => ce(var_core_value_sigE68A, var_core_value_sig3E68, {
+          color: var_core_value_sig2CC7
+        })),
+        onChangeWidth: var_core_value_sig4784 => var_core_value_sig2C60((var_core_value_sigF4C5, var_core_value_sig5410) => ce(var_core_value_sigF4C5, var_core_value_sig5410, {
+          width: var_core_value_sig4784,
+          dash: var_core_value_sig4784 === 0 ? n.SlideTableBorderDashEnum["None"] : undefined
+        })),
+        onChangeDash: var_core_value_sigC39E => var_core_value_sig2C60((var_core_value_sig492F, var_core_value_sig8EA0) => ce(var_core_value_sig492F, var_core_value_sig8EA0, {
+          dash: var_core_value_sigC39E
+        }))
+      })]
+    })
+  });
+}
+function dr(var_core_value_sig7325) {
+  return (0, m.jsx)(u.Tooltip, {
+    title: var_core_value_sig7325.title,
+    placement: "bottom",
+    children: (0, m.jsx)("button", {
+      type: "button",
+      "aria-label": var_core_value_sig7325.title,
+      "aria-pressed": var_core_value_sig7325.mixed ? "mixed" : var_core_value_sig7325.active,
+      onClick: var_core_value_sig7325.onClick,
+      onMouseDown: var_core_value_sig16C7 => var_core_value_sig16C7.preventDefault(),
+      className: (0, u.clsx)("univer-flex\x20univer-size-6\x20univer-items-center\x20univer-justify-center\x20univer-rounded-md\x20univer-border-0\x20univer-bg-transparent\x20univer-p-0\x20univer-text-sm\x20univer-text-gray-700\x20univer-transition-colors\x20hover:univer-bg-gray-100\x20hover:univer-text-primary-600\x20dark:!univer-text-gray-100\x20dark:hover:!univer-bg-gray-700", (var_core_value_sig7325.active || var_core_value_sig7325.mixed) && "univer-bg-primary-50 univer-text-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-primary-300"),
+      children: var_core_value_sig7325.children
+    })
+  });
+}
+function fr(var_core_value_sig4C4B) {
+  let [var_core_value_sigB11B, var_core_value_sig826D] = (0, f.useState)(false),
+    var_core_value_sig949F = var_core_value_sig4C4B.options["find"](var_core_value_sig7481 => var_core_value_sig7481.value === var_core_value_sig4C4B.value) ?? var_core_value_sig4C4B.options[0];
+  return (0, m.jsx)(u.Dropdown, {
+    open: var_core_value_sigB11B,
+    onOpenChange: var_core_value_sig826D,
+    side: "bottom",
+    avoidCollisions: true,
+    overlay: (0, m.jsx)("div", {
+      className: "univer-flex univer-flex-col univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-white univer-p-1 univer-shadow-lg dark:!univer-border-gray-700 dark:!univer-bg-gray-900",
+      children: var_core_value_sig4C4B.options["map"](var_core_value_sig08A3 => (0, m.jsxs)("button", {
+        type: "button",
+        "aria-label": var_core_value_sig08A3.label,
+        "aria-pressed": var_core_value_sig08A3.value === var_core_value_sig4C4B.value,
+        className: (0, u.clsx)("univer-flex univer-h-8 univer-w-32 univer-items-center univer-justify-start univer-gap-2 univer-rounded-md univer-border-0 univer-bg-transparent univer-px-2 univer-text-sm univer-text-gray-700 hover:univer-bg-gray-100 dark:!univer-text-gray-100 dark:hover:!univer-bg-gray-700", var_core_value_sig08A3.value === var_core_value_sig4C4B.value && "univer-bg-primary-50 univer-text-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-primary-300"),
+        onClick: () => {
+          var_core_value_sig4C4B.onChange(var_core_value_sig08A3.value), var_core_value_sig826D(false);
+        },
+        onMouseDown: var_core_value_sigA6F6 => var_core_value_sigA6F6.preventDefault(),
+        children: [(0, m.jsx)("span", {
+          className: "univer-flex univer-size-5 univer-items-center univer-justify-center univer-text-lg",
+          children: var_core_value_sig08A3.icon
+        }), (0, m.jsx)("span", {
+          children: var_core_value_sig08A3.label
+        })]
+      }, var_core_value_sig08A3.value))
+    }),
+    children: (0, m.jsx)("span", {
+      children: (0, m.jsx)(u.Tooltip, {
+        title: var_core_value_sig949F == null ? undefined : var_core_value_sig949F.label,
+        placement: "bottom",
+        children: (0, m.jsxs)("button", {
+          type: "button",
+          "aria-expanded": var_core_value_sigB11B,
+          "aria-label": var_core_value_sig949F == null ? undefined : var_core_value_sig949F.label,
+          className: (0, u.clsx)("univer-flex univer-h-6 univer-w-10 univer-items-center univer-justify-center univer-gap-0.5 univer-rounded-md univer-border-0 univer-bg-transparent univer-p-0 univer-text-lg univer-text-gray-700 hover:univer-bg-gray-100 dark:!univer-text-gray-100 dark:hover:!univer-bg-gray-700", (var_core_value_sigB11B || var_core_value_sig4C4B.mixed) && "univer-bg-primary-50 univer-text-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-primary-300"),
+          onMouseDown: var_core_value_sig77D8 => var_core_value_sig77D8.preventDefault(),
+          children: [var_core_value_sig4C4B.mixed ? (0, m.jsx)("span", {
+            "aria-hidden": "true",
+            children: "—"
+          }) : var_core_value_sig949F == null ? undefined : var_core_value_sig949F.icon, (0, m.jsx)(c.MoreDownIcon, {
+            className: "univer-text-xs"
+          })]
+        })
+      })
+    })
+  });
+}
+function pr(var_core_value_sig77E0) {
+  let [var_core_value_sigD177, var_core_value_sig26E6] = (0, f.useState)(false);
+  return (0, m.jsxs)("div", {
+    className: "univer-flex\x20univer-h-6\x20univer-w-10\x20univer-items-center",
+    children: [(0, m.jsx)(dr, {
+      active: var_core_value_sig77E0.active,
+      mixed: var_core_value_sig77E0.mixed,
+      title: var_core_value_sig77E0.title,
+      onClick: var_core_value_sig77E0.onToggle,
+      children: var_core_value_sig77E0.icon
+    }), (0, m.jsx)(u.Dropdown, {
+      open: var_core_value_sigD177,
+      onOpenChange: var_core_value_sig26E6,
+      side: "bottom",
+      avoidCollisions: true,
+      overlay: var_core_value_sig77E0.picker(() => var_core_value_sig26E6(false)),
+      children: (0, m.jsx)("button", {
+        type: "button",
+        "aria-expanded": var_core_value_sigD177,
+        "aria-label": var_core_value_sig77E0.title,
+        className: (0, u.clsx)("univer-flex univer-h-6 univer-w-4 univer-items-center univer-justify-center univer-rounded-md univer-border-0 univer-bg-transparent univer-p-0 univer-text-xs univer-text-gray-700 hover:univer-bg-gray-100 dark:!univer-text-gray-100 dark:hover:!univer-bg-gray-700", var_core_value_sigD177 && "univer-bg-primary-50\x20univer-text-primary-600\x20dark:!univer-bg-gray-700\x20dark:!univer-text-primary-300"),
+        onMouseDown: var_core_value_sig78A3 => var_core_value_sig78A3.preventDefault(),
+        children: (0, m.jsx)(c.MoreDownIcon, {})
+      })
+    })]
+  });
+}
+function mr(var_core_value_sig43D51, var_core_value_sig132C) {
+  let var_core_value_sig469E = o.FONT_SIZE_LIST["map"](var_core_value_sig649B => var_core_value_sig649B.value);
+  return var_core_value_sig132C > 0 ? var_core_value_sig469E.find(var_core_value_sig6256 => var_core_value_sig6256 > var_core_value_sig43D51) ?? var_core_value_sig469E[var_core_value_sig469E.length - 1] ?? var_core_value_sig43D51 : [...var_core_value_sig469E].reverse().find(var_core_value_sigE7A6 => var_core_value_sigE7A6 < var_core_value_sig43D51) ?? var_core_value_sig469E[0] ?? var_core_value_sig43D51;
+}
+function hr() {
+  var var_core_value_sig3C91;
+  let var_core_value_sig5A6B = (0, o.useDependency)(i.LocaleService),
+    var_core_value_sigD8F0 = or(),
+    var_core_value_sig534A = lr(var_core_value_sigD8F0),
+    [var_core_value_sigB1E6, var_core_value_sig02FE] = (0, f.useState)(null),
+    var_core_value_sigD80D = Cn(var_core_value_sigD8F0 == null ? undefined : var_core_value_sigD8F0.table, (var_core_value_sigD8F0 == null ? undefined : var_core_value_sigD8F0.selection) ?? null).values,
+    var_core_value_sig572B = !(var_core_value_sigD8F0 != null && var_core_value_sigD8F0.editable) || !var_core_value_sigD8F0.selection,
+    var_core_value_sigB8EA = [{
+      label: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.alignLeft"),
+      value: i.HorizontalAlign["LEFT"],
+      icon: (0, m.jsx)(c.LeftJustifyingIcon, {})
+    }, {
+      label: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.alignCenter"),
+      value: i.HorizontalAlign["CENTER"],
+      icon: (0, m.jsx)(c.HorizontallyIcon, {})
+    }, {
+      label: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.alignRight"),
+      value: i.HorizontalAlign["RIGHT"],
+      icon: (0, m.jsx)(c.RightJustifyingIcon, {})
+    }, {
+      label: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.alignJustify"),
+      value: i.HorizontalAlign["JUSTIFIED"],
+      icon: (0, m.jsx)(c.AlignTextBothIcon, {})
+    }],
+    var_core_value_sig1494 = [{
+      label: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.alignTop"),
+      value: i.VerticalAlign["TOP"],
+      icon: (0, m.jsx)(c.AlignTopIcon, {})
+    }, {
+      label: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.alignMiddle"),
+      value: i.VerticalAlign["MIDDLE"],
+      icon: (0, m.jsx)(c.VerticalCenterIcon, {})
+    }, {
+      label: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.alignBottom"),
+      value: i.VerticalAlign["BOTTOM"],
+      icon: (0, m.jsx)(c.AlignBottomIcon, {})
+    }],
+    var_core_value_sigB5E9 = var_core_value_sigD8F0 == null || (var_core_value_sig3C91 = var_core_value_sigD8F0.selection) == null ? undefined : var_core_value_sig3C91.ranges[0],
+    var_core_value_sig0862 = re(var_core_value_sigD8F0 == null ? undefined : var_core_value_sigD8F0.table, var_core_value_sigB5E9, i.PresetListType["ORDER_LIST"]),
+    var_core_value_sig9099 = re(var_core_value_sigD8F0 == null ? undefined : var_core_value_sigD8F0.table, var_core_value_sigB5E9, i.PresetListType["BULLET_LIST"]),
+    var_core_value_sigC317 = [{
+      key: "bold",
+      title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.bold"),
+      active: var_core_value_sigD80D.bold,
+      mixed: !!var_core_value_sigD80D.mixed["bold"],
+      icon: (0, m.jsx)(c.BoldIcon, {}),
+      patch: {
+        bl: var_core_value_sigD80D.mixed["bold"] || !var_core_value_sigD80D.bold ? i.BooleanNumber["TRUE"] : i.BooleanNumber["FALSE"]
+      }
+    }, {
+      key: "italic",
+      title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.italic"),
+      active: var_core_value_sigD80D.italic,
+      mixed: !!var_core_value_sigD80D.mixed["italic"],
+      icon: (0, m.jsx)(c.ItalicIcon, {}),
+      patch: {
+        it: var_core_value_sigD80D.mixed["italic"] || !var_core_value_sigD80D.italic ? i.BooleanNumber["TRUE"] : i.BooleanNumber["FALSE"]
+      }
+    }, {
+      key: "underline",
+      title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.underline"),
+      active: var_core_value_sigD80D.underline,
+      mixed: !!var_core_value_sigD80D.mixed["underline"],
+      icon: (0, m.jsx)(c.UnderlineIcon, {}),
+      patch: {
+        ul: {
+          s: var_core_value_sigD80D.mixed["underline"] || !var_core_value_sigD80D.underline ? i.BooleanNumber["TRUE"] : i.BooleanNumber["FALSE"]
+        }
+      }
+    }, {
+      key: "strikethrough",
+      title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.strikethrough"),
+      active: var_core_value_sigD80D.strike,
+      mixed: !!var_core_value_sigD80D.mixed["strike"],
+      icon: (0, m.jsx)(c.StrikethroughIcon, {}),
+      patch: {
+        st: {
+          s: var_core_value_sigD80D.mixed["strike"] || !var_core_value_sigD80D.strike ? i.BooleanNumber["TRUE"] : i.BooleanNumber["FALSE"]
+        }
+      }
+    }];
+  return (0, m.jsx)(sr, {
+    disabled: var_core_value_sig572B,
+    children: (0, m.jsxs)("div", {
+      className: "univer-flex univer-h-full univer-w-full univer-items-center univer-gap-2",
+      children: [(0, m.jsxs)("div", {
+        className: "univer-flex univer-items-center univer-gap-1 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid [[data-u-comp='ribbon-grid-toolbar']_&]:univer-w-[120px] [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid-rows-2 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-gap-y-2",
+        children: [(0, m.jsx)(o.FontFamilyDropdown, {
+          ariaLabel: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.fontFamily"),
+          className: "!univer-h-6 univer-w-[120px] [[data-u-comp='ribbon-grid-toolbar']_&]:univer-w-full",
+          inputClassName: "univer-w-auto",
+          value: var_core_value_sigD80D.mixed["fontFamily"] ? "" : var_core_value_sigD80D.fontFamily,
+          onChange: var_core_value_sigB505 => var_core_value_sig534A((var_core_value_sigCDDA, var_core_value_sigE243) => ue(var_core_value_sigCDDA, var_core_value_sigE243, var_core_value_sigB505))
+        }), (0, m.jsxs)("div", {
+          className: "univer-flex\x20univer-items-center\x20univer-gap-1",
+          children: [(0, m.jsx)(Jn, {
+            title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.fontSize"),
+            widthClassName: "univer-w-14",
+            value: var_core_value_sigD80D.mixed["fontSize"] ? "" : String(var_core_value_sigD80D.fontSize),
+            options: var_core_value_sigD80D.mixed["fontSize"] ? [{
+              label: "—",
+              value: ""
+            }, ...Mn] : ln(Mn, String(var_core_value_sigD80D.fontSize)),
+            onChange: var_core_value_sig7428 => {
+              let var_core_value_sig1DCE = Number(var_core_value_sig7428);
+              var_core_value_sig7428 && !Number.isNaN(var_core_value_sig1DCE) && var_core_value_sig534A((var_core_value_sig74A8, var_core_value_sig21B2) => de(var_core_value_sig74A8, var_core_value_sig21B2, var_core_value_sig1DCE));
+            }
+          }), (0, m.jsx)(dr, {
+            title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.increaseFontSize"),
+            onClick: () => var_core_value_sig534A((var_core_value_sigDE08, var_core_value_sigACCB) => de(var_core_value_sigDE08, var_core_value_sigACCB, mr(var_core_value_sigD80D.fontSize, 1))),
+            children: (0, m.jsx)(c.FontSizeIncreaseIcon, {})
+          }), (0, m.jsx)(dr, {
+            title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.decreaseFontSize"),
+            onClick: () => var_core_value_sig534A((var_core_value_sig7F33, var_core_value_sig0C53) => de(var_core_value_sig7F33, var_core_value_sig0C53, mr(var_core_value_sigD80D.fontSize, -1))),
+            children: (0, m.jsx)(c.FontSizeReduceIcon, {})
+          })]
+        })]
+      }), (0, m.jsx)("div", {
+        className: "univer-flex univer-items-center univer-gap-1 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid-cols-2 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid-rows-2",
+        children: var_core_value_sigC317.map(var_core_value_sig0567 => (0, m.jsx)(dr, {
+          title: var_core_value_sig0567.title,
+          active: var_core_value_sig0567.active,
+          mixed: var_core_value_sig0567.mixed,
+          onClick: () => var_core_value_sig534A((var_core_value_sigB577, var_core_value_sig9572) => L(var_core_value_sigB577, var_core_value_sig9572, var_core_value_sig0567.patch)),
+          children: var_core_value_sig0567.icon
+        }, var_core_value_sig0567.key))
+      }), (0, m.jsxs)("div", {
+        className: "univer-flex univer-items-center univer-gap-1 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid [[data-u-comp='ribbon-grid-toolbar']_&]:univer-w-11 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-grid-rows-2 [[data-u-comp='ribbon-grid-toolbar']_&]:univer-gap-y-2",
+        children: [(0, m.jsx)(Kn, {
+          "data-toolbar-item": "ribbon-text-color",
+          title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.textColor"),
+          color: var_core_value_sigD80D.textColor,
+          mixed: !!(var_core_value_sigD80D.mixed["textColor"] || var_core_value_sigD80D.mixed["textFill"]),
+          icon: "font",
+          open: var_core_value_sigB1E6 === "textColor",
+          onOpenChange: var_core_value_sigA7F3 => var_core_value_sig02FE(var_core_value_sigA7F3 ? "textColor" : null),
+          onChange: var_core_value_sigEACD => var_core_value_sig534A((var_core_value_sigEA04, var_core_value_sig7A62) => se(var_core_value_sigEA04, var_core_value_sig7A62, {
+            type: "solid",
+            color: var_core_value_sigEACD,
+            opacity: 1
+          }))
+        }), (0, m.jsx)(Kn, {
+          "data-toolbar-item": "ribbon-text-background",
+          title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.textBackgroundColor"),
+          color: var_core_value_sigD80D.textBackgroundColor,
+          mixed: !!var_core_value_sigD80D.mixed["textBackgroundColor"],
+          icon: "bucket",
+          open: var_core_value_sigB1E6 === "textBackground",
+          onOpenChange: var_core_value_sig901E => var_core_value_sig02FE(var_core_value_sig901E ? "textBackground" : null),
+          onChange: var_core_value_sigF7BB => var_core_value_sig534A((var_core_value_sig8109, var_core_value_sig7565) => L(var_core_value_sig8109, var_core_value_sig7565, {
+            bg: {
+              rgb: var_core_value_sigF7BB
+            }
+          }))
+        })]
+      }), (0, m.jsxs)("div", {
+        className: "univer-flex\x20univer-items-center\x20univer-gap-2\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-grid\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-grid-cols-2\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-grid-rows-2\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-gap-x-2\x20[[data-u-comp=\x27ribbon-grid-toolbar\x27]_&]:univer-gap-y-2",
+        children: [(0, m.jsx)(fr, {
+          options: var_core_value_sigB8EA,
+          value: var_core_value_sigD80D.horizontalAlign,
+          mixed: !!var_core_value_sigD80D.mixed["horizontalAlign"],
+          onChange: var_core_value_sigFA38 => var_core_value_sig534A((var_core_value_sigD4FB, var_core_value_sig3E71) => ne(var_core_value_sigD4FB, var_core_value_sig3E71, {
+            axis: "horizontal",
+            value: var_core_value_sigFA38
+          }))
+        }), (0, m.jsx)(pr, {
+          title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.orderedList"),
+          icon: (0, m.jsx)(c.OrderIcon, {}),
+          active: var_core_value_sig0862.active,
+          mixed: var_core_value_sig0862.mixed,
+          onToggle: () => var_core_value_sig534A((var_core_value_sig01B3, var_core_value_sig7442) => M(var_core_value_sig01B3, var_core_value_sig7442, var_core_value_sig0862.active ? null : i.PresetListType["ORDER_LIST"])),
+          picker: var_core_value_sig102B => (0, m.jsx)(d.OrderListTypePicker, {
+            value: var_core_value_sig0862.value,
+            onChange: var_core_value_sigDF87 => {
+              var_core_value_sigDF87 && (var_core_value_sig534A((var_core_value_sigD873, var_core_value_sigA12B) => M(var_core_value_sigD873, var_core_value_sigA12B, var_core_value_sigDF87)), var_core_value_sig102B());
+            }
+          })
+        }), (0, m.jsx)(fr, {
+          options: var_core_value_sig1494,
+          value: var_core_value_sigD80D.verticalAlign,
+          mixed: !!var_core_value_sigD80D.mixed["verticalAlign"],
+          onChange: var_core_value_sigA7DB => var_core_value_sig534A((var_core_value_sig9EE0, var_core_value_sigF051) => ne(var_core_value_sig9EE0, var_core_value_sigF051, {
+            axis: "vertical",
+            value: var_core_value_sigA7DB
+          }))
+        }), (0, m.jsx)(pr, {
+          title: var_core_value_sig5A6B.t("slides-table-ui.editorToolbar.bulletList"),
+          icon: (0, m.jsx)(c.UnorderIcon, {}),
+          active: var_core_value_sig9099.active,
+          mixed: var_core_value_sig9099.mixed,
+          onToggle: () => var_core_value_sig534A((var_core_value_sig0B45, var_core_value_sig36F8) => M(var_core_value_sig0B45, var_core_value_sig36F8, var_core_value_sig9099.active ? null : i.PresetListType["BULLET_LIST"])),
+          picker: var_core_value_sig5EEE => (0, m.jsx)(d.BulletListTypePicker, {
+            value: var_core_value_sig9099.value,
+            onChange: var_core_value_sig03E1 => {
+              var_core_value_sig03E1 && (var_core_value_sig534A((var_core_value_sigF230, var_core_value_sig09B8) => M(var_core_value_sigF230, var_core_value_sig09B8, var_core_value_sig03E1)), var_core_value_sig5EEE());
+            }
+          })
+        })]
+      })]
+    })
+  });
+}
+let gr = class extends i.Disposable {
+  constructor(var_core_value_sig65B4, var_core_value_sigF98E) {
+    super(), this._componentManager = var_core_value_sig65B4, this._iconManager = var_core_value_sigF98E, this._registerIcons(), this._registerComponents();
+  }
+  _registerIcons() {
+    this.disposeWithMe(this._iconManager["register"]({
+      AdjustHeightDoubleIcon: c.AdjustHeightDoubleIcon,
+      AdjustWidthDoubleIcon: c.AdjustWidthDoubleIcon,
+      CancelMergeIcon: c.CancelMergeIcon,
+      DeleteColumnDoubleIcon: c.DeleteColumnDoubleIcon,
+      DeleteRowDoubleIcon: c.DeleteRowDoubleIcon,
+      InsertRowAboveDoubleIcon: c.InsertRowAboveDoubleIcon,
+      InsertRowBelowDoubleIcon: c.InsertRowBelowDoubleIcon,
+      LeftInsertColumnDoubleIcon: c.LeftInsertColumnDoubleIcon,
+      MergeAllIcon: c.MergeAllIcon,
+      RightInsertColumnDoubleIcon: c.RightInsertColumnDoubleIcon
+    }));
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](nr, cr)), this.disposeWithMe(this._componentManager["register"](rr, ur)), this.disposeWithMe(this._componentManager["register"](ir, hr));
+  }
+};
+gr = V([B(0, (0, i.Inject)(o.ComponentManager)), B(1, (0, i.Inject)(o.IconManager))], gr);
+const _r = "slides-table-ui.ribbon.tableDesign",
+  vr = "slides-table-ui.ribbon.styles-control",
+  yr = "slides-table-ui.ribbon.cell-style-control",
+  br = "slides-table-ui.ribbon.text-control";
+function xr(var_core_value_sig2746, var_core_value_sig71B8) {
+  return {
+    id: var_core_value_sig2746,
+    type: o.MenuItemType["BUTTON"],
+    label: {
+      name: var_core_value_sig71B8,
+      hoverable: false,
+      selectable: false
+    }
+  };
+}
+function Sr() {
+  return xr(vr, nr);
+}
+function Cr() {
+  return xr(yr, rr);
+}
+function wr() {
+  return xr(br, ir);
+}
+function Tr(var_core_value_sigFD40) {
+  var var_core_value_sig152B;
+  let var_core_value_sig0334 = var_core_value_sigFD40.get(H),
+    var_core_value_sigE424 = ((var_core_value_sig152B = var_core_value_sigFD40.get(i.IConfigService).getConfig(r.SLIDES_UI_PLUGIN_CONFIG_KEY)) == null || (var_core_value_sig152B = var_core_value_sig152B.editor) == null ? undefined : var_core_value_sig152B.enabled) !== false;
+  return {
+    id: Bt.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "ShowToolbarIcon",
+    title: "slides-table-ui.ribbon.floatingToolbar",
+    tooltip: "slides-table-ui.ribbon.floatingToolbar",
+    activated$: var_core_value_sig0334.enabled$,
+    disabled$: var_core_value_sigE424 ? undefined : (0, s.of)(true)
+  };
+}
+const Er = {
+  forward: {
+    id: Ue.id,
+    icon: "MoveUpIcon",
+    title: "slides-table-ui.ribbon.arrangeForward"
+  },
+  backward: {
+    id: We.id,
+    icon: "MoveDownIcon",
+    title: "slides-table-ui.ribbon.arrangeBackward"
+  },
+  front: {
+    id: Ge.id,
+    icon: "TopmostIcon",
+    title: "slides-table-ui.ribbon.bringToFront"
+  },
+  back: {
+    id: Ke.id,
+    icon: "BottomIcon",
+    title: "slides-table-ui.ribbon.sendToBack"
+  }
+};
+function Dr(var_core_value_sigCDE2, var_core_value_sigD2B0) {
+  let var_core_value_sig4E8D = var_core_value_sigCDE2.get(i.IConfigService),
+    var_core_value_sig9675 = var_core_value_sigCDE2.get(t.ISlideDrawingService),
+    var_core_value_sig24B6 = var_core_value_sigCDE2.get(r.ISlideDrawingStateService),
+    var_core_value_sig283C = var_core_value_sigCDE2.get(E);
+  return (0, s.combineLatest)([var_core_value_sig24B6.state$, var_core_value_sig9675.order$["pipe"]((0, s.startWith)(undefined)), var_core_value_sig283C.selection$["pipe"]((0, s.startWith)(null))]).pipe((0, s.map)(([var_core_value_sigA470,, var_core_value_sig19A1]) => {
+    var var_core_value_sig81F7;
+    if (((var_core_value_sig81F7 = var_core_value_sig4E8D.getConfig(r.SLIDES_UI_PLUGIN_CONFIG_KEY)) == null || (var_core_value_sig81F7 = var_core_value_sig81F7.editor) == null ? undefined : var_core_value_sig81F7.enabled) === false || (var_core_value_sig19A1 == null ? undefined : var_core_value_sig19A1.kind) === "text") return true;
+    let var_core_value_sigBE51 = var_core_value_sigA470.context;
+    if (!var_core_value_sigBE51 || var_core_value_sigA470.selectedIds["length"] !== 1) return true;
+    let var_core_value_sigAAD1 = var_core_value_sigA470.selectedIds[0],
+      var_core_value_sigBC1A = var_core_value_sig9675.getDrawingByParam({
+        unitId: var_core_value_sigBE51.unitId,
+        subUnitId: var_core_value_sigBE51.subUnitId,
+        drawingId: var_core_value_sigAAD1
+      });
+    if ((var_core_value_sigBC1A == null ? undefined : var_core_value_sigBC1A.element["type"]) !== t.PageElementTypeEnum["Table"]) return true;
+    let var_core_value_sig3F3A = var_core_value_sig9675.getDrawingOrder(var_core_value_sigBE51.unitId, var_core_value_sigBE51.subUnitId),
+      var_core_value_sigA984 = var_core_value_sig3F3A.indexOf(var_core_value_sigAAD1);
+    return var_core_value_sigA984 < 0 || (var_core_value_sigD2B0 === "forward" || var_core_value_sigD2B0 === "front" ? var_core_value_sigA984 === var_core_value_sig3F3A.length - 1 : var_core_value_sigA984 === 0);
+  }));
+}
+function Or(var_core_value_sig062F, var_core_value_sig96C7) {
+  let var_core_value_sig8D50 = Er[var_core_value_sig96C7];
+  return {
+    id: var_core_value_sig8D50.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: var_core_value_sig8D50.icon,
+    title: var_core_value_sig8D50.title,
+    tooltip: var_core_value_sig8D50.title,
+    disabled$: Dr(var_core_value_sig062F, var_core_value_sig96C7)
+  };
+}
+const kr = var_core_value_sigB5EA => Or(var_core_value_sigB5EA, "forward"),
+  Ar = var_core_value_sigE952 => Or(var_core_value_sigE952, "backward"),
+  jr = var_core_value_sigE241 => Or(var_core_value_sigE241, "front"),
+  Mr = var_core_value_sig9C99 => Or(var_core_value_sig9C99, "back");
+function G(var_core_value_sigD135, var_core_value_sig0891) {
+  let var_core_value_sigF788 = var_core_value_sigD135.get(i.IConfigService),
+    var_core_value_sigE094 = var_core_value_sigD135.get(n.SlideTableModelService);
+  return (0, s.combineLatest)([var_core_value_sigD135.get(E).selection$, var_core_value_sigE094.tableChange$["pipe"]((0, s.startWith)(undefined))]).pipe((0, s.map)(([var_core_value_sigA504]) => {
+    var var_core_value_sig05FF;
+    return ((var_core_value_sig05FF = var_core_value_sigF788.getConfig(r.SLIDES_UI_PLUGIN_CONFIG_KEY)) == null || (var_core_value_sig05FF = var_core_value_sig05FF.editor) == null ? undefined : var_core_value_sig05FF.enabled) === false || (var_core_value_sigA504 == null ? undefined : var_core_value_sigA504.kind) === "text" || !var_core_value_sig0891(var_core_value_sigD135);
+  }));
+}
+const Nr = "slide-table.menu.insert",
+  Pr = "slide-table.menu.delete",
+  Fr = "slide-table.menu.distribute";
+function Ir(var_core_value_sig0BC4) {
+  return {
+    id: Nr,
+    type: o.MenuItemType["SUBITEMS"],
+    title: "slides-table-ui.contextMenu.insert",
+    hidden$: Lr(var_core_value_sig0BC4)
+  };
+}
+function Lr(var_core_value_sig8F20) {
+  if (!var_core_value_sig8F20) return (0, s.of)(true);
+  let var_core_value_sigB8CA = var_core_value_sig8F20.get(E),
+    var_core_value_sig4663 = var_core_value_sig8F20.get(n.SlideTableResourceService);
+  return var_core_value_sigB8CA.selection$["pipe"]((0, s.map)(var_core_value_sigFBF0 => {
+    let var_core_value_sig2F95 = A(var_core_value_sigFBF0);
+    return !var_core_value_sig2F95 || !var_core_value_sig4663.getTable(var_core_value_sig2F95.unitId, var_core_value_sig2F95.tableId);
+  }));
+}
+function Rr() {
+  return {
+    id: Pr,
+    type: o.MenuItemType["SUBITEMS"],
+    icon: "DeleteIcon",
+    title: "slides-table-ui.contextMenu.delete",
+    tooltip: "slides-table-ui.contextMenu.delete"
+  };
+}
+function zr(var_core_value_sig5970) {
+  let var_core_value_sig7D63 = (0, s.combineLatest)([G(var_core_value_sig5970, ht), G(var_core_value_sig5970, gt)]).pipe((0, s.map)(([var_core_value_sigF0E1, var_core_value_sig2D8D]) => [{
+    id: Ne.id,
+    value: Ne.id,
+    icon: "DeleteRowDoubleIcon",
+    label: {
+      name: "slides-table-ui.contextMenu.deleteRow",
+      selectable: false
+    },
+    params: {},
+    disabled: var_core_value_sigF0E1
+  }, {
+    id: Pe.id,
+    value: Pe.id,
+    icon: "DeleteColumnDoubleIcon",
+    label: {
+      name: "slides-table-ui.contextMenu.deleteColumn",
+      selectable: false
+    },
+    params: {},
+    disabled: var_core_value_sig2D8D
+  }]));
+  return {
+    ...Rr(),
+    selections: var_core_value_sig7D63
+  };
+}
+function Br() {
+  return {
+    id: Fr,
+    type: o.MenuItemType["SUBITEMS"],
+    icon: "AdjustHeightDoubleIcon",
+    title: "slides-table-ui.contextMenu.distribute"
+  };
+}
+function Vr(var_core_value_sig7713) {
+  var var_core_value_sigD598;
+  let var_core_value_sig61E6 = ((var_core_value_sigD598 = var_core_value_sig7713.get(i.IConfigService).getConfig(r.SLIDES_UI_PLUGIN_CONFIG_KEY)) == null || (var_core_value_sigD598 = var_core_value_sigD598.editor) == null ? undefined : var_core_value_sigD598.enabled) === false,
+    var_core_value_sig054F = var_core_value_sig7713.get(E).selection$["pipe"]((0, s.startWith)(null), (0, s.map)(var_core_value_sigE5A6 => var_core_value_sig61E6 || (var_core_value_sigE5A6 == null ? undefined : var_core_value_sigE5A6.kind) === "text"));
+  return {
+    id: Ve.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "DeleteIcon",
+    title: "slides-table-ui.contextMenu.deleteTable",
+    tooltip: "slides-table-ui.contextMenu.deleteTable",
+    disabled$: var_core_value_sig054F
+  };
+}
+function Hr(var_core_value_sig9047) {
+  return {
+    id: ke.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "InsertRowAboveDoubleIcon",
+    title: "slides-table-ui.contextMenu.insertRowAbove",
+    tooltip: "slides-table-ui.contextMenu.insertRowAbove",
+    disabled$: var_core_value_sig9047 ? G(var_core_value_sig9047, Qr) : undefined
+  };
+}
+function Ur(var_core_value_sigB9FA) {
+  return {
+    id: Ae.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "InsertRowBelowDoubleIcon",
+    title: "slides-table-ui.contextMenu.insertRowBelow",
+    tooltip: "slides-table-ui.contextMenu.insertRowBelow",
+    disabled$: var_core_value_sigB9FA ? G(var_core_value_sigB9FA, Qr) : undefined
+  };
+}
+function Wr(var_core_value_sigF8DB) {
+  return {
+    id: je.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "LeftInsertColumnDoubleIcon",
+    title: "slides-table-ui.contextMenu.insertColumnLeft",
+    tooltip: "slides-table-ui.contextMenu.insertColumnLeft",
+    disabled$: var_core_value_sigF8DB ? G(var_core_value_sigF8DB, Qr) : undefined
+  };
+}
+function Gr(var_core_value_sig6E53) {
+  return {
+    id: Me.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "RightInsertColumnDoubleIcon",
+    title: "slides-table-ui.contextMenu.insertColumnRight",
+    tooltip: "slides-table-ui.contextMenu.insertColumnRight",
+    disabled$: var_core_value_sig6E53 ? G(var_core_value_sig6E53, Qr) : undefined
+  };
+}
+function Kr(var_core_value_sig5812) {
+  return {
+    id: Ne.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "DeleteRowDoubleIcon",
+    title: "slides-table-ui.contextMenu.deleteRow",
+    tooltip: "slides-table-ui.contextMenu.deleteRow",
+    disabled$: var_core_value_sig5812 ? G(var_core_value_sig5812, ht) : undefined
+  };
+}
+function qr(var_core_value_sig343C) {
+  return {
+    id: Pe.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "DeleteColumnDoubleIcon",
+    title: "slides-table-ui.contextMenu.deleteColumn",
+    tooltip: "slides-table-ui.contextMenu.deleteColumn",
+    disabled$: var_core_value_sig343C ? G(var_core_value_sig343C, gt) : undefined
+  };
+}
+function Jr(var_core_value_sigD924) {
+  return {
+    id: Fe.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "MergeAllIcon",
+    title: "slides-table-ui.editorToolbar.mergeCells",
+    tooltip: "slides-table-ui.editorToolbar.mergeCells",
+    disabled$: var_core_value_sigD924 ? G(var_core_value_sigD924, pt) : undefined
+  };
+}
+function Yr(var_core_value_sig02D4) {
+  return {
+    id: Ie.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "CancelMergeIcon",
+    title: "slides-table-ui.editorToolbar.unmergeCells",
+    tooltip: "slides-table-ui.editorToolbar.unmergeCells",
+    disabled$: var_core_value_sig02D4 ? G(var_core_value_sig02D4, mt) : undefined
+  };
+}
+function Xr(var_core_value_sigEFE7) {
+  return {
+    id: Le.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "AdjustHeightDoubleIcon",
+    title: "slides-table-ui.contextMenu.distributeRows",
+    tooltip: "slides-table-ui.contextMenu.distributeRows",
+    disabled$: var_core_value_sigEFE7 ? G(var_core_value_sigEFE7, _t) : undefined
+  };
+}
+function Zr(var_core_value_sig9277) {
+  return {
+    id: Re.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "AdjustWidthDoubleIcon",
+    title: "slides-table-ui.contextMenu.distributeColumns",
+    tooltip: "slides-table-ui.contextMenu.distributeColumns",
+    disabled$: var_core_value_sig9277 ? G(var_core_value_sig9277, vt) : undefined
+  };
+}
+function Qr(var_core_value_sig2AE5) {
+  let var_core_value_sigE274 = var_core_value_sig2AE5.get(E).getSelection();
+  return !!var_core_value_sigE274 && var_core_value_sigE274.kind !== "text" && var_core_value_sigE274.ranges["length"] > 0;
+}
+const $r = {
+    [o.MenuManagerPosition["CONTEXT_MENU"]]: {
+      "slide-table.contextMenu.cell": {
+        order: 23,
+        [o.ContextMenuGroup["LAYOUT"]]: {
+          order: 0,
+          [Nr]: {
+            order: 0,
+            menuItemFactory: (0, r.withSlideEditPermission)(Ir),
+            "slide-table.menu.insert-row-above": {
+              order: 0,
+              menuItemFactory: (0, r.withSlideEditPermission)(Hr)
+            },
+            "slide-table.menu.insert-row-below": {
+              order: 1,
+              menuItemFactory: (0, r.withSlideEditPermission)(Ur)
+            },
+            "slide-table.menu.insert-column-left": {
+              order: 2,
+              menuItemFactory: (0, r.withSlideEditPermission)(Wr)
+            },
+            "slide-table.menu.insert-column-right": {
+              order: 3,
+              menuItemFactory: (0, r.withSlideEditPermission)(Gr)
+            }
+          },
+          [Pr]: {
+            order: 1,
+            menuItemFactory: (0, r.withSlideEditPermission)(Rr),
+            "slide-table.menu.delete-rows": {
+              order: 0,
+              menuItemFactory: (0, r.withSlideEditPermission)(Kr)
+            },
+            "slide-table.menu.delete-columns": {
+              order: 1,
+              menuItemFactory: (0, r.withSlideEditPermission)(qr)
+            }
+          },
+          "slide-table.menu.merge-cells": {
+            order: 2,
+            menuItemFactory: (0, r.withSlideEditPermission)(Jr)
+          },
+          "slide-table.menu.unmerge-cells": {
+            order: 3,
+            menuItemFactory: (0, r.withSlideEditPermission)(Yr)
+          },
+          [Fr]: {
+            order: 4,
+            menuItemFactory: (0, r.withSlideEditPermission)(Br),
+            "slide-table.menu.distribute-rows": {
+              order: 0,
+              menuItemFactory: (0, r.withSlideEditPermission)(Xr)
+            },
+            "slide-table.menu.distribute-columns": {
+              order: 1,
+              menuItemFactory: (0, r.withSlideEditPermission)(Zr)
+            }
+          }
+        },
+        [o.ContextMenuGroup["OTHERS"]]: {
+          order: 1,
+          [Ve.id]: {
+            order: 0,
+            menuItemFactory: (0, r.withSlideEditPermission)(Vr)
+          }
+        }
+      }
+    }
+  },
+  ei = {
+    [o.MenuManagerPosition["RIBBON"]]: {
+      [_r]: {
+        order: 101,
+        contextual: true,
+        "slides-table-ui.ribbon.styles": {
+          order: 0,
+          [vr]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              columnSpan: 2,
+              width: 112
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Sr)
+          }
+        },
+        "slides-table-ui.ribbon.cellStyle": {
+          order: 1,
+          [yr]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              width: 56
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Cr)
+          }
+        },
+        "slides-table-ui.ribbon.text": {
+          order: 2,
+          [br]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              width: 344
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(wr)
+          }
+        },
+        "slides-table-ui.ribbon.layout": {
+          order: 3,
+          "slide-table.ribbon.insert-row-above": {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Hr)
+          },
+          "slide-table.ribbon.insert-row-below": {
+            order: 1,
+            gridLayout: {
+              row: 2,
+              column: 1
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Ur)
+          },
+          "slide-table.ribbon.insert-column-left": {
+            order: 2,
+            gridLayout: {
+              row: 1,
+              column: 2
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Wr)
+          },
+          "slide-table.ribbon.insert-column-right": {
+            order: 3,
+            gridLayout: {
+              row: 2,
+              column: 2
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Gr)
+          },
+          "slide-table.ribbon.merge-cells": {
+            order: 4,
+            gridLayout: {
+              row: 1,
+              column: 3
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Jr)
+          },
+          "slide-table.ribbon.unmerge-cells": {
+            order: 5,
+            gridLayout: {
+              row: 2,
+              column: 3
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Yr)
+          },
+          "slide-table.ribbon.distribute-rows": {
+            order: 6,
+            gridLayout: {
+              row: 1,
+              column: 4
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Xr)
+          },
+          "slide-table.ribbon.distribute-columns": {
+            order: 7,
+            gridLayout: {
+              row: 2,
+              column: 4
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Zr)
+          }
+        },
+        "slides-table-ui.ribbon.arrange": {
+          order: 4,
+          "slide-table.ribbon.arrange-forward": {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(kr)
+          },
+          "slide-table.ribbon.arrange-backward": {
+            order: 1,
+            gridLayout: {
+              row: 2,
+              column: 1
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Ar)
+          },
+          "slide-table.ribbon.arrange-front": {
+            order: 2,
+            gridLayout: {
+              row: 1,
+              column: 2
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(jr)
+          },
+          "slide-table.ribbon.arrange-back": {
+            order: 3,
+            gridLayout: {
+              row: 2,
+              column: 2
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(Mr)
+          }
+        },
+        "slides-table-ui.ribbon.panel": {
+          order: 5,
+          [Pr]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: (0, r.withSlideEditPermission)(zr),
+            [Ve.id]: {
+              order: 0,
+              menuItemFactory: (0, r.withSlideEditPermission)(Vr)
+            }
+          },
+          [Bt.id]: {
+            order: 1,
+            gridLayout: {
+              row: 2,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: Tr
+          }
+        }
+      }
+    }
+  },
+  ti = "slides-table-ui.contextual-ribbon";
+let ni = class extends i.Disposable {
+  constructor(var_core_value_sigF449, var_core_value_sig38C5, var_core_value_sigC87D, var_core_value_sigCCDC, var_core_value_sigC310, var_core_value_sigA4E8, var_core_value_sigDC07, var_core_value_sig3474) {
+    super(), this._menuManagerService = var_core_value_sigF449, this._ribbonService = var_core_value_sig38C5, this._slideDrawingStateService = var_core_value_sigC87D, this._slideDrawingService = var_core_value_sigCCDC, this._floatingToolbarService = var_core_value_sigC310, this._embedFocusOwnerService = var_core_value_sigA4E8, this._embedFloatingActiveService = var_core_value_sigDC07, this._embedMountService = var_core_value_sig3474, T(this, "_tableDesignVisible", false), this._menuManagerService["mergeMenu"](ei), this._listenSelection();
+  }
+  dispose() {
+    this._floatingToolbarService["setFallbackVisible"](false, ti), this._hideTableDesignTab(), super.dispose();
+  }
+  _listenSelection() {
+    this.disposeWithMe((0, i.toDisposable)(this._slideDrawingStateService["state$"].subscribe(var_core_value_sigBB57 => {
+      var var_core_value_sig7C4A;
+      if (!this._isSingleTableSelection(var_core_value_sigBB57) || this._isActiveFloatingEmbedHostSelection(var_core_value_sigBB57)) {
+        this._floatingToolbarService["setFallbackVisible"](false, ti), this._hideTableDesignTab();
+        return;
+      }
+      let var_core_value_sigE799 = (var_core_value_sig7C4A = var_core_value_sigBB57.context) == null ? undefined : var_core_value_sig7C4A.unitId;
+      if (var_core_value_sigE799 && this._isIsolatedEmbedChildSelection(var_core_value_sigE799)) {
+        this._floatingToolbarService["setFallbackVisible"](true, ti), this._hideTableDesignTab();
+        return;
+      }
+      this._floatingToolbarService["setFallbackVisible"](false, ti), this._tableDesignVisible || (this._tableDesignVisible = true, this._ribbonService["showContextualTab"](_r, {
+        activate: true
+      }));
+    })));
+  }
+  _isSingleTableSelection(var_core_value_sig4E80) {
+    var var_core_value_sigD23B;
+    let var_core_value_sig2B2A = var_core_value_sig4E80.context;
+    return !var_core_value_sig2B2A || var_core_value_sig4E80.selectedIds["length"] !== 1 ? false : ((var_core_value_sigD23B = this._slideDrawingService["getDrawingByParam"]({
+      unitId: var_core_value_sig2B2A.unitId,
+      subUnitId: var_core_value_sig2B2A.subUnitId,
+      drawingId: var_core_value_sig4E80.selectedIds[0]
+    })) == null ? undefined : var_core_value_sigD23B.element["type"]) === t.PageElementTypeEnum["Table"];
+  }
+  _isNonFullscreenFloatingEmbedChildSelection(var_core_value_sig0B5C) {
+    var var_core_value_sig7D42, var_core_value_sig8FDE;
+    let var_core_value_sig78E6 = (var_core_value_sig7D42 = this._embedFocusOwnerService) == null ? undefined : var_core_value_sig7D42.getFocusOwner(),
+      var_core_value_sig541F = (var_core_value_sig8FDE = this._embedFloatingActiveService) == null ? undefined : var_core_value_sig8FDE.getActive();
+    return (var_core_value_sig78E6 == null ? undefined : var_core_value_sig78E6.childUnitId) === var_core_value_sig0B5C && (var_core_value_sig541F == null ? undefined : var_core_value_sig541F.childUnitId) === var_core_value_sig0B5C && var_core_value_sig541F.stage === "stage2";
+  }
+  _isIsolatedEmbedChildSelection(var_core_value_sig417B) {
+    var var_core_value_sigAA90;
+    return this._isNonFullscreenFloatingEmbedChildSelection(var_core_value_sig417B) ? true : ((var_core_value_sigAA90 = this._embedMountService) == null ? undefined : var_core_value_sigAA90.listSessions().some(var_core_value_sigB601 => var_core_value_sigB601.childUnitId === var_core_value_sig417B && var_core_value_sigB601.layout !== "tab-peer")) ?? false;
+  }
+  _isActiveFloatingEmbedHostSelection(var_core_value_sigE92D) {
+    var var_core_value_sig9940, var_core_value_sig682D, var_core_value_sig1435, var_core_value_sig4082;
+    let var_core_value_sigC049 = (var_core_value_sig9940 = this._embedFloatingActiveService) == null ? undefined : var_core_value_sig9940.getActive();
+    if (!var_core_value_sigC049 || var_core_value_sigC049.stage === "inactive" || ((var_core_value_sig682D = var_core_value_sigE92D.context) == null ? undefined : var_core_value_sig682D.unitId) !== var_core_value_sigC049.hostUnitId || var_core_value_sigE92D.selectedIds["length"] !== 1) return false;
+    let var_core_value_sigE5C3 = (var_core_value_sig1435 = this._embedMountService) == null ? undefined : var_core_value_sig1435.listSessions().find(var_core_value_sig8B71 => var_core_value_sig8B71.hostUnitId === var_core_value_sigC049.hostUnitId && var_core_value_sig8B71.embedId === var_core_value_sigC049.embedId && var_core_value_sig8B71.childUnitId === var_core_value_sigC049.childUnitId),
+      var_core_value_sigCCAA = var_core_value_sigE5C3 == null || (var_core_value_sig4082 = var_core_value_sigE5C3.context) == null ? undefined : var_core_value_sig4082.descriptor["hostAnchorId"];
+    return !!var_core_value_sigCCAA && var_core_value_sigE92D.selectedIds[0] === var_core_value_sigCCAA;
+  }
+  _hideTableDesignTab() {
+    this._tableDesignVisible && (this._tableDesignVisible = false, this._ribbonService["hideContextualTab"](_r), this._ribbonService["setCollapsedIds"]([]));
+  }
+};
+ni = V([B(0, o.IMenuManagerService), B(1, o.IRibbonService), B(2, (0, i.Inject)(r.ISlideDrawingStateService)), B(3, (0, i.Inject)(t.ISlideDrawingService)), B(4, (0, i.Inject)(H)), B(5, (0, i.Optional)(r.ISlideEmbedFocusOwnerService)), B(6, (0, i.Optional)(r.ISlideEmbedFloatingActiveService)), B(7, (0, i.Optional)(r.ISlideEmbedMountService))], ni);
+function ri(var_core_value_sig305B) {
+  var var_core_value_sigAE39;
+  let {
+      selection: var_core_value_sigF21C,
+      table: var_core_value_sig66D1,
+      tableHeight: var_core_value_sig83A6,
+      tableWidth: var_core_value_sig7D8E
+    } = var_core_value_sig305B,
+    var_core_value_sigADFE = var_core_value_sigF21C == null ? undefined : var_core_value_sigF21C.ranges[0];
+  if (!var_core_value_sigF21C || !var_core_value_sig66D1 || !var_core_value_sigADFE) return null;
+  let var_core_value_sigF11A = var_core_value_sigF21C.focus ?? var_core_value_sigF21C.anchor ?? gi(var_core_value_sigADFE);
+  if (!var_core_value_sigF11A) return null;
+  let var_core_value_sigF020 = (0, n.resolveSlideTableRenderModel)(var_core_value_sig66D1),
+    var_core_value_sigAECB = var_core_value_sigF020.cells["find"](var_core_value_sigF32D => !var_core_value_sigF32D.hidden && var_core_value_sigF32D.row === var_core_value_sigF11A.row && var_core_value_sigF32D.column === var_core_value_sigF11A.column) ?? var_core_value_sigF020.cells["find"](var_core_value_sig9427 => !var_core_value_sig9427.hidden && var_core_value_sigF11A.row >= var_core_value_sig9427.row && var_core_value_sigF11A.row < var_core_value_sig9427.row + var_core_value_sig9427.rowSpan && var_core_value_sigF11A.column >= var_core_value_sig9427.column && var_core_value_sigF11A.column < var_core_value_sig9427.column + var_core_value_sig9427.columnSpan);
+  if (!var_core_value_sigAECB) return null;
+  let var_core_value_sigF759 = q(var_core_value_sig7D8E / var_core_value_sigF020.width, 1),
+    var_core_value_sig52AE = q(var_core_value_sig83A6 / var_core_value_sigF020.height, 1),
+    var_core_value_sig35A1 = (var_core_value_sigAE39 = var_core_value_sig66D1.rows[var_core_value_sigAECB.row]) == null ? undefined : var_core_value_sigAE39.cells[var_core_value_sigAECB.column];
+  return {
+    row: var_core_value_sigAECB.row,
+    column: var_core_value_sigAECB.column,
+    cellStyle: var_core_value_sigAECB.style,
+    rect: _i({
+      left: var_core_value_sigAECB.bounds["left"] * var_core_value_sigF759,
+      top: var_core_value_sigAECB.bounds["top"] * var_core_value_sig52AE,
+      width: var_core_value_sigAECB.bounds["width"] * var_core_value_sigF759,
+      height: var_core_value_sigAECB.bounds["height"] * var_core_value_sig52AE
+    }, var_core_value_sigAECB.style["margins"]),
+    documentData: ci(var_core_value_sig35A1 == null ? undefined : var_core_value_sig35A1.textData, hi(var_core_value_sig66D1.id, var_core_value_sigAECB.row, var_core_value_sigAECB.column))
+  };
+}
+function ii(var_core_value_sig5F74, var_core_value_sig72A2, var_core_value_sig956E, var_core_value_sig7B0C = "") {
+  return ci({
+    id: hi(var_core_value_sig5F74, var_core_value_sig72A2, var_core_value_sig956E),
+    body: {
+      dataStream: var_core_value_sig7B0C + "\x0d\x0a",
+      paragraphs: [mi()],
+      textRuns: []
+    },
+    documentStyle: {}
+  }, hi(var_core_value_sig5F74, var_core_value_sig72A2, var_core_value_sig956E));
+}
+function ai(var_core_value_sig0616, var_core_value_sigDA4C) {
+  var var_core_value_sig5EDC;
+  let var_core_value_sig3956 = var_core_value_sigDA4C.replace(/\r\n/g, "\x0d").replace(/\n/g, "\x0d") + "\x0d\x0a",
+    var_core_value_sig182F = Math.max(0, var_core_value_sig3956.length - 2),
+    var_core_value_sig76FA = (var_core_value_sig5EDC = var_core_value_sig0616.body) == null || (var_core_value_sig5EDC = var_core_value_sig5EDC.textRuns) == null || (var_core_value_sig5EDC = var_core_value_sig5EDC.find(var_core_value_sig21F4 => var_core_value_sig21F4.ts)) == null ? undefined : var_core_value_sig5EDC.ts;
+  return ci({
+    ...i.Tools["deepClone"](var_core_value_sig0616),
+    body: {
+      ...var_core_value_sig0616.body,
+      dataStream: var_core_value_sig3956,
+      paragraphs: ui(var_core_value_sig3956),
+      textRuns: var_core_value_sig76FA && var_core_value_sig182F > 0 ? [{
+        st: 0,
+        ed: var_core_value_sig182F,
+        ts: {
+          ...var_core_value_sig76FA
+        }
+      }] : []
+    }
+  }, var_core_value_sig0616.id ?? "SLIDE_TABLE_CELL");
+}
+function oi(var_core_value_sig960A) {
+  var var_core_value_sigBE8E, var_core_value_sig294A;
+  let {
+      rect: var_core_value_sig31A6,
+      scenePointToViewportPoint: var_core_value_sigAA4F,
+      tableTransform: var_core_value_sig672C
+    } = var_core_value_sig960A,
+    var_core_value_sig7D0D = K(var_core_value_sig672C.left, 0),
+    var_core_value_sigE30C = K(var_core_value_sig672C.top, 0),
+    var_core_value_sigC06A = q(var_core_value_sig672C.width, 1),
+    var_core_value_sig3CF8 = q(var_core_value_sig672C.height, 1),
+    var_core_value_sig3EC3 = q(var_core_value_sig31A6.width, 1),
+    var_core_value_sigBD61 = q(var_core_value_sig31A6.height, 1),
+    var_core_value_sig445D = var_core_value_sig31A6.left + var_core_value_sig3EC3 / 2 - var_core_value_sigC06A / 2,
+    var_core_value_sigC15F = var_core_value_sig31A6.top + var_core_value_sigBD61 / 2 - var_core_value_sig3CF8 / 2,
+    var_core_value_sig73A8 = K(var_core_value_sig672C.angle, 0) * Math.PI / 180,
+    var_core_value_sigE227 = var_core_value_sig445D * Math.cos(var_core_value_sig73A8) - var_core_value_sigC15F * Math.sin(var_core_value_sig73A8),
+    var_core_value_sig6909 = var_core_value_sig445D * Math.sin(var_core_value_sig73A8) + var_core_value_sigC15F * Math.cos(var_core_value_sig73A8),
+    var_core_value_sigCFCC = var_core_value_sigAA4F({
+      x: var_core_value_sig7D0D + var_core_value_sigC06A / 2 + var_core_value_sigE227,
+      y: var_core_value_sigE30C + var_core_value_sig3CF8 / 2 + var_core_value_sig6909
+    });
+  return {
+    rect: {
+      left: var_core_value_sigCFCC.x - var_core_value_sig3EC3 / 2,
+      top: var_core_value_sigCFCC.y - var_core_value_sigBD61 / 2,
+      width: var_core_value_sig3EC3,
+      height: var_core_value_sigBD61
+    },
+    scale: {
+      scaleX: q((var_core_value_sigBE8E = var_core_value_sig960A.scale) == null ? undefined : var_core_value_sigBE8E.scaleX, 1),
+      scaleY: q((var_core_value_sig294A = var_core_value_sig960A.scale) == null ? undefined : var_core_value_sig294A.scaleY, 1)
+    },
+    transform: {
+      angle: 0,
+      flipX: false,
+      flipY: var_core_value_sig672C.flipY
+    }
+  };
+}
+function si(var_core_value_sig0503, var_core_value_sigAA49, var_core_value_sigAB24) {
+  return var_core_value_sig0503 ? {
+    commandId: var_core_value_sigAB24,
+    params: {
+      unitId: var_core_value_sig0503.unitId,
+      tableId: var_core_value_sig0503.tableId,
+      row: var_core_value_sig0503.row,
+      column: var_core_value_sig0503.column,
+      textData: var_core_value_sigAA49
+    }
+  } : null;
+}
+function ci(var_core_value_sig2F15, var_core_value_sig316C) {
+  var var_core_value_sig75A2, var_core_value_sig95CE, var_core_value_sig41FA, var_core_value_sig73C4, var_core_value_sig3216;
+  let var_core_value_sigF636 = i.Tools["deepClone"](var_core_value_sig2F15 ?? {
+      id: var_core_value_sig316C,
+      body: {
+        dataStream: "\x0d\x0a",
+        paragraphs: [mi()],
+        textRuns: []
+      },
+      documentStyle: {}
+    }),
+    var_core_value_sig2EE8 = li((var_core_value_sig75A2 = var_core_value_sigF636.body) == null ? undefined : var_core_value_sig75A2.dataStream),
+    var_core_value_sig6177 = (var_core_value_sig95CE = var_core_value_sigF636.documentStyle) == null || (var_core_value_sig95CE = var_core_value_sig95CE.renderConfig) == null ? undefined : var_core_value_sig95CE.horizontalAlign,
+    var_core_value_sig723F = {
+      ...var_core_value_sigF636.body,
+      dataStream: var_core_value_sig2EE8,
+      paragraphs: di(pi((var_core_value_sig41FA = var_core_value_sigF636.body) != null && (var_core_value_sig41FA = var_core_value_sig41FA.paragraphs) != null && var_core_value_sig41FA.length ? var_core_value_sigF636.body["paragraphs"] : ui(var_core_value_sig2EE8)), var_core_value_sig6177),
+      textRuns: fi(((var_core_value_sig73C4 = var_core_value_sigF636.body) == null ? undefined : var_core_value_sig73C4.textRuns) ?? [])
+    },
+    var_core_value_sigADA0 = var_core_value_sigF636.documentStyle ? {
+      ...var_core_value_sigF636.documentStyle
+    } : {};
+  return (var_core_value_sig3216 = var_core_value_sigADA0.textStyle) != null && var_core_value_sig3216.bg && (var_core_value_sigADA0.textStyle = {
+    ...var_core_value_sigADA0.textStyle
+  }, delete var_core_value_sigADA0.textStyle["bg"]), {
+    ...var_core_value_sigF636,
+    id: var_core_value_sigF636.id ?? var_core_value_sig316C,
+    body: var_core_value_sig723F,
+    documentStyle: {
+      ...var_core_value_sigADA0,
+      documentFlavor: i.DocumentFlavor["UNSPECIFIED"]
+    }
+  };
+}
+function li(var_core_value_sig2F52) {
+  if (!var_core_value_sig2F52) return "\x0d\x0a";
+  let var_core_value_sig8FC3 = var_core_value_sig2F52.replace(/\r\n/g, "\x0d").replace(/\n/g, "\x0d");
+  return var_core_value_sig8FC3.endsWith("\x0d") ? var_core_value_sig8FC3 + "\x0a" : var_core_value_sig8FC3 + "\x0d\x0a";
+}
+function ui(var_core_value_sigF5B3) {
+  let var_core_value_sig074A = Math.max(1, var_core_value_sigF5B3.split("\x0d").length - 1),
+    var_core_value_sig5FBE = 0;
+  return Array.from({
+    length: var_core_value_sig074A
+  }, () => {
+    let var_core_value_sigA345 = mi(var_core_value_sig5FBE),
+      var_core_value_sigA468 = var_core_value_sigF5B3.indexOf("\x0d", var_core_value_sig5FBE);
+    return var_core_value_sig5FBE = var_core_value_sigA468 >= 0 ? var_core_value_sigA468 + 1 : var_core_value_sigF5B3.length, var_core_value_sigA345;
+  });
+}
+function di(var_core_value_sig9D61, var_core_value_sigF126) {
+  return var_core_value_sigF126 === undefined ? var_core_value_sig9D61 : var_core_value_sig9D61.map(var_core_value_sig1561 => ({
+    ...var_core_value_sig1561,
+    paragraphStyle: {
+      ...var_core_value_sig1561.paragraphStyle,
+      horizontalAlign: var_core_value_sigF126
+    }
+  }));
+}
+function fi(var_core_value_sig9AF8) {
+  return var_core_value_sig9AF8.map(var_core_value_sigDF14 => {
+    var var_core_value_sig842F;
+    if (!((var_core_value_sig842F = var_core_value_sigDF14.ts) != null && var_core_value_sig842F.bg)) return var_core_value_sigDF14;
+    let var_core_value_sigC4C0 = {
+      ...var_core_value_sigDF14.ts
+    };
+    return delete var_core_value_sigC4C0.bg, {
+      ...var_core_value_sigDF14,
+      ts: var_core_value_sigC4C0
+    };
+  });
+}
+function pi(var_core_value_sig7537) {
+  return var_core_value_sig7537 != null && var_core_value_sig7537.length ? var_core_value_sig7537.map((var_core_value_sig214A, var_core_value_sigCCC3) => ({
+    ...var_core_value_sig214A,
+    startIndex: typeof var_core_value_sig214A.startIndex == "number" ? var_core_value_sig214A.startIndex : var_core_value_sigCCC3,
+    paragraphId: var_core_value_sig214A.paragraphId ?? (0, i.createParagraphId)(new Set())
+  })) : [mi()];
+}
+function mi(var_core_value_sig50C7 = 0) {
+  return {
+    startIndex: var_core_value_sig50C7,
+    paragraphId: (0, i.createParagraphId)(new Set())
+  };
+}
+function hi(var_core_value_sig9B62, var_core_value_sig470B, var_core_value_sig7525) {
+  return "SLIDE_TABLE_CELL_" + var_core_value_sig9B62 + "_" + var_core_value_sig470B + "_" + var_core_value_sig7525;
+}
+function gi(var_core_value_sig95B5) {
+  let var_core_value_sig2347 = (0, n.normalizeSlideTableCellRange)(var_core_value_sig95B5);
+  return {
+    row: var_core_value_sig2347.startRow,
+    column: var_core_value_sig2347.startColumn
+  };
+}
+function _i(var_core_value_sigB20E, var_core_value_sig8ADE) {
+  let var_core_value_sig7F51 = K(var_core_value_sig8ADE == null ? undefined : var_core_value_sig8ADE.left, 4),
+    var_core_value_sig622A = K(var_core_value_sig8ADE == null ? undefined : var_core_value_sig8ADE.right, 4),
+    var_core_value_sig40EC = K(var_core_value_sig8ADE == null ? undefined : var_core_value_sig8ADE.top, 4),
+    var_core_value_sig27C9 = K(var_core_value_sig8ADE == null ? undefined : var_core_value_sig8ADE.bottom, 4);
+  return {
+    left: var_core_value_sigB20E.left + var_core_value_sig7F51,
+    top: var_core_value_sigB20E.top + var_core_value_sig40EC,
+    width: Math.max(1, var_core_value_sigB20E.width - var_core_value_sig7F51 - var_core_value_sig622A),
+    height: Math.max(1, var_core_value_sigB20E.height - var_core_value_sig40EC - var_core_value_sig27C9)
+  };
+}
+function K(var_core_value_sigF296, var_core_value_sigD001) {
+  return typeof var_core_value_sigF296 == "number" && Number.isFinite(var_core_value_sigF296) ? var_core_value_sigF296 : var_core_value_sigD001;
+}
+function q(var_core_value_sig4940, var_core_value_sig7E0F) {
+  let var_core_value_sig9785 = K(var_core_value_sig4940, var_core_value_sig7E0F);
+  return var_core_value_sig9785 > 0 ? var_core_value_sig9785 : Math.max(1, var_core_value_sig7E0F);
+}
+function vi(var_core_value_sig235B, var_core_value_sigBCA8) {
+  let var_core_value_sig0C8C = Ti(var_core_value_sig235B, var_core_value_sigBCA8);
+  if (!var_core_value_sig235B || !var_core_value_sig0C8C) return "";
+  let var_core_value_sig56FC = [];
+  for (let var_core_value_sig986E = var_core_value_sig0C8C.startRow; var_core_value_sig986E <= var_core_value_sig0C8C.endRow; var_core_value_sig986E += 1) {
+    let var_core_value_sigAEFB = [];
+    for (let var_core_value_sig6F91 = var_core_value_sig0C8C.startColumn; var_core_value_sig6F91 <= var_core_value_sig0C8C.endColumn; var_core_value_sig6F91 += 1) {
+      var var_core_value_sig7EC8;
+      let var_core_value_sig1BBD = (var_core_value_sig7EC8 = var_core_value_sig235B.rows[var_core_value_sig986E]) == null ? undefined : var_core_value_sig7EC8.cells[var_core_value_sig6F91];
+      if (var_core_value_sig1BBD != null && var_core_value_sig1BBD.hMerge || var_core_value_sig1BBD != null && var_core_value_sig1BBD.vMerge) {
+        var_core_value_sigAEFB.push("");
+        continue;
+      }
+      var_core_value_sigAEFB.push(ki(wi(var_core_value_sig1BBD == null ? undefined : var_core_value_sig1BBD.textData)));
+    }
+    var_core_value_sig56FC.push(var_core_value_sigAEFB.join("\x09"));
+  }
+  return var_core_value_sig56FC.join("\x0a");
+}
+function yi(var_core_value_sig0454, var_core_value_sig71F7) {
+  let var_core_value_sig8D12 = Ti(var_core_value_sig0454, var_core_value_sig71F7);
+  if (!var_core_value_sig0454 || !var_core_value_sig8D12) return "";
+  let var_core_value_sigEEC4 = var_core_value_sig0454.columns["slice"](var_core_value_sig8D12.startColumn, var_core_value_sig8D12.endColumn + 1).map(var_core_value_sig537C => '<col style="width: ' + var_core_value_sig537C.width + 'px">').join(""),
+    var_core_value_sig0EDB = [];
+  for (let var_core_value_sigBBBC = var_core_value_sig8D12.startRow; var_core_value_sigBBBC <= var_core_value_sig8D12.endRow; var_core_value_sigBBBC += 1) {
+    let var_core_value_sig826B = var_core_value_sig0454.rows[var_core_value_sigBBBC];
+    if (!var_core_value_sig826B) continue;
+    let var_core_value_sigCF89 = [];
+    for (let var_core_value_sigF9C7 = var_core_value_sig8D12.startColumn; var_core_value_sigF9C7 <= var_core_value_sig8D12.endColumn; var_core_value_sigF9C7 += 1) {
+      let var_core_value_sigF704 = var_core_value_sig826B.cells[var_core_value_sigF9C7];
+      if (!var_core_value_sigF704 || var_core_value_sigF704.hMerge || var_core_value_sigF704.vMerge) continue;
+      let var_core_value_sig2BCF = Math.min(var_core_value_sigF704.rowSpan ?? 1, var_core_value_sig8D12.endRow - var_core_value_sigBBBC + 1),
+        var_core_value_sig0D69 = Math.min(var_core_value_sigF704.columnSpan ?? 1, var_core_value_sig8D12.endColumn - var_core_value_sigF9C7 + 1),
+        var_core_value_sig480E = [var_core_value_sig2BCF > 1 ? "rowspan=\x22" + var_core_value_sig2BCF + "\x22" : "", var_core_value_sig0D69 > 1 ? 'colspan="' + var_core_value_sig0D69 + "\x22" : "", bi(var_core_value_sigF704)].filter(Boolean).join("\x20"),
+        var_core_value_sig26DB = var_core_value_sigF704.textData ? (0, d.convertBodyToHtml)(i.Tools["deepClone"](var_core_value_sigF704.textData)) : "";
+      var_core_value_sigCF89.push("<td" + (var_core_value_sig480E ? "\x20" + var_core_value_sig480E : "") + ">" + var_core_value_sig26DB + "</td>");
+    }
+    var_core_value_sig0EDB.push("<tr" + (var_core_value_sig826B.height ? ' style="height: ' + var_core_value_sig826B.height + 'px"' : "") + ">" + var_core_value_sigCF89.join("") + "</tr>");
+  }
+  return "<table><colgroup>" + var_core_value_sigEEC4 + "</colgroup><tbody>" + var_core_value_sig0EDB.join("") + "</tbody></table>";
+}
+function bi(var_core_value_sig1C1B1) {
+  var var_core_value_sig083D, var_core_value_sig70CE;
+  let var_core_value_sig4B4A = [];
+  ((var_core_value_sig083D = var_core_value_sig1C1B1.style) == null || (var_core_value_sig083D = var_core_value_sig083D.fill) == null ? undefined : var_core_value_sig083D.type) === n.SlideTableFillTypeEnum["Solid"] && var_core_value_sig1C1B1.style["fill"].color && var_core_value_sig4B4A.push("background-color:\x20" + var_core_value_sig1C1B1.style["fill"].color);
+  let var_core_value_sig6585 = (var_core_value_sig70CE = var_core_value_sig1C1B1.style) == null ? undefined : var_core_value_sig70CE.borders;
+  return var_core_value_sig6585 && ["top", "right", "bottom", "left"].forEach(var_core_value_sig5440 => {
+    let var_core_value_sigE28B = var_core_value_sig6585[var_core_value_sig5440];
+    var_core_value_sigE28B != null && var_core_value_sigE28B.color && var_core_value_sigE28B.width !== undefined && var_core_value_sig4B4A.push("border-" + var_core_value_sig5440 + ":\x20" + var_core_value_sigE28B.width + "px solid " + var_core_value_sigE28B.color);
+  }), var_core_value_sig4B4A.length > 0 ? 'style="' + Mi(var_core_value_sig4B4A.join(";\x20")) + "\x22" : "";
+}
+function xi(var_core_value_sig743E, var_core_value_sig9872, var_core_value_sig049A) {
+  if (!var_core_value_sig743E || !var_core_value_sig9872 || var_core_value_sig049A.length === 0) return null;
+  let var_core_value_sig58301 = Di(var_core_value_sig743E, var_core_value_sig9872);
+  if (!var_core_value_sig58301) return null;
+  let var_core_value_sig69CB = Oi(var_core_value_sig049A);
+  if (var_core_value_sig69CB.length === 0) return null;
+  let var_core_value_sigB5CC = i.Tools["deepClone"](var_core_value_sig743E.rows),
+    var_core_value_sig823B = false;
+  return var_core_value_sig69CB.forEach((var_core_value_sig0FD9, var_core_value_sig5649) => {
+    let var_core_value_sigAF82 = var_core_value_sig58301.row + var_core_value_sig5649;
+    var_core_value_sigAF82 < 0 || var_core_value_sigAF82 >= var_core_value_sigB5CC.length || var_core_value_sig0FD9.forEach((var_core_value_sig00CB, var_core_value_sig77EE) => {
+      let var_core_value_sig9F76 = var_core_value_sig58301.column + var_core_value_sig77EE;
+      if (var_core_value_sig9F76 < 0 || var_core_value_sig9F76 >= var_core_value_sig743E.columns["length"]) return;
+      let var_core_value_sigB008 = var_core_value_sigB5CC[var_core_value_sigAF82],
+        var_core_value_sig8721 = var_core_value_sigB008 == null ? undefined : var_core_value_sigB008.cells[var_core_value_sig9F76];
+      !var_core_value_sigB008 || !var_core_value_sig8721 || var_core_value_sig8721.hMerge || var_core_value_sig8721.vMerge || (var_core_value_sigB008.cells[var_core_value_sig9F76] = {
+        ...var_core_value_sig8721,
+        textData: var_core_value_sig8721.textData ? ai(var_core_value_sig8721.textData, var_core_value_sig00CB) : ii(var_core_value_sig743E.id, var_core_value_sigAF82, var_core_value_sig9F76, var_core_value_sig00CB)
+      }, var_core_value_sig823B = true);
+    });
+  }), var_core_value_sig823B ? {
+    rows: var_core_value_sigB5CC
+  } : null;
+}
+function Si(var_core_value_sigC9B0, var_core_value_sigAA99, var_core_value_sig1D86) {
+  if (!var_core_value_sigC9B0 || !var_core_value_sigAA99 || !var_core_value_sig1D86) return null;
+  let var_core_value_sig1F4D = Di(var_core_value_sigC9B0, var_core_value_sigAA99);
+  if (!var_core_value_sig1F4D) return null;
+  let var_core_value_sig91D2 = (0, _.parseHtmlTableClipboard)(var_core_value_sig1D86),
+    var_core_value_sigBF6A = var_core_value_sig91D2.rows["length"] > 0 ? var_core_value_sig91D2.rows["map"](var_core_value_sig21A2 => var_core_value_sig21A2.cells) : [[{
+      html: var_core_value_sig1D86,
+      text: "",
+      rowSpan: 1,
+      colSpan: 1
+    }]];
+  if (!var_core_value_sigBF6A.some(var_core_value_sig5C1D => var_core_value_sig5C1D.some(var_core_value_sig08BA => var_core_value_sig08BA !== null))) return null;
+  let var_core_value_sigC8CD = Math.max(1, ...var_core_value_sigBF6A.map(var_core_value_sig4CBA => var_core_value_sig4CBA.length)),
+    var_core_value_sig1D8D = {
+      startRow: var_core_value_sig1F4D.row,
+      endRow: Math.min(var_core_value_sigC9B0.rows["length"] - 1, var_core_value_sig1F4D.row + var_core_value_sigBF6A.length - 1),
+      startColumn: var_core_value_sig1F4D.column,
+      endColumn: Math.min(var_core_value_sigC9B0.columns["length"] - 1, var_core_value_sig1F4D.column + var_core_value_sigC8CD - 1)
+    },
+    var_core_value_sigFCDA = (0, n.collectSlideTableMergeRanges)(var_core_value_sigC9B0).filter(var_core_value_sig8E65 => Ni(var_core_value_sig8E65, var_core_value_sig1D8D)).reduce((var_core_value_sig772C, var_core_value_sigF309) => (0, n.unmergeSlideTableCells)(var_core_value_sig772C, var_core_value_sigF309.startRow, var_core_value_sigF309.startColumn), i.Tools["deepClone"](var_core_value_sigC9B0)),
+    var_core_value_sig4A8B = [],
+    var_core_value_sigE2301 = false;
+  return var_core_value_sigBF6A.forEach((var_core_value_sig44F9, var_core_value_sigE532) => {
+    var_core_value_sig44F9.forEach((var_core_value_sigDBB5, var_core_value_sigCFAC) => {
+      var var_core_value_sig237B;
+      let var_core_value_sigFEAB = var_core_value_sig1F4D.row + var_core_value_sigE532,
+        var_core_value_sigE347 = var_core_value_sig1F4D.column + var_core_value_sigCFAC,
+        var_core_value_sig3C5B = (var_core_value_sig237B = var_core_value_sigFCDA.rows[var_core_value_sigFEAB]) == null ? undefined : var_core_value_sig237B.cells[var_core_value_sigE347];
+      if (!var_core_value_sigDBB5 || !var_core_value_sig3C5B) return;
+      let var_core_value_sig200B = Ai((0, d.removeClipboardHtmlImages)(var_core_value_sigDBB5.html)) ?? ii(var_core_value_sigC9B0.id, var_core_value_sigFEAB, var_core_value_sigE347, var_core_value_sigDBB5.text);
+      var_core_value_sigFCDA.rows[var_core_value_sigFEAB].cells[var_core_value_sigE347] = {
+        ...var_core_value_sig3C5B,
+        textData: ci(var_core_value_sig200B, var_core_value_sigC9B0.id + "-" + var_core_value_sigFEAB + "-" + var_core_value_sigE347),
+        style: ji(var_core_value_sig3C5B.style, var_core_value_sigDBB5)
+      };
+      let var_core_value_sig3863 = Math.min(var_core_value_sigDBB5.rowSpan, var_core_value_sigC9B0.rows["length"] - var_core_value_sigFEAB),
+        var_core_value_sigC97C = Math.min(var_core_value_sigDBB5.colSpan, var_core_value_sigC9B0.columns["length"] - var_core_value_sigE347);
+      (var_core_value_sig3863 > 1 || var_core_value_sigC97C > 1) && var_core_value_sig4A8B.push({
+        startRow: var_core_value_sigFEAB,
+        endRow: var_core_value_sigFEAB + var_core_value_sig3863 - 1,
+        startColumn: var_core_value_sigE347,
+        endColumn: var_core_value_sigE347 + var_core_value_sigC97C - 1
+      }), var_core_value_sigE2301 = true;
+    });
+  }), var_core_value_sig4A8B.forEach(var_core_value_sigF381 => {
+    var_core_value_sigFCDA = (0, n.mergeSlideTableCells)(var_core_value_sigFCDA, var_core_value_sigF381);
+  }), var_core_value_sigE2301 ? {
+    rows: var_core_value_sigFCDA.rows
+  } : null;
+}
+function Ci(var_core_value_sigB8AF, var_core_value_sigD4B6) {
+  let var_core_value_sigB90E = Ei(var_core_value_sigB8AF, var_core_value_sigD4B6);
+  if (!var_core_value_sigB8AF || var_core_value_sigB90E.length === 0) return null;
+  let var_core_value_sigAEF2 = i.Tools["deepClone"](var_core_value_sigB8AF.rows),
+    var_core_value_sig4453 = false;
+  return var_core_value_sigB90E.forEach(var_core_value_sigCB92 => {
+    for (let var_core_value_sigC4B1 = var_core_value_sigCB92.startRow; var_core_value_sigC4B1 <= var_core_value_sigCB92.endRow; var_core_value_sigC4B1 += 1) {
+      let var_core_value_sig8895 = var_core_value_sigAEF2[var_core_value_sigC4B1];
+      if (var_core_value_sig8895) for (let var_core_value_sigF0F9 = var_core_value_sigCB92.startColumn; var_core_value_sigF0F9 <= var_core_value_sigCB92.endColumn; var_core_value_sigF0F9 += 1) {
+        let var_core_value_sig3D7D = var_core_value_sig8895.cells[var_core_value_sigF0F9];
+        if (!(var_core_value_sig3D7D != null && var_core_value_sig3D7D.textData)) continue;
+        let var_core_value_sig27E5 = {
+          ...var_core_value_sig3D7D
+        };
+        delete var_core_value_sig27E5.textData, var_core_value_sig8895.cells[var_core_value_sigF0F9] = var_core_value_sig27E5, var_core_value_sig4453 = true;
+      }
+    }
+  }), var_core_value_sig4453 ? {
+    rows: var_core_value_sigAEF2
+  } : null;
+}
+function wi(var_core_value_sigFA8E) {
+  var var_core_value_sig9D66;
+  let var_core_value_sig399F = var_core_value_sigFA8E == null || (var_core_value_sig9D66 = var_core_value_sigFA8E.body) == null ? undefined : var_core_value_sig9D66.dataStream;
+  return var_core_value_sig399F ? var_core_value_sig399F.replace(/\r\n/g, "\x0a").replace(/\r/g, "\x0a").replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "").replace(/\n+$/g, "") : "";
+}
+function Ti(var_core_value_sig57C2, var_core_value_sigA85E) {
+  return Ei(var_core_value_sig57C2, var_core_value_sigA85E)[0] ?? null;
+}
+function Ei(var_core_value_sig65AA, var_core_value_sigC6DD) {
+  if (!var_core_value_sig65AA || !(var_core_value_sigC6DD != null && var_core_value_sigC6DD.ranges["length"])) return [];
+  let var_core_value_sig1300 = var_core_value_sig65AA.rows["length"] - 1,
+    var_core_value_sig05BB = var_core_value_sig65AA.columns["length"] - 1;
+  return var_core_value_sig1300 < 0 || var_core_value_sig05BB < 0 ? [] : var_core_value_sigC6DD.ranges["map"](var_core_value_sigC844 => {
+    let var_core_value_sig2ED4 = (0, n.normalizeSlideTableCellRange)(var_core_value_sigC844);
+    return {
+      startRow: Math.max(0, Math.min(var_core_value_sig2ED4.startRow, var_core_value_sig1300)),
+      endRow: Math.max(0, Math.min(var_core_value_sig2ED4.endRow, var_core_value_sig1300)),
+      startColumn: Math.max(0, Math.min(var_core_value_sig2ED4.startColumn, var_core_value_sig05BB)),
+      endColumn: Math.max(0, Math.min(var_core_value_sig2ED4.endColumn, var_core_value_sig05BB))
+    };
+  });
+}
+function Di(var_core_value_sig91CD, var_core_value_sig2AF0) {
+  let var_core_value_sig796D = Ti(var_core_value_sig91CD, var_core_value_sig2AF0);
+  if (!var_core_value_sig796D) return null;
+  let var_core_value_sig7D2B = var_core_value_sig2AF0.focus ?? var_core_value_sig2AF0.anchor;
+  return var_core_value_sig7D2B ? {
+    row: Math.max(var_core_value_sig796D.startRow, Math.min(var_core_value_sig7D2B.row, var_core_value_sig796D.endRow)),
+    column: Math.max(var_core_value_sig796D.startColumn, Math.min(var_core_value_sig7D2B.column, var_core_value_sig796D.endColumn))
+  } : {
+    row: var_core_value_sig796D.startRow,
+    column: var_core_value_sig796D.startColumn
+  };
+}
+function Oi(var_core_value_sigEA89) {
+  let var_core_value_sig97B1 = var_core_value_sigEA89.replace(/\r\n/g, "\x0a").replace(/\r/g, "\x0a").replace(/\n$/g, "");
+  return var_core_value_sig97B1 ? var_core_value_sig97B1.split("\x0a").map(var_core_value_sig0477 => var_core_value_sig0477.split("\x09")) : [];
+}
+function ki(var_core_value_sigD238) {
+  return var_core_value_sigD238.replace(/\t/g, "\x20").replace(/\n/g, "\x20");
+}
+function Ai(var_core_value_sigA1F8) {
+  try {
+    var var_core_value_sig71F3;
+    let var_core_value_sig6FDF = (0, d.convertClipboardHtmlToDocumentData)(var_core_value_sigA1F8);
+    return (var_core_value_sig71F3 = var_core_value_sig6FDF.body) != null && var_core_value_sig71F3.dataStream ? {
+      ...var_core_value_sig6FDF,
+      id: var_core_value_sig6FDF.id || (0, i.generateRandomId)(6),
+      body: var_core_value_sig6FDF.body,
+      documentStyle: var_core_value_sig6FDF.documentStyle ?? {}
+    } : null;
+  } catch {
+    return null;
+  }
+}
+function ji(var_core_value_sigD652, var_core_value_sig6289) {
+  let var_core_value_sigB20A = var_core_value_sig6289.borderColor || var_core_value_sig6289.borderWidth ? {
+    color: var_core_value_sig6289.borderColor,
+    width: var_core_value_sig6289.borderWidth,
+    dash: n.SlideTableBorderDashEnum["Solid"]
+  } : undefined;
+  return !var_core_value_sig6289.backgroundColor && !var_core_value_sigB20A ? var_core_value_sigD652 : {
+    ...var_core_value_sigD652,
+    fill: var_core_value_sig6289.backgroundColor ? {
+      type: n.SlideTableFillTypeEnum["Solid"],
+      color: var_core_value_sig6289.backgroundColor
+    } : var_core_value_sigD652 == null ? undefined : var_core_value_sigD652.fill,
+    borders: var_core_value_sigB20A ? {
+      top: var_core_value_sigB20A,
+      right: var_core_value_sigB20A,
+      bottom: var_core_value_sigB20A,
+      left: var_core_value_sigB20A
+    } : var_core_value_sigD652 == null ? undefined : var_core_value_sigD652.borders
+  };
+}
+function Mi(var_core_value_sig0591) {
+  return var_core_value_sig0591.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function Ni(var_core_value_sigDBF1, var_core_value_sig0358) {
+  return var_core_value_sigDBF1.startRow <= var_core_value_sig0358.endRow && var_core_value_sigDBF1.endRow >= var_core_value_sig0358.startRow && var_core_value_sigDBF1.startColumn <= var_core_value_sig0358.endColumn && var_core_value_sigDBF1.endColumn >= var_core_value_sig0358.startColumn;
+}
+function Pi(var_core_value_sigC4C9, var_core_value_sig56ED, var_core_value_sigFD401) {
+  if (var_core_value_sig56ED < 0 || var_core_value_sigFD401 < 0 || var_core_value_sig56ED > var_core_value_sigC4C9.width || var_core_value_sigFD401 > var_core_value_sigC4C9.height) return null;
+  let var_core_value_sigD649 = var_core_value_sigC4C9.cells["find"](var_core_value_sig27C4 => !var_core_value_sig27C4.hidden && Fi(var_core_value_sig27C4, var_core_value_sig56ED, var_core_value_sigFD401));
+  return var_core_value_sigD649 ? {
+    kind: "cell",
+    row: var_core_value_sigD649.row,
+    column: var_core_value_sigD649.column
+  } : null;
+}
+function Fi(var_core_value_sig0E88, var_core_value_sig13C8, var_core_value_sigE521) {
+  return var_core_value_sig13C8 >= var_core_value_sig0E88.bounds["left"] && var_core_value_sig13C8 <= var_core_value_sig0E88.bounds["left"] + var_core_value_sig0E88.bounds["width"] && var_core_value_sigE521 >= var_core_value_sig0E88.bounds["top"] && var_core_value_sigE521 <= var_core_value_sig0E88.bounds["top"] + var_core_value_sig0E88.bounds["height"];
+}
+function Ii(var_core_value_sig0571) {
+  return (var_core_value_sig0571 == null ? undefined : var_core_value_sig0571.kind) === "row-insert-dot" && var_core_value_sig0571.row !== undefined || (var_core_value_sig0571 == null ? undefined : var_core_value_sig0571.kind) === "column-insert-dot" && var_core_value_sig0571.column !== undefined;
+}
+function Li(var_core_value_sig43F4) {
+  return var_core_value_sig43F4.kind === "row-insert-dot" ? {
+    visible: true,
+    hoveredTrigger: var_core_value_sig43F4,
+    insertGuide: {
+      kind: "row",
+      index: var_core_value_sig43F4.row + 1
+    }
+  } : {
+    visible: true,
+    hoveredTrigger: var_core_value_sig43F4,
+    insertGuide: {
+      kind: "column",
+      index: var_core_value_sig43F4.column + 1
+    }
+  };
+}
+const Ri = "SLIDE_TABLE_EDITOR_UNIT_ID",
+  zi = -10000;
+function Bi(var_core_value_sig37F8) {
+  if (typeof var_core_value_sig37F8.insertIndex == "number" && Number.isInteger(var_core_value_sig37F8.insertIndex)) return var_core_value_sig37F8.insertIndex;
+  let var_core_value_sig45D3 = var_core_value_sig37F8.kind === "row-insert-dot" ? var_core_value_sig37F8.row : var_core_value_sig37F8.column;
+  return typeof var_core_value_sig45D3 == "number" && Number.isInteger(var_core_value_sig45D3) ? var_core_value_sig45D3 + 1 : null;
+}
+function Vi(var_core_value_sigE2F3, var_core_value_sig9CB1, var_core_value_sigFB76, var_core_value_sig58A5, var_core_value_sigA486, var_core_value_sigB0DE = 6) {
+  if (var_core_value_sig58A5 < 0 || var_core_value_sigA486 < 0 || var_core_value_sig58A5 > var_core_value_sig9CB1 || var_core_value_sigA486 > var_core_value_sigFB76) return null;
+  let var_core_value_sig6793 = X(var_core_value_sigE2F3.columns["map"](var_core_value_sig3E1A => var_core_value_sig3E1A.width), var_core_value_sig9CB1),
+    var_core_value_sigECD2 = X(var_core_value_sigE2F3.rows["map"](var_core_value_sig7FB0 => var_core_value_sig7FB0.height ?? 24), var_core_value_sigFB76),
+    var_core_value_sigD28E = Zi(var_core_value_sig6793, var_core_value_sig58A5, var_core_value_sigB0DE),
+    var_core_value_sigB896 = Zi(var_core_value_sigECD2, var_core_value_sigA486, var_core_value_sigB0DE);
+  return !var_core_value_sigD28E && !var_core_value_sigB896 ? null : var_core_value_sigD28E && (!var_core_value_sigB896 || var_core_value_sigD28E.distance <= var_core_value_sigB896.distance) ? {
+    axis: "column",
+    boundaryIndex: var_core_value_sigD28E.boundaryIndex
+  } : {
+    axis: "row",
+    boundaryIndex: var_core_value_sigB896.boundaryIndex
+  };
+}
+function Hi(var_core_value_sig22D9, var_core_value_sig7E70, var_core_value_sig9CCC, var_core_value_sigEB93) {
+  let var_core_value_sig8F13 = i.Tools["deepClone"](var_core_value_sig22D9),
+    var_core_value_sigAC84 = Math.max(1, var_core_value_sigEB93.minSize ?? 12);
+  if (var_core_value_sigEB93.axis === "column") var_core_value_sig8F13.columns = Qi(X(var_core_value_sig22D9.columns["map"](var_core_value_sig5215 => var_core_value_sig5215.width), var_core_value_sig7E70), var_core_value_sigEB93.boundaryIndex, var_core_value_sigEB93.delta, var_core_value_sigAC84).map(var_core_value_sig5204 => ({
+    width: var_core_value_sig5204
+  }));else {
+    let var_core_value_sig5E11 = Qi(X(var_core_value_sig22D9.rows["map"](var_core_value_sig1BD9 => var_core_value_sig1BD9.height ?? 24), var_core_value_sig9CCC), var_core_value_sigEB93.boundaryIndex, var_core_value_sigEB93.delta, var_core_value_sigAC84);
+    var_core_value_sig8F13.rows = var_core_value_sig8F13.rows["map"]((var_core_value_sigE43E, var_core_value_sigA937) => ({
+      ...var_core_value_sigE43E,
+      height: var_core_value_sig5E11[var_core_value_sigA937] ?? var_core_value_sigE43E.height ?? 24
+    }));
+  }
+  return var_core_value_sig8F13;
+}
+let Ui = class extends i.RxDisposable {
+  constructor(var_core_value_sig4D58, var_core_value_sig2DBD, var_core_value_sig424E, var_core_value_sigF481, var_core_value_sigD7F2, var_core_value_sig7CF3, var_core_value_sig9DC6, var_core_value_sig6643, var_core_value_sig4124, var_core_value_sigBF1C, var_core_value_sigEEEF, var_core_value_sig9A01, var_core_value_sig674F, var_core_value_sigC8F6, var_core_value_sig8A26, var_core_value_sigD073) {
+    super(), this._renderContext = var_core_value_sig4D58, this._hitTestService = var_core_value_sig2DBD, this._tableResourceService = var_core_value_sig424E, this._tableSelectionService = var_core_value_sigF481, this._editorUIService = var_core_value_sigD7F2, this._drawingStateService = var_core_value_sig7CF3, this._contextMenuService = var_core_value_sig9DC6, this._commandService = var_core_value_sig6643, this._keyboardService = var_core_value_sig4124, this._contextService = var_core_value_sigBF1C, this._univerInstanceService = var_core_value_sigEEEF, this._slideDrawingService = var_core_value_sig9A01, this._transformerVisibilityService = var_core_value_sig674F, this._permissionService = var_core_value_sigC8F6, this._alignmentGuideService = var_core_value_sig8A26, this._slideInsertService = var_core_value_sigD073, T(this, "_editorDisposable", null), T(this, "_resizeDragContext", null), T(this, "_rangeDragContext", null), T(this, "_rangeDragWindowCleanup", null), T(this, "_tableMoveDragContext", null), T(this, "_editorSessionId", 0), T(this, "_activeEditorContextKey", null), T(this, "_lastActiveTableContext", null), T(this, "_tableActivationStage", null), T(this, "_pendingStage1TableDragContext", null), T(this, "_hoveredTrigger", null), T(this, "_headerSelectionDragState", null), T(this, "_pendingHeaderSelection", null), T(this, "_rowColumnMoveState", null), T(this, "_rowColumnMoveTarget", null), T(this, "_headerSelectionDragCleanup", null), T(this, "_resizeHoverActive", false), T(this, "_ownsStructuralCursor", false), T(this, "_resizeWireScheduled", false), T(this, "_editorLayoutSyncScheduled", false), T(this, "_structuralInsertHoverObject", null), T(this, "_wiredResizeObjectRefs", new Map()), T(this, "_handleClipboardCopy", var_core_value_sigCAD5 => {
+      let var_core_value_sigE503 = this._resolveTableClipboardTarget(var_core_value_sigCAD5);
+      !var_core_value_sigE503 || !var_core_value_sigCAD5.clipboardData || !this._canCopyTable(var_core_value_sigE503.selection) || (var_core_value_sigCAD5.clipboardData["setData"]("text/plain", vi(var_core_value_sigE503.table, var_core_value_sigE503.selection)), var_core_value_sigCAD5.clipboardData["setData"]("text/html", yi(var_core_value_sigE503.table, var_core_value_sigE503.selection)), var_core_value_sigCAD5.preventDefault(), var_core_value_sigCAD5.stopPropagation());
+    }), T(this, "_handleClipboardCut", async var_core_value_sig48DD => {
+      let var_core_value_sig5E6A = this._resolveTableClipboardTarget(var_core_value_sig48DD);
+      if (!var_core_value_sig5E6A || !var_core_value_sig48DD.clipboardData || !this._canCopyTable(var_core_value_sig5E6A.selection)) return;
+      let var_core_value_sigB7FC = Ci(var_core_value_sig5E6A.table, var_core_value_sig5E6A.selection);
+      var_core_value_sigB7FC && (var_core_value_sig48DD.clipboardData["setData"]("text/plain", vi(var_core_value_sig5E6A.table, var_core_value_sig5E6A.selection)), var_core_value_sig48DD.clipboardData["setData"]("text/html", yi(var_core_value_sig5E6A.table, var_core_value_sig5E6A.selection)), var_core_value_sig48DD.preventDefault(), var_core_value_sig48DD.stopPropagation(), await this._commitClipboardPatch(var_core_value_sig5E6A, var_core_value_sigB7FC));
+    }), T(this, "_handleClipboardPaste", async var_core_value_sig9CD9 => {
+      let var_core_value_sigFD0C = this._resolveTableClipboardTarget(var_core_value_sig9CD9);
+      if (!var_core_value_sigFD0C || !var_core_value_sig9CD9.clipboardData) return;
+      let var_core_value_sig849B = var_core_value_sig9CD9.clipboardData["getData"]("text/html"),
+        var_core_value_sig5F1A = var_core_value_sig9CD9.clipboardData["getData"]("text/plain"),
+        var_core_value_sigB455 = (0, h.isClipboardTextImage)(var_core_value_sig5F1A) ? await (0, h.extractClipboardTextImageFile)(var_core_value_sig5F1A) : null,
+        var_core_value_sig5241 = var_core_value_sigB455 ? null : (var_core_value_sig849B ? Si(var_core_value_sigFD0C.table, var_core_value_sigFD0C.selection, var_core_value_sig849B) : null) ?? xi(var_core_value_sigFD0C.table, var_core_value_sigFD0C.selection, var_core_value_sig5F1A),
+        var_core_value_sigC6E5 = var_core_value_sigB455 ? [var_core_value_sigB455] : await ga(var_core_value_sig9CD9.clipboardData, var_core_value_sig849B);
+      !var_core_value_sig5241 && var_core_value_sigC6E5.length === 0 || (var_core_value_sig9CD9.preventDefault(), var_core_value_sig9CD9.stopPropagation(), !(var_core_value_sig5241 && !(await this._commitClipboardPatch(var_core_value_sigFD0C, var_core_value_sig5241))) && (await this._insertClipboardImages(var_core_value_sigC6E5, +!!var_core_value_sig5241)));
+    }), this._init();
+  }
+  dispose() {
+    this._editorLayoutSyncScheduled = false, this._resetTableInteraction(), super.dispose();
+  }
+  _init() {
+    var var_core_value_sigF631, var_core_value_sig2278;
+    document.addEventListener("copy", this._handleClipboardCopy, true), document.addEventListener("cut", this._handleClipboardCut, true), document.addEventListener("paste", this._handleClipboardPaste, true), this.disposeWithMe((0, i.toDisposable)(() => {
+      document.removeEventListener("copy", this._handleClipboardCopy, true), document.removeEventListener("cut", this._handleClipboardCut, true), document.removeEventListener("paste", this._handleClipboardPaste, true);
+    })), this.disposeWithMe(this._keyboardService["setHandler"](var_core_value_sigCEFB => this._handleKeyboardAction(var_core_value_sigCEFB))), this.disposeWithMe(this._keyboardService["setInputHandler"](var_core_value_sig1537 => this._handleKeyboardInput(var_core_value_sig1537)));
+    let var_core_value_sig7053 = (var_core_value_sigF631 = (var_core_value_sig2278 = this._transformerVisibilityService).registerGuard) == null ? undefined : var_core_value_sigF631.call(var_core_value_sig2278, var_core_value_sigE4C6 => this._shouldShowTransformerForDrawing(var_core_value_sigE4C6));
+    var_core_value_sig7053 && this.disposeWithMe(var_core_value_sig7053), this.disposeWithMe(this._keyboardService["setHandler"](var_core_value_sig4313 => this._handleKeyboardAction(var_core_value_sig4313))), this.disposeWithMe(this._renderContext["scene"].onDblclick$["subscribeEvent"](var_core_value_sigFC87 => {
+      this._handleSceneDoubleClick(var_core_value_sigFC87);
+    })), this.disposeWithMe(this._renderContext["engine"].onTransformChange$["subscribeEvent"](() => {
+      this._scheduleActiveEditorLayoutSync();
+    }));
+    let var_core_value_sig52F1 = this._drawingStateService["state$"];
+    if (var_core_value_sig52F1) {
+      let var_core_value_sig156F = var_core_value_sig52F1.subscribe(var_core_value_sigC80B => {
+        var var_core_value_sig284F;
+        this._syncActiveTableFromDrawingState(var_core_value_sigC80B);
+        let var_core_value_sigE154 = this._tableSelectionService["getSelection"]();
+        if (!var_core_value_sigE154) {
+          var var_core_value_sig4632, var_core_value_sig12F2;
+          let var_core_value_sig1A0F = ((var_core_value_sig4632 = (var_core_value_sig12F2 = this._tableSelectionService).isTableInternalInteractionActive) == null ? undefined : var_core_value_sig4632.call(var_core_value_sig12F2)) ?? false;
+          this._lastActiveTableContext && this._tableActivationStage && !this._isLastActiveTableSelected(var_core_value_sigC80B) && !var_core_value_sig1A0F && this._resetTableInteraction();
+          return;
+        }
+        if (!(((var_core_value_sig284F = var_core_value_sigC80B.context) == null ? undefined : var_core_value_sig284F.unitId) === var_core_value_sigE154.unitId && var_core_value_sigC80B.context["subUnitId"] === var_core_value_sigE154.subUnitId && var_core_value_sigC80B.selectedIds["includes"](var_core_value_sigE154.elementId))) {
+          if (!this._isExternalDrawingSelection(var_core_value_sigC80B, var_core_value_sigE154) && this._isTableInteractionInProgress(var_core_value_sigE154)) return;
+          this._resetTableInteraction();
+        }
+      });
+      this.disposeWithMe({
+        dispose: () => var_core_value_sig156F.unsubscribe()
+      });
+    }
+    this._initResizeInteraction(), this._initPointerDownContextMenu();
+  }
+  _scheduleActiveEditorLayoutSync() {
+    this._editorLayoutSyncScheduled || (this._editorLayoutSyncScheduled = true, Promise.resolve().then(() => {
+      this._editorLayoutSyncScheduled && (this._editorLayoutSyncScheduled = false, this._syncActiveEditorLayout());
+    }));
+  }
+  _syncActiveEditorLayout() {
+    let var_core_value_sig1E74 = this._editorUIService["getSession"](),
+      var_core_value_sig1E84 = var_core_value_sig1E74 == null ? undefined : var_core_value_sig1E74.context;
+    if (!var_core_value_sig1E74 || !var_core_value_sig1E84 || !this._isCurrentEditorSession(var_core_value_sig1E84)) return;
+    let var_core_value_sig133B = this._resolveTableObjectFromContext(var_core_value_sig1E84);
+    if (!var_core_value_sig133B) return;
+    let {
+        object: var_core_value_sig69B8,
+        table: var_core_value_sig983D
+      } = var_core_value_sig133B,
+      var_core_value_sig9A03 = (0, n.resolveSlideTableRenderModel)(var_core_value_sig983D),
+      var_core_value_sig3363 = var_core_value_sig9A03.cells["find"](var_core_value_sigDD51 => var_core_value_sigDD51.row === var_core_value_sig1E84.row && var_core_value_sigDD51.column === var_core_value_sig1E84.column && !var_core_value_sigDD51.hidden);
+    if (!var_core_value_sig3363) return;
+    let var_core_value_sigF64A = this._resolveEditorLayout(var_core_value_sig69B8, var_core_value_sig9A03, var_core_value_sig3363, var_core_value_sig1E74.documentData);
+    var_core_value_sigF64A && this._editorUIService["update"]({
+      layout: var_core_value_sigF64A
+    });
+  }
+  _syncActiveTableFromDrawingState(var_core_value_sig25EC) {
+    if (!var_core_value_sig25EC.context || var_core_value_sig25EC.selectedIds["length"] !== 1) return;
+    let [var_core_value_sigA790] = var_core_value_sig25EC.selectedIds,
+      var_core_value_sig9A5E = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sig25EC.context["unitId"], var_core_value_sig25EC.context["subUnitId"], var_core_value_sigA790));
+    if (!var_core_value_sig9A5E) return;
+    let var_core_value_sig01B9 = this._resolveSelectedTableDrawing(var_core_value_sig25EC.context["unitId"], var_core_value_sig25EC.context["subUnitId"], var_core_value_sigA790);
+    if (!var_core_value_sig01B9 || var_core_value_sig01B9.element["type"] !== t.PageElementTypeEnum["Table"]) return;
+    let var_core_value_sigD6A9 = this._tableSelectionService["getSelection"]();
+    if ((var_core_value_sigD6A9 == null ? undefined : var_core_value_sigD6A9.unitId) === var_core_value_sig01B9.unitId && var_core_value_sigD6A9.subUnitId === var_core_value_sig01B9.subUnitId && var_core_value_sigD6A9.elementId === var_core_value_sig01B9.drawingId) {
+      this._syncTableSelectionToObject(var_core_value_sig01B9, var_core_value_sig9A5E, var_core_value_sigD6A9), this._syncActivationStageFromSelection(var_core_value_sigD6A9);
+      return;
+    }
+    (var_core_value_sigD6A9 == null ? undefined : var_core_value_sigD6A9.kind) === "table" && this._tableSelectionService["clear"](), this._lastActiveTableContext = {
+      unitId: var_core_value_sig01B9.unitId,
+      subUnitId: var_core_value_sig01B9.subUnitId,
+      elementId: var_core_value_sig01B9.drawingId
+    }, this._activateTableObject(var_core_value_sig9A5E);
+  }
+  _isLastActiveTableSelected(var_core_value_sig0FCF) {
+    var var_core_value_sigCF96;
+    let var_core_value_sigC4E9 = this._lastActiveTableContext;
+    return !!var_core_value_sigC4E9 && ((var_core_value_sigCF96 = var_core_value_sig0FCF.context) == null ? undefined : var_core_value_sigCF96.unitId) === var_core_value_sigC4E9.unitId && var_core_value_sig0FCF.context["subUnitId"] === var_core_value_sigC4E9.subUnitId && var_core_value_sig0FCF.selectedIds["includes"](var_core_value_sigC4E9.elementId);
+  }
+  _isExternalDrawingSelection(var_core_value_sigF612, var_core_value_sigAA6C) {
+    if (var_core_value_sigF612.selectedIds["length"] === 0) return true;
+    if (!var_core_value_sigF612.context) return false;
+    let var_core_value_sig8BFA = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sigAA6C.unitId, var_core_value_sigAA6C.subUnitId, var_core_value_sigAA6C.elementId));
+    return var_core_value_sigF612.selectedIds["some"](var_core_value_sigF057 => {
+      if (var_core_value_sigF057 === var_core_value_sigAA6C.elementId) return false;
+      let var_core_value_sig72F6 = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sigF612.context["unitId"], var_core_value_sigF612.context["subUnitId"], var_core_value_sigF057));
+      return !!var_core_value_sig72F6 && var_core_value_sig72F6 !== var_core_value_sig8BFA;
+    });
+  }
+  _resolveSelectedTableDrawing(var_core_value_sig236B, var_core_value_sig1951, var_core_value_sigFEA0) {
+    var var_core_value_sig931A, var_core_value_sigEE7D;
+    let var_core_value_sig3585 = (var_core_value_sig931A = this._hitTestService) == null ? undefined : var_core_value_sig931A.getOrderedTopLevelDrawings;
+    return (var_core_value_sig3585 == null || (var_core_value_sigEE7D = var_core_value_sig3585.call(this._hitTestService)) == null ? undefined : var_core_value_sigEE7D.find(var_core_value_sig9FBA => var_core_value_sig9FBA.unitId === var_core_value_sig236B && var_core_value_sig9FBA.subUnitId === var_core_value_sig1951 && var_core_value_sig9FBA.drawingId === var_core_value_sigFEA0)) ?? null;
+  }
+  _resolveInsertDotAtScenePoint(var_core_value_sig31A8) {
+    var var_core_value_sigA4DA;
+    let var_core_value_sig6FC0 = (var_core_value_sigA4DA = this._hitTestService) == null ? undefined : var_core_value_sigA4DA.getOrderedTopLevelDrawings,
+      var_core_value_sig6217 = (var_core_value_sig6FC0 == null ? undefined : var_core_value_sig6FC0.call(this._hitTestService)) ?? [],
+      var_core_value_sigB805 = new a["Vector2"](var_core_value_sig31A8.x, var_core_value_sig31A8.y);
+    for (let var_core_value_sigFE01 = var_core_value_sig6217.length - 1; var_core_value_sigFE01 >= 0; var_core_value_sigFE01--) {
+      let var_core_value_sig2259 = var_core_value_sig6217[var_core_value_sigFE01];
+      if (!var_core_value_sig2259 || var_core_value_sig2259.unitId !== this._renderContext["unitId"] || var_core_value_sig2259.element["type"] !== t.PageElementTypeEnum["Table"] || var_core_value_sig2259.groupId || !this._tableResourceService["getTable"](var_core_value_sig2259.unitId, var_core_value_sig2259.element["tableId"])) continue;
+      let var_core_value_sig9E2F = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sig2259.unitId, var_core_value_sig2259.subUnitId, var_core_value_sig2259.drawingId));
+      if (!var_core_value_sig9E2F || var_core_value_sig9E2F.isInGroup) continue;
+      let var_core_value_sigD082 = this._resolveInsertDotTriggerForObject(var_core_value_sig9E2F, var_core_value_sigB805);
+      if (var_core_value_sigD082) return {
+        drawing: var_core_value_sig2259,
+        object: var_core_value_sig9E2F,
+        trigger: var_core_value_sigD082
+      };
+    }
+    return null;
+  }
+  _resolveInsertDotTriggerForObject(var_core_value_sig4FAE, var_core_value_sig1FCC) {
+    var var_core_value_sigB7F9;
+    let var_core_value_sigB1A2 = (var_core_value_sigB7F9 = var_core_value_sig4FAE.hitTestStructuralTriggerAtScenePoint) == null ? undefined : var_core_value_sigB7F9.call(var_core_value_sig4FAE, var_core_value_sig1FCC);
+    return Ii(var_core_value_sigB1A2) ? var_core_value_sigB1A2 : null;
+  }
+  _initPointerDownContextMenu() {
+    let var_core_value_sig526D = this._renderContext["scene"];
+    var_core_value_sig526D.onPointerDown$ && this.disposeWithMe(var_core_value_sig526D.onPointerDown$["subscribeEvent"]({
+      priority: zi,
+      next: ([var_core_value_sigA2CE, var_core_value_sig1975]) => {
+        this._handleActiveTableControlPointerDown(var_core_value_sigA2CE, var_core_value_sig1975);
+      }
+    }));
+    let var_core_value_sigBDB5 = this._hitTestService["onPointerDown$"];
+    if (!var_core_value_sigBDB5) return;
+    let var_core_value_sig59CE1 = var_core_value_sigBDB5.subscribe(var_core_value_sig6EA1 => this._handleHitTestPointerDown(var_core_value_sig6EA1));
+    this.disposeWithMe({
+      dispose: () => var_core_value_sig59CE1.unsubscribe()
+    });
+  }
+  _handleActiveTableControlPointerDown(var_core_value_sig3AD7, var_core_value_sig04E4) {
+    let var_core_value_sigD8F01 = var_core_value_sig3AD7.button ?? 0;
+    if (var_core_value_sigD8F01 !== 0 && var_core_value_sigD8F01 !== 2) return false;
+    let var_core_value_sig1475 = this._resolvePointerViewportPoint(var_core_value_sig3AD7),
+      var_core_value_sig08B7 = this._resolveScenePoint(var_core_value_sig1475.x, var_core_value_sig1475.y);
+    if (var_core_value_sigD8F01 === 0 && !this._isTableTextEditing()) {
+      let var_core_value_sig029F = this._resolveInsertDotAtScenePoint(var_core_value_sig08B7);
+      if (var_core_value_sig029F) {
+        var var_core_value_sig2008, var_core_value_sig496B;
+        return var_core_value_sig04E4.stopPropagation(), var_core_value_sig04E4.skipNextObservers = true, (var_core_value_sig2008 = var_core_value_sig3AD7.stopPropagation) == null || var_core_value_sig2008.call(var_core_value_sig3AD7), (var_core_value_sig496B = var_core_value_sig3AD7.preventDefault) == null || var_core_value_sig496B.call(var_core_value_sig3AD7), this._hideContextMenu(), this._editorUIService["complete"](), this._lastActiveTableContext = {
+          unitId: var_core_value_sig029F.drawing["unitId"],
+          subUnitId: var_core_value_sig029F.drawing["subUnitId"],
+          elementId: var_core_value_sig029F.drawing["drawingId"]
+        }, this._handleStructuralInsertTrigger(var_core_value_sig029F.drawing, var_core_value_sig029F.object, var_core_value_sig029F.trigger, var_core_value_sig08B7), true;
+      }
+    }
+    let var_core_value_sig7161 = this._resolveActiveTableObject();
+    if (!var_core_value_sig7161 || var_core_value_sig7161.drawing["element"].type !== t.PageElementTypeEnum["Table"]) return false;
+    let {
+        drawing: var_core_value_sig2AB8,
+        object: var_core_value_sig3FCF
+      } = var_core_value_sig7161,
+      var_core_value_sig675A = (0, r.buildDrawingOKey)(var_core_value_sig2AB8.unitId, var_core_value_sig2AB8.subUnitId, var_core_value_sig2AB8.drawingId),
+      var_core_value_sig837F = this._resolveTableControlHit(var_core_value_sig2AB8, var_core_value_sig3FCF, var_core_value_sig08B7.x, var_core_value_sig08B7.y),
+      var_core_value_sig9D6E = var_core_value_sig837F ? null : this._resolveCellHit(var_core_value_sig2AB8, var_core_value_sig675A, var_core_value_sig08B7.x, var_core_value_sig08B7.y);
+    if (!var_core_value_sig837F && !var_core_value_sig9D6E) return false;
+    if (!this._isTableDrawingActive(var_core_value_sig2AB8)) {
+      var var_core_value_sigB205, var_core_value_sigBF78;
+      return this._drawingStateService["selectDrawings"]({
+        unitId: var_core_value_sig2AB8.unitId,
+        subUnitId: var_core_value_sig2AB8.subUnitId
+      }, [var_core_value_sig2AB8.drawingId], var_core_value_sig2AB8.drawingId), var_core_value_sig04E4.stopPropagation(), var_core_value_sig04E4.skipNextObservers = true, (var_core_value_sigB205 = var_core_value_sig3AD7.stopPropagation) == null || var_core_value_sigB205.call(var_core_value_sig3AD7), (var_core_value_sigBF78 = var_core_value_sig3AD7.preventDefault) == null || var_core_value_sigBF78.call(var_core_value_sig3AD7), this._hideContextMenu(), this._editorUIService["complete"](), this._lastActiveTableContext = {
+        unitId: var_core_value_sig2AB8.unitId,
+        subUnitId: var_core_value_sig2AB8.subUnitId,
+        elementId: var_core_value_sig2AB8.drawingId
+      }, this._activateTableObject(var_core_value_sig3FCF), true;
+    }
+    return this._handleTablePointerDown(var_core_value_sig2AB8, var_core_value_sig675A, var_core_value_sig3FCF, this._createViewportPointerEvent(var_core_value_sig3AD7, var_core_value_sig1475), var_core_value_sig04E4, var_core_value_sig837F), true;
+  }
+  _handleHitTestPointerDown(var_core_value_sig8AF3) {
+    let var_core_value_sigA0CC = var_core_value_sig8AF3.nativeEvent["button"] ?? 0;
+    if (var_core_value_sigA0CC !== 0 && var_core_value_sigA0CC !== 2) return;
+    let var_core_value_sigB3A1 = var_core_value_sig8AF3.nativeEvent;
+    var_core_value_sigB3A1.offsetX === undefined && (var_core_value_sigB3A1.offsetX = var_core_value_sig8AF3.offsetX), var_core_value_sigB3A1.offsetY === undefined && (var_core_value_sigB3A1.offsetY = var_core_value_sig8AF3.offsetY);
+    let var_core_value_sig1FB9 = this._renderContext["scene"].getObject(var_core_value_sig8AF3.oKey);
+    var_core_value_sig1FB9 && (var_core_value_sigA0CC !== 2 || var_core_value_sig8AF3.drawing["element"].type !== t.PageElementTypeEnum["Table"] || this._isTableTextEditing() || this._handleCellContextMenuPointerDown(var_core_value_sig8AF3.drawing, var_core_value_sig8AF3.oKey, var_core_value_sig1FB9, var_core_value_sigB3A1, {
+      stopPropagation: () => {
+        var var_core_value_sig3767;
+        return (var_core_value_sig3767 = var_core_value_sigB3A1.stopPropagation) == null ? undefined : var_core_value_sig3767.call(var_core_value_sigB3A1);
+      },
+      skipNextObservers: false
+    }));
+  }
+  _initResizeInteraction() {
+    let var_core_value_sig53A9 = this._renderContext["scene"];
+    if (var_core_value_sig53A9.onPointerMove$ && this.disposeWithMe(var_core_value_sig53A9.onPointerMove$["subscribeEvent"]({
+      priority: zi,
+      next: ([var_core_value_sig670B]) => {
+        this._handleResizeHover(var_core_value_sig670B), this._updateTableControlHover(var_core_value_sig670B);
+      }
+    })), var_core_value_sig53A9.addObject$) {
+      let var_core_value_sig6912 = var_core_value_sig53A9.addObject$["subscribe"](() => this._scheduleWireResizeObjects());
+      this.disposeWithMe({
+        dispose: () => var_core_value_sig6912.unsubscribe()
+      });
+    }
+    this._scheduleWireResizeObjects();
+  }
+  _scheduleWireResizeObjects() {
+    this._resizeWireScheduled || (this._resizeWireScheduled = true, Promise.resolve().then(() => {
+      this._resizeWireScheduled = false, this._wireResizeObjects();
+    }));
+  }
+  _wireResizeObjects() {
+    let var_core_value_sigDACD = this._hitTestService["getOrderedTopLevelDrawings"];
+    ((var_core_value_sigDACD == null ? undefined : var_core_value_sigDACD.call(this._hitTestService)) ?? []).forEach(var_core_value_sigE235 => {
+      if (var_core_value_sigE235.element["type"] !== t.PageElementTypeEnum["Table"]) return;
+      let var_core_value_sig7664 = (0, r.buildDrawingOKey)(var_core_value_sigE235.unitId, var_core_value_sigE235.subUnitId, var_core_value_sigE235.drawingId),
+        var_core_value_sig2281 = this._renderContext["scene"].getObject(var_core_value_sig7664);
+      if (!var_core_value_sig2281 || var_core_value_sig2281.isInGroup || (this._syncTableSelectionToObject(var_core_value_sigE235, var_core_value_sig2281), this._wiredResizeObjectRefs["get"](var_core_value_sig7664) === var_core_value_sig2281)) return;
+      let var_core_value_sig5E86 = var_core_value_sig2281.onPointerDown$["subscribeEvent"]({
+        priority: zi,
+        next: ([var_core_value_sigDBB7, var_core_value_sigD0A8]) => {
+          this._handleTablePointerDown(var_core_value_sigE235, var_core_value_sig7664, var_core_value_sig2281, var_core_value_sigDBB7, var_core_value_sigD0A8);
+        }
+      });
+      this.disposeWithMe(var_core_value_sig5E86), this._wiredResizeObjectRefs["set"](var_core_value_sig7664, var_core_value_sig2281);
+    });
+  }
+  _handleSceneDoubleClick(var_core_value_sig691E) {
+    let var_core_value_sigD6D6 = this._hitTestService["hitTest"](var_core_value_sig691E.offsetX, var_core_value_sig691E.offsetY);
+    if (!var_core_value_sigD6D6) return;
+    let var_core_value_sig0347 = this._resolveScenePoint(var_core_value_sig691E.offsetX, var_core_value_sig691E.offsetY);
+    this._handleDoubleClick({
+      drawing: var_core_value_sigD6D6.drawing,
+      oKey: var_core_value_sigD6D6.oKey,
+      offsetX: var_core_value_sig0347.x,
+      offsetY: var_core_value_sig0347.y,
+      nativeEvent: var_core_value_sig691E
+    });
+  }
+  _resolveScenePoint(var_core_value_sig52A3, var_core_value_sigAD91) {
+    var var_core_value_sigF64E, var_core_value_sig9B3D, var_core_value_sigB217;
+    let var_core_value_sig1FE6 = new a.Vector2(var_core_value_sig52A3, var_core_value_sigAD91),
+      var_core_value_sig2471 = this._renderContext["scene"],
+      var_core_value_sigD1FC = ((var_core_value_sigF64E = var_core_value_sig2471.getActiveViewportByCoord) == null ? undefined : var_core_value_sigF64E.call(var_core_value_sig2471, var_core_value_sig1FE6)) ?? ((var_core_value_sig9B3D = var_core_value_sig2471.getViewports) == null ? undefined : var_core_value_sig9B3D.call(var_core_value_sig2471)[0]),
+      var_core_value_sigE2F9 = (var_core_value_sigD1FC == null || (var_core_value_sigB217 = var_core_value_sigD1FC.transformVector2SceneCoord) == null ? undefined : var_core_value_sigB217.call(var_core_value_sigD1FC, var_core_value_sig1FE6)) ?? var_core_value_sig1FE6;
+    return {
+      x: var_core_value_sigE2F9.x,
+      y: var_core_value_sigE2F9.y
+    };
+  }
+  _handleResizeHover(var_core_value_sigD689) {
+    if (this._resizeDragContext) return;
+    if (this._isTableTextEditing()) {
+      this._resetResizeCursor();
+      return;
+    }
+    let var_core_value_sig7AE3 = this._hitTestService["hitTest"](var_core_value_sigD689.offsetX, var_core_value_sigD689.offsetY);
+    if (!var_core_value_sig7AE3 || var_core_value_sig7AE3.drawing["element"].type !== t.PageElementTypeEnum["Table"]) {
+      this._resetResizeCursor();
+      return;
+    }
+    if (!this._isTableDrawingActive(var_core_value_sig7AE3.drawing)) {
+      this._resetResizeCursor();
+      return;
+    }
+    let var_core_value_sig1EB3 = this._renderContext["scene"].getObject(var_core_value_sig7AE3.oKey);
+    if (!var_core_value_sig1EB3) {
+      this._resetResizeCursor();
+      return;
+    }
+    let var_core_value_sigE120 = this._resolveScenePoint(var_core_value_sigD689.offsetX, var_core_value_sigD689.offsetY),
+      var_core_value_sigD6E7 = this._resolveResizeHit(var_core_value_sig7AE3.drawing, var_core_value_sig1EB3, var_core_value_sigE120.x, var_core_value_sigE120.y);
+    if (!var_core_value_sigD6E7) {
+      this._resetResizeCursor();
+      return;
+    }
+    this._setResizeCursor(var_core_value_sigD6E7.handle["axis"]);
+  }
+  _handleTablePointerDown(var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig20BE, var_core_value_sig6BD0, var_core_value_sig8C15, var_core_value_sig6DF7) {
+    var var_core_value_sigB411, var_core_value_sigA81B;
+    let var_core_value_sigFE8D = var_core_value_sig6BD0.button ?? 0;
+    if (this._handleTableControlPointerDown(var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig20BE, var_core_value_sig6BD0, var_core_value_sig8C15, var_core_value_sig6DF7) || this._handleTextEditingCellPointerDown(var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig20BE, var_core_value_sig6BD0, var_core_value_sig8C15) || var_core_value_sigFE8D === 2 && this._handleCellContextMenuPointerDown(var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig20BE, var_core_value_sig6BD0, var_core_value_sig8C15) || this._handleResizePointerDown(var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig20BE, var_core_value_sig6BD0, var_core_value_sig8C15) || var_core_value_sigFE8D !== 0 || this._isTableTextEditing() || !this._isTableDrawingActive(var_core_value_sig3669)) return;
+    let var_core_value_sig8595 = this._resolveScenePoint(var_core_value_sig6BD0.offsetX, var_core_value_sig6BD0.offsetY),
+      var_core_value_sigF8DE = this._resolveCellHit(var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig8595.x, var_core_value_sig8595.y);
+    if (var_core_value_sigF8DE) {
+      if (this._tableActivationStage === "table") {
+        this._startStage1TableBodyPointer(var_core_value_sig3669, var_core_value_sig20BE, var_core_value_sig6BD0, var_core_value_sig8C15, var_core_value_sigF8DE);
+        return;
+      }
+      var_core_value_sig8C15.stopPropagation(), var_core_value_sig8C15.skipNextObservers = true, (var_core_value_sigB411 = var_core_value_sig6BD0.stopPropagation) == null || var_core_value_sigB411.call(var_core_value_sig6BD0), (var_core_value_sigA81B = var_core_value_sig6BD0.preventDefault) == null || var_core_value_sigA81B.call(var_core_value_sig6BD0), this._hideContextMenu(), this._editorUIService["complete"](), this._selectResolvedCell(var_core_value_sig3669, var_core_value_sig20BE, var_core_value_sigF8DE), this._rangeDragContext = {
+        drawing: var_core_value_sig3669,
+        objectKey: var_core_value_sig5CBC,
+        object: var_core_value_sig20BE,
+        table: var_core_value_sigF8DE.table,
+        anchor: {
+          row: var_core_value_sigF8DE.row,
+          column: var_core_value_sigF8DE.column
+        },
+        current: {
+          row: var_core_value_sigF8DE.row,
+          column: var_core_value_sigF8DE.column
+        }
+      }, this._bindRangeDragWindowEvents();
+    }
+  }
+  _handleTextEditingCellPointerDown(var_core_value_sigFE76, var_core_value_sig84C8, var_core_value_sig80C0, var_core_value_sig22B4, var_core_value_sigBB37) {
+    var var_core_value_sig0C51, var_core_value_sigADA4;
+    if ((var_core_value_sig22B4.button ?? 0) !== 0 || !this._isTableTextEditing() || !this._isTableDrawingActive(var_core_value_sigFE76) || var_core_value_sigFE76.element["type"] !== t.PageElementTypeEnum["Table"]) return false;
+    let var_core_value_sig0E48 = this._resolveScenePoint(var_core_value_sig22B4.offsetX, var_core_value_sig22B4.offsetY),
+      var_core_value_sig495B = this._resolveCellHit(var_core_value_sigFE76, var_core_value_sig84C8, var_core_value_sig0E48.x, var_core_value_sig0E48.y);
+    if (!var_core_value_sig495B) return false;
+    var_core_value_sigBB37.stopPropagation(), var_core_value_sigBB37.skipNextObservers = true, this._hideContextMenu();
+    let var_core_value_sig310C = this._tableSelectionService["getSelection"]();
+    return (var_core_value_sig310C == null ? undefined : var_core_value_sig310C.kind) === "text" && ((var_core_value_sig0C51 = var_core_value_sig310C.focus) == null ? undefined : var_core_value_sig0C51.row) === var_core_value_sig495B.row && var_core_value_sig310C.focus["column"] === var_core_value_sig495B.column ? true : ((var_core_value_sigADA4 = var_core_value_sig80C0.setEditingCell) == null || var_core_value_sigADA4.call(var_core_value_sig80C0, null), this._openCellEditor(var_core_value_sigFE76, var_core_value_sig495B, {
+      handoffCurrent: true
+    }), true);
+  }
+  _handleTableControlPointerDown(var_core_value_sig759E, var_core_value_sig6C80, var_core_value_sig6B99, var_core_value_sig6ADC, var_core_value_sig41AD, var_core_value_sigDBC2) {
+    var var_core_value_sig7739, var_core_value_sig4040;
+    if ((var_core_value_sig6ADC.button ?? 0) !== 0 || this._isTableTextEditing() || var_core_value_sig759E.element["type"] !== t.PageElementTypeEnum["Table"]) return false;
+    let var_core_value_sig1AAA = this._resolvePointerScenePoint(var_core_value_sig6ADC),
+      var_core_value_sig58DB = var_core_value_sigDBC2 ?? this._resolveTableControlHit(var_core_value_sig759E, var_core_value_sig6B99, var_core_value_sig1AAA.x, var_core_value_sig1AAA.y);
+    if (!var_core_value_sig58DB) return false;
+    if (Ii(var_core_value_sig58DB)) {
+      var var_core_value_sig4840, var_core_value_sigB76D;
+      return var_core_value_sig41AD.stopPropagation(), var_core_value_sig41AD.skipNextObservers = true, (var_core_value_sig4840 = var_core_value_sig6ADC.stopPropagation) == null || var_core_value_sig4840.call(var_core_value_sig6ADC), (var_core_value_sigB76D = var_core_value_sig6ADC.preventDefault) == null || var_core_value_sigB76D.call(var_core_value_sig6ADC), this._hideContextMenu(), this._editorUIService["complete"](), this._lastActiveTableContext = {
+        unitId: var_core_value_sig759E.unitId,
+        subUnitId: var_core_value_sig759E.subUnitId,
+        elementId: var_core_value_sig759E.drawingId
+      }, this._handleStructuralInsertTrigger(var_core_value_sig759E, var_core_value_sig6B99, var_core_value_sig58DB, var_core_value_sig1AAA);
+    }
+    return this._isTableDrawingActive(var_core_value_sig759E) ? (var_core_value_sig41AD.stopPropagation(), var_core_value_sig41AD.skipNextObservers = true, (var_core_value_sig7739 = var_core_value_sig6ADC.stopPropagation) == null || var_core_value_sig7739.call(var_core_value_sig6ADC), (var_core_value_sig4040 = var_core_value_sig6ADC.preventDefault) == null || var_core_value_sig4040.call(var_core_value_sig6ADC), this._hideContextMenu(), this._editorUIService["complete"](), var_core_value_sig58DB.kind === "row-header" || var_core_value_sig58DB.kind === "column-header" ? (this._handleStructuralHeaderPointerDown(var_core_value_sig759E, var_core_value_sig6B99, var_core_value_sig58DB, var_core_value_sig1AAA), true) : var_core_value_sig58DB.kind === "table-handle" ? (this._startTableMoveDrag(var_core_value_sig759E, var_core_value_sig6B99, var_core_value_sig6ADC), true) : false) : false;
+  }
+  _handleCellContextMenuPointerDown(var_core_value_sig1015, var_core_value_sig6223, var_core_value_sigC6B6, var_core_value_sig498A, var_core_value_sigEF45) {
+    if (!this._isTableDrawingActive(var_core_value_sig1015) || var_core_value_sig1015.element["type"] !== t.PageElementTypeEnum["Table"]) return false;
+    let var_core_value_sig36FE = this._resolvePointerScenePoint(var_core_value_sig498A),
+      var_core_value_sig3AF5 = this._resolveCellHit(var_core_value_sig1015, var_core_value_sig6223, var_core_value_sig36FE.x, var_core_value_sig36FE.y);
+    return var_core_value_sig3AF5 ? (var_core_value_sigEF45.stopPropagation(), var_core_value_sigEF45.skipNextObservers = true, this._hideContextMenu(), this._editorUIService["complete"](), this._selectResolvedCell(var_core_value_sig1015, var_core_value_sigC6B6, var_core_value_sig3AF5), this._openContextMenu(var_core_value_sig498A, "slide-table.contextMenu.cell"), true) : false;
+  }
+  _handleResizePointerDown(var_core_value_sig14E6, var_core_value_sig8690, var_core_value_sigDF29, var_core_value_sigC0F8, var_core_value_sig3C75) {
+    var var_core_value_sig992D, var_core_value_sigE4E4;
+    if ((var_core_value_sigC0F8.button ?? 0) !== 0 || this._isTableTextEditing() || !this._isTableDrawingActive(var_core_value_sig14E6)) return false;
+    let var_core_value_sigA4B0 = this._resolveScenePoint(var_core_value_sigC0F8.offsetX, var_core_value_sigC0F8.offsetY),
+      var_core_value_sig5F50 = this._resolveResizeHit(var_core_value_sig14E6, var_core_value_sigDF29, var_core_value_sigA4B0.x, var_core_value_sigA4B0.y);
+    if (!var_core_value_sig5F50 || var_core_value_sig14E6.element["type"] !== t.PageElementTypeEnum["Table"]) return false;
+    var_core_value_sig3C75.stopPropagation(), var_core_value_sig3C75.skipNextObservers = true, this._hideContextMenu(), this._editorUIService["complete"](), this._tableSelectionService["clear"](), (var_core_value_sig992D = var_core_value_sigDF29.setTableSelection) == null || var_core_value_sig992D.call(var_core_value_sigDF29, null), this._resizeDragContext = {
+      unitId: var_core_value_sig14E6.unitId,
+      tableId: var_core_value_sig14E6.element["tableId"],
+      object: var_core_value_sigDF29,
+      table: var_core_value_sig5F50.table,
+      handle: var_core_value_sig5F50.handle,
+      startPoint: var_core_value_sig5F50.point,
+      pendingTable: var_core_value_sig5F50.table
+    }, this._setResizeCursor(var_core_value_sig5F50.handle["axis"]);
+    let var_core_value_sig4494 = this._renderContext["scene"];
+    (var_core_value_sigE4E4 = var_core_value_sig4494.disableObjectsEvent) == null || var_core_value_sigE4E4.call(var_core_value_sig4494);
+    let var_core_value_sigFFAF = var_core_value_sig4494.onPointerMove$["subscribeEvent"](var_core_value_sig6998 => this._updateResizeDrag(var_core_value_sig6998)),
+      var_core_value_sig478B = var_core_value_sig4494.onPointerUp$["subscribeEvent"](var_core_value_sigF639 => {
+        var var_core_value_sigEAE5;
+        var_core_value_sigFFAF == null || var_core_value_sigFFAF.unsubscribe(), var_core_value_sig478B == null || var_core_value_sig478B.unsubscribe(), (var_core_value_sigEAE5 = var_core_value_sig4494.enableObjectsEvent) == null || var_core_value_sigEAE5.call(var_core_value_sig4494), this._finishResizeDrag(var_core_value_sigF639);
+      });
+    return this.disposeWithMe({
+      dispose: () => var_core_value_sigFFAF.unsubscribe()
+    }), this.disposeWithMe({
+      dispose: () => var_core_value_sig478B.unsubscribe()
+    }), true;
+  }
+  _resolveResizeHit(var_core_value_sig1E21, var_core_value_sig9DBF, var_core_value_sig36CC, var_core_value_sigA568) {
+    if (var_core_value_sig1E21.unitId !== this._renderContext["unitId"] || var_core_value_sig1E21.element["type"] !== t.PageElementTypeEnum["Table"] || !this._isTableDrawingActive(var_core_value_sig1E21) || var_core_value_sig1E21.groupId || var_core_value_sig9DBF.isInGroup) return null;
+    let var_core_value_sigD22D = this._tableResourceService["getTable"](var_core_value_sig1E21.unitId, var_core_value_sig1E21.element["tableId"]);
+    if (!var_core_value_sigD22D) return null;
+    let var_core_value_sig85D5 = this._resolveObjectPoint(var_core_value_sig9DBF, var_core_value_sig36CC, var_core_value_sigA568),
+      var_core_value_sig5D2E = Vi(var_core_value_sigD22D, var_core_value_sig9DBF.width, var_core_value_sig9DBF.height, var_core_value_sig85D5.x, var_core_value_sig85D5.y, 6);
+    return var_core_value_sig5D2E ? {
+      table: var_core_value_sigD22D,
+      handle: var_core_value_sig5D2E,
+      point: var_core_value_sig85D5
+    } : null;
+  }
+  _resolveObjectPoint(var_core_value_sig7221, var_core_value_sig0A5A, var_core_value_sigE6D6) {
+    let var_core_value_sig8507 = var_core_value_sig7221.getInverseCoord(new a["Vector2"](var_core_value_sig0A5A, var_core_value_sigE6D6));
+    return {
+      x: var_core_value_sig8507.x + var_core_value_sig7221.width / 2,
+      y: var_core_value_sig8507.y + var_core_value_sig7221.height / 2
+    };
+  }
+  _resolveTableControlHit(var_core_value_sig8A7F, var_core_value_sig9E81, var_core_value_sig8295, var_core_value_sigA975) {
+    if (var_core_value_sig8A7F.element["type"] !== t.PageElementTypeEnum["Table"]) return null;
+    let var_core_value_sig1263 = this._tableResourceService["getTable"](var_core_value_sig8A7F.unitId, var_core_value_sig8A7F.element["tableId"]);
+    if (!var_core_value_sig1263) return null;
+    let var_core_value_sig457C = this._resolveObjectPoint(var_core_value_sig9E81, var_core_value_sig8295, var_core_value_sigA975),
+      var_core_value_sigA4E6 = this._resolveTableTriggerHit(var_core_value_sig1263, var_core_value_sig9E81, var_core_value_sig457C.x, var_core_value_sig457C.y);
+    return var_core_value_sigA4E6 && (var_core_value_sigA4E6.kind === "table-handle" || var_core_value_sigA4E6.kind === "row-header" || var_core_value_sigA4E6.kind === "column-header" || var_core_value_sigA4E6.kind === "row-insert-dot" || var_core_value_sigA4E6.kind === "column-insert-dot") ? var_core_value_sigA4E6 : (0, n.hitTestSlideTableControl)((0, n.buildSlideTableControls)((0, n.resolveSlideTableRenderModel)(var_core_value_sig1263), var_core_value_sig9E81.width, var_core_value_sig9E81.height).filter(var_core_value_sigE94C => var_core_value_sigE94C.kind === "table-handle"), var_core_value_sig457C.x, var_core_value_sig457C.y);
+  }
+  _updateTableControlHover(var_core_value_sig934F) {
+    if (this._isTableTextEditing()) {
+      this._clearTableControlHover();
+      return;
+    }
+    let var_core_value_sig74A7 = this._resolvePointerScenePoint(var_core_value_sig934F),
+      var_core_value_sig3685 = this._resolveInsertDotAtScenePoint(var_core_value_sig74A7);
+    if (var_core_value_sig3685) {
+      this._clearStructuralInsertHoverObject(var_core_value_sig3685.object), this._structuralInsertHoverObject = var_core_value_sig3685.object, this._updateStructuralControlHover(var_core_value_sig3685.object, var_core_value_sig3685.trigger), this._setTableControlHover(var_core_value_sig3685.object, null), this._setTableCellHover(var_core_value_sig3685.object, null);
+      return;
+    }
+    let var_core_value_sigC621 = this._resolveActiveTableObject();
+    if (!var_core_value_sigC621) {
+      this._clearTableControlHover();
+      return;
+    }
+    this._clearStructuralInsertHoverObject(var_core_value_sigC621.object);
+    let var_core_value_sig86D7 = this._resolveTableControlHit(var_core_value_sigC621.drawing, var_core_value_sigC621.object, var_core_value_sig74A7.x, var_core_value_sig74A7.y),
+      var_core_value_sig431B1 = var_core_value_sig86D7 && (var_core_value_sig86D7.kind === "row-header" || var_core_value_sig86D7.kind === "column-header" || var_core_value_sig86D7.kind === "row-insert-dot" || var_core_value_sig86D7.kind === "column-insert-dot") ? var_core_value_sig86D7 : null;
+    this._updateStructuralControlHover(var_core_value_sigC621.object, var_core_value_sig431B1), this._setTableControlHover(var_core_value_sigC621.object, (var_core_value_sig86D7 == null ? undefined : var_core_value_sig86D7.kind) === "table-handle" ? {
+      kind: "table-handle"
+    } : null), this._updateCellHover(var_core_value_sigC621.drawing, var_core_value_sigC621.object, var_core_value_sig74A7.x, var_core_value_sig74A7.y, !!var_core_value_sig86D7);
+  }
+  _clearTableControlHover() {
+    this._setStructuralCursor(false);
+    let var_core_value_sig5C7C = this._resolveActiveTableObject();
+    this._clearStructuralInsertHoverObject((var_core_value_sig5C7C == null ? undefined : var_core_value_sig5C7C.object) ?? null), var_core_value_sig5C7C && (this._hoveredTrigger = null, this._setTableControlState(var_core_value_sig5C7C.object, null), this._setTableControlHover(var_core_value_sig5C7C.object, null), this._setTableCellHover(var_core_value_sig5C7C.object, null));
+  }
+  _clearStructuralInsertHoverObject(var_core_value_sig87E2 = null) {
+    let var_core_value_sig2E04 = this._structuralInsertHoverObject;
+    var_core_value_sig2E04 && (this._structuralInsertHoverObject = null, var_core_value_sig2E04 !== var_core_value_sig87E2 && (this._hoveredTrigger = null, this._setTableControlState(var_core_value_sig2E04, null), this._setTableControlHover(var_core_value_sig2E04, null), this._setTableCellHover(var_core_value_sig2E04, null)));
+  }
+  _setTableControlHover(var_core_value_sig2EDD, var_core_value_sig27D2) {
+    var var_core_value_sig355D;
+    if ((var_core_value_sig355D = var_core_value_sig2EDD.setTableControlHover) != null && var_core_value_sig355D.call(var_core_value_sig2EDD, var_core_value_sig27D2)) {
+      var var_core_value_sig8B21, var_core_value_sigEB36;
+      (var_core_value_sig8B21 = (var_core_value_sigEB36 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig8B21.call(var_core_value_sigEB36, true);
+    }
+  }
+  _updateCellHover(var_core_value_sig5C27, var_core_value_sigD494, var_core_value_sigBF6D, var_core_value_sigD051, var_core_value_sig16D9) {
+    if (var_core_value_sig16D9 || !this._tableActivationStage) {
+      this._setTableCellHover(var_core_value_sigD494, null);
+      return;
+    }
+    let var_core_value_sigF378 = this._resolveCellHit(var_core_value_sig5C27, (0, r.buildDrawingOKey)(var_core_value_sig5C27.unitId, var_core_value_sig5C27.subUnitId, var_core_value_sig5C27.drawingId), var_core_value_sigBF6D, var_core_value_sigD051);
+    this._setTableCellHover((var_core_value_sigF378 == null ? undefined : var_core_value_sigF378.object) ?? var_core_value_sigD494, var_core_value_sigF378 ? {
+      row: var_core_value_sigF378.cell["row"],
+      column: var_core_value_sigF378.cell["column"]
+    } : null);
+  }
+  _setTableCellHover(var_core_value_sig5F6C, var_core_value_sig7E85) {
+    var var_core_value_sigF204;
+    if ((var_core_value_sigF204 = var_core_value_sig5F6C.setTableCellHover) != null && var_core_value_sigF204.call(var_core_value_sig5F6C, var_core_value_sig7E85)) {
+      var var_core_value_sig7A15, var_core_value_sigEEA6;
+      (var_core_value_sig7A15 = (var_core_value_sigEEA6 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig7A15.call(var_core_value_sigEEA6, true);
+    }
+  }
+  _buildActiveTableTriggers(var_core_value_sigEAE1, var_core_value_sigC69F) {
+    var var_core_value_sig0442, var_core_value_sig697A;
+    let var_core_value_sigDB65 = (0, n.resolveSlideTableRenderModel)(var_core_value_sigEAE1),
+      var_core_value_sig045E = (var_core_value_sig0442 = (var_core_value_sig697A = this._renderContext["scene"]).getAncestorScale) == null ? undefined : var_core_value_sig0442.call(var_core_value_sig697A),
+      var_core_value_sig4524 = J((var_core_value_sig045E == null ? undefined : var_core_value_sig045E.scaleX) ?? (var_core_value_sig045E == null ? undefined : var_core_value_sig045E.scaleY), 1);
+    return (0, n.buildSlideTableTriggers)({
+      tableId: var_core_value_sigEAE1.id,
+      tableWidth: var_core_value_sigC69F.width,
+      tableHeight: var_core_value_sigC69F.height,
+      rowHeights: X(var_core_value_sigEAE1.rows["map"](var_core_value_sig6D47 => var_core_value_sig6D47.height ?? 24), var_core_value_sigC69F.height),
+      columnWidths: X(var_core_value_sigEAE1.columns["map"](var_core_value_sigCB82 => var_core_value_sigCB82.width), var_core_value_sigC69F.width),
+      mergedCells: var_core_value_sigDB65.cells["filter"](var_core_value_sigCF4E => !var_core_value_sigCF4E.hidden && (var_core_value_sigCF4E.rowSpan > 1 || var_core_value_sigCF4E.columnSpan > 1)).map(var_core_value_sig6CAD => ({
+        startRow: var_core_value_sig6CAD.row,
+        endRow: var_core_value_sig6CAD.row + var_core_value_sig6CAD.rowSpan - 1,
+        startColumn: var_core_value_sig6CAD.column,
+        endColumn: var_core_value_sig6CAD.column + var_core_value_sig6CAD.columnSpan - 1
+      })),
+      zoom: var_core_value_sig4524
+    });
+  }
+  _resolveTableTriggerHit(var_core_value_sig64D5, var_core_value_sig9678, var_core_value_sig5E74, var_core_value_sig75FC) {
+    return (0, n.hitTestSlideTableTrigger)(this._buildActiveTableTriggers(var_core_value_sig64D5, var_core_value_sig9678), var_core_value_sig5E74, var_core_value_sig75FC);
+  }
+  _updateStructuralControlHover(var_core_value_sig639A, var_core_value_sig567C) {
+    let var_core_value_sig825F = var_core_value_sig567C && (var_core_value_sig567C.kind === "row-header" || var_core_value_sig567C.kind === "column-header" || var_core_value_sig567C.kind === "row-insert-dot" || var_core_value_sig567C.kind === "column-insert-dot") ? var_core_value_sig567C : null;
+    this._hoveredTrigger = var_core_value_sig825F;
+    let var_core_value_sig546D = var_core_value_sig825F ? Bi(var_core_value_sig825F) : null,
+      var_core_value_sig8078 = (var_core_value_sig825F == null ? undefined : var_core_value_sig825F.kind) === "row-insert-dot" && var_core_value_sig546D !== null ? {
+        kind: "row",
+        index: var_core_value_sig546D
+      } : (var_core_value_sig825F == null ? undefined : var_core_value_sig825F.kind) === "column-insert-dot" && var_core_value_sig546D !== null ? {
+        kind: "column",
+        index: var_core_value_sig546D
+      } : null,
+      var_core_value_sigDCED = this._headerSelectionDragState ? {
+        kind: this._headerSelectionDragState["kind"],
+        start: Math.min(this._headerSelectionDragState["anchor"], this._headerSelectionDragState["current"]),
+        end: Math.max(this._headerSelectionDragState["anchor"], this._headerSelectionDragState["current"])
+      } : null,
+      var_core_value_sig2829 = this._rowColumnMoveTarget ? {
+        kind: this._rowColumnMoveTarget["kind"],
+        index: this._rowColumnMoveTarget["guideIndex"]
+      } : null,
+      var_core_value_sig6EE2 = !!var_core_value_sig825F || !!var_core_value_sigDCED || !!var_core_value_sig8078 || !!var_core_value_sig2829;
+    this._setTableControlState(var_core_value_sig639A, var_core_value_sig6EE2 ? {
+      visible: true,
+      hoveredTrigger: var_core_value_sig825F,
+      selectedStructuralRange: var_core_value_sigDCED,
+      insertGuide: var_core_value_sig8078,
+      reorderGuide: var_core_value_sig2829
+    } : null), this._setStructuralCursor(!!var_core_value_sig825F);
+  }
+  _setStructuralCursor(var_core_value_sig4CCC) {
+    let var_core_value_sig6E47 = this._renderContext["scene"];
+    if (var_core_value_sig4CCC) {
+      this._ownsStructuralCursor = true, var_core_value_sig6E47.setCursor(a.CURSOR_TYPE["POINTER"]);
+      return;
+    }
+    this._ownsStructuralCursor && (this._ownsStructuralCursor = false, !this._resizeHoverActive && var_core_value_sig6E47.getCursor() === a.CURSOR_TYPE["POINTER"] && var_core_value_sig6E47.resetCursor());
+  }
+  _setTableControlState(var_core_value_sigB64D, var_core_value_sig2407) {
+    var var_core_value_sigE4D0;
+    if ((var_core_value_sigE4D0 = var_core_value_sigB64D.setTableControlState) != null && var_core_value_sigE4D0.call(var_core_value_sigB64D, var_core_value_sig2407)) {
+      var var_core_value_sigD5F1, var_core_value_sigBC19;
+      (var_core_value_sigD5F1 = (var_core_value_sigBC19 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sigD5F1.call(var_core_value_sigBC19, true);
+    }
+  }
+  _handleStructuralHeaderPointerDown(var_core_value_sig4F3C, var_core_value_sig8D44, var_core_value_sig1660, var_core_value_sigEE7B) {
+    var var_core_value_sig44DF;
+    if (this._finishHeaderSelectionDrag(), var_core_value_sig1660.kind === "row-header" && var_core_value_sig1660.row !== undefined) {
+      let var_core_value_sig8CF5 = this._getSelectedHeaderRange(var_core_value_sig4F3C, "row", var_core_value_sig1660.row);
+      var_core_value_sig8CF5 ? this._pendingHeaderSelection = {
+        drawing: var_core_value_sig4F3C,
+        object: var_core_value_sig8D44,
+        kind: "row",
+        start: var_core_value_sig8CF5.start,
+        end: var_core_value_sig8CF5.end,
+        startPoint: var_core_value_sigEE7B
+      } : (this._selectRows(var_core_value_sig4F3C, var_core_value_sig8D44, var_core_value_sig1660.row, var_core_value_sig1660.row), this._headerSelectionDragState = {
+        drawing: var_core_value_sig4F3C,
+        object: var_core_value_sig8D44,
+        kind: "row",
+        anchor: var_core_value_sig1660.row,
+        current: var_core_value_sig1660.row
+      });
+    } else {
+      if (var_core_value_sig1660.kind === "column-header" && var_core_value_sig1660.column !== undefined) {
+        let var_core_value_sigF4B9 = this._getSelectedHeaderRange(var_core_value_sig4F3C, "column", var_core_value_sig1660.column);
+        var_core_value_sigF4B9 ? this._pendingHeaderSelection = {
+          drawing: var_core_value_sig4F3C,
+          object: var_core_value_sig8D44,
+          kind: "column",
+          start: var_core_value_sigF4B9.start,
+          end: var_core_value_sigF4B9.end,
+          startPoint: var_core_value_sigEE7B
+        } : (this._selectColumns(var_core_value_sig4F3C, var_core_value_sig8D44, var_core_value_sig1660.column, var_core_value_sig1660.column), this._headerSelectionDragState = {
+          drawing: var_core_value_sig4F3C,
+          object: var_core_value_sig8D44,
+          kind: "column",
+          anchor: var_core_value_sig1660.column,
+          current: var_core_value_sig1660.column
+        });
+      } else return;
+    }
+    this._setTableControlState(var_core_value_sig8D44, {
+      visible: true,
+      hoveredTrigger: var_core_value_sig1660,
+      selectedStructuralRange: this._headerSelectionDragState ? {
+        kind: this._headerSelectionDragState["kind"],
+        start: this._headerSelectionDragState["anchor"],
+        end: this._headerSelectionDragState["current"]
+      } : this._pendingHeaderSelection ? {
+        kind: this._pendingHeaderSelection["kind"],
+        start: this._pendingHeaderSelection["start"],
+        end: this._pendingHeaderSelection["end"]
+      } : null
+    });
+    let var_core_value_sig7E48 = this._renderContext["scene"];
+    if (!var_core_value_sig7E48.onPointerMove$ || !var_core_value_sig7E48.onPointerUp$) return;
+    (var_core_value_sig44DF = var_core_value_sig7E48.disableObjectsEvent) == null || var_core_value_sig44DF.call(var_core_value_sig7E48);
+    let var_core_value_sig7B9E = var_core_value_sig7E48.onPointerMove$["subscribeEvent"](var_core_value_sigDDD7 => this._updateHeaderSelectionDrag(var_core_value_sigDDD7)),
+      var_core_value_sig5C3B = var_core_value_sig7E48.onPointerUp$["subscribeEvent"](() => this._finishHeaderSelectionDrag(var_core_value_sig8D44));
+    this._headerSelectionDragCleanup = () => {
+      var var_core_value_sigB2CE;
+      var_core_value_sig7B9E == null || var_core_value_sig7B9E.unsubscribe(), var_core_value_sig5C3B == null || var_core_value_sig5C3B.unsubscribe(), (var_core_value_sigB2CE = var_core_value_sig7E48.enableObjectsEvent) == null || var_core_value_sigB2CE.call(var_core_value_sig7E48);
+    }, this.disposeWithMe({
+      dispose: () => var_core_value_sig7B9E.unsubscribe()
+    }), this.disposeWithMe({
+      dispose: () => var_core_value_sig5C3B.unsubscribe()
+    });
+  }
+  _finishHeaderSelectionDrag(var_core_value_sig4002, var_core_value_sig4153) {
+    var var_core_value_sig2825, var_core_value_sig5FD0, var_core_value_sigA7E3;
+    let var_core_value_sigA784 = this._headerSelectionDragCleanup;
+    this._headerSelectionDragCleanup = null, var_core_value_sigA784 == null || var_core_value_sigA784();
+    let var_core_value_sig4406 = var_core_value_sig4002 ?? ((var_core_value_sig2825 = this._rowColumnMoveState) == null ? undefined : var_core_value_sig2825.object) ?? ((var_core_value_sig5FD0 = this._pendingHeaderSelection) == null ? undefined : var_core_value_sig5FD0.object) ?? ((var_core_value_sigA7E3 = this._headerSelectionDragState) == null ? undefined : var_core_value_sigA7E3.object);
+    (var_core_value_sig4153 == null ? undefined : var_core_value_sig4153.commitMove) !== false && this._executeRowColumnMove(), this._headerSelectionDragState = null, this._pendingHeaderSelection = null, this._rowColumnMoveState = null, this._rowColumnMoveTarget = null, var_core_value_sig4406 && this._updateStructuralControlHover(var_core_value_sig4406, this._hoveredTrigger);
+  }
+  _updateHeaderSelectionDrag(var_core_value_sig6806) {
+    let var_core_value_sigD4AA = this._pendingHeaderSelection,
+      var_core_value_sigDC41 = this._rowColumnMoveState;
+    if (var_core_value_sigD4AA || var_core_value_sigDC41) {
+      this._updateRowColumnMoveDrag(var_core_value_sig6806);
+      return;
+    }
+    let var_core_value_sigFB47 = this._headerSelectionDragState;
+    if (!var_core_value_sigFB47 || var_core_value_sigFB47.drawing["element"].type !== t.PageElementTypeEnum["Table"]) return;
+    if ("buttons" in var_core_value_sig6806 && var_core_value_sig6806.buttons !== undefined && (var_core_value_sig6806.buttons & 1) != 1) {
+      this._finishHeaderSelectionDrag(var_core_value_sigFB47.object);
+      return;
+    }
+    let var_core_value_sig9B3D1 = this._tableResourceService["getTable"](var_core_value_sigFB47.drawing["unitId"], var_core_value_sigFB47.drawing["element"].tableId);
+    if (!var_core_value_sig9B3D1) return;
+    let var_core_value_sigC1CF = this._resolvePointerScenePoint(var_core_value_sig6806),
+      var_core_value_sigEE12 = this._resolveObjectPoint(var_core_value_sigFB47.object, var_core_value_sigC1CF.x, var_core_value_sigC1CF.y),
+      var_core_value_sigD70C = (0, n.hitTestSlideTableFloatingControl)(this._buildActiveTableTriggers(var_core_value_sig9B3D1, var_core_value_sigFB47.object), var_core_value_sigEE12.x, var_core_value_sigEE12.y);
+    if (var_core_value_sigD70C) {
+      if (var_core_value_sigFB47.kind === "row" && var_core_value_sigD70C.kind === "row-header" && var_core_value_sigD70C.row !== undefined) var_core_value_sigFB47.current = var_core_value_sigD70C.row, this._selectRows(var_core_value_sigFB47.drawing, var_core_value_sigFB47.object, var_core_value_sigFB47.anchor, var_core_value_sigD70C.row);else {
+        if (var_core_value_sigFB47.kind === "column" && var_core_value_sigD70C.kind === "column-header" && var_core_value_sigD70C.column !== undefined) var_core_value_sigFB47.current = var_core_value_sigD70C.column, this._selectColumns(var_core_value_sigFB47.drawing, var_core_value_sigFB47.object, var_core_value_sigFB47.anchor, var_core_value_sigD70C.column);else return;
+      }
+      this._setTableControlState(var_core_value_sigFB47.object, {
+        visible: true,
+        hoveredTrigger: var_core_value_sigD70C,
+        selectedStructuralRange: {
+          kind: var_core_value_sigFB47.kind,
+          start: Math.min(var_core_value_sigFB47.anchor, var_core_value_sigFB47.current),
+          end: Math.max(var_core_value_sigFB47.anchor, var_core_value_sigFB47.current)
+        }
+      });
+    }
+  }
+  _updateRowColumnMoveDrag(var_core_value_sigF047) {
+    let var_core_value_sigC2F9 = this._pendingHeaderSelection,
+      var_core_value_sig1F51 = this._rowColumnMoveState,
+      var_core_value_sig29F5 = var_core_value_sig1F51 ?? var_core_value_sigC2F9;
+    if (!var_core_value_sig29F5 || var_core_value_sig29F5.drawing["element"].type !== t.PageElementTypeEnum["Table"]) return;
+    if ("buttons" in var_core_value_sigF047 && var_core_value_sigF047.buttons !== undefined && (var_core_value_sigF047.buttons & 1) != 1) {
+      this._finishHeaderSelectionDrag(var_core_value_sig29F5.object, {
+        commitMove: false
+      });
+      return;
+    }
+    let var_core_value_sig5A51 = this._resolvePointerScenePoint(var_core_value_sigF047);
+    if (!var_core_value_sig1F51 && var_core_value_sigC2F9) {
+      let var_core_value_sig443C = var_core_value_sig5A51.x - var_core_value_sigC2F9.startPoint["x"],
+        var_core_value_sig39B1 = var_core_value_sig5A51.y - var_core_value_sigC2F9.startPoint["y"];
+      if (Math.hypot(var_core_value_sig443C, var_core_value_sig39B1) < 8) return;
+      this._rowColumnMoveState = {
+        drawing: var_core_value_sigC2F9.drawing,
+        object: var_core_value_sigC2F9.object,
+        kind: var_core_value_sigC2F9.kind,
+        start: var_core_value_sigC2F9.start,
+        end: var_core_value_sigC2F9.end
+      }, this._pendingHeaderSelection = null;
+    }
+    let var_core_value_sigF1D1 = this._rowColumnMoveState;
+    if (!var_core_value_sigF1D1 || var_core_value_sigF1D1.drawing["element"].type !== t.PageElementTypeEnum["Table"]) return;
+    let var_core_value_sig370E = this._tableResourceService["getTable"](var_core_value_sigF1D1.drawing["unitId"], var_core_value_sigF1D1.drawing["element"].tableId);
+    if (!var_core_value_sig370E) {
+      this._rowColumnMoveTarget = null, this._setTableControlState(var_core_value_sigF1D1.object, null);
+      return;
+    }
+    let var_core_value_sigDE14 = this._resolveRowColumnMoveTarget(var_core_value_sig370E, var_core_value_sigF1D1.object, var_core_value_sigF1D1.kind, var_core_value_sig5A51),
+      var_core_value_sig02CB = !!var_core_value_sigDE14 && (var_core_value_sigDE14.kind === "row" ? (0, n.canMoveSlideTableRows)(var_core_value_sig370E, {
+        startRow: var_core_value_sigF1D1.start,
+        endRow: var_core_value_sigF1D1.end
+      }, {
+        row: var_core_value_sigDE14.targetRow,
+        position: var_core_value_sigDE14.position
+      }) : (0, n.canMoveSlideTableColumns)(var_core_value_sig370E, {
+        startColumn: var_core_value_sigF1D1.start,
+        endColumn: var_core_value_sigF1D1.end
+      }, {
+        column: var_core_value_sigDE14.targetColumn,
+        position: var_core_value_sigDE14.position
+      }));
+    this._rowColumnMoveTarget = var_core_value_sig02CB ? var_core_value_sigDE14 : null, this._setTableControlState(var_core_value_sigF1D1.object, var_core_value_sig02CB && var_core_value_sigDE14 ? {
+      visible: true,
+      selectedStructuralRange: {
+        kind: var_core_value_sigF1D1.kind,
+        start: var_core_value_sigF1D1.start,
+        end: var_core_value_sigF1D1.end
+      },
+      reorderGuide: {
+        kind: var_core_value_sigDE14.kind,
+        index: var_core_value_sigDE14.guideIndex
+      }
+    } : null);
+  }
+  _executeRowColumnMove() {
+    let var_core_value_sig6CBB = this._rowColumnMoveState,
+      var_core_value_sig68DA = this._rowColumnMoveTarget;
+    !var_core_value_sig6CBB || !var_core_value_sig68DA || var_core_value_sig6CBB.drawing["element"].type !== t.PageElementTypeEnum["Table"] || (var_core_value_sig6CBB.kind === "row" && var_core_value_sig68DA.kind === "row" ? this._commandService["executeCommand"](n.MoveSlideTableRowsCommand["id"], {
+      unitId: var_core_value_sig6CBB.drawing["unitId"],
+      tableId: var_core_value_sig6CBB.drawing["element"].tableId,
+      startRow: var_core_value_sig6CBB.start,
+      endRow: var_core_value_sig6CBB.end,
+      targetRow: var_core_value_sig68DA.targetRow,
+      position: var_core_value_sig68DA.position
+    }) : var_core_value_sig6CBB.kind === "column" && var_core_value_sig68DA.kind === "column" && this._commandService["executeCommand"](n.MoveSlideTableColumnsCommand["id"], {
+      unitId: var_core_value_sig6CBB.drawing["unitId"],
+      tableId: var_core_value_sig6CBB.drawing["element"].tableId,
+      startColumn: var_core_value_sig6CBB.start,
+      endColumn: var_core_value_sig6CBB.end,
+      targetColumn: var_core_value_sig68DA.targetColumn,
+      position: var_core_value_sig68DA.position
+    }));
+  }
+  _getSelectedHeaderRange(var_core_value_sig64D8, var_core_value_sigD755, var_core_value_sigF897) {
+    if (var_core_value_sig64D8.element["type"] !== t.PageElementTypeEnum["Table"]) return null;
+    let var_core_value_sigA578 = this._tableSelectionService["getSelection"]();
+    if (!var_core_value_sigA578 || var_core_value_sigA578.kind !== var_core_value_sigD755 || var_core_value_sigA578.unitId !== var_core_value_sig64D8.unitId || var_core_value_sigA578.subUnitId !== var_core_value_sig64D8.subUnitId || var_core_value_sigA578.elementId !== var_core_value_sig64D8.drawingId || var_core_value_sigA578.tableId !== var_core_value_sig64D8.element["tableId"]) return null;
+    for (let var_core_value_sig210D of var_core_value_sigA578.ranges) {
+      let var_core_value_sig5CEE = var_core_value_sigD755 === "row" ? Math.min(var_core_value_sig210D.startRow, var_core_value_sig210D.endRow) : Math.min(var_core_value_sig210D.startColumn, var_core_value_sig210D.endColumn),
+        var_core_value_sigE92A = var_core_value_sigD755 === "row" ? Math.max(var_core_value_sig210D.startRow, var_core_value_sig210D.endRow) : Math.max(var_core_value_sig210D.startColumn, var_core_value_sig210D.endColumn);
+      if (var_core_value_sigF897 >= var_core_value_sig5CEE && var_core_value_sigF897 <= var_core_value_sigE92A) return {
+        start: var_core_value_sig5CEE,
+        end: var_core_value_sigE92A
+      };
+    }
+    return null;
+  }
+  _resolveRowColumnMoveTarget(var_core_value_sig0260, var_core_value_sig034D, var_core_value_sig89EC, var_core_value_sig9975) {
+    let var_core_value_sigD6D9 = this._resolveObjectPoint(var_core_value_sig034D, var_core_value_sig9975.x, var_core_value_sig9975.y),
+      var_core_value_sig2637 = var_core_value_sig89EC === "row" ? X(var_core_value_sig0260.rows["map"](var_core_value_sigB4B4 => var_core_value_sigB4B4.height ?? 24), var_core_value_sig034D.height) : X(var_core_value_sig0260.columns["map"](var_core_value_sigD407 => var_core_value_sigD407.width), var_core_value_sig034D.width);
+    if (var_core_value_sig2637.length === 0) return null;
+    let var_core_value_sigAF1D = Yi(var_core_value_sig2637, var_core_value_sig89EC === "row" ? var_core_value_sigD6D9.y : var_core_value_sigD6D9.x),
+      var_core_value_sigC92D = var_core_value_sigAF1D <= 0 ? 0 : var_core_value_sigAF1D >= var_core_value_sig2637.length ? var_core_value_sig2637.length - 1 : var_core_value_sigAF1D,
+      var_core_value_sigEA3D = var_core_value_sigAF1D <= 0 ? "before" : var_core_value_sigAF1D >= var_core_value_sig2637.length ? "after" : "before";
+    return var_core_value_sig89EC === "row" ? {
+      kind: var_core_value_sig89EC,
+      targetRow: var_core_value_sigC92D,
+      position: var_core_value_sigEA3D,
+      guideIndex: var_core_value_sigAF1D
+    } : {
+      kind: var_core_value_sig89EC,
+      targetColumn: var_core_value_sigC92D,
+      position: var_core_value_sigEA3D,
+      guideIndex: var_core_value_sigAF1D
+    };
+  }
+  _handleStructuralInsertTrigger(var_core_value_sig2841, var_core_value_sig9FE1, var_core_value_sig9DAA, var_core_value_sig1F8A) {
+    var var_core_value_sigEBB4;
+    if (var_core_value_sig2841.element["type"] !== t.PageElementTypeEnum["Table"]) return false;
+    let var_core_value_sig2B74 = Bi(var_core_value_sig9DAA),
+      var_core_value_sig0483 = false;
+    if (var_core_value_sig9DAA.kind === "row-insert-dot" && var_core_value_sig2B74 !== null ? var_core_value_sig0483 = !!this._commandService["executeCommand"](n.InsertSlideTableRowsCommand["id"], {
+      unitId: var_core_value_sig2841.unitId,
+      subUnitId: var_core_value_sig2841.subUnitId,
+      elementId: var_core_value_sig2841.drawingId,
+      tableId: var_core_value_sig2841.element["tableId"],
+      rowIndex: var_core_value_sig2B74,
+      count: 1
+    }) : var_core_value_sig9DAA.kind === "column-insert-dot" && var_core_value_sig2B74 !== null && (var_core_value_sig0483 = !!this._commandService["executeCommand"](n.InsertSlideTableColumnsCommand["id"], {
+      unitId: var_core_value_sig2841.unitId,
+      subUnitId: var_core_value_sig2841.subUnitId,
+      elementId: var_core_value_sig2841.drawingId,
+      tableId: var_core_value_sig2841.element["tableId"],
+      columnIndex: var_core_value_sig2B74,
+      count: 1
+    })), !var_core_value_sig0483) return false;
+    let var_core_value_sig4A48 = this._tableResourceService["getTable"](var_core_value_sig2841.unitId, var_core_value_sig2841.element["tableId"]);
+    (var_core_value_sigEBB4 = var_core_value_sig9FE1.setTable) == null || var_core_value_sigEBB4.call(var_core_value_sig9FE1, var_core_value_sig4A48);
+    let var_core_value_sigD170 = Li((var_core_value_sig1F8A ? this._resolveInsertDotTriggerForObject(var_core_value_sig9FE1, new a["Vector2"](var_core_value_sig1F8A.x, var_core_value_sig1F8A.y)) : null) ?? var_core_value_sig9DAA);
+    return this._structuralInsertHoverObject = var_core_value_sig9FE1, this._setTableControlState(var_core_value_sig9FE1, var_core_value_sigD170), this._setTableControlHover(var_core_value_sig9FE1, null), this._setTableCellHover(var_core_value_sig9FE1, null), true;
+  }
+  _resolveActiveTableObject() {
+    var var_core_value_sig90E5, var_core_value_sig7000;
+    let var_core_value_sigD7C5 = (var_core_value_sig90E5 = (var_core_value_sig7000 = this._drawingStateService).getSnapshot) == null ? undefined : var_core_value_sig90E5.call(var_core_value_sig7000),
+      var_core_value_sig3633 = this._tableSelectionService["getSelection"](),
+      var_core_value_sig1DF5 = (var_core_value_sigD7C5 == null ? undefined : var_core_value_sigD7C5.context) ?? (var_core_value_sig3633 ? {
+        unitId: var_core_value_sig3633.unitId,
+        subUnitId: var_core_value_sig3633.subUnitId
+      } : null),
+      var_core_value_sig90A3 = (var_core_value_sigD7C5 == null ? undefined : var_core_value_sigD7C5.selectedIds["length"]) === 1 ? var_core_value_sigD7C5.selectedIds[0] : var_core_value_sig3633 == null ? undefined : var_core_value_sig3633.elementId;
+    return !var_core_value_sig1DF5 || !var_core_value_sig90A3 ? this._resolveTableObjectFromContext(this._lastActiveTableContext) : this._resolveTableObjectFromContext({
+      ...var_core_value_sig1DF5,
+      elementId: var_core_value_sig90A3
+    }) ?? this._resolveTableObjectFromContext(this._lastActiveTableContext);
+  }
+  _resolveTableObjectFromContext(var_core_value_sig28BE) {
+    if (!var_core_value_sig28BE) return null;
+    let var_core_value_sig0224 = this._resolveSelectedTableDrawing(var_core_value_sig28BE.unitId, var_core_value_sig28BE.subUnitId, var_core_value_sig28BE.elementId);
+    if (!var_core_value_sig0224 || var_core_value_sig0224.element["type"] !== t.PageElementTypeEnum["Table"]) return null;
+    let var_core_value_sig854B = this._tableResourceService["getTable"](var_core_value_sig0224.unitId, var_core_value_sig0224.element["tableId"]);
+    if (!var_core_value_sig854B) return null;
+    let var_core_value_sig1FF6 = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sig28BE.unitId, var_core_value_sig28BE.subUnitId, var_core_value_sig28BE.elementId));
+    return var_core_value_sig1FF6 ? {
+      drawing: var_core_value_sig0224,
+      object: var_core_value_sig1FF6,
+      table: var_core_value_sig854B
+    } : null;
+  }
+  _openContextMenu(var_core_value_sig4B271, var_core_value_sig3A41) {
+    var var_core_value_sig269A;
+    let var_core_value_sigBF53 = this._createContextMenuEvent(var_core_value_sig4B271);
+    (var_core_value_sig269A = var_core_value_sigBF53.preventDefault) == null || var_core_value_sig269A.call(var_core_value_sigBF53), this._contextMenuService["triggerContextMenu"](var_core_value_sigBF53, var_core_value_sig3A41);
+  }
+  _createContextMenuEvent(var_core_value_sigD9BB) {
+    var var_core_value_sigF549, var_core_value_sigC125, var_core_value_sigB63D;
+    let var_core_value_sig8255 = var_core_value_sigD9BB;
+    if (Z(var_core_value_sig8255.clientX) && Z(var_core_value_sig8255.clientY)) return {
+      ...var_core_value_sig8255,
+      clientX: var_core_value_sig8255.clientX,
+      clientY: var_core_value_sig8255.clientY,
+      preventDefault: () => {
+        var var_core_value_sig63F3;
+        return (var_core_value_sig63F3 = var_core_value_sig8255.preventDefault) == null ? undefined : var_core_value_sig63F3.call(var_core_value_sig8255);
+      },
+      stopPropagation: () => {
+        var var_core_value_sig6A71;
+        return (var_core_value_sig6A71 = var_core_value_sig8255.stopPropagation) == null ? undefined : var_core_value_sig6A71.call(var_core_value_sig8255);
+      }
+    };
+    let var_core_value_sigBFC7 = (var_core_value_sigF549 = this._renderContext["engine"]) == null || (var_core_value_sigC125 = var_core_value_sigF549.getCanvasElement) == null || (var_core_value_sigC125 = var_core_value_sigC125.call(var_core_value_sigF549)) == null || (var_core_value_sigB63D = var_core_value_sigC125.getBoundingClientRect) == null ? undefined : var_core_value_sigB63D.call(var_core_value_sigC125),
+      var_core_value_sig933F = ((var_core_value_sigBFC7 == null ? undefined : var_core_value_sigBFC7.left) ?? 0) + (var_core_value_sigD9BB.offsetX ?? 0),
+      var_core_value_sig29DE = ((var_core_value_sigBFC7 == null ? undefined : var_core_value_sigBFC7.top) ?? 0) + (var_core_value_sigD9BB.offsetY ?? 0);
+    return {
+      ...var_core_value_sig8255,
+      clientX: var_core_value_sig933F,
+      clientY: var_core_value_sig29DE,
+      preventDefault: () => {
+        var var_core_value_sig3BF6;
+        return (var_core_value_sig3BF6 = var_core_value_sig8255.preventDefault) == null ? undefined : var_core_value_sig3BF6.call(var_core_value_sig8255);
+      },
+      stopPropagation: () => {
+        var var_core_value_sig38CE;
+        return (var_core_value_sig38CE = var_core_value_sig8255.stopPropagation) == null ? undefined : var_core_value_sig38CE.call(var_core_value_sig8255);
+      }
+    };
+  }
+  _hideContextMenu() {
+    var var_core_value_sig4AFB, var_core_value_sigC7EA;
+    (var_core_value_sig4AFB = this._contextMenuService) == null || (var_core_value_sigC7EA = var_core_value_sig4AFB.hideContextMenu) == null || var_core_value_sigC7EA.call(var_core_value_sig4AFB);
+  }
+  _startStage1TableBodyPointer(var_core_value_sigDAB9, var_core_value_sig9CF7, var_core_value_sigCCE5, var_core_value_sig5933, var_core_value_sig884B) {
+    var var_core_value_sig4E30, var_core_value_sig9730;
+    this._finishPendingStage1TableDrag({
+      focusCell: false
+    }), var_core_value_sig5933.stopPropagation(), var_core_value_sig5933.skipNextObservers = true, (var_core_value_sig4E30 = var_core_value_sigCCE5.stopPropagation) == null || var_core_value_sig4E30.call(var_core_value_sigCCE5), (var_core_value_sig9730 = var_core_value_sigCCE5.preventDefault) == null || var_core_value_sig9730.call(var_core_value_sigCCE5), this._hideContextMenu(), this._editorUIService["complete"]();
+    let var_core_value_sig8E4A = this._renderContext["scene"],
+      var_core_value_sig300B = null,
+      var_core_value_sig8457 = null,
+      var_core_value_sigB30D = typeof window > "u" ? null : window,
+      var_core_value_sigDB33 = () => {
+        var_core_value_sig300B == null || var_core_value_sig300B.unsubscribe(), var_core_value_sig8457 == null || var_core_value_sig8457.unsubscribe(), var_core_value_sigB30D == null || var_core_value_sigB30D.removeEventListener("pointerup", var_core_value_sig7A5E);
+      },
+      var_core_value_sig6C8C = var_core_value_sig62B7 => this._updatePendingStage1TableDrag(var_core_value_sig62B7),
+      var_core_value_sig7A5E = () => this._finishPendingStage1TableDrag({
+        focusCell: true
+      });
+    this._pendingStage1TableDragContext = {
+      drawing: var_core_value_sigDAB9,
+      object: var_core_value_sig9CF7,
+      resolved: var_core_value_sig884B,
+      startEvent: var_core_value_sigCCE5,
+      startPoint: this._resolvePointerScenePoint(var_core_value_sigCCE5),
+      cleanup: var_core_value_sigDB33
+    }, var_core_value_sig300B = var_core_value_sig8E4A.onPointerMove$["subscribeEvent"](var_core_value_sig6C8C), var_core_value_sig8457 = var_core_value_sig8E4A.onPointerUp$["subscribeEvent"](var_core_value_sig7A5E), var_core_value_sigB30D == null || var_core_value_sigB30D.addEventListener("pointerup", var_core_value_sig7A5E, {
+      once: true
+    }), this.disposeWithMe({
+      dispose: var_core_value_sigDB33
+    });
+  }
+  _updatePendingStage1TableDrag(var_core_value_sig838E) {
+    let var_core_value_sig9A5B = this._pendingStage1TableDragContext;
+    if (!var_core_value_sig9A5B) return;
+    if ("buttons" in var_core_value_sig838E && var_core_value_sig838E.buttons !== undefined && (var_core_value_sig838E.buttons & 1) != 1) {
+      this._finishPendingStage1TableDrag({
+        focusCell: true
+      });
+      return;
+    }
+    let var_core_value_sigC860 = this._resolvePointerScenePoint(var_core_value_sig838E),
+      var_core_value_sigE64C = var_core_value_sigC860.x - var_core_value_sig9A5B.startPoint["x"],
+      var_core_value_sigF39B = var_core_value_sigC860.y - var_core_value_sig9A5B.startPoint["y"];
+    Math.hypot(var_core_value_sigE64C, var_core_value_sigF39B) < 8 || (this._finishPendingStage1TableDrag({
+      focusCell: false
+    }), this._startTableMoveDrag(var_core_value_sig9A5B.drawing, var_core_value_sig9A5B.object, var_core_value_sig9A5B.startEvent), this._updateTableMoveDrag(var_core_value_sig838E));
+  }
+  _finishPendingStage1TableDrag(var_core_value_sig9B88) {
+    let var_core_value_sig992A = this._pendingStage1TableDragContext;
+    var_core_value_sig992A && (this._pendingStage1TableDragContext = null, var_core_value_sig992A.cleanup(), var_core_value_sig9B88.focusCell && this._selectResolvedCell(var_core_value_sig992A.drawing, var_core_value_sig992A.object, var_core_value_sig992A.resolved));
+  }
+  _startTableMoveDrag(var_core_value_sig6281, var_core_value_sig9B01, var_core_value_sigA724) {
+    var var_core_value_sig385E;
+    let var_core_value_sig10D3 = this._resolvePointerScenePoint(var_core_value_sigA724),
+      var_core_value_sig41F2 = Ki(this._resolveCurrentTableDrawing(var_core_value_sig6281), var_core_value_sig9B01);
+    this._tableMoveDragContext = {
+      drawing: var_core_value_sig6281,
+      object: var_core_value_sig9B01,
+      activationStage: this._tableActivationStage,
+      startEvent: var_core_value_sigA724,
+      startPoint: var_core_value_sig10D3,
+      lastPoint: var_core_value_sig10D3,
+      startObjectLeft: var_core_value_sig9B01.left,
+      startObjectTop: var_core_value_sig9B01.top,
+      startTransform: var_core_value_sig41F2,
+      moved: false,
+      clickFallbackTimer: null
+    }, this._alignmentGuideService["start"](this._renderContext["unitId"], new Map([[var_core_value_sig9B01.oKey, var_core_value_sig9B01]]));
+    let var_core_value_sig32DD = this._renderContext["scene"];
+    (var_core_value_sig385E = var_core_value_sig32DD.disableObjectsEvent) == null || var_core_value_sig385E.call(var_core_value_sig32DD);
+    let var_core_value_sig7A88 = false,
+      var_core_value_sig6CFC = null,
+      var_core_value_sig3EC0 = null,
+      var_core_value_sigEA69 = typeof window > "u" ? null : window,
+      var_core_value_sigF42A = var_core_value_sig37A8 => {
+        var var_core_value_sigA90D;
+        var_core_value_sig7A88 || (var_core_value_sig7A88 = true, var_core_value_sig6CFC == null || var_core_value_sig6CFC.unsubscribe(), var_core_value_sig3EC0 == null || var_core_value_sig3EC0.unsubscribe(), var_core_value_sigEA69 == null || var_core_value_sigEA69.removeEventListener("pointerup", var_core_value_sigF42A), (var_core_value_sigA90D = var_core_value_sig32DD.enableObjectsEvent) == null || var_core_value_sigA90D.call(var_core_value_sig32DD), this._finishTableMoveDrag(var_core_value_sig37A8));
+      };
+    var_core_value_sig6CFC = var_core_value_sig32DD.onPointerMove$["subscribeEvent"](var_core_value_sig7A3C => this._updateTableMoveDrag(var_core_value_sig7A3C)), var_core_value_sig3EC0 = var_core_value_sig32DD.onPointerUp$["subscribeEvent"](var_core_value_sigF42A), var_core_value_sigEA69 == null || var_core_value_sigEA69.addEventListener("pointerup", var_core_value_sigF42A, {
+      once: true
+    }), this._tableMoveDragContext["clickFallbackTimer"] = setTimeout(var_core_value_sigF42A, 180), this.disposeWithMe({
+      dispose: () => var_core_value_sig6CFC == null ? undefined : var_core_value_sig6CFC.unsubscribe()
+    }), this.disposeWithMe({
+      dispose: () => var_core_value_sig3EC0 == null ? undefined : var_core_value_sig3EC0.unsubscribe()
+    }), this.disposeWithMe({
+      dispose: () => var_core_value_sigEA69 == null ? undefined : var_core_value_sigEA69.removeEventListener("pointerup", var_core_value_sigF42A)
+    });
+  }
+  _resolveCurrentTableDrawing(var_core_value_sig898E) {
+    return this._slideDrawingService["getDrawingByParam"]({
+      unitId: var_core_value_sig898E.unitId,
+      subUnitId: var_core_value_sig898E.subUnitId,
+      drawingId: var_core_value_sig898E.drawingId
+    }) ?? var_core_value_sig898E;
+  }
+  _updateTableMoveDrag(var_core_value_sigC481) {
+    var var_core_value_sig27B7, var_core_value_sig2DAD;
+    let var_core_value_sig00DE = this._tableMoveDragContext;
+    if (!var_core_value_sig00DE) return;
+    let var_core_value_sigEF7C = this._resolvePointerScenePoint(var_core_value_sigC481),
+      var_core_value_sig07E7 = var_core_value_sigEF7C.x - var_core_value_sig00DE.startPoint["x"],
+      var_core_value_sig6005 = var_core_value_sigEF7C.y - var_core_value_sig00DE.startPoint["y"];
+    if (!var_core_value_sig00DE.moved && Math.hypot(var_core_value_sig07E7, var_core_value_sig6005) < 8) return;
+    var_core_value_sig00DE.moved || (var_core_value_sig00DE.clickFallbackTimer &&= (clearTimeout(var_core_value_sig00DE.clickFallbackTimer), null), this._hideContextMenu());
+    let var_core_value_sig25A4 = var_core_value_sigEF7C.x - var_core_value_sig00DE.lastPoint["x"],
+      var_core_value_sigB591 = var_core_value_sigEF7C.y - var_core_value_sig00DE.lastPoint["y"],
+      var_core_value_sigB272 = var_core_value_sig00DE.object;
+    var_core_value_sigB272.left += var_core_value_sig25A4, var_core_value_sigB272.top += var_core_value_sigB591, var_core_value_sigB272.makeDirty(true), var_core_value_sig00DE.activationStage === "table" && this._syncTableMoveTransformerControls(var_core_value_sig00DE.object), var_core_value_sig00DE.moved = true, var_core_value_sig00DE.lastPoint = var_core_value_sigEF7C, this._alignmentGuideService["move"](this._renderContext["unitId"], new Map([[var_core_value_sig00DE.object["oKey"], var_core_value_sig00DE.object]])), this._slideDrawingService["refreshTransformNotification"]([{
+      ...this._resolveCurrentTableDrawing(var_core_value_sig00DE.drawing),
+      transform: {
+        ...var_core_value_sig00DE.startTransform,
+        left: (var_core_value_sig00DE.startTransform["left"] ?? 0) + var_core_value_sigB272.left - var_core_value_sig00DE.startObjectLeft,
+        top: (var_core_value_sig00DE.startTransform["top"] ?? 0) + var_core_value_sigB272.top - var_core_value_sig00DE.startObjectTop
+      }
+    }]), (var_core_value_sig27B7 = (var_core_value_sig2DAD = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig27B7.call(var_core_value_sig2DAD, true);
+  }
+  _syncTableMoveTransformerControls(var_core_value_sig6F52) {
+    var var_core_value_sig09C4, var_core_value_sig8E3E, var_core_value_sigC3D3, var_core_value_sig1451;
+    let var_core_value_sigAD57 = (var_core_value_sig09C4 = (var_core_value_sig8E3E = this._renderContext["scene"]).getTransformer) == null ? undefined : var_core_value_sig09C4.call(var_core_value_sig8E3E);
+    if (!var_core_value_sigAD57 || var_core_value_sig6F52.isInGroup) return;
+    let var_core_value_sig58A8 = var_core_value_sigAD57,
+      var_core_value_sigEC1A = (var_core_value_sigC3D3 = var_core_value_sig58A8.getSelectedObjectMap) == null ? undefined : var_core_value_sigC3D3.call(var_core_value_sig58A8);
+    if (var_core_value_sigEC1A && !var_core_value_sigEC1A.has(var_core_value_sig6F52.oKey)) {
+      var var_core_value_sigBDED;
+      (var_core_value_sigBDED = var_core_value_sig58A8.setSelectedControl) == null || var_core_value_sigBDED.call(var_core_value_sig58A8, var_core_value_sig6F52);
+    }
+    (var_core_value_sig1451 = var_core_value_sig58A8.updateControl) == null || var_core_value_sig1451.call(var_core_value_sig58A8);
+  }
+  _finishTableMoveDrag(var_core_value_sig4BFF) {
+    var_core_value_sig4BFF && this._updateTableMoveDrag(var_core_value_sig4BFF);
+    let var_core_value_sig40E7 = this._tableMoveDragContext;
+    if (!var_core_value_sig40E7) return;
+    if (this._tableMoveDragContext = null, var_core_value_sig40E7.clickFallbackTimer &&= (clearTimeout(var_core_value_sig40E7.clickFallbackTimer), null), !var_core_value_sig40E7.moved) {
+      this._alignmentGuideService["end"](this._renderContext["unitId"], new Map([[var_core_value_sig40E7.object["oKey"], var_core_value_sig40E7.object]])), this._selectTable(var_core_value_sig40E7.drawing, var_core_value_sig40E7.object);
+      return;
+    }
+    let var_core_value_sigEDBA = var_core_value_sig40E7.startTransform["left"] ?? 0,
+      var_core_value_sigE863 = var_core_value_sig40E7.startTransform["top"] ?? 0,
+      var_core_value_sig04B4 = var_core_value_sig40E7.object,
+      var_core_value_sig1C07 = var_core_value_sig04B4.left - var_core_value_sig40E7.startObjectLeft,
+      var_core_value_sig93D6 = var_core_value_sig04B4.top - var_core_value_sig40E7.startObjectTop;
+    this._alignmentGuideService["end"](this._renderContext["unitId"], new Map([[var_core_value_sig40E7.object["oKey"], var_core_value_sig40E7.object]]));
+    let var_core_value_sigDD05 = this._resolveCurrentTableDrawing(var_core_value_sig40E7.drawing),
+      var_core_value_sig3932 = {
+        ...var_core_value_sig40E7.startTransform,
+        left: var_core_value_sigEDBA + var_core_value_sig1C07,
+        top: var_core_value_sigE863 + var_core_value_sig93D6
+      };
+    this._commandService["executeCommand"](t.UpdateSlideDrawingCommand["id"], {
+      patches: [{
+        unitId: var_core_value_sig40E7.drawing["unitId"],
+        subUnitId: var_core_value_sig40E7.drawing["subUnitId"],
+        drawingId: var_core_value_sig40E7.drawing["drawingId"],
+        element: {
+          ...var_core_value_sigDD05.element,
+          transform: {
+            ...var_core_value_sigDD05.element["transform"],
+            left: var_core_value_sig3932.left,
+            top: var_core_value_sig3932.top
+          }
+        },
+        transform: var_core_value_sig3932
+      }]
+    });
+  }
+  _resolvePointerScenePoint(var_core_value_sig48B2, var_core_value_sig57DF) {
+    let var_core_value_sigC985 = var_core_value_sig48B2;
+    if (var_core_value_sig57DF != null && var_core_value_sig57DF.preferOffset && Z(var_core_value_sigC985.offsetX) && Z(var_core_value_sigC985.offsetY)) return this._resolveScenePoint(var_core_value_sigC985.offsetX, var_core_value_sigC985.offsetY);
+    if (Z(var_core_value_sigC985.clientX) && Z(var_core_value_sigC985.clientY)) {
+      var var_core_value_sig8DA6, var_core_value_sigCA69, var_core_value_sigB77C;
+      let var_core_value_sig0511 = (var_core_value_sig8DA6 = this._renderContext["engine"]) == null || (var_core_value_sigCA69 = var_core_value_sig8DA6.getCanvasElement) == null || (var_core_value_sigCA69 = var_core_value_sigCA69.call(var_core_value_sig8DA6)) == null || (var_core_value_sigB77C = var_core_value_sigCA69.getBoundingClientRect) == null ? undefined : var_core_value_sigB77C.call(var_core_value_sigCA69);
+      if (var_core_value_sig0511) return this._resolveScenePoint(var_core_value_sigC985.clientX - var_core_value_sig0511.left, var_core_value_sigC985.clientY - var_core_value_sig0511.top);
+    }
+    return this._resolveScenePoint(var_core_value_sigC985.offsetX ?? 0, var_core_value_sigC985.offsetY ?? 0);
+  }
+  _resolvePointerViewportPoint(var_core_value_sig9AFF) {
+    let var_core_value_sig3545 = var_core_value_sig9AFF;
+    if (Z(var_core_value_sig3545.clientX) && Z(var_core_value_sig3545.clientY)) {
+      var var_core_value_sig5EE4, var_core_value_sig7EAB, var_core_value_sig56B9;
+      let var_core_value_sig1F44 = (var_core_value_sig5EE4 = this._renderContext["engine"]) == null || (var_core_value_sig7EAB = var_core_value_sig5EE4.getCanvasElement) == null || (var_core_value_sig7EAB = var_core_value_sig7EAB.call(var_core_value_sig5EE4)) == null || (var_core_value_sig56B9 = var_core_value_sig7EAB.getBoundingClientRect) == null ? undefined : var_core_value_sig56B9.call(var_core_value_sig7EAB);
+      return {
+        x: var_core_value_sig3545.clientX - ((var_core_value_sig1F44 == null ? undefined : var_core_value_sig1F44.left) ?? 0),
+        y: var_core_value_sig3545.clientY - ((var_core_value_sig1F44 == null ? undefined : var_core_value_sig1F44.top) ?? 0)
+      };
+    }
+    return {
+      x: var_core_value_sig3545.offsetX ?? 0,
+      y: var_core_value_sig3545.offsetY ?? 0
+    };
+  }
+  _createViewportPointerEvent(var_core_value_sig90CF, var_core_value_sigA3861) {
+    let var_core_value_sigCD6E = var_core_value_sig90CF;
+    return {
+      ...var_core_value_sigCD6E,
+      button: var_core_value_sigCD6E.button,
+      buttons: var_core_value_sigCD6E.buttons,
+      offsetX: var_core_value_sigA3861.x,
+      offsetY: var_core_value_sigA3861.y,
+      clientX: undefined,
+      clientY: undefined,
+      preventDefault: () => {
+        var var_core_value_sigCB04;
+        return (var_core_value_sigCB04 = var_core_value_sigCD6E.preventDefault) == null ? undefined : var_core_value_sigCB04.call(var_core_value_sigCD6E);
+      },
+      stopPropagation: () => {
+        var var_core_value_sig947E;
+        return (var_core_value_sig947E = var_core_value_sigCD6E.stopPropagation) == null ? undefined : var_core_value_sig947E.call(var_core_value_sigCD6E);
+      }
+    };
+  }
+  _updateResizeDrag(var_core_value_sigFD9D) {
+    var var_core_value_sigA2A4, var_core_value_sigA1AC, var_core_value_sig6180, var_core_value_sigB93D;
+    let var_core_value_sigB17C = this._resizeDragContext;
+    if (!var_core_value_sigB17C) return;
+    let var_core_value_sig69B6 = this._resolveScenePoint(var_core_value_sigFD9D.offsetX, var_core_value_sigFD9D.offsetY),
+      var_core_value_sig708D = this._resolveObjectPoint(var_core_value_sigB17C.object, var_core_value_sig69B6.x, var_core_value_sig69B6.y),
+      var_core_value_sig1ED2 = var_core_value_sigB17C.handle["axis"] === "column" ? var_core_value_sig708D.x - var_core_value_sigB17C.startPoint["x"] : var_core_value_sig708D.y - var_core_value_sigB17C.startPoint["y"],
+      var_core_value_sig94C1 = Hi(var_core_value_sigB17C.table, var_core_value_sigB17C.object["width"], var_core_value_sigB17C.object["height"], {
+        ...var_core_value_sigB17C.handle,
+        delta: var_core_value_sig1ED2,
+        minSize: 12
+      });
+    var_core_value_sigB17C.pendingTable = var_core_value_sig94C1, (var_core_value_sigA2A4 = (var_core_value_sigA1AC = var_core_value_sigB17C.object).setPreviewTable) == null || var_core_value_sigA2A4.call(var_core_value_sigA1AC, var_core_value_sig94C1), this._setResizeCursor(var_core_value_sigB17C.handle["axis"]), (var_core_value_sig6180 = (var_core_value_sigB93D = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig6180.call(var_core_value_sigB93D, true);
+  }
+  _finishResizeDrag(var_core_value_sigABAC) {
+    var var_core_value_sigFAE6, var_core_value_sig06AC;
+    let var_core_value_sig57E2 = this._resizeDragContext;
+    if (!var_core_value_sig57E2) return;
+    this._updateResizeDrag(var_core_value_sigABAC);
+    let var_core_value_sig01FC = var_core_value_sig57E2.pendingTable;
+    (var_core_value_sigFAE6 = (var_core_value_sig06AC = var_core_value_sig57E2.object).setPreviewTable) == null || var_core_value_sigFAE6.call(var_core_value_sig06AC, null), this._resizeDragContext = null, this._resetResizeCursor(), $i(var_core_value_sig57E2.table, var_core_value_sig01FC, var_core_value_sig57E2.handle["axis"]) && this._commandService["executeCommand"](n.UpdateSlideTableCommand["id"], {
+      unitId: var_core_value_sig57E2.unitId,
+      tableId: var_core_value_sig57E2.tableId,
+      patch: var_core_value_sig57E2.handle["axis"] === "column" ? {
+        columns: var_core_value_sig01FC.columns
+      } : {
+        rows: var_core_value_sig01FC.rows
+      }
+    });
+  }
+  _setResizeCursor(var_core_value_sig10FC) {
+    this._resizeHoverActive = true, this._renderContext["scene"].setCursor(var_core_value_sig10FC === "column" ? a.CURSOR_TYPE["COLUMN_RESIZE"] : a.CURSOR_TYPE["ROW_RESIZE"]);
+  }
+  _resetResizeCursor() {
+    this._resizeHoverActive && (this._resizeHoverActive = false, this._renderContext["scene"].resetCursor());
+  }
+  _isTableTextEditing() {
+    var var_core_value_sig5374;
+    return ((var_core_value_sig5374 = this._tableSelectionService["getSelection"]()) == null ? undefined : var_core_value_sig5374.kind) === "text";
+  }
+  _isTableDrawingActive(var_core_value_sigB66D) {
+    var var_core_value_sigD0F0, var_core_value_sig8E31, var_core_value_sig8339, var_core_value_sigA01E, var_core_value_sigA41E;
+    let var_core_value_sig939C = (var_core_value_sigD0F0 = this._tableSelectionService) == null || (var_core_value_sig8E31 = var_core_value_sigD0F0.getSelection) == null ? undefined : var_core_value_sig8E31.call(var_core_value_sigD0F0);
+    if ((var_core_value_sig939C == null ? undefined : var_core_value_sig939C.kind) === "text" && var_core_value_sig939C.unitId === var_core_value_sigB66D.unitId && var_core_value_sig939C.subUnitId === var_core_value_sigB66D.subUnitId && var_core_value_sig939C.elementId === var_core_value_sigB66D.drawingId && var_core_value_sigB66D.element["type"] === t.PageElementTypeEnum["Table"] && var_core_value_sig939C.tableId === var_core_value_sigB66D.element["tableId"]) return true;
+    let var_core_value_sigA49E = (var_core_value_sig8339 = this._drawingStateService) == null || (var_core_value_sigA01E = var_core_value_sig8339.getSnapshot) == null ? undefined : var_core_value_sigA01E.call(var_core_value_sig8339);
+    return !var_core_value_sigA49E || ((var_core_value_sigA41E = var_core_value_sigA49E.context) == null ? undefined : var_core_value_sigA41E.unitId) === var_core_value_sigB66D.unitId && var_core_value_sigA49E.context["subUnitId"] === var_core_value_sigB66D.subUnitId && var_core_value_sigA49E.selectedIds["includes"](var_core_value_sigB66D.drawingId);
+  }
+  _isTableInteractionInProgress(var_core_value_sig6DEB) {
+    var var_core_value_sig2F0D, var_core_value_sig5141;
+    let var_core_value_sigA9E0 = var_core_value_sig4545 => var_core_value_sig4545 ? var_core_value_sig4545.drawing ? var_core_value_sig4545.drawing["unitId"] === var_core_value_sig6DEB.unitId && var_core_value_sig4545.drawing["subUnitId"] === var_core_value_sig6DEB.subUnitId && var_core_value_sig4545.drawing["drawingId"] === var_core_value_sig6DEB.elementId : var_core_value_sig4545.unitId === var_core_value_sig6DEB.unitId && var_core_value_sig4545.tableId === var_core_value_sig6DEB.tableId : false,
+      var_core_value_sig751D = ((var_core_value_sig2F0D = (var_core_value_sig5141 = this._tableSelectionService).isTableInternalInteractionActive) == null ? undefined : var_core_value_sig2F0D.call(var_core_value_sig5141)) ?? false;
+    return var_core_value_sig6DEB.kind === "text" || var_core_value_sig751D || var_core_value_sigA9E0(this._rangeDragContext) || var_core_value_sigA9E0(this._pendingStage1TableDragContext) || var_core_value_sigA9E0(this._tableMoveDragContext) || var_core_value_sigA9E0(this._resizeDragContext) || var_core_value_sigA9E0(this._pendingHeaderSelection) || var_core_value_sigA9E0(this._rowColumnMoveState);
+  }
+  _selectResolvedCell(var_core_value_sig2E9A, var_core_value_sigE105, var_core_value_sig0BD6) {
+    var var_core_value_sig3070, var_core_value_sigC66D, var_core_value_sig8EC51;
+    if (var_core_value_sig2E9A.element["type"] !== t.PageElementTypeEnum["Table"]) return;
+    this._enterCellStage();
+    let var_core_value_sig1056 = this._tableSelectionService["selectCell"]({
+      unitId: var_core_value_sig2E9A.unitId,
+      subUnitId: var_core_value_sig2E9A.subUnitId,
+      elementId: var_core_value_sig2E9A.drawingId,
+      tableId: var_core_value_sig2E9A.element["tableId"],
+      row: var_core_value_sig0BD6.row,
+      column: var_core_value_sig0BD6.column
+    });
+    (var_core_value_sig3070 = var_core_value_sigE105.setTableSelection) == null || var_core_value_sig3070.call(var_core_value_sigE105, {
+      kind: Y(var_core_value_sig1056.kind),
+      ranges: var_core_value_sig1056.ranges,
+      active: {
+        row: var_core_value_sig0BD6.row,
+        column: var_core_value_sig0BD6.column
+      }
+    }), this._setTableKeyboardFocus(true), (var_core_value_sigC66D = (var_core_value_sig8EC51 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sigC66D.call(var_core_value_sig8EC51, true);
+  }
+  _syncTableSelectionToObject(var_core_value_sig6EE5, var_core_value_sig9DD9, var_core_value_sig09AC = this._tableSelectionService["getSelection"]()) {
+    var var_core_value_sig1613, var_core_value_sigADC6;
+    if (!var_core_value_sig09AC || var_core_value_sig6EE5.element["type"] !== t.PageElementTypeEnum["Table"] || var_core_value_sig09AC.unitId !== var_core_value_sig6EE5.unitId || var_core_value_sig09AC.subUnitId !== var_core_value_sig6EE5.subUnitId || var_core_value_sig09AC.elementId !== var_core_value_sig6EE5.drawingId || var_core_value_sig09AC.tableId !== var_core_value_sig6EE5.element["tableId"]) return;
+    let var_core_value_sig4620 = var_core_value_sig09AC.focus ?? var_core_value_sig09AC.anchor ?? Ji(var_core_value_sig09AC.ranges);
+    (var_core_value_sig1613 = var_core_value_sig9DD9.setTableSelection) == null || var_core_value_sig1613.call(var_core_value_sig9DD9, {
+      kind: Y(var_core_value_sig09AC.kind),
+      ranges: var_core_value_sig09AC.ranges,
+      active: var_core_value_sig4620
+    }), (var_core_value_sigADC6 = var_core_value_sig9DD9.setEditingCell) == null || var_core_value_sigADC6.call(var_core_value_sig9DD9, var_core_value_sig09AC.kind === "text" ? var_core_value_sig4620 ?? null : null);
+  }
+  _selectRows(var_core_value_sig07FB, var_core_value_sig617E, var_core_value_sigC85E, var_core_value_sig8293) {
+    var var_core_value_sig050D, var_core_value_sig37AE, var_core_value_sig5B51;
+    if (var_core_value_sig07FB.element["type"] !== t.PageElementTypeEnum["Table"]) return;
+    let var_core_value_sig64FF = this._tableResourceService["getTable"](var_core_value_sig07FB.unitId, var_core_value_sig07FB.element["tableId"]);
+    if (!var_core_value_sig64FF) return;
+    this._enterCellStage();
+    let var_core_value_sig86F4 = (0, n.expandSlideTableRangeToMergedCells)(var_core_value_sig64FF, {
+        startRow: var_core_value_sigC85E,
+        endRow: var_core_value_sig8293,
+        startColumn: 0,
+        endColumn: Math.max(0, var_core_value_sig64FF.columns["length"] - 1)
+      }),
+      var_core_value_sig9E0F = this._tableSelectionService["selectRows"]({
+        unitId: var_core_value_sig07FB.unitId,
+        subUnitId: var_core_value_sig07FB.subUnitId,
+        elementId: var_core_value_sig07FB.drawingId,
+        tableId: var_core_value_sig07FB.element["tableId"],
+        startRow: var_core_value_sig86F4.startRow,
+        endRow: var_core_value_sig86F4.endRow,
+        columnCount: var_core_value_sig64FF.columns["length"]
+      });
+    (var_core_value_sig050D = var_core_value_sig617E.setTableSelection) == null || var_core_value_sig050D.call(var_core_value_sig617E, {
+      kind: Y(var_core_value_sig9E0F.kind),
+      ranges: var_core_value_sig9E0F.ranges
+    }), this._setTableKeyboardFocus(true), (var_core_value_sig37AE = (var_core_value_sig5B51 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig37AE.call(var_core_value_sig5B51, true);
+  }
+  _selectColumns(var_core_value_sig3A42, var_core_value_sig8802, var_core_value_sig95D5, var_core_value_sigE027) {
+    var var_core_value_sigE537, var_core_value_sig5D84, var_core_value_sigD120;
+    if (var_core_value_sig3A42.element["type"] !== t.PageElementTypeEnum["Table"]) return;
+    let var_core_value_sigAA05 = this._tableResourceService["getTable"](var_core_value_sig3A42.unitId, var_core_value_sig3A42.element["tableId"]);
+    if (!var_core_value_sigAA05) return;
+    this._enterCellStage();
+    let var_core_value_sigC04C = (0, n.expandSlideTableRangeToMergedCells)(var_core_value_sigAA05, {
+        startRow: 0,
+        endRow: Math.max(0, var_core_value_sigAA05.rows["length"] - 1),
+        startColumn: var_core_value_sig95D5,
+        endColumn: var_core_value_sigE027
+      }),
+      var_core_value_sig2069 = this._tableSelectionService["selectColumns"]({
+        unitId: var_core_value_sig3A42.unitId,
+        subUnitId: var_core_value_sig3A42.subUnitId,
+        elementId: var_core_value_sig3A42.drawingId,
+        tableId: var_core_value_sig3A42.element["tableId"],
+        startColumn: var_core_value_sigC04C.startColumn,
+        endColumn: var_core_value_sigC04C.endColumn,
+        rowCount: var_core_value_sigAA05.rows["length"]
+      });
+    (var_core_value_sigE537 = var_core_value_sig8802.setTableSelection) == null || var_core_value_sigE537.call(var_core_value_sig8802, {
+      kind: Y(var_core_value_sig2069.kind),
+      ranges: var_core_value_sig2069.ranges
+    }), this._setTableKeyboardFocus(true), (var_core_value_sig5D84 = (var_core_value_sigD120 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig5D84.call(var_core_value_sigD120, true);
+  }
+  _selectTable(var_core_value_sig5176, var_core_value_sig71A1) {
+    var var_core_value_sig72AD, var_core_value_sig9ABE, var_core_value_sig8EF01;
+    if (var_core_value_sig5176.element["type"] !== t.PageElementTypeEnum["Table"]) return;
+    let var_core_value_sig234B = this._tableResourceService["getTable"](var_core_value_sig5176.unitId, var_core_value_sig5176.element["tableId"]);
+    if (!var_core_value_sig234B) return;
+    this._enterCellStage();
+    let var_core_value_sig8169 = this._tableSelectionService["selectTable"]({
+      unitId: var_core_value_sig5176.unitId,
+      subUnitId: var_core_value_sig5176.subUnitId,
+      elementId: var_core_value_sig5176.drawingId,
+      tableId: var_core_value_sig5176.element["tableId"],
+      rowCount: var_core_value_sig234B.rows["length"],
+      columnCount: var_core_value_sig234B.columns["length"]
+    });
+    (var_core_value_sig72AD = var_core_value_sig71A1.setTableSelection) == null || var_core_value_sig72AD.call(var_core_value_sig71A1, {
+      kind: Y(var_core_value_sig8169.kind),
+      ranges: var_core_value_sig8169.ranges
+    }), this._setTableKeyboardFocus(true), (var_core_value_sig9ABE = (var_core_value_sig8EF01 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig9ABE.call(var_core_value_sig8EF01, true);
+  }
+  _activateTableObject(var_core_value_sigC5FB) {
+    var var_core_value_sig5453, var_core_value_sig8725, var_core_value_sig513B;
+    this._tableActivationStage = "table", (var_core_value_sig5453 = var_core_value_sigC5FB.setTableSelection) == null || var_core_value_sig5453.call(var_core_value_sigC5FB, {
+      ranges: []
+    }), this._setTableKeyboardFocus(false), this._setTableObjectKeyboardFocus(true), (var_core_value_sig8725 = (var_core_value_sig513B = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig8725.call(var_core_value_sig513B, true);
+  }
+  _enterCellStage() {
+    this._tableActivationStage !== "cell" && (this._tableActivationStage = "cell"), this._setTableObjectKeyboardFocus(false), this._hideTableTransformerControls();
+  }
+  _syncActivationStageFromSelection(var_core_value_sig5501) {
+    var var_core_value_sig7784;
+    let var_core_value_sigB706 = !!((var_core_value_sig7784 = var_core_value_sig5501.ranges) != null && var_core_value_sig7784.length);
+    this._tableActivationStage = var_core_value_sigB706 ? "cell" : "table", this._setTableKeyboardFocus(var_core_value_sigB706 && var_core_value_sig5501.kind !== "text"), this._setTableObjectKeyboardFocus(!var_core_value_sigB706), var_core_value_sigB706 && this._hideTableTransformerControls();
+  }
+  _shouldShowTransformerForDrawing(var_core_value_sig5FD01) {
+    var var_core_value_sig77E3, var_core_value_sigB071;
+    if (var_core_value_sig5FD01.element["type"] !== t.PageElementTypeEnum["Table"]) return true;
+    let var_core_value_sig15FE = this._tableSelectionService["getSelection"]();
+    return !(var_core_value_sig15FE && var_core_value_sig15FE.unitId === var_core_value_sig5FD01.unitId && var_core_value_sig15FE.subUnitId === var_core_value_sig5FD01.subUnitId && var_core_value_sig15FE.elementId === var_core_value_sig5FD01.drawingId && (var_core_value_sig15FE.kind === "text" || (var_core_value_sig77E3 = var_core_value_sig15FE.ranges) != null && var_core_value_sig77E3.length) || ((var_core_value_sigB071 = this._lastActiveTableContext) == null ? undefined : var_core_value_sigB071.unitId) === var_core_value_sig5FD01.unitId && this._lastActiveTableContext["subUnitId"] === var_core_value_sig5FD01.subUnitId && this._lastActiveTableContext["elementId"] === var_core_value_sig5FD01.drawingId && this._tableActivationStage === "cell");
+  }
+  _hideTableTransformerControls() {
+    var var_core_value_sigCF47, var_core_value_sigB0F9, var_core_value_sigAF12, var_core_value_sigC60C, var_core_value_sig1C3C;
+    let var_core_value_sig71CF = (var_core_value_sigCF47 = (var_core_value_sigB0F9 = this._renderContext["scene"]).getTransformer) == null ? undefined : var_core_value_sigCF47.call(var_core_value_sigB0F9);
+    var_core_value_sig71CF == null || (var_core_value_sigAF12 = var_core_value_sig71CF.clearSelectedObjects) == null || var_core_value_sigAF12.call(var_core_value_sig71CF), (var_core_value_sigC60C = (var_core_value_sig1C3C = this._renderContext["scene"]).makeDirty) == null || var_core_value_sigC60C.call(var_core_value_sig1C3C, true);
+  }
+  _handleKeyboardAction(var_core_value_sigC341) {
+    var var_core_value_sigBA47, var_core_value_sig3DF7;
+    if (this._isTableTextEditing()) {
+      let var_core_value_sigF39A = this._editorUIService["getSession"](),
+        var_core_value_sigF79C = Gi(var_core_value_sigC341);
+      return !var_core_value_sigF39A || !var_core_value_sigF79C ? false : this._handleCellEditorKeyDown(var_core_value_sigF79C, var_core_value_sigF39A.context, this._editorSessionId);
+    }
+    if (var_core_value_sigC341 === "edit-cell") return this._openSelectionEditor();
+    let var_core_value_sigD49F = this._resolveActiveSelectionForKeyboard();
+    if (!var_core_value_sigD49F || var_core_value_sigD49F.drawing["element"].type !== t.PageElementTypeEnum["Table"]) return false;
+    if (var_core_value_sigC341 === "clear-cells") return this._clearSelectedCellContents(var_core_value_sigD49F);
+    let var_core_value_sigCECC = Ot(var_core_value_sigC341);
+    if (!var_core_value_sigCECC) return false;
+    if (var_core_value_sigCECC.extend) {
+      var var_core_value_sig0F47, var_core_value_sig6B29;
+      let var_core_value_sig2E54 = var_core_value_sigD49F.selection["anchor"] ?? var_core_value_sigD49F.focus,
+        var_core_value_sig7658 = kt(var_core_value_sigD49F.focus, var_core_value_sigCECC, var_core_value_sigD49F.table["rows"].length, var_core_value_sigD49F.table["columns"].length),
+        var_core_value_sigDCF5 = (0, n.expandSlideTableRangeToMergedCells)(var_core_value_sigD49F.table, {
+          startRow: var_core_value_sig2E54.row,
+          startColumn: var_core_value_sig2E54.column,
+          endRow: var_core_value_sig7658.row,
+          endColumn: var_core_value_sig7658.column
+        }),
+        var_core_value_sigC786 = this._tableSelectionService["selectRange"]({
+          unitId: var_core_value_sigD49F.drawing["unitId"],
+          subUnitId: var_core_value_sigD49F.drawing["subUnitId"],
+          elementId: var_core_value_sigD49F.drawing["drawingId"],
+          tableId: var_core_value_sigD49F.drawing["element"].tableId,
+          ...var_core_value_sigDCF5
+        });
+      (var_core_value_sig0F47 = (var_core_value_sig6B29 = var_core_value_sigD49F.object).setTableSelection) == null || var_core_value_sig0F47.call(var_core_value_sig6B29, {
+        kind: Y(var_core_value_sigC786.kind),
+        ranges: var_core_value_sigC786.ranges,
+        active: var_core_value_sig7658
+      });
+    } else {
+      var var_core_value_sig28E2, var_core_value_sig1578;
+      let var_core_value_sigC0D9 = kt(var_core_value_sigD49F.focus, var_core_value_sigCECC, var_core_value_sigD49F.table["rows"].length, var_core_value_sigD49F.table["columns"].length),
+        var_core_value_sigF0511 = this._tableSelectionService["selectCell"]({
+          unitId: var_core_value_sigD49F.drawing["unitId"],
+          subUnitId: var_core_value_sigD49F.drawing["subUnitId"],
+          elementId: var_core_value_sigD49F.drawing["drawingId"],
+          tableId: var_core_value_sigD49F.drawing["element"].tableId,
+          row: var_core_value_sigC0D9.row,
+          column: var_core_value_sigC0D9.column
+        });
+      (var_core_value_sig28E2 = (var_core_value_sig1578 = var_core_value_sigD49F.object).setTableSelection) == null || var_core_value_sig28E2.call(var_core_value_sig1578, {
+        kind: Y(var_core_value_sigF0511.kind),
+        ranges: var_core_value_sigF0511.ranges,
+        active: var_core_value_sigC0D9
+      });
+    }
+    return this._setTableKeyboardFocus(true), (var_core_value_sigBA47 = (var_core_value_sig3DF7 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sigBA47.call(var_core_value_sig3DF7, true), true;
+  }
+  _resolveTableClipboardTarget(var_core_value_sig52ED) {
+    if (var_core_value_sig52ED.defaultPrevented || !this._contextService["getContextValue"]("FOCUSING_SLIDE_TABLE") || this._isTableTextEditing()) return null;
+    let var_core_value_sig135F = this._resolveActiveSelectionForKeyboard();
+    return (var_core_value_sig135F == null ? undefined : var_core_value_sig135F.selection["unitId"]) === this._renderContext["unitId"] ? var_core_value_sig135F : null;
+  }
+  _canCopyTable(var_core_value_sig416D) {
+    return (0, t.getSlidePermissionValue)(this._permissionService, var_core_value_sig416D.unitId, var_core_value_sig416D.unitId, g.UnitAction["Copy"]);
+  }
+  async _commitClipboardPatch(var_core_value_sigAD5D, var_core_value_sig1B8A) {
+    var var_core_value_sigFB18, var_core_value_sig703C, var_core_value_sig96CF, var_core_value_sig49F1;
+    return (await this._commandService["executeCommand"](n.UpdateSlideTableCommand["id"], {
+      unitId: var_core_value_sigAD5D.selection["unitId"],
+      tableId: var_core_value_sigAD5D.selection["tableId"],
+      patch: var_core_value_sig1B8A
+    })) ? ((var_core_value_sigFB18 = (var_core_value_sig703C = var_core_value_sigAD5D.object).setTableSelection) == null || var_core_value_sigFB18.call(var_core_value_sig703C, {
+      kind: Y(var_core_value_sigAD5D.selection["kind"]),
+      ranges: var_core_value_sigAD5D.selection["ranges"],
+      active: var_core_value_sigAD5D.selection["focus"]
+    }), this._setTableKeyboardFocus(true), (var_core_value_sig96CF = (var_core_value_sig49F1 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig96CF.call(var_core_value_sig49F1, true), true) : false;
+  }
+  async _insertClipboardImages(var_core_value_sig2F7B, var_core_value_sigB0DF = 0) {
+    for (let var_core_value_sig5825 = 0; var_core_value_sig5825 < var_core_value_sig2F7B.length; var_core_value_sig5825++) {
+      let var_core_value_sig362B = var_core_value_sig2F7B[var_core_value_sig5825],
+        var_core_value_sig5CA5 = await (0, h.normalizeClipboardImageFile)(var_core_value_sig362B);
+      if (var_core_value_sig5CA5) {
+        let var_core_value_sigFBA4 = (var_core_value_sigB0DF + var_core_value_sig5825) * 32;
+        var_core_value_sigFBA4 === 0 ? await this._slideInsertService["insertImage"](var_core_value_sig5CA5) : await this._slideInsertService["insertImage"](var_core_value_sig5CA5, {
+          offset: {
+            x: var_core_value_sigFBA4,
+            y: var_core_value_sigFBA4
+          }
+        });
+      }
+    }
+  }
+  _handleKeyboardInput(var_core_value_sig2E44) {
+    return var_core_value_sig2E44.kind === "composition-start" ? this._openSelectionEditor() : this._isTableTextEditing() || !var_core_value_sig2E44.text ? false : this._openSelectionEditor({
+      initialText: var_core_value_sig2E44.text
+    });
+  }
+  _clearSelectedCellContents(var_core_value_sig8560) {
+    var var_core_value_sig138D, var_core_value_sig1E26, var_core_value_sig5C6C, var_core_value_sigBE85;
+    let var_core_value_sig56DE = Ci(var_core_value_sig8560.table, var_core_value_sig8560.selection);
+    return var_core_value_sig56DE && this._commandService["executeCommand"](n.UpdateSlideTableCommand["id"], {
+      unitId: var_core_value_sig8560.selection["unitId"],
+      tableId: var_core_value_sig8560.selection["tableId"],
+      patch: var_core_value_sig56DE
+    }), (var_core_value_sig138D = (var_core_value_sig1E26 = var_core_value_sig8560.object).setTableSelection) == null || var_core_value_sig138D.call(var_core_value_sig1E26, {
+      kind: Y(var_core_value_sig8560.selection["kind"]),
+      ranges: var_core_value_sig8560.selection["ranges"],
+      active: var_core_value_sig8560.selection["focus"]
+    }), this._setTableKeyboardFocus(true), (var_core_value_sig5C6C = (var_core_value_sigBE85 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig5C6C.call(var_core_value_sigBE85, true), true;
+  }
+  _openSelectionEditor(var_core_value_sig0278) {
+    let var_core_value_sig08A6 = this._resolveActiveSelectionForKeyboard();
+    if (!var_core_value_sig08A6 || var_core_value_sig08A6.drawing["element"].type !== t.PageElementTypeEnum["Table"]) return false;
+    let var_core_value_sig04E1 = (0, n.resolveSlideTableRenderModel)(var_core_value_sig08A6.table),
+      var_core_value_sigC504 = var_core_value_sig04E1.cells["find"](var_core_value_sig4EB7 => var_core_value_sig4EB7.row === var_core_value_sig08A6.focus["row"] && var_core_value_sig4EB7.column === var_core_value_sig08A6.focus["column"] && !var_core_value_sig4EB7.hidden) ?? var_core_value_sig04E1.cells["find"](var_core_value_sig73AF => !var_core_value_sig73AF.hidden && var_core_value_sig08A6.focus["row"] >= var_core_value_sig73AF.row && var_core_value_sig08A6.focus["row"] < var_core_value_sig73AF.row + var_core_value_sig73AF.rowSpan && var_core_value_sig08A6.focus["column"] >= var_core_value_sig73AF.column && var_core_value_sig08A6.focus["column"] < var_core_value_sig73AF.column + var_core_value_sig73AF.columnSpan);
+    return var_core_value_sigC504 ? (this._openCellEditor(var_core_value_sig08A6.drawing, {
+      table: var_core_value_sig08A6.table,
+      model: var_core_value_sig04E1,
+      cell: var_core_value_sigC504,
+      row: var_core_value_sigC504.row,
+      column: var_core_value_sigC504.column,
+      object: var_core_value_sig08A6.object
+    }, var_core_value_sig0278), true) : false;
+  }
+  _resolveActiveSelectionForKeyboard() {
+    let var_core_value_sig0515 = this._tableSelectionService["getSelection"](),
+      var_core_value_sig9F34 = var_core_value_sig0515 == null ? undefined : var_core_value_sig0515.ranges[0];
+    if (!var_core_value_sig0515 || !var_core_value_sig9F34 || var_core_value_sig0515.kind === "text") return null;
+    let var_core_value_sig0247 = this._resolveSelectedTableDrawing(var_core_value_sig0515.unitId, var_core_value_sig0515.subUnitId, var_core_value_sig0515.elementId);
+    if (!var_core_value_sig0247 || var_core_value_sig0247.element["type"] !== t.PageElementTypeEnum["Table"] || !this._isTableDrawingActive(var_core_value_sig0247)) return null;
+    let var_core_value_sig6030 = this._tableResourceService["getTable"](var_core_value_sig0515.unitId, var_core_value_sig0515.tableId),
+      var_core_value_sig0137 = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sig0515.unitId, var_core_value_sig0515.subUnitId, var_core_value_sig0515.elementId));
+    return !var_core_value_sig6030 || !var_core_value_sig0137 ? null : {
+      drawing: var_core_value_sig0247,
+      object: var_core_value_sig0137,
+      table: var_core_value_sig6030,
+      selection: var_core_value_sig0515,
+      focus: At(var_core_value_sig0515.focus ?? {
+        row: Math.min(var_core_value_sig9F34.startRow, var_core_value_sig9F34.endRow),
+        column: Math.min(var_core_value_sig9F34.startColumn, var_core_value_sig9F34.endColumn)
+      }, var_core_value_sig6030.rows["length"], var_core_value_sig6030.columns["length"])
+    };
+  }
+  _setTableKeyboardFocus(var_core_value_sig14F3) {
+    this._contextService["setContextValue"]("FOCUSING_SLIDE_TABLE", var_core_value_sig14F3);
+  }
+  _setTableObjectKeyboardFocus(var_core_value_sig34E8) {
+    this._contextService["setContextValue"]("FOCUSING_SLIDE_TABLE_OBJECT", var_core_value_sig34E8);
+  }
+  _updateRangeDrag(var_core_value_sigCFE7) {
+    let var_core_value_sigECBC = this._rangeDragContext;
+    if (!var_core_value_sigECBC || var_core_value_sigECBC.drawing["element"].type !== t.PageElementTypeEnum["Table"]) return;
+    if ("buttons" in var_core_value_sigCFE7 && var_core_value_sigCFE7.buttons !== undefined && (var_core_value_sigCFE7.buttons & 1) != 1) {
+      this._finishRangeDrag();
+      return;
+    }
+    let var_core_value_sig65D2 = this._resolvePointerScenePoint(var_core_value_sigCFE7),
+      var_core_value_sig4306 = this._resolveCellHit(var_core_value_sigECBC.drawing, var_core_value_sigECBC.objectKey, var_core_value_sig65D2.x, var_core_value_sig65D2.y);
+    var_core_value_sig4306 && this._applyRangeDragSelection(var_core_value_sigECBC, {
+      row: var_core_value_sig4306.row,
+      column: var_core_value_sig4306.column
+    });
+  }
+  _applyRangeDragSelection(var_core_value_sigFCD3, var_core_value_sig147A) {
+    var var_core_value_sig829F, var_core_value_sig534C, var_core_value_sigABB7, var_core_value_sig9071, var_core_value_sig01A9;
+    if (var_core_value_sigFCD3.drawing["element"].type !== t.PageElementTypeEnum["Table"] || var_core_value_sigFCD3.current["row"] === var_core_value_sig147A.row && var_core_value_sigFCD3.current["column"] === var_core_value_sig147A.column && ((var_core_value_sig829F = this._tableSelectionService["getSelection"]()) == null ? undefined : var_core_value_sig829F.kind) === "range") return;
+    var_core_value_sigFCD3.current = var_core_value_sig147A;
+    let var_core_value_sig9477 = (0, n.expandSlideTableRangeToMergedCells)(var_core_value_sigFCD3.table, {
+        startRow: var_core_value_sigFCD3.anchor["row"],
+        startColumn: var_core_value_sigFCD3.anchor["column"],
+        endRow: var_core_value_sig147A.row,
+        endColumn: var_core_value_sig147A.column
+      }),
+      var_core_value_sig917C = this._tableSelectionService["selectRange"]({
+        unitId: var_core_value_sigFCD3.drawing["unitId"],
+        subUnitId: var_core_value_sigFCD3.drawing["subUnitId"],
+        elementId: var_core_value_sigFCD3.drawing["drawingId"],
+        tableId: var_core_value_sigFCD3.drawing["element"].tableId,
+        ...var_core_value_sig9477
+      });
+    (var_core_value_sig534C = (var_core_value_sigABB7 = var_core_value_sigFCD3.object).setTableSelection) == null || var_core_value_sig534C.call(var_core_value_sigABB7, {
+      kind: Y(var_core_value_sig917C.kind),
+      ranges: var_core_value_sig917C.ranges,
+      active: var_core_value_sig147A
+    }), this._setTableKeyboardFocus(true), (var_core_value_sig9071 = (var_core_value_sig01A9 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig9071.call(var_core_value_sig01A9, true);
+  }
+  _resetTableInteraction() {
+    var var_core_value_sig27E2, var_core_value_sig10D7, var_core_value_sig5A1A, var_core_value_sig77D2, var_core_value_sig625E, var_core_value_sig6F04, var_core_value_sig48DA;
+    let var_core_value_sigD327 = this._tableSelectionService["getSelection"](),
+      var_core_value_sig6694 = [var_core_value_sigD327 ? {
+        unitId: var_core_value_sigD327.unitId,
+        subUnitId: var_core_value_sigD327.subUnitId,
+        elementId: var_core_value_sigD327.elementId
+      } : null, this._lastActiveTableContext].filter(var_core_value_sig548A => !!var_core_value_sig548A),
+      var_core_value_sig2A21 = var_core_value_sig6694.filter((var_core_value_sigE026, var_core_value_sig339E) => var_core_value_sig6694.findIndex(var_core_value_sigE90F => var_core_value_sigE90F.unitId === var_core_value_sigE026.unitId && var_core_value_sigE90F.subUnitId === var_core_value_sigE026.subUnitId && var_core_value_sigE90F.elementId === var_core_value_sigE026.elementId) === var_core_value_sig339E);
+    (var_core_value_sig27E2 = this._editorDisposable) == null || var_core_value_sig27E2.dispose(), this._editorDisposable = null, this._editorSessionId += 1, this._activeEditorContextKey = null, this._finishRangeDrag(), this._rangeDragContext = null, this._finishPendingStage1TableDrag({
+      focusCell: false
+    }), this._hoveredTrigger = null, this._finishHeaderSelectionDrag(undefined, {
+      commitMove: false
+    }), this._tableActivationStage = null, this._lastActiveTableContext = null, (var_core_value_sig10D7 = this._tableMoveDragContext) != null && var_core_value_sig10D7.clickFallbackTimer && clearTimeout(this._tableMoveDragContext["clickFallbackTimer"]), this._tableMoveDragContext && this._alignmentGuideService["end"](this._renderContext["unitId"], new Map([[this._tableMoveDragContext["object"].oKey, this._tableMoveDragContext["object"]]])), this._tableMoveDragContext = null, (var_core_value_sig5A1A = this._resizeDragContext) == null || (var_core_value_sig625E = (var_core_value_sig77D2 = var_core_value_sig5A1A.object).setPreviewTable) == null || var_core_value_sig625E.call(var_core_value_sig77D2, null), this._resizeDragContext = null, this._resetResizeCursor(), this._setStructuralCursor(false), this._setTableKeyboardFocus(false), this._setTableObjectKeyboardFocus(false), var_core_value_sig2A21.forEach(var_core_value_sig7550 => {
+      var var_core_value_sig2983, var_core_value_sigE1B0, var_core_value_sigD4FF, var_core_value_sig1E5B, var_core_value_sigB680, var_core_value_sig1F64;
+      let var_core_value_sigDD1C = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sig7550.unitId, var_core_value_sig7550.subUnitId, var_core_value_sig7550.elementId));
+      var_core_value_sigDD1C == null || (var_core_value_sig2983 = var_core_value_sigDD1C.setEditingCell) == null || var_core_value_sig2983.call(var_core_value_sigDD1C, null), var_core_value_sigDD1C == null || (var_core_value_sigE1B0 = var_core_value_sigDD1C.setPreviewTable) == null || var_core_value_sigE1B0.call(var_core_value_sigDD1C, null), var_core_value_sigDD1C == null || (var_core_value_sigD4FF = var_core_value_sigDD1C.setTableSelection) == null || var_core_value_sigD4FF.call(var_core_value_sigDD1C, null), var_core_value_sigDD1C == null || (var_core_value_sig1E5B = var_core_value_sigDD1C.setTableCellHover) == null || var_core_value_sig1E5B.call(var_core_value_sigDD1C, null), var_core_value_sigDD1C == null || (var_core_value_sigB680 = var_core_value_sigDD1C.setTableControlState) == null || var_core_value_sigB680.call(var_core_value_sigDD1C, null), var_core_value_sigDD1C == null || (var_core_value_sig1F64 = var_core_value_sigDD1C.setTableControlHover) == null || var_core_value_sig1F64.call(var_core_value_sigDD1C, null);
+    }), this._tableSelectionService["clear"](), (var_core_value_sig6F04 = (var_core_value_sig48DA = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig6F04.call(var_core_value_sig48DA, true);
+  }
+  _handleDoubleClick(var_core_value_sig0836) {
+    if (var_core_value_sig0836.drawing["unitId"] !== this._renderContext["unitId"] || var_core_value_sig0836.drawing["element"].type !== t.PageElementTypeEnum["Table"] || !this._isTableDrawingActive(var_core_value_sig0836.drawing)) return;
+    let var_core_value_sigD95C = this._resolveCellHit(var_core_value_sig0836.drawing, var_core_value_sig0836.oKey, var_core_value_sig0836.offsetX, var_core_value_sig0836.offsetY);
+    var_core_value_sigD95C && this._openCellEditor(var_core_value_sig0836.drawing, var_core_value_sigD95C);
+  }
+  _openCellEditor(var_core_value_sig692E, var_core_value_sig3FAF1, var_core_value_sig378B) {
+    var var_core_value_sigDE50, var_core_value_sig3094, var_core_value_sig86CC, var_core_value_sig78681;
+    if (var_core_value_sig692E.element["type"] !== t.PageElementTypeEnum["Table"]) return;
+    let var_core_value_sig9921 = var_core_value_sig692E.element,
+      var_core_value_sig59BF = {
+        unitId: var_core_value_sig692E.unitId,
+        subUnitId: var_core_value_sig692E.subUnitId,
+        elementId: var_core_value_sig692E.drawingId,
+        tableId: var_core_value_sig9921.tableId,
+        row: var_core_value_sig3FAF1.row,
+        column: var_core_value_sig3FAF1.column,
+        drawingTransform: var_core_value_sig692E.transform
+      },
+      var_core_value_sigF001 = (var_core_value_sig378B == null ? undefined : var_core_value_sig378B.initialText) === undefined ? this._resolveCellDocumentData(var_core_value_sig3FAF1.table, var_core_value_sig3FAF1.row, var_core_value_sig3FAF1.column) : ai(this._resolveCellDocumentData(var_core_value_sig3FAF1.table, var_core_value_sig3FAF1.row, var_core_value_sig3FAF1.column), var_core_value_sig378B.initialText),
+      var_core_value_sigE511 = this._resolveEditorLayout(var_core_value_sig3FAF1.object, var_core_value_sig3FAF1.model, var_core_value_sig3FAF1.cell, var_core_value_sigF001);
+    if (!var_core_value_sigE511) return;
+    this._enterCellStage();
+    let var_core_value_sig1C81 = ea(var_core_value_sig59BF);
+    this._hideContextMenu();
+    let var_core_value_sig2C6A = (this._editorSessionId ?? 0) + 1;
+    if (this._editorSessionId = var_core_value_sig2C6A, this._activeEditorContextKey = var_core_value_sig1C81, var_core_value_sig378B != null && var_core_value_sig378B.handoffCurrent) {
+      var var_core_value_sig7207, var_core_value_sig297F;
+      let var_core_value_sig2C39 = (var_core_value_sig7207 = (var_core_value_sig297F = this._editorUIService).getSession) == null ? undefined : var_core_value_sig7207.call(var_core_value_sig297F);
+      this._editorUIService["complete"](var_core_value_sig2C39 == null ? undefined : var_core_value_sig2C39.documentData, var_core_value_sig2C39 == null ? undefined : var_core_value_sig2C39.measurement, var_core_value_sig2C39 == null ? undefined : var_core_value_sig2C39.sessionId);
+    } else this._editorUIService["complete"]();
+    (var_core_value_sigDE50 = (var_core_value_sig3094 = var_core_value_sig3FAF1.object).setEditingCell) == null || var_core_value_sigDE50.call(var_core_value_sig3094, {
+      row: var_core_value_sig3FAF1.cell["row"],
+      column: var_core_value_sig3FAF1.cell["column"]
+    });
+    let var_core_value_sigA95A = this._tableSelectionService["enterTextMode"](var_core_value_sig59BF);
+    (var_core_value_sig86CC = (var_core_value_sig78681 = var_core_value_sig3FAF1.object).setTableSelection) == null || var_core_value_sig86CC.call(var_core_value_sig78681, {
+      kind: Y(var_core_value_sigA95A.kind),
+      ranges: var_core_value_sigA95A.ranges,
+      active: {
+        row: var_core_value_sig3FAF1.row,
+        column: var_core_value_sig3FAF1.column
+      }
+    }), this._makeSceneDirty(), this._setTableKeyboardFocus(false), this._editorDisposable = this._editorUIService["open"]({
+      editorId: Ri,
+      documentData: var_core_value_sigF001,
+      layout: var_core_value_sigE511,
+      context: var_core_value_sig59BF,
+      appearance: "table-cell",
+      autoFocus: true,
+      hideFloatingToolbarAlignment: true,
+      cellFillColor: oa(var_core_value_sig3FAF1.table, var_core_value_sig3FAF1.cell),
+      isSingle: false,
+      onCellFillColorChange: (var_core_value_sigB7D1, var_core_value_sig64F0) => {
+        this._commitCellStyle(var_core_value_sig64F0, {
+          fill: aa(var_core_value_sigB7D1)
+        });
+      },
+      onChange: (var_core_value_sig85B1, var_core_value_sig3141, var_core_value_sig2162) => {
+        this._autoGrowCellEditorRowHeight(var_core_value_sig3141, var_core_value_sig2162, var_core_value_sig2C6A);
+      },
+      onComplete: (var_core_value_sig2EAD, var_core_value_sig6774, var_core_value_sig340D) => {
+        this._commitCellDocument(var_core_value_sig2EAD, var_core_value_sig6774, var_core_value_sig340D, var_core_value_sig2C6A);
+      },
+      onCancel: var_core_value_sig82D4 => {
+        this._finishCellEditing(var_core_value_sig82D4, var_core_value_sig2C6A);
+      },
+      onPointerDown: (var_core_value_sigBDE4, var_core_value_sig7DF1) => this._handleCellEditorPointerDown(var_core_value_sigBDE4, var_core_value_sig7DF1, var_core_value_sig2C6A),
+      onKeyDown: (var_core_value_sigDC86, var_core_value_sig0B0C) => this._handleCellEditorKeyDown(var_core_value_sigDC86, var_core_value_sig0B0C, var_core_value_sig2C6A)
+    });
+  }
+  _handleCellEditorPointerDown(var_core_value_sig94D6, var_core_value_sigC22E, var_core_value_sig2321) {
+    var var_core_value_sigFF33;
+    if (!var_core_value_sigC22E || !this._isCurrentEditorSession(var_core_value_sigC22E, var_core_value_sig2321)) return false;
+    let var_core_value_sig16E0 = this._tableResourceService["getTable"](var_core_value_sigC22E.unitId, var_core_value_sigC22E.tableId),
+      var_core_value_sig213C = this._resolveSelectedTableDrawing(var_core_value_sigC22E.unitId, var_core_value_sigC22E.subUnitId, var_core_value_sigC22E.elementId);
+    if (!var_core_value_sig16E0 || !var_core_value_sig213C || var_core_value_sig213C.element["type"] !== t.PageElementTypeEnum["Table"]) return false;
+    let var_core_value_sig31F8 = (0, r.buildDrawingOKey)(var_core_value_sigC22E.unitId, var_core_value_sigC22E.subUnitId, var_core_value_sigC22E.elementId),
+      var_core_value_sig6905 = this._renderContext["scene"].getObject(var_core_value_sig31F8);
+    if (!var_core_value_sig6905) return false;
+    let var_core_value_sigC3C0 = this._resolvePointerScenePoint(var_core_value_sig94D6),
+      var_core_value_sig1F39 = this._resolveCellHit(var_core_value_sig213C, var_core_value_sig31F8, var_core_value_sigC3C0.x, var_core_value_sigC3C0.y);
+    return !var_core_value_sig1F39 || var_core_value_sig1F39.row === var_core_value_sigC22E.row && var_core_value_sig1F39.column === var_core_value_sigC22E.column ? false : ((var_core_value_sigFF33 = var_core_value_sig94D6.stopTextSelectionDrag) == null || var_core_value_sigFF33.call(var_core_value_sig94D6), this._openCellEditor(var_core_value_sig213C, {
+      table: var_core_value_sig16E0,
+      model: var_core_value_sig1F39.model,
+      cell: var_core_value_sig1F39.cell,
+      row: var_core_value_sig1F39.row,
+      column: var_core_value_sig1F39.column,
+      object: var_core_value_sig6905
+    }, {
+      handoffCurrent: true
+    }), true);
+  }
+  _handleCellEditorKeyDown(var_core_value_sig9256, var_core_value_sig98A0, var_core_value_sig3EBD) {
+    var var_core_value_sig1AC3;
+    if (!var_core_value_sig98A0 || !this._isCurrentEditorSession(var_core_value_sig98A0, var_core_value_sig3EBD)) return false;
+    let var_core_value_sig66B8 = Wi(var_core_value_sig9256);
+    if (!var_core_value_sig66B8) return false;
+    let var_core_value_sig4C7F = this._tableResourceService["getTable"](var_core_value_sig98A0.unitId, var_core_value_sig98A0.tableId),
+      var_core_value_sig2543 = this._resolveSelectedTableDrawing(var_core_value_sig98A0.unitId, var_core_value_sig98A0.subUnitId, var_core_value_sig98A0.elementId);
+    if (!var_core_value_sig4C7F || !var_core_value_sig2543 || var_core_value_sig2543.element["type"] !== t.PageElementTypeEnum["Table"]) return false;
+    let var_core_value_sigB230 = kt({
+      row: var_core_value_sig98A0.row,
+      column: var_core_value_sig98A0.column
+    }, {
+      rowDelta: var_core_value_sig66B8.rowDelta,
+      columnDelta: var_core_value_sig66B8.columnDelta,
+      wrap: var_core_value_sig66B8.wrap
+    }, var_core_value_sig4C7F.rows["length"], var_core_value_sig4C7F.columns["length"]);
+    if (var_core_value_sigB230.row === var_core_value_sig98A0.row && var_core_value_sigB230.column === var_core_value_sig98A0.column) return false;
+    let var_core_value_sig407E = (0, r.buildDrawingOKey)(var_core_value_sig98A0.unitId, var_core_value_sig98A0.subUnitId, var_core_value_sig98A0.elementId),
+      var_core_value_sig88CB = this._renderContext["scene"].getObject(var_core_value_sig407E);
+    if (!var_core_value_sig88CB) return false;
+    let var_core_value_sigD615 = (0, n.resolveSlideTableRenderModel)(var_core_value_sig4C7F),
+      var_core_value_sigB708 = var_core_value_sigD615.cells["find"](var_core_value_sigA39E => var_core_value_sigA39E.row === var_core_value_sigB230.row && var_core_value_sigA39E.column === var_core_value_sigB230.column && !var_core_value_sigA39E.hidden) ?? var_core_value_sigD615.cells["find"](var_core_value_sigBBEE => !var_core_value_sigBBEE.hidden && var_core_value_sigB230.row >= var_core_value_sigBBEE.row && var_core_value_sigB230.row < var_core_value_sigBBEE.row + var_core_value_sigBBEE.rowSpan && var_core_value_sigB230.column >= var_core_value_sigBBEE.column && var_core_value_sigB230.column < var_core_value_sigBBEE.column + var_core_value_sigBBEE.columnSpan);
+    if (!var_core_value_sigB708) return false;
+    let var_core_value_sig60EF = this._editorUIService["getSession"]();
+    if (!var_core_value_sig60EF) return false;
+    var_core_value_sig9256.preventDefault(), var_core_value_sig9256.stopPropagation(), this._editorUIService["complete"](var_core_value_sig60EF.documentData, var_core_value_sig60EF.measurement, var_core_value_sig60EF.sessionId);
+    let var_core_value_sigA6FB = this._tableSelectionService["selectCell"]({
+      unitId: var_core_value_sig2543.unitId,
+      subUnitId: var_core_value_sig2543.subUnitId,
+      elementId: var_core_value_sig2543.drawingId,
+      tableId: var_core_value_sig2543.element["tableId"],
+      row: var_core_value_sigB708.row,
+      column: var_core_value_sigB708.column
+    });
+    return (var_core_value_sig1AC3 = var_core_value_sig88CB.setTableSelection) == null || var_core_value_sig1AC3.call(var_core_value_sig88CB, {
+      kind: Y(var_core_value_sigA6FB.kind),
+      ranges: var_core_value_sigA6FB.ranges,
+      active: {
+        row: var_core_value_sigB708.row,
+        column: var_core_value_sigB708.column
+      }
+    }), this._enterCellStage(), this._setTableKeyboardFocus(true), this._makeSceneDirty(), true;
+  }
+  _resolveCellHit(var_core_value_sigD6EA, var_core_value_sigA2D31, var_core_value_sig727A, var_core_value_sig6AF1) {
+    if (var_core_value_sigD6EA.element["type"] !== t.PageElementTypeEnum["Table"] || var_core_value_sigD6EA.groupId) return null;
+    let var_core_value_sig3F6A = this._tableResourceService["getTable"](var_core_value_sigD6EA.unitId, var_core_value_sigD6EA.element["tableId"]);
+    if (!var_core_value_sig3F6A) return null;
+    let var_core_value_sig23B4 = this._renderContext["scene"].getObject(var_core_value_sigA2D31);
+    if (!var_core_value_sig23B4 || var_core_value_sig23B4.isInGroup) return null;
+    let var_core_value_sig350C = (0, n.resolveSlideTableRenderModel)(var_core_value_sig3F6A),
+      var_core_value_sig2335 = this._resolveTablePoint(var_core_value_sig23B4, var_core_value_sig350C, var_core_value_sig727A, var_core_value_sig6AF1),
+      var_core_value_sig6233 = Pi(var_core_value_sig350C, var_core_value_sig2335.x, var_core_value_sig2335.y);
+    if (!var_core_value_sig6233) return null;
+    let var_core_value_sig4230 = var_core_value_sig350C.cells["find"](var_core_value_sig011D => var_core_value_sig011D.row === var_core_value_sig6233.row && var_core_value_sig011D.column === var_core_value_sig6233.column && !var_core_value_sig011D.hidden);
+    return var_core_value_sig4230 ? {
+      table: var_core_value_sig3F6A,
+      model: var_core_value_sig350C,
+      cell: var_core_value_sig4230,
+      row: var_core_value_sig6233.row,
+      column: var_core_value_sig6233.column,
+      object: var_core_value_sig23B4
+    } : null;
+  }
+  _resolveTablePoint(var_core_value_sig6136, var_core_value_sigD25E, var_core_value_sigE1BC, var_core_value_sigCF441) {
+    let var_core_value_sig3C97 = var_core_value_sig6136.getInverseCoord(new a["Vector2"](var_core_value_sigE1BC, var_core_value_sigCF441)),
+      var_core_value_sigA920 = var_core_value_sig3C97.x + var_core_value_sig6136.width / 2,
+      var_core_value_sigAD561 = var_core_value_sig3C97.y + var_core_value_sig6136.height / 2,
+      var_core_value_sig04541 = J(var_core_value_sigD25E.width / var_core_value_sig6136.width, 1),
+      var_core_value_sigEE1A = J(var_core_value_sigD25E.height / var_core_value_sig6136.height, 1);
+    return {
+      x: var_core_value_sigA920 * var_core_value_sig04541,
+      y: var_core_value_sigAD561 * var_core_value_sigEE1A
+    };
+  }
+  _resolveEditorLayout(var_core_value_sig4107, var_core_value_sigF35C, var_core_value_sigEF8D, var_core_value_sigE025) {
+    var var_core_value_sigD549, var_core_value_sigC79E;
+    if (!this._renderContext["engine"].getCanvasElement()) return null;
+    let var_core_value_sig9221 = this._renderContext["scene"].getAncestorScale(),
+      var_core_value_sig0351 = J(var_core_value_sig9221.scaleX, 1),
+      var_core_value_sig4686 = J(var_core_value_sig9221.scaleY, 1),
+      var_core_value_sig8E1C = oi({
+        rect: ((var_core_value_sigD549 = var_core_value_sig4107.getCellTextRect) == null ? undefined : var_core_value_sigD549.call(var_core_value_sig4107, var_core_value_sigEF8D.row, var_core_value_sigEF8D.column, var_core_value_sig4107.width, var_core_value_sig4107.height)) ?? (0, n.resolveSlideTableCellRect)({
+          cell: var_core_value_sigEF8D,
+          tableWidth: var_core_value_sigF35C.width,
+          tableHeight: var_core_value_sigF35C.height,
+          targetWidth: var_core_value_sig4107.width,
+          targetHeight: var_core_value_sig4107.height,
+          includeMargins: true
+        }),
+        tableTransform: {
+          left: var_core_value_sig4107.left,
+          top: var_core_value_sig4107.top,
+          width: var_core_value_sig4107.width,
+          height: var_core_value_sig4107.height,
+          angle: var_core_value_sig4107.angle,
+          flipX: var_core_value_sig4107.flipX,
+          flipY: var_core_value_sig4107.flipY
+        },
+        scale: {
+          scaleX: var_core_value_sig0351,
+          scaleY: var_core_value_sig4686
+        },
+        scenePointToViewportPoint: var_core_value_sig6167 => this._resolveScenePointToEditorPoint(var_core_value_sig6167)
+      }),
+      var_core_value_sigD719 = var_core_value_sigEF8D.style["textDirection"],
+      var_core_value_sig323C = (var_core_value_sigC79E = var_core_value_sigE025.documentStyle) == null ? undefined : var_core_value_sigC79E.renderConfig;
+    return {
+      ...var_core_value_sig8E1C,
+      horizontalAlign: var_core_value_sig323C == null ? undefined : var_core_value_sig323C.horizontalAlign,
+      isHorizontal: var_core_value_sigD719 !== "vertical" && var_core_value_sigD719 !== "vertical270",
+      verticalAlign: ta(var_core_value_sigEF8D.style["verticalAlign"]) ?? (var_core_value_sig323C == null ? undefined : var_core_value_sig323C.verticalAlign)
+    };
+  }
+  _resolveScenePointToEditorPoint(var_core_value_sig015D) {
+    var var_core_value_sigBF8B, var_core_value_sigF7CE, var_core_value_sig7CF1;
+    let var_core_value_sigA552 = this._renderContext["scene"],
+      var_core_value_sigAE32 = (var_core_value_sigBF8B = var_core_value_sigA552.getViewports) == null ? undefined : var_core_value_sigBF8B.call(var_core_value_sigA552)[0],
+      var_core_value_sig9B4D = var_core_value_sigAE32 == null || (var_core_value_sigF7CE = var_core_value_sigAE32.getAbsoluteVector) == null ? undefined : var_core_value_sigF7CE.call(var_core_value_sigAE32, new a.Vector2(var_core_value_sig015D.x, var_core_value_sig015D.y));
+    if (var_core_value_sig9B4D) return {
+      x: var_core_value_sig9B4D.x,
+      y: var_core_value_sig9B4D.y
+    };
+    let var_core_value_sig2704 = this._renderContext["engine"].getCanvasElement(),
+      var_core_value_sigD0CC = (var_core_value_sig2704 == null || (var_core_value_sig7CF1 = var_core_value_sig2704.getBoundingClientRect) == null ? undefined : var_core_value_sig7CF1.call(var_core_value_sig2704)) ?? {
+        left: 0,
+        top: 0
+      },
+      var_core_value_sigF347 = var_core_value_sigA552.getAncestorScale(),
+      var_core_value_sig80C6 = J(var_core_value_sigF347.scaleX, 1),
+      var_core_value_sigEBFB = J(var_core_value_sigF347.scaleY, 1);
+    return {
+      x: var_core_value_sigD0CC.left + var_core_value_sig015D.x * var_core_value_sig80C6,
+      y: var_core_value_sigD0CC.top + var_core_value_sig015D.y * var_core_value_sigEBFB
+    };
+  }
+  _resolveCellDocumentData(var_core_value_sigF3BF, var_core_value_sigAE58, var_core_value_sig8E13) {
+    var var_core_value_sig3AAF;
+    let var_core_value_sig134E = Ri + "_" + var_core_value_sigF3BF.id + "_" + var_core_value_sigAE58 + "_" + var_core_value_sig8E13;
+    return ci(((var_core_value_sig3AAF = var_core_value_sigF3BF.rows[var_core_value_sigAE58]) == null || (var_core_value_sig3AAF = var_core_value_sig3AAF.cells[var_core_value_sig8E13]) == null ? undefined : var_core_value_sig3AAF.textData) || {
+      id: var_core_value_sig134E,
+      body: {
+        dataStream: "\x0d\x0a"
+      },
+      documentStyle: {}
+    }, var_core_value_sig134E);
+  }
+  _commitCellDocument(var_core_value_sigA3C0, var_core_value_sig723F1, var_core_value_sigD044, var_core_value_sig9797) {
+    var var_core_value_sig8533;
+    if (!var_core_value_sig723F1) return;
+    let var_core_value_sig57C5 = this._tableResourceService["getTable"](var_core_value_sig723F1.unitId, var_core_value_sig723F1.tableId);
+    if (!var_core_value_sig57C5) {
+      this._isCurrentEditorSession(var_core_value_sig723F1, var_core_value_sig9797) && this._tableSelectionService["clear"]();
+      return;
+    }
+    let var_core_value_sig0DE9 = Ri + "_" + var_core_value_sig57C5.id + "_" + var_core_value_sig723F1.row + "_" + var_core_value_sig723F1.column,
+      var_core_value_sigB00D = ci((0, r.stripEditorUIDocumentData)(var_core_value_sigA3C0), var_core_value_sig0DE9),
+      var_core_value_sig57C8 = na((var_core_value_sig8533 = var_core_value_sigB00D.documentStyle) == null || (var_core_value_sig8533 = var_core_value_sig8533.renderConfig) == null ? undefined : var_core_value_sig8533.verticalAlign),
+      var_core_value_sigC27D = (0, n.buildSlideTableCellTextDataPatch)(var_core_value_sig57C5, var_core_value_sig723F1.row, var_core_value_sig723F1.column, var_core_value_sigB00D, {
+        verticalAlign: var_core_value_sig57C8
+      });
+    if (!var_core_value_sigC27D) {
+      this._isCurrentEditorSession(var_core_value_sig723F1, var_core_value_sig9797) && this._tableSelectionService["clear"]();
+      return;
+    }
+    let var_core_value_sig7B95 = var_core_value_sigC27D.rows,
+      var_core_value_sig7D59 = this._applyAutoGrowRowHeight(var_core_value_sig57C5, var_core_value_sig7B95, var_core_value_sig723F1, var_core_value_sigD044);
+    this._commandService["executeCommand"](n.UpdateSlideTableCommand["id"], {
+      unitId: var_core_value_sig723F1.unitId,
+      tableId: var_core_value_sig723F1.tableId,
+      patch: {
+        rows: var_core_value_sig7B95
+      }
+    }), var_core_value_sig7D59 > 0 && this._growTableDrawingHeight(var_core_value_sig723F1, var_core_value_sig7D59), this._finishCellEditing(var_core_value_sig723F1, var_core_value_sig9797);
+  }
+  _autoGrowCellEditorRowHeight(var_core_value_sig5863, var_core_value_sig5BE7, var_core_value_sigC74A) {
+    var var_core_value_sig8F6A;
+    if (!var_core_value_sig5863 || !this._isCurrentEditorSession(var_core_value_sig5863, var_core_value_sigC74A)) return;
+    let var_core_value_sig46EA = this._tableResourceService["getTable"](var_core_value_sig5863.unitId, var_core_value_sig5863.tableId);
+    if (!var_core_value_sig46EA) return;
+    let var_core_value_sig626C = i.Tools["deepClone"](var_core_value_sig46EA.rows),
+      var_core_value_sig9077 = this._applyAutoGrowRowHeight(var_core_value_sig46EA, var_core_value_sig626C, var_core_value_sig5863, var_core_value_sig5BE7);
+    if (var_core_value_sig9077 <= 0) return;
+    this._commandService["executeCommand"](n.UpdateSlideTableCommand["id"], {
+      unitId: var_core_value_sig5863.unitId,
+      tableId: var_core_value_sig5863.tableId,
+      patch: {
+        rows: var_core_value_sig626C
+      }
+    });
+    let var_core_value_sigC76C = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sig5863.unitId, var_core_value_sig5863.subUnitId, var_core_value_sig5863.elementId));
+    var_core_value_sigC76C == null || (var_core_value_sig8F6A = var_core_value_sigC76C.setPreviewTable) == null || var_core_value_sig8F6A.call(var_core_value_sigC76C, {
+      ...var_core_value_sig46EA,
+      rows: var_core_value_sig626C
+    }), this._growTableDrawingHeight(var_core_value_sig5863, var_core_value_sig9077), this._makeSceneDirty();
+  }
+  _handleCellEditorPointerMove(var_core_value_sigB23A, var_core_value_sigBA66, var_core_value_sig3DF0) {}
+  _handoffCellEditorToRangeSelection(var_core_value_sig0512, var_core_value_sig4B2B, var_core_value_sigDF88, var_core_value_sigDB93, var_core_value_sig67CF, var_core_value_sigCA96, var_core_value_sig6C5E, var_core_value_sig4997) {
+    var var_core_value_sig7290;
+    let var_core_value_sigE835 = this._editorUIService["getSession"]();
+    !var_core_value_sigE835 || !this._isCurrentEditorSession(var_core_value_sigE835.context, var_core_value_sigDF88) || ((var_core_value_sig7290 = var_core_value_sig0512.stopTextSelectionDrag) == null || var_core_value_sig7290.call(var_core_value_sig0512), this._editorUIService["complete"](var_core_value_sigE835.documentData, var_core_value_sigE835.measurement), this._rangeDragContext = {
+      drawing: var_core_value_sigDB93,
+      objectKey: var_core_value_sig67CF,
+      object: var_core_value_sigCA96,
+      table: var_core_value_sig6C5E,
+      anchor: {
+        row: var_core_value_sig4B2B.row,
+        column: var_core_value_sig4B2B.column
+      },
+      current: {
+        row: var_core_value_sig4B2B.row,
+        column: var_core_value_sig4B2B.column
+      }
+    }, this._bindRangeDragWindowEvents(), this._applyRangeDragSelection(this._rangeDragContext, {
+      row: var_core_value_sig4997.row,
+      column: var_core_value_sig4997.column
+    }));
+  }
+  _bindRangeDragWindowEvents() {
+    if (this._rangeDragWindowCleanup || typeof window > "u") return;
+    let var_core_value_sig4644 = var_core_value_sig65A1 => {
+        this._updateRangeDrag({
+          buttons: var_core_value_sig65A1.buttons,
+          clientX: var_core_value_sig65A1.clientX,
+          clientY: var_core_value_sig65A1.clientY
+        });
+      },
+      var_core_value_sig9DED = () => {
+        this._finishRangeDrag();
+      };
+    window.addEventListener("pointermove", var_core_value_sig4644), window.addEventListener("pointerup", var_core_value_sig9DED), this._rangeDragWindowCleanup = () => {
+      window.removeEventListener("pointermove", var_core_value_sig4644), window.removeEventListener("pointerup", var_core_value_sig9DED), this._rangeDragWindowCleanup = null;
+    };
+  }
+  _finishRangeDrag() {
+    let var_core_value_sig7DE6 = this._rangeDragWindowCleanup;
+    var_core_value_sig7DE6 && var_core_value_sig7DE6(), this._rangeDragContext = null;
+  }
+  _handleCellEditorPointerUp(var_core_value_sig120E, var_core_value_sigD79B) {
+    var var_core_value_sig92A3;
+    var_core_value_sig120E && ((var_core_value_sig92A3 = this._rangeDragContext) == null ? undefined : var_core_value_sig92A3.drawing["unitId"]) === var_core_value_sig120E.unitId && this._rangeDragContext["drawing"].drawingId === var_core_value_sig120E.elementId && this._finishRangeDrag();
+  }
+  _applyAutoGrowRowHeight(var_core_value_sig8911, var_core_value_sig8D1B, var_core_value_sigA915, var_core_value_sigE1F7) {
+    if (!var_core_value_sigE1F7) return 0;
+    let var_core_value_sig4BE7 = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sigA915.unitId, var_core_value_sigA915.subUnitId, var_core_value_sigA915.elementId));
+    if (!var_core_value_sig4BE7) return 0;
+    let var_core_value_sigF9FF = (0, n.resolveSlideTableRenderModel)(var_core_value_sig8911),
+      var_core_value_sigE0E3 = var_core_value_sigF9FF.cells["find"](var_core_value_sig7F19 => var_core_value_sig7F19.row === var_core_value_sigA915.row && var_core_value_sig7F19.column === var_core_value_sigA915.column && !var_core_value_sig7F19.hidden);
+    if (!var_core_value_sigE0E3) return 0;
+    let var_core_value_sig3AB3 = J(var_core_value_sig4BE7.height, var_core_value_sigF9FF.height),
+      var_core_value_sig816E = Xi(var_core_value_sigE0E3, var_core_value_sigF9FF, var_core_value_sig3AB3),
+      var_core_value_sigE6F3 = J(var_core_value_sigE1F7.contentHeight, var_core_value_sig816E),
+      var_core_value_sig3EE1 = Math.ceil(var_core_value_sigE6F3 - var_core_value_sig816E);
+    if (var_core_value_sig3EE1 <= 0) return 0;
+    let var_core_value_sig9673 = var_core_value_sig3EE1 * (J(var_core_value_sigF9FF.height, var_core_value_sig3AB3) / var_core_value_sig3AB3),
+      var_core_value_sig4917 = var_core_value_sig8D1B[Math.min(var_core_value_sig8D1B.length - 1, var_core_value_sigE0E3.row + Math.max(1, var_core_value_sigE0E3.rowSpan) - 1)];
+    return var_core_value_sig4917 ? (var_core_value_sig4917.height = J(var_core_value_sig4917.height, 24) + var_core_value_sig9673, var_core_value_sig3EE1) : 0;
+  }
+  _growTableDrawingHeight(var_core_value_sig3BE6, var_core_value_sigA1C9) {
+    let var_core_value_sig77D6 = var_core_value_sig3BE6.drawingTransform;
+    if (!var_core_value_sig77D6) return;
+    let var_core_value_sigE3CE = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sig3BE6.unitId, var_core_value_sig3BE6.subUnitId, var_core_value_sig3BE6.elementId)),
+      var_core_value_sig219B = Math.max(J(var_core_value_sig77D6.height, 0), J(var_core_value_sigE3CE == null ? undefined : var_core_value_sigE3CE.height, 0)),
+      var_core_value_sig4493 = {
+        ...var_core_value_sig77D6,
+        height: var_core_value_sig219B + var_core_value_sigA1C9
+      };
+    var_core_value_sig3BE6.drawingTransform = var_core_value_sig4493, this._commandService["executeCommand"](t.UpdateSlideDrawingCommand["id"], {
+      patches: [{
+        unitId: var_core_value_sig3BE6.unitId,
+        subUnitId: var_core_value_sig3BE6.subUnitId,
+        drawingId: var_core_value_sig3BE6.elementId,
+        transform: var_core_value_sig4493
+      }]
+    });
+  }
+  _commitCellStyle(var_core_value_sig8B9C, var_core_value_sigA35B) {
+    if (!var_core_value_sig8B9C) return;
+    let var_core_value_sig82DD = this._tableResourceService["getTable"](var_core_value_sig8B9C.unitId, var_core_value_sig8B9C.tableId);
+    if (!var_core_value_sig82DD) {
+      this._tableSelectionService["clear"]();
+      return;
+    }
+    let var_core_value_sigAAC7 = i.Tools["deepClone"](var_core_value_sig82DD.rows),
+      var_core_value_sig1999 = var_core_value_sigAAC7[var_core_value_sig8B9C.row],
+      var_core_value_sigFB45 = var_core_value_sig1999 == null ? undefined : var_core_value_sig1999.cells[var_core_value_sig8B9C.column];
+    !var_core_value_sig1999 || !var_core_value_sigFB45 || (var_core_value_sig1999.cells[var_core_value_sig8B9C.column] = {
+      ...var_core_value_sigFB45,
+      style: ra(var_core_value_sigFB45.style, var_core_value_sigA35B)
+    }, this._commandService["executeCommand"](n.UpdateSlideTableCommand["id"], {
+      unitId: var_core_value_sig8B9C.unitId,
+      tableId: var_core_value_sig8B9C.tableId,
+      patch: {
+        rows: var_core_value_sigAAC7
+      }
+    }));
+  }
+  _finishCellEditing(var_core_value_sigB86C, var_core_value_sigD892) {
+    var var_core_value_sig6086, var_core_value_sigAED2, var_core_value_sig3516, var_core_value_sigCDCD;
+    if (!this._isCurrentEditorSession(var_core_value_sigB86C, var_core_value_sigD892) || (this._tableSelectionService["clear"](), this._editorDisposable = null, this._activeEditorContextKey = null, this._setTableKeyboardFocus(false), !var_core_value_sigB86C)) return;
+    this._univerInstanceService["focusUnit"](var_core_value_sigB86C.unitId);
+    let var_core_value_sig206A = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sigB86C.unitId, var_core_value_sigB86C.subUnitId, var_core_value_sigB86C.elementId));
+    var_core_value_sig206A == null || (var_core_value_sig6086 = var_core_value_sig206A.setEditingCell) == null || var_core_value_sig6086.call(var_core_value_sig206A, null), var_core_value_sig206A == null || (var_core_value_sigAED2 = var_core_value_sig206A.setTableSelection) == null || var_core_value_sigAED2.call(var_core_value_sig206A, null), var_core_value_sig206A == null || (var_core_value_sig3516 = var_core_value_sig206A.setTableControlHover) == null || var_core_value_sig3516.call(var_core_value_sig206A, null), var_core_value_sig206A == null || (var_core_value_sigCDCD = var_core_value_sig206A.setPreviewTable) == null || var_core_value_sigCDCD.call(var_core_value_sig206A, null), this._restoreTableDrawingSelection(var_core_value_sigB86C), this._makeSceneDirty();
+  }
+  _isCurrentEditorSession(var_core_value_sig1EFE, var_core_value_sig9904) {
+    return var_core_value_sig1EFE ? var_core_value_sig9904 !== undefined && var_core_value_sig9904 !== this._editorSessionId ? false : this._activeEditorContextKey === ea(var_core_value_sig1EFE) : var_core_value_sig9904 === undefined || var_core_value_sig9904 === this._editorSessionId;
+  }
+  _restoreTableDrawingSelection(var_core_value_sig39C7) {
+    var var_core_value_sigA022;
+    this._drawingStateService["selectDrawings"]({
+      unitId: var_core_value_sig39C7.unitId,
+      subUnitId: var_core_value_sig39C7.subUnitId
+    }, [var_core_value_sig39C7.elementId], var_core_value_sig39C7.elementId);
+    let var_core_value_sig913A = this._renderContext["scene"].getTransformer(),
+      var_core_value_sig991D = this._renderContext["scene"].getObject((0, r.buildDrawingOKey)(var_core_value_sig39C7.unitId, var_core_value_sig39C7.subUnitId, var_core_value_sig39C7.elementId));
+    !var_core_value_sig913A || !var_core_value_sig991D || var_core_value_sig991D.isInGroup || (var_core_value_sigA022 = var_core_value_sig913A.setSelectedControl) == null || var_core_value_sigA022.call(var_core_value_sig913A, var_core_value_sig991D);
+  }
+  _makeSceneDirty() {
+    var var_core_value_sig3E9C, var_core_value_sig7835;
+    (var_core_value_sig3E9C = (var_core_value_sig7835 = this._renderContext["scene"]).makeDirty) == null || var_core_value_sig3E9C.call(var_core_value_sig7835, true);
+  }
+};
+Ui = V([B(1, (0, i.Inject)(r.SlideHitTestService)), B(2, (0, i.Inject)(n.SlideTableResourceService)), B(3, (0, i.Inject)(E)), B(4, r.IEditorUIService), B(5, (0, i.Inject)(r.ISlideDrawingStateService)), B(6, o.IContextMenuService), B(7, i.ICommandService), B(8, (0, i.Inject)(Tt)), B(9, i.IContextService), B(10, i.IUniverInstanceService), B(11, (0, i.Inject)(t.ISlideDrawingService)), B(12, r.ISlideTransformerVisibilityService), B(13, i.IPermissionService), B(14, r.ISlideAlignmentGuideService), B(15, (0, i.Inject)(r.SlideInsertService))], Ui);
+function Wi(var_core_value_sig1312) {
+  if (var_core_value_sig1312.altKey || var_core_value_sig1312.ctrlKey || var_core_value_sig1312.metaKey) return null;
+  switch (var_core_value_sig1312.key) {
+    case "Tab":
+      return {
+        rowDelta: 0,
+        columnDelta: var_core_value_sig1312.shiftKey ? -1 : 1,
+        wrap: true
+      };
+    default:
+      return null;
+  }
+}
+function Gi(var_core_value_sig18A9) {
+  let var_core_value_sigE028 = {
+    preventDefault: () => {},
+    stopPropagation: () => {}
+  };
+  switch (var_core_value_sig18A9) {
+    case "move-left":
+    case "extend-left":
+      return {
+        ...var_core_value_sigE028,
+        key: "ArrowLeft"
+      };
+    case "move-right":
+    case "extend-right":
+      return {
+        ...var_core_value_sigE028,
+        key: "ArrowRight"
+      };
+    case "move-up":
+    case "extend-up":
+      return {
+        ...var_core_value_sigE028,
+        key: "ArrowUp"
+      };
+    case "move-down":
+    case "extend-down":
+      return {
+        ...var_core_value_sigE028,
+        key: "ArrowDown"
+      };
+    case "tab-forward":
+      return {
+        ...var_core_value_sigE028,
+        key: "Tab"
+      };
+    case "tab-backward":
+      return {
+        ...var_core_value_sigE028,
+        key: "Tab",
+        shiftKey: true
+      };
+    case "edit-cell":
+      return {
+        ...var_core_value_sigE028,
+        key: "Enter"
+      };
+    default:
+      return null;
+  }
+}
+function Ki(var_core_value_sig8FC31, var_core_value_sig76A1) {
+  let var_core_value_sig642F = var_core_value_sig8FC31.element["transform"],
+    var_core_value_sigF190 = var_core_value_sig8FC31.transform;
+  return {
+    left: var_core_value_sig642F.left ?? (var_core_value_sigF190 == null ? undefined : var_core_value_sigF190.left) ?? 0,
+    top: var_core_value_sig642F.top ?? (var_core_value_sigF190 == null ? undefined : var_core_value_sigF190.top) ?? 0,
+    width: var_core_value_sig642F.width ?? (var_core_value_sigF190 == null ? undefined : var_core_value_sigF190.width) ?? (var_core_value_sig76A1 == null ? undefined : var_core_value_sig76A1.width),
+    height: var_core_value_sig642F.height ?? (var_core_value_sigF190 == null ? undefined : var_core_value_sigF190.height) ?? (var_core_value_sig76A1 == null ? undefined : var_core_value_sig76A1.height),
+    angle: var_core_value_sig642F.rotation ?? (var_core_value_sigF190 == null ? undefined : var_core_value_sigF190.angle) ?? 0,
+    flipX: var_core_value_sig642F.flipX ?? (var_core_value_sigF190 == null ? undefined : var_core_value_sigF190.flipX),
+    flipY: var_core_value_sig642F.flipY ?? (var_core_value_sigF190 == null ? undefined : var_core_value_sigF190.flipY)
+  };
+}
+function qi(var_core_value_sig5BF0, var_core_value_sig4144 = 0) {
+  return typeof var_core_value_sig5BF0 == "number" && Number.isFinite(var_core_value_sig5BF0) ? var_core_value_sig5BF0 : var_core_value_sig4144;
+}
+function J(var_core_value_sig81CB, var_core_value_sig7C8C) {
+  let var_core_value_sigF533 = qi(var_core_value_sig81CB, var_core_value_sig7C8C);
+  return var_core_value_sigF533 > 0 ? var_core_value_sigF533 : var_core_value_sig7C8C;
+}
+function Y(var_core_value_sig018A) {
+  return var_core_value_sig018A === "none" ? undefined : var_core_value_sig018A;
+}
+function Ji(var_core_value_sigECD9) {
+  let var_core_value_sig900B = var_core_value_sigECD9[0];
+  if (var_core_value_sig900B) return {
+    row: Math.min(var_core_value_sig900B.startRow, var_core_value_sig900B.endRow),
+    column: Math.min(var_core_value_sig900B.startColumn, var_core_value_sig900B.endColumn)
+  };
+}
+function X(var_core_value_sig82F5, var_core_value_sigB2AC) {
+  let var_core_value_sigECB5 = J(var_core_value_sigB2AC, 1),
+    var_core_value_sigA422 = var_core_value_sig82F5.map(var_core_value_sig1257 => J(var_core_value_sig1257, 1)),
+    var_core_value_sigDA36 = var_core_value_sigA422.reduce((var_core_value_sig97E2, var_core_value_sigBFA3) => var_core_value_sig97E2 + var_core_value_sigBFA3, 0);
+  return var_core_value_sigA422.map(var_core_value_sig6663 => var_core_value_sig6663 / var_core_value_sigDA36 * var_core_value_sigECB5);
+}
+function Yi(var_core_value_sig2A70, var_core_value_sigA9DF) {
+  let var_core_value_sigBC94 = 0,
+    var_core_value_sig018B = {
+      index: 0,
+      distance: Math.abs(var_core_value_sigA9DF)
+    };
+  for (let var_core_value_sigB250 = 0; var_core_value_sigB250 < var_core_value_sig2A70.length; var_core_value_sigB250 += 1) {
+    var_core_value_sigBC94 += var_core_value_sig2A70[var_core_value_sigB250];
+    let var_core_value_sig7827 = Math.abs(var_core_value_sigA9DF - var_core_value_sigBC94);
+    var_core_value_sig7827 < var_core_value_sig018B.distance && (var_core_value_sig018B = {
+      index: var_core_value_sigB250 + 1,
+      distance: var_core_value_sig7827
+    });
+  }
+  return var_core_value_sig018B.index;
+}
+function Xi(var_core_value_sig6F36, var_core_value_sigF1B5, var_core_value_sig51CE) {
+  let var_core_value_sigB5C9 = J(var_core_value_sig51CE / var_core_value_sigF1B5.height, 1),
+    var_core_value_sigFEE6 = (0, n.resolveSlideTableCellTextMargins)(var_core_value_sig6F36.style["margins"]),
+    var_core_value_sig8700 = var_core_value_sigFEE6.top,
+    var_core_value_sig723F2 = var_core_value_sigFEE6.bottom;
+  return Math.max(1, var_core_value_sig6F36.bounds["height"] * var_core_value_sigB5C9 - var_core_value_sig8700 - var_core_value_sig723F2);
+}
+function Zi(var_core_value_sig70D4, var_core_value_sig838B, var_core_value_sigE6AD) {
+  let var_core_value_sigC4E91 = 0,
+    var_core_value_sigE39E = null;
+  for (let var_core_value_sig4EAB = 0; var_core_value_sig4EAB < var_core_value_sig70D4.length - 1; var_core_value_sig4EAB += 1) {
+    var_core_value_sigC4E91 += var_core_value_sig70D4[var_core_value_sig4EAB];
+    let var_core_value_sig652C = Math.abs(var_core_value_sig838B - var_core_value_sigC4E91);
+    var_core_value_sig652C > var_core_value_sigE6AD || (!var_core_value_sigE39E || var_core_value_sig652C < var_core_value_sigE39E.distance) && (var_core_value_sigE39E = {
+      boundaryIndex: var_core_value_sig4EAB + 1,
+      distance: var_core_value_sig652C
+    });
+  }
+  return var_core_value_sigE39E;
+}
+function Qi(var_core_value_sig6818, var_core_value_sig504F, var_core_value_sigA21D, var_core_value_sigB754) {
+  let var_core_value_sig2B87 = var_core_value_sig504F - 1,
+    var_core_value_sig2FFF = var_core_value_sig504F;
+  if (var_core_value_sig2B87 < 0 || var_core_value_sig2FFF >= var_core_value_sig6818.length) return var_core_value_sig6818;
+  let var_core_value_sig82FF = var_core_value_sig6818[var_core_value_sig2B87],
+    var_core_value_sig6C72 = var_core_value_sig6818[var_core_value_sig2FFF],
+    var_core_value_sig50E5 = var_core_value_sigB754 - var_core_value_sig82FF,
+    var_core_value_sig6E14 = var_core_value_sig6C72 - var_core_value_sigB754,
+    var_core_value_sig4D3F = Math.min(Math.max(var_core_value_sigA21D, var_core_value_sig50E5), var_core_value_sig6E14),
+    var_core_value_sigBE4F = var_core_value_sig6818.slice();
+  return var_core_value_sigBE4F[var_core_value_sig2B87] = var_core_value_sig82FF + var_core_value_sig4D3F, var_core_value_sigBE4F[var_core_value_sig2FFF] = var_core_value_sig6C72 - var_core_value_sig4D3F, var_core_value_sigBE4F;
+}
+function $i(var_core_value_sig8DF2, var_core_value_sig666F, var_core_value_sig2BE5) {
+  return var_core_value_sig2BE5 === "column" ? var_core_value_sig8DF2.columns["some"]((var_core_value_sig2FD0, var_core_value_sig035C) => {
+    var var_core_value_sigA7F0;
+    return var_core_value_sig2FD0.width !== ((var_core_value_sigA7F0 = var_core_value_sig666F.columns[var_core_value_sig035C]) == null ? undefined : var_core_value_sigA7F0.width);
+  }) : var_core_value_sig8DF2.rows["some"]((var_core_value_sig6AE2, var_core_value_sigFD17) => {
+    var var_core_value_sigA5E0;
+    return (var_core_value_sig6AE2.height ?? 24) !== (((var_core_value_sigA5E0 = var_core_value_sig666F.rows[var_core_value_sigFD17]) == null ? undefined : var_core_value_sigA5E0.height) ?? 24);
+  });
+}
+function ea(var_core_value_sig79D6) {
+  return var_core_value_sig79D6.unitId + ":" + var_core_value_sig79D6.subUnitId + ":" + var_core_value_sig79D6.elementId + ":" + var_core_value_sig79D6.tableId + ":" + var_core_value_sig79D6.row + ":" + var_core_value_sig79D6.column;
+}
+function ta(var_core_value_sig6476) {
+  if (var_core_value_sig6476 === "middle") return i.VerticalAlign["MIDDLE"];
+  if (var_core_value_sig6476 === "bottom") return i.VerticalAlign["BOTTOM"];
+  if (var_core_value_sig6476 === "top") return i.VerticalAlign["TOP"];
+}
+function na(var_core_value_sigAFF3) {
+  if (var_core_value_sigAFF3 === i.VerticalAlign["MIDDLE"]) return n.SlideTableVerticalAlignEnum["Middle"];
+  if (var_core_value_sigAFF3 === i.VerticalAlign["BOTTOM"]) return n.SlideTableVerticalAlignEnum["Bottom"];
+  if (var_core_value_sigAFF3 === i.VerticalAlign["TOP"]) return n.SlideTableVerticalAlignEnum["Top"];
+}
+function ra(var_core_value_sig866B, var_core_value_sig40A0) {
+  return {
+    ...var_core_value_sig866B,
+    ...var_core_value_sig40A0,
+    ...(var_core_value_sig40A0.fill ? {
+      fill: {
+        ...(var_core_value_sig866B == null ? undefined : var_core_value_sig866B.fill),
+        ...var_core_value_sig40A0.fill
+      }
+    } : {}),
+    ...(var_core_value_sig40A0.borders ? {
+      borders: {
+        ...(var_core_value_sig866B == null ? undefined : var_core_value_sig866B.borders),
+        ...var_core_value_sig40A0.borders
+      }
+    } : {}),
+    ...(var_core_value_sig40A0.margins ? {
+      margins: {
+        ...(var_core_value_sig866B == null ? undefined : var_core_value_sig866B.margins),
+        ...var_core_value_sig40A0.margins
+      }
+    } : {})
+  };
+}
+function ia(var_core_value_sig86F0) {
+  if ((var_core_value_sig86F0 == null ? undefined : var_core_value_sig86F0.type) === "none") return "transparent";
+  let var_core_value_sigE4B4 = var_core_value_sig86F0 == null ? undefined : var_core_value_sig86F0.color;
+  if (!var_core_value_sigE4B4) return;
+  let var_core_value_sig1D8C = ca(var_core_value_sigE4B4);
+  if (var_core_value_sig1D8C) {
+    let var_core_value_sigC38F = fa(var_core_value_sig1D8C.a) ?? 1;
+    return "rgba(" + var_core_value_sig1D8C.r + ",\x20" + var_core_value_sig1D8C.g + ",\x20" + var_core_value_sig1D8C.b + ",\x20" + ma(var_core_value_sigC38F) + ")";
+  }
+  let var_core_value_sigED34 = la(var_core_value_sigE4B4);
+  if (!var_core_value_sigED34) return var_core_value_sigE4B4;
+  let var_core_value_sig74CE = fa(var_core_value_sig86F0.alpha) ?? 1;
+  return "rgba(" + var_core_value_sigED34.r + ",\x20" + var_core_value_sigED34.g + ",\x20" + var_core_value_sigED34.b + ",\x20" + ma(var_core_value_sig74CE) + ")";
+}
+function aa(var_core_value_sig7FB9) {
+  let var_core_value_sigAE9F = ca(var_core_value_sig7FB9);
+  if (var_core_value_sigAE9F) return {
+    color: ua(var_core_value_sigAE9F.r, var_core_value_sigAE9F.g, var_core_value_sigAE9F.b),
+    alpha: fa(var_core_value_sigAE9F.a) ?? 1
+  };
+  let var_core_value_sigFF68 = la(var_core_value_sig7FB9);
+  return var_core_value_sigFF68 ? {
+    color: ua(var_core_value_sigFF68.r, var_core_value_sigFF68.g, var_core_value_sigFF68.b)
+  } : {
+    color: var_core_value_sig7FB9
+  };
+}
+function oa(var_core_value_sigC604, var_core_value_sigE56F) {
+  return ia(var_core_value_sigE56F.style["fill"]) ?? sa(var_core_value_sigC604, var_core_value_sigE56F.row);
+}
+function sa(var_core_value_sig6D7D, var_core_value_sig335B) {
+  return var_core_value_sig6D7D.options["firstRow"] && var_core_value_sig335B === 0 ? "#E8F1FF" : var_core_value_sig6D7D.options["bandRow"] && var_core_value_sig335B % 2 == 0 ? "#F7FAFF" : "#FFFFFF";
+}
+function Z(var_core_value_sig61E2) {
+  return typeof var_core_value_sig61E2 == "number" && Number.isFinite(var_core_value_sig61E2);
+}
+function ca(var_core_value_sig974B) {
+  let var_core_value_sigB89A = /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(\d+(?:\.\d+)?|\.\d+))?\s*\)$/i.exec(var_core_value_sig974B.trim());
+  if (var_core_value_sigB89A) return {
+    r: da(Number.parseInt(var_core_value_sigB89A[1], 10)),
+    g: da(Number.parseInt(var_core_value_sigB89A[2], 10)),
+    b: da(Number.parseInt(var_core_value_sigB89A[3], 10)),
+    a: var_core_value_sigB89A[4] === undefined ? 1 : Number.parseFloat(var_core_value_sigB89A[4])
+  };
+}
+function la(var_core_value_sig3B83) {
+  let var_core_value_sig3092 = var_core_value_sig3B83.trim(),
+    var_core_value_sigBFDA = /^#([0-9a-f]{3})$/i.exec(var_core_value_sig3092);
+  if (var_core_value_sigBFDA) {
+    let [var_core_value_sigFAFE, var_core_value_sig2B86, var_core_value_sig8873] = var_core_value_sigBFDA[1].split("").map(var_core_value_sig7E32 => Number.parseInt("" + var_core_value_sig7E32 + var_core_value_sig7E32, 16));
+    return {
+      r: var_core_value_sigFAFE,
+      g: var_core_value_sig2B86,
+      b: var_core_value_sig8873
+    };
+  }
+  let var_core_value_sig995C = /^#([0-9a-f]{6})$/i.exec(var_core_value_sig3092);
+  if (var_core_value_sig995C) return {
+    r: Number.parseInt(var_core_value_sig995C[1].slice(0, 2), 16),
+    g: Number.parseInt(var_core_value_sig995C[1].slice(2, 4), 16),
+    b: Number.parseInt(var_core_value_sig995C[1].slice(4, 6), 16)
+  };
+}
+function ua(var_core_value_sig364B, var_core_value_sig2C9F, var_core_value_sig4133) {
+  return ("#" + [var_core_value_sig364B, var_core_value_sig2C9F, var_core_value_sig4133].map(var_core_value_sigB9C5 => da(var_core_value_sigB9C5).toString(16).padStart(2, "0")).join("")).toUpperCase();
+}
+function da(var_core_value_sig8333) {
+  return Number.isFinite(var_core_value_sig8333) ? Math.min(255, Math.max(0, Math.round(var_core_value_sig8333))) : 0;
+}
+function fa(var_core_value_sigB171) {
+  if (!(typeof var_core_value_sigB171 != "number" || !Number.isFinite(var_core_value_sigB171))) return pa(var_core_value_sigB171 <= 1 ? var_core_value_sigB171 : var_core_value_sigB171 <= 100 ? var_core_value_sigB171 / 100 : var_core_value_sigB171 / 100000);
+}
+function pa(var_core_value_sigA6AB) {
+  return Math.min(1, Math.max(0, var_core_value_sigA6AB));
+}
+function ma(var_core_value_sigDC81) {
+  return Number(var_core_value_sigDC81.toFixed(4)).toString();
+}
+function ha(var_core_value_sig6378) {
+  return new DOMParser().parseFromString(var_core_value_sig6378, "text/html").querySelector("img") !== null;
+}
+async function ga(var_core_value_sig3C58, var_core_value_sig1D57) {
+  let var_core_value_sig45F01 = (0, h.extractClipboardImageFiles)(var_core_value_sig3C58);
+  return var_core_value_sig1D57 ? ha(var_core_value_sig1D57) ? var_core_value_sig45F01.length > 0 ? var_core_value_sig45F01 : (0, h.extractClipboardHtmlImageFiles)(var_core_value_sig1D57) : [] : var_core_value_sig45F01;
+}
+function _a(var_core_value_sig7AFB) {
+  return var_core_value_sig7AFB.type === t.PageElementTypeEnum["Table"];
+}
+let va = class {
+  constructor(var_core_value_sig511D) {
+    this._resourceService = var_core_value_sig511D, T(this, "key", "slide-table");
+  }
+  collect(var_core_value_sig1610) {
+    let var_core_value_sig23AB = {},
+      var_core_value_sigA15D = {},
+      var_core_value_sig7E90 = {};
+    return var_core_value_sig1610.elements["forEach"](var_core_value_sig4C07 => {
+      if (!_a(var_core_value_sig4C07)) return;
+      let var_core_value_sig79AB = this._resourceService["getTable"](var_core_value_sig1610.unitId, var_core_value_sig4C07.tableId);
+      if (var_core_value_sig79AB && (var_core_value_sig23AB[var_core_value_sig79AB.id] = i.Tools["deepClone"](var_core_value_sig79AB), var_core_value_sig7E90[var_core_value_sig4C07.id] = var_core_value_sig79AB.id, var_core_value_sig79AB.themeId)) {
+        let var_core_value_sigEFD4 = this._resourceService["getTheme"](var_core_value_sig1610.unitId, var_core_value_sig79AB.themeId);
+        var_core_value_sigEFD4 && (var_core_value_sigA15D[var_core_value_sigEFD4.id] = i.Tools["deepClone"](var_core_value_sigEFD4));
+      }
+    }), Object.keys(var_core_value_sig23AB).length === 0 ? null : {
+      tables: var_core_value_sig23AB,
+      themes: var_core_value_sigA15D,
+      tableIdByElementId: var_core_value_sig7E90
+    };
+  }
+  serialize(var_core_value_sig03F7) {
+    let var_core_value_sig756F = var_core_value_sig03F7.elements["filter"](_a).map(var_core_value_sig8E74 => this._resourceService["getTable"](var_core_value_sig03F7.unitId, var_core_value_sig8E74.tableId)).filter(var_core_value_sig104C => var_core_value_sig104C !== undefined);
+    return var_core_value_sig756F.length > 0 ? {
+      html: var_core_value_sig756F.map(Sa).join("<br>"),
+      plainText: var_core_value_sig756F.map(xa).join("\x0a")
+    } : null;
+  }
+  preparePaste(var_core_value_sig0DB11) {
+    if (!ya(var_core_value_sig0DB11.payload)) return null;
+    let var_core_value_sig4950 = var_core_value_sig0DB11.payload,
+      var_core_value_sig4424 = new Map();
+    var_core_value_sig0DB11.elementIdMap["forEach"]((var_core_value_sig841D, var_core_value_sig90CB) => var_core_value_sig4424.set(var_core_value_sig841D, var_core_value_sig90CB));
+    let var_core_value_sig57E8 = new Map(),
+      var_core_value_sig76B6 = new Map(),
+      var_core_value_sig89BC = var_core_value_sig0DB11.elements["map"](var_core_value_sigBDF5 => {
+        if (!_a(var_core_value_sigBDF5)) return var_core_value_sigBDF5;
+        let var_core_value_sigACC6 = var_core_value_sig4424.get(var_core_value_sigBDF5.id),
+          var_core_value_sig1614 = var_core_value_sigACC6 ? var_core_value_sig4950.tableIdByElementId[var_core_value_sigACC6] : undefined;
+        if (!var_core_value_sig1614 || !var_core_value_sig4950.tables[var_core_value_sig1614]) return var_core_value_sigBDF5;
+        let var_core_value_sig85C3 = var_core_value_sig57E8.get(var_core_value_sig1614);
+        return var_core_value_sig85C3 || (var_core_value_sig85C3 = (0, i.generateRandomId)(6), var_core_value_sig57E8.set(var_core_value_sig1614, var_core_value_sig85C3)), {
+          ...var_core_value_sigBDF5,
+          tableId: var_core_value_sig85C3
+        };
+      }),
+      var_core_value_sig2191 = [];
+    return var_core_value_sig57E8.forEach((var_core_value_sigB996, var_core_value_sig4BBA) => {
+      let var_core_value_sig6201 = var_core_value_sig4950.tables[var_core_value_sig4BBA];
+      if (!var_core_value_sig6201) return;
+      let var_core_value_sig5151 = i.Tools["deepClone"](var_core_value_sig6201);
+      var_core_value_sig5151.id = var_core_value_sigB996;
+      let var_core_value_sigB542;
+      if (var_core_value_sig6201.themeId) {
+        let var_core_value_sig861B = var_core_value_sig4950.themes[var_core_value_sig6201.themeId];
+        if (var_core_value_sig861B) {
+          let var_core_value_sig4383 = var_core_value_sig76B6.get(var_core_value_sig861B.id);
+          var_core_value_sig4383 || (var_core_value_sig4383 = (0, n.freezeSlideTableTheme)((0, i.generateRandomId)(6), var_core_value_sig861B).id, var_core_value_sig76B6.set(var_core_value_sig861B.id, var_core_value_sig4383)), var_core_value_sigB542 = {
+            ...i.Tools["deepClone"](var_core_value_sig861B),
+            id: var_core_value_sig4383
+          }, var_core_value_sig5151.themeId = var_core_value_sig4383;
+        } else delete var_core_value_sig5151.themeId;
+      }
+      var_core_value_sig2191.push({
+        table: var_core_value_sig5151,
+        theme: var_core_value_sigB542
+      });
+    }), var_core_value_sig2191.length === 0 ? null : {
+      elements: var_core_value_sig89BC,
+      redoMutations: var_core_value_sig2191.map(({
+        table: var_core_value_sigBB6C,
+        theme: var_core_value_sigE2BF
+      }) => ({
+        id: n.SetSlideTableMutation["id"],
+        params: {
+          unitId: var_core_value_sig0DB11.targetUnitId,
+          table: var_core_value_sigBB6C,
+          theme: var_core_value_sigE2BF
+        }
+      })),
+      undoMutations: [...var_core_value_sig2191].reverse().map(({
+        table: var_core_value_sigB8C7
+      }) => ({
+        id: n.RemoveSlideTableMutation["id"],
+        params: {
+          unitId: var_core_value_sig0DB11.targetUnitId,
+          tableId: var_core_value_sigB8C7.id
+        }
+      }))
+    };
+  }
+};
+va = V([B(0, (0, i.Inject)(n.SlideTableResourceService))], va);
+function ya(var_core_value_sig54CD) {
+  return !var_core_value_sig54CD || typeof var_core_value_sig54CD != "object" ? false : "tables" in var_core_value_sig54CD && ba(var_core_value_sig54CD.tables) && "themes" in var_core_value_sig54CD && ba(var_core_value_sig54CD.themes) && "tableIdByElementId" in var_core_value_sig54CD && ba(var_core_value_sig54CD.tableIdByElementId);
+}
+function ba(var_core_value_sigF4AD) {
+  return typeof var_core_value_sigF4AD == "object" && !!var_core_value_sigF4AD && !Array.isArray(var_core_value_sigF4AD);
+}
+function xa(var_core_value_sigF802) {
+  return var_core_value_sigF802.rows["map"](var_core_value_sig3B2E => var_core_value_sig3B2E.cells["map"](var_core_value_sigA56E => var_core_value_sigA56E.hMerge || var_core_value_sigA56E.vMerge ? "" : var_core_value_sigA56E.textData ? (0, t.slideDocumentDataToPlainText)(var_core_value_sigA56E.textData).replace(/[\t\r\n]+/g, "\x20") : "").join("\x09")).join("\x0a");
+}
+function Sa(var_core_value_sig90E4) {
+  return "<table><colgroup>" + var_core_value_sig90E4.columns["map"](var_core_value_sig5A9A => '<col style="width: ' + var_core_value_sig5A9A.width + 'px">').join("") + "</colgroup><tbody>" + var_core_value_sig90E4.rows["map"](var_core_value_sigB524 => {
+    let var_core_value_sig8CFB = var_core_value_sigB524.cells["map"](var_core_value_sig1998 => {
+      if (var_core_value_sig1998.hMerge || var_core_value_sig1998.vMerge) return "";
+      let var_core_value_sigFF19 = [var_core_value_sig1998.rowSpan && var_core_value_sig1998.rowSpan > 1 ? "rowspan=\x22" + var_core_value_sig1998.rowSpan + "\x22" : "", var_core_value_sig1998.columnSpan && var_core_value_sig1998.columnSpan > 1 ? 'colspan="' + var_core_value_sig1998.columnSpan + "\x22" : "", bi(var_core_value_sig1998)].filter(Boolean).join("\x20"),
+        var_core_value_sig43B8 = var_core_value_sig1998.textData ? (0, d.convertBodyToHtml)(i.Tools["deepClone"](var_core_value_sig1998.textData)) : "";
+      return "<td" + (var_core_value_sigFF19 ? "\x20" + var_core_value_sigFF19 : "") + ">" + var_core_value_sig43B8 + "</td>";
+    }).join("");
+    return "<tr" + (var_core_value_sigB524.height ? ' style="height: ' + var_core_value_sigB524.height + 'px"' : "") + ">" + var_core_value_sig8CFB + "</tr>";
+  }).join("") + "</tbody></table>";
+}
+function Ca(var_core_value_sig23B5, var_core_value_sigB560, var_core_value_sigB46F) {
+  let var_core_value_sig440F = var_core_value_sigB560.flatMap(var_core_value_sigB52C => var_core_value_sigB52C ? [var_core_value_sigB52C.subscribeEvent(var_core_value_sig23B5)] : []),
+    var_core_value_sigB857 = var_core_value_sigB46F && typeof ResizeObserver < "u" ? new ResizeObserver(var_core_value_sig23B5) : null;
+  return var_core_value_sigB46F && (var_core_value_sigB857 == null || var_core_value_sigB857.observe(var_core_value_sigB46F)), () => {
+    var_core_value_sig440F.forEach(var_core_value_sigD98F => var_core_value_sigD98F.unsubscribe()), var_core_value_sigB857 == null || var_core_value_sigB857.disconnect();
+  };
+}
+function wa(var_core_value_sig0743) {
+  let var_core_value_sigFDAF = Ta(var_core_value_sig0743.object, var_core_value_sig0743.table, var_core_value_sig0743.selection),
+    var_core_value_sigFC34 = var_core_value_sig0743.scale["scaleX"] * var_core_value_sig0743.canvasScale,
+    var_core_value_sig162E = var_core_value_sig0743.scale["scaleY"] * var_core_value_sig0743.canvasScale,
+    var_core_value_sigB564 = var_core_value_sig0743.canvasRect["left"] + (var_core_value_sigFDAF.centerX - var_core_value_sig0743.scroll["x"]) * var_core_value_sigFC34,
+    var_core_value_sig5989 = var_core_value_sig0743.canvasRect["top"] + (var_core_value_sigFDAF.top - var_core_value_sig0743.scroll["y"] - n.SLIDE_TABLE_CONTROL_GUTTER) * var_core_value_sig162E - 42 - 5,
+    var_core_value_sigC36D = Math.max(352, var_core_value_sig0743.viewportWidth - 340 - 12);
+  return {
+    left: Math.min(Math.max(352, var_core_value_sigB564), var_core_value_sigC36D),
+    top: Math.max(12, var_core_value_sig5989)
+  };
+}
+function Ta(var_core_value_sig580E, var_core_value_sigF338, var_core_value_sig6EEE) {
+  if (!var_core_value_sigF338 || var_core_value_sig6EEE.kind !== "row" && var_core_value_sig6EEE.kind !== "column") return {
+    centerX: var_core_value_sig580E.left + var_core_value_sig580E.width / 2,
+    top: var_core_value_sig580E.top
+  };
+  let var_core_value_sigC0CF = var_core_value_sig6EEE.ranges[0];
+  if (!var_core_value_sigC0CF) return {
+    centerX: var_core_value_sig580E.left + var_core_value_sig580E.width / 2,
+    top: var_core_value_sig580E.top
+  };
+  let var_core_value_sig10D4 = (0, n.normalizeSlideTableCellRange)(var_core_value_sigC0CF),
+    var_core_value_sigE597 = Ea(var_core_value_sigF338.columns["map"](var_core_value_sigA4B8 => var_core_value_sigA4B8.width), var_core_value_sig580E.width, var_core_value_sig10D4.startColumn, var_core_value_sig10D4.endColumn),
+    var_core_value_sig4C3E = Ea(var_core_value_sigF338.rows["map"](var_core_value_sigFF9C => var_core_value_sigFF9C.height ?? 24), var_core_value_sig580E.height, var_core_value_sig10D4.startRow, var_core_value_sig10D4.endRow);
+  return {
+    centerX: var_core_value_sig580E.left + var_core_value_sigE597.start + var_core_value_sigE597.size / 2,
+    top: var_core_value_sig580E.top + var_core_value_sig4C3E.start
+  };
+}
+function Ea(var_core_value_sig616D, var_core_value_sig0F8A, var_core_value_sig2FD4, var_core_value_sig9AF9) {
+  let var_core_value_sig662D = var_core_value_sig616D.reduce((var_core_value_sig278D, var_core_value_sigC0FE) => var_core_value_sig278D + var_core_value_sigC0FE, 0);
+  if (var_core_value_sig662D <= 0 || var_core_value_sig616D.length === 0) return {
+    start: 0,
+    size: var_core_value_sig0F8A
+  };
+  let var_core_value_sig1452 = Math.max(0, Math.min(var_core_value_sig2FD4, var_core_value_sig616D.length - 1)),
+    var_core_value_sig6050 = Math.max(var_core_value_sig1452, Math.min(var_core_value_sig9AF9, var_core_value_sig616D.length - 1)),
+    var_core_value_sig896E = var_core_value_sig616D.slice(0, var_core_value_sig1452).reduce((var_core_value_sigDD22, var_core_value_sig2D35) => var_core_value_sigDD22 + var_core_value_sig2D35, 0),
+    var_core_value_sig6D9B = var_core_value_sig616D.slice(var_core_value_sig1452, var_core_value_sig6050 + 1).reduce((var_core_value_sig7A4B, var_core_value_sigE50A) => var_core_value_sig7A4B + var_core_value_sigE50A, 0);
+  return {
+    start: var_core_value_sig896E / var_core_value_sig662D * var_core_value_sig0F8A,
+    size: var_core_value_sig6D9B / var_core_value_sig662D * var_core_value_sig0F8A
+  };
+}
+function Da() {
+  let var_core_value_sig9425 = (0, o.useDependency)(H),
+    var_core_value_sigCE16 = (0, o.useDependency)(E),
+    var_core_value_sig0207 = (0, o.useDependency)(n.SlideTableResourceService),
+    var_core_value_sig5FE7 = (0, o.useDependency)(i.ICommandService),
+    var_core_value_sig5BA5 = (0, o.useDependency)(a.IRenderManagerService),
+    var_core_value_sig4F79 = (0, o.useDependency)(i.LocaleService),
+    var_core_value_sig2BD8 = (0, o.useObservable)(var_core_value_sig4F79.direction$, var_core_value_sig4F79.getDirection()),
+    var_core_value_sigC182 = (0, o.useDependency)(i.ThemeService),
+    var_core_value_sig1373 = (0, o.useDependency)(n.SlideTableModelService),
+    var_core_value_sig2D20 = (0, o.useObservable)(var_core_value_sigCE16.selection$),
+    var_core_value_sigB4E5 = (0, o.useObservable)(var_core_value_sig9425.visible$, var_core_value_sig9425.getVisible());
+  (0, o.useObservable)(var_core_value_sig1373.tableChange$);
+  let [var_core_value_sigA9C9, var_core_value_sigDA64] = (0, f.useState)(null),
+    [var_core_value_sigBE3F, var_core_value_sig072F] = (0, f.useState)({
+      selectionKey: null,
+      value: null
+    }),
+    var_core_value_sigD794 = (0, f.useCallback)(() => {
+      var_core_value_sigCE16.markTableInternalInteraction();
+    }, [var_core_value_sigCE16]),
+    var_core_value_sigCB821 = !var_core_value_sigB4E5 || !var_core_value_sig2D20 || var_core_value_sig2D20.kind === "text" || !var_core_value_sig2D20.ranges["length"] ? null : var_core_value_sig2D20,
+    var_core_value_sigB67E = var_core_value_sigCB821 ? [var_core_value_sigCB821.unitId, var_core_value_sigCB821.subUnitId, var_core_value_sigCB821.elementId, var_core_value_sigCB821.tableId, ...Object.values(var_core_value_sigCB821.ranges[0] ?? {})].join("|") : null,
+    var_core_value_sig7504 = var_core_value_sigBE3F.selectionKey === var_core_value_sigB67E ? var_core_value_sigBE3F.value : null,
+    var_core_value_sigC2EA = (0, f.useCallback)(() => {
+      var var_core_value_sigC8AC, var_core_value_sig8E63, var_core_value_sig300D, var_core_value_sig520B, var_core_value_sigFE26, var_core_value_sig1019;
+      if (!var_core_value_sigCB821) {
+        var_core_value_sigDA64(null);
+        return;
+      }
+      let var_core_value_sig32AB = var_core_value_sig5BA5.getRenderUnitById(var_core_value_sigCB821.unitId),
+        var_core_value_sig72BE = var_core_value_sig32AB == null ? undefined : var_core_value_sig32AB.scene,
+        var_core_value_sig3E4A = var_core_value_sig72BE == null || (var_core_value_sigC8AC = var_core_value_sig72BE.getObject) == null ? undefined : var_core_value_sigC8AC.call(var_core_value_sig72BE, (0, r.buildDrawingOKey)(var_core_value_sigCB821.unitId, var_core_value_sigCB821.subUnitId, var_core_value_sigCB821.elementId));
+      if (!var_core_value_sig72BE || !var_core_value_sig3E4A) {
+        var_core_value_sigDA64(null);
+        return;
+      }
+      let var_core_value_sig3171 = var_core_value_sig32AB == null || (var_core_value_sig8E63 = var_core_value_sig32AB.engine) == null || (var_core_value_sig300D = var_core_value_sig8E63.getCanvasElement) == null ? undefined : var_core_value_sig300D.call(var_core_value_sig8E63),
+        var_core_value_sigEBC4 = (var_core_value_sig3171 == null || (var_core_value_sig520B = var_core_value_sig3171.getBoundingClientRect) == null ? undefined : var_core_value_sig520B.call(var_core_value_sig3171)) ?? {
+          left: 0,
+          top: 0,
+          width: 0
+        },
+        var_core_value_sig788B = (0, a.pxToNum)((var_core_value_sig3171 == null ? undefined : var_core_value_sig3171.style["width"]) ?? ""),
+        var_core_value_sig9A80 = var_core_value_sig788B > 0 ? var_core_value_sigEBC4.width / var_core_value_sig788B : 1,
+        var_core_value_sig7C69 = ((var_core_value_sigFE26 = var_core_value_sig72BE.getAncestorScale) == null ? undefined : var_core_value_sigFE26.call(var_core_value_sig72BE)) ?? {
+          scaleX: 1,
+          scaleY: 1
+        },
+        var_core_value_sig01EF = (var_core_value_sig1019 = var_core_value_sig72BE.getViewport) == null ? undefined : var_core_value_sig1019.call(var_core_value_sig72BE, r.SLIDE_MAIN_VIEWPORT_KEY),
+        var_core_value_sig3603 = var_core_value_sig0207.getTable(var_core_value_sigCB821.unitId, var_core_value_sigCB821.tableId);
+      var_core_value_sigDA64(wa({
+        canvasRect: var_core_value_sigEBC4,
+        canvasScale: var_core_value_sig9A80,
+        object: var_core_value_sig3E4A,
+        scale: var_core_value_sig7C69,
+        scroll: {
+          x: (var_core_value_sig01EF == null ? undefined : var_core_value_sig01EF.viewportScrollX) ?? 0,
+          y: (var_core_value_sig01EF == null ? undefined : var_core_value_sig01EF.viewportScrollY) ?? 0
+        },
+        selection: var_core_value_sigCB821,
+        table: var_core_value_sig3603,
+        viewportWidth: window.innerWidth
+      }));
+    }, [var_core_value_sig5BA5, var_core_value_sig0207, var_core_value_sigCB821]);
+  (0, f.useEffect)(() => {
+    var var_core_value_sigC163;
+    let var_core_value_sigF5F3 = requestAnimationFrame(var_core_value_sigC2EA);
+    if (!var_core_value_sigCB821) return () => cancelAnimationFrame(var_core_value_sigF5F3);
+    let var_core_value_sig5E69 = var_core_value_sig5BA5.getRenderUnitById(var_core_value_sigCB821.unitId),
+      var_core_value_sig7B39 = var_core_value_sig5E69 == null ? undefined : var_core_value_sig5E69.scene,
+      var_core_value_sigDCAB = var_core_value_sig7B39 == null ? undefined : var_core_value_sig7B39.getObject((0, r.buildDrawingOKey)(var_core_value_sigCB821.unitId, var_core_value_sigCB821.subUnitId, var_core_value_sigCB821.elementId)),
+      var_core_value_sigF569 = Ca(var_core_value_sigC2EA, [var_core_value_sig5E69 == null ? undefined : var_core_value_sig5E69.engine["onTransformChange$"], var_core_value_sig7B39 == null ? undefined : var_core_value_sig7B39.onTransformChange$, var_core_value_sigDCAB == null ? undefined : var_core_value_sigDCAB.onTransformChange$, var_core_value_sig7B39 == null || (var_core_value_sigC163 = var_core_value_sig7B39.getViewport(r.SLIDE_MAIN_VIEWPORT_KEY)) == null ? undefined : var_core_value_sigC163.onScrollAfter$], var_core_value_sig5E69 == null ? undefined : var_core_value_sig5E69.engine["getCanvasElement"]());
+    return window.addEventListener("resize", var_core_value_sigC2EA), () => {
+      cancelAnimationFrame(var_core_value_sigF5F3), var_core_value_sigF569(), window.removeEventListener("resize", var_core_value_sigC2EA);
+    };
+  }, [var_core_value_sigC2EA, var_core_value_sig5BA5, var_core_value_sigCB821]);
+  let var_core_value_sigC733 = var_core_value_sigCB821 ? var_core_value_sig0207.getTable(var_core_value_sigCB821.unitId, var_core_value_sigCB821.tableId) : null,
+    var_core_value_sig9E26 = Cn(var_core_value_sigC733, var_core_value_sigCB821),
+    var_core_value_sig6B84 = var_core_value_sig9E26.values,
+    var_core_value_sig2D04 = (0, f.useCallback)(var_core_value_sig2A9F => {
+      if (!var_core_value_sigCB821) return;
+      let var_core_value_sigB14A = var_core_value_sigCB821.ranges[0],
+        var_core_value_sig4401 = var_core_value_sig0207.getTable(var_core_value_sigCB821.unitId, var_core_value_sigCB821.tableId);
+      !var_core_value_sigB14A || !var_core_value_sig4401 || var_core_value_sig5FE7.executeCommand(n.UpdateSlideTableCommand["id"], {
+        unitId: var_core_value_sigCB821.unitId,
+        tableId: var_core_value_sigCB821.tableId,
+        patch: var_core_value_sig2A9F(var_core_value_sig4401, var_core_value_sigB14A)
+      });
+    }, [var_core_value_sig5FE7, var_core_value_sig0207, var_core_value_sigCB821]),
+    var_core_value_sigD3D6 = (0, f.useCallback)(var_core_value_sig4D6A => {
+      var_core_value_sigCB821 && var_core_value_sig5FE7.executeCommand(n.UpdateSlideTableCommand["id"], {
+        unitId: var_core_value_sigCB821.unitId,
+        tableId: var_core_value_sigCB821.tableId,
+        patch: {
+          styleId: var_core_value_sig4D6A
+        }
+      });
+    }, [var_core_value_sig5FE7, var_core_value_sigCB821]),
+    var_core_value_sig5BE71 = (0, f.useCallback)(var_core_value_sigEF80 => {
+      var_core_value_sigCB821 && var_core_value_sig5FE7.executeCommand(n.UpdateSlideTableCommand["id"], {
+        unitId: var_core_value_sigCB821.unitId,
+        tableId: var_core_value_sigCB821.tableId,
+        patch: {
+          options: var_core_value_sigEF80
+        }
+      });
+    }, [var_core_value_sig5FE7, var_core_value_sigCB821]),
+    var_core_value_sigFD72 = (0, f.useCallback)((var_core_value_sig526D1, var_core_value_sigD78B) => {
+      var_core_value_sig072F({
+        selectionKey: var_core_value_sigB67E,
+        value: var_core_value_sigD78B ? var_core_value_sig526D1 : null
+      });
+    }, [var_core_value_sigB67E]),
+    var_core_value_sig3FA8 = (0, f.useMemo)(() => (0, n.resolveSlideTableThemePalette)(var_core_value_sig66C0 => var_core_value_sigC182.getColorFromTheme(var_core_value_sig66C0)), [var_core_value_sigC182]);
+  if (!var_core_value_sigCB821 || !var_core_value_sigA9C9 || !var_core_value_sigC733) return null;
+  let var_core_value_sig4749 = {
+      left: var_core_value_sigA9C9.left,
+      top: var_core_value_sigA9C9.top,
+      width: "max-content",
+      maxWidth: "min(760px,\x20calc(100vw\x20-\x2024px))",
+      minHeight: 42,
+      transform: "translateX(-50%)",
+      zIndex: 10050
+    },
+    var_core_value_sig5D76 = [{
+      labelKey: "slides-table-ui.editorToolbar.alignLeft",
+      value: i.HorizontalAlign["LEFT"],
+      icon: (0, m.jsx)(c.LeftJustifyingIcon, {})
+    }, {
+      labelKey: "slides-table-ui.editorToolbar.alignCenter",
+      value: i.HorizontalAlign["CENTER"],
+      icon: (0, m.jsx)(c.HorizontallyIcon, {})
+    }, {
+      labelKey: "slides-table-ui.editorToolbar.alignRight",
+      value: i.HorizontalAlign["RIGHT"],
+      icon: (0, m.jsx)(c.RightJustifyingIcon, {})
+    }, {
+      labelKey: "slides-table-ui.editorToolbar.alignJustify",
+      value: i.HorizontalAlign["JUSTIFIED"],
+      icon: (0, m.jsx)(c.AlignTextBothIcon, {})
+    }],
+    var_core_value_sigB8B6 = [{
+      labelKey: "slides-table-ui.editorToolbar.alignTop",
+      value: i.VerticalAlign["TOP"],
+      icon: (0, m.jsx)(c.AlignTopIcon, {})
+    }, {
+      labelKey: "slides-table-ui.editorToolbar.alignMiddle",
+      value: i.VerticalAlign["MIDDLE"],
+      icon: (0, m.jsx)(c.VerticalCenterIcon, {})
+    }, {
+      labelKey: "slides-table-ui.editorToolbar.alignBottom",
+      value: i.VerticalAlign["BOTTOM"],
+      icon: (0, m.jsx)(c.AlignBottomIcon, {})
+    }],
+    var_core_value_sig93DE = var_core_value_sigCB821.ranges[0],
+    var_core_value_sigA278 = var_core_value_sig9E26.mergeState,
+    var_core_value_sig4263 = Tn(var_core_value_sigC733, var_core_value_sigCB821),
+    var_core_value_sig5B46 = (var_core_value_sig4263 == null ? undefined : var_core_value_sig4263.kind) === "row" ? var_core_value_sig4F79.t("slides-table-ui.contextMenu.deleteRow") : (var_core_value_sig4263 == null ? undefined : var_core_value_sig4263.kind) === "column" ? var_core_value_sig4F79.t("slides-table-ui.contextMenu.deleteColumn") : null,
+    var_core_value_sig1533 = () => {
+      var_core_value_sig4263 && var_core_value_sig5FE7.executeCommand(var_core_value_sig4263.commandId, var_core_value_sig4263.params);
+    },
+    var_core_value_sig8C06 = (var_core_value_sigA278 == null ? undefined : var_core_value_sigA278.action) === "unmerge" ? var_core_value_sig4F79.t("slides-table-ui.editorToolbar.unmergeCells") : (var_core_value_sigA278 == null ? undefined : var_core_value_sigA278.action) === "merge" ? var_core_value_sig4F79.t("slides-table-ui.editorToolbar.mergeCells") : null,
+    var_core_value_sig04F0 = () => {
+      let var_core_value_sigCB8C = wn(var_core_value_sigCB821, (var_core_value_sigA278 == null ? undefined : var_core_value_sigA278.action) ?? null, (var_core_value_sigA278 == null ? undefined : var_core_value_sigA278.range) ?? var_core_value_sig93DE ?? null);
+      var_core_value_sigCB8C && var_core_value_sig5FE7.executeCommand(var_core_value_sigCB8C.commandId, var_core_value_sigCB8C.params);
+    };
+  return (0, m.jsxs)("div", {
+    "data-u-comp": "slide-table-floating-toolbar",
+    role: "toolbar",
+    className: (0, u.clsx)("univer-fixed univer-box-border univer-flex univer-max-w-[760px] univer-flex-nowrap univer-items-center univer-rounded univer-bg-gray-0 univer-px-1 univer-py-1 univer-shadow-sm dark:!univer-border-gray-700 dark:!univer-bg-gray-900", u.borderClassName),
+    dir: var_core_value_sig2BD8,
+    style: {
+      ...var_core_value_sig4749,
+      direction: var_core_value_sig2BD8
+    },
+    onMouseDownCapture: var_core_value_sigD794,
+    onPointerDownCapture: var_core_value_sigD794,
+    onMouseDown: l.keepFloatingToolbarPanelInteraction,
+    onPointerDown: l.keepFloatingToolbarPanelInteraction,
+    children: [var_core_value_sig4263 && var_core_value_sig5B46 ? (0, m.jsxs)(m.Fragment, {
+      children: [(0, m.jsx)(zn, {
+        children: (0, m.jsx)(Bn, {
+          "data-toolbar-item": var_core_value_sig4263.kind === "row" ? "delete-row" : "delete-column",
+          title: var_core_value_sig5B46,
+          onClick: var_core_value_sig1533,
+          children: (0, m.jsx)(c.DeleteIcon, {})
+        })
+      }), (0, m.jsx)(u.Separator, {
+        orientation: "vertical"
+      })]
+    }) : null, var_core_value_sig8C06 ? (0, m.jsxs)(m.Fragment, {
+      children: [(0, m.jsx)(zn, {
+        children: (0, m.jsx)(Bn, {
+          "data-toolbar-item": "merge-cells",
+          title: var_core_value_sig8C06,
+          onClick: var_core_value_sig04F0,
+          children: (var_core_value_sigA278 == null ? undefined : var_core_value_sigA278.action) === "unmerge" ? (0, m.jsx)(c.CancelMergeIcon, {}) : (0, m.jsx)(c.MergeAllIcon, {})
+        })
+      }), (0, m.jsx)(u.Separator, {
+        orientation: "vertical"
+      })]
+    }) : null, (0, m.jsxs)(zn, {
+      children: [(0, m.jsx)(Dn, {
+        color: var_core_value_sig6B84.backgroundColor,
+        value: $t(var_core_value_sig6B84.backgroundFill),
+        gradientValue: rn(var_core_value_sig6B84.backgroundFill, var_core_value_sig6B84.backgroundColor),
+        previewStyle: on(var_core_value_sig6B84.backgroundFill, var_core_value_sig6B84.backgroundColor),
+        showPreview: false,
+        tableFill: var_core_value_sig6B84.backgroundFill,
+        mixed: !!var_core_value_sig6B84.mixed["backgroundFill"],
+        open: var_core_value_sig7504 === "background",
+        onOpenChange: var_core_value_sigD217 => var_core_value_sigFD72("background", var_core_value_sigD217),
+        onTableFillChange: var_core_value_sigEB0F => var_core_value_sig2D04((var_core_value_sig9D15, var_core_value_sigB785) => ae(var_core_value_sig9D15, var_core_value_sigB785, var_core_value_sigEB0F)),
+        children: (0, m.jsx)(c.ShapeBackgroundColorDoubleIcon, {
+          extend: {
+            colorChannel1: var_core_value_sig6B84.backgroundColor
+          }
+        })
+      }), (0, m.jsx)(Wn, {
+        direction: var_core_value_sig2BD8,
+        color: var_core_value_sig6B84.borderColor,
+        width: var_core_value_sig6B84.borderWidth,
+        dash: var_core_value_sig6B84.borderDash,
+        presets: Fn,
+        open: var_core_value_sig7504 === "border",
+        mixed: !!(var_core_value_sig6B84.mixed["borderColor"] || var_core_value_sig6B84.mixed["borderWidth"] || var_core_value_sig6B84.mixed["borderDash"]),
+        onOpenChange: var_core_value_sigDC44 => var_core_value_sigFD72("border", var_core_value_sigDC44),
+        onSelectPreset: var_core_value_sigDEFC => var_core_value_sig2D04((var_core_value_sig130F, var_core_value_sigC0E3) => le(var_core_value_sig130F, var_core_value_sigC0E3, var_core_value_sigDEFC)),
+        onChangeColor: var_core_value_sigE842 => var_core_value_sig2D04((var_core_value_sig52F7, var_core_value_sig866F) => ce(var_core_value_sig52F7, var_core_value_sig866F, {
+          color: var_core_value_sigE842
+        })),
+        onChangeWidth: var_core_value_sigA77A => var_core_value_sig2D04((var_core_value_sigDE3D, var_core_value_sigF175) => ce(var_core_value_sigDE3D, var_core_value_sigF175, {
+          width: var_core_value_sigA77A,
+          dash: var_core_value_sigA77A === 0 ? n.SlideTableBorderDashEnum["None"] : undefined
+        })),
+        onChangeDash: var_core_value_sig0701 => var_core_value_sig2D04((var_core_value_sig6A18, var_core_value_sig4E3D) => ce(var_core_value_sig6A18, var_core_value_sig4E3D, {
+          dash: var_core_value_sig0701
+        }))
+      })]
+    }), (0, m.jsx)(u.Separator, {
+      orientation: "vertical"
+    }), (0, m.jsxs)(zn, {
+      children: [(0, m.jsx)(o.FontFamilyDropdown, {
+        ariaLabel: var_core_value_sig4F79.t("slides-table-ui.editorToolbar.fontFamily"),
+        className: "univer-w-28",
+        inputClassName: "univer-w-auto",
+        value: var_core_value_sig6B84.mixed["fontFamily"] ? "" : var_core_value_sig6B84.fontFamily,
+        onChange: var_core_value_sig5DCA => var_core_value_sig2D04((var_core_value_sig49B0, var_core_value_sig2547) => ue(var_core_value_sig49B0, var_core_value_sig2547, var_core_value_sig5DCA)),
+        onMouseDown: l.keepFloatingToolbarPanelInteraction,
+        onPointerDown: l.keepFloatingToolbarPanelInteraction
+      }), (0, m.jsx)(Jn, {
+        title: var_core_value_sig4F79.t("slides-table-ui.editorToolbar.fontSize"),
+        widthClassName: "univer-w-14",
+        value: var_core_value_sig6B84.mixed["fontSize"] ? "" : String(var_core_value_sig6B84.fontSize),
+        options: var_core_value_sig6B84.mixed["fontSize"] ? [{
+          label: "—",
+          value: ""
+        }, ...Mn] : ln(Mn, String(var_core_value_sig6B84.fontSize)),
+        onChange: var_core_value_sigF1AB => {
+          let var_core_value_sig902F = Number(var_core_value_sigF1AB);
+          var_core_value_sigF1AB && !Number.isNaN(var_core_value_sig902F) && var_core_value_sig2D04((var_core_value_sigBCA9, var_core_value_sig4CDF) => de(var_core_value_sigBCA9, var_core_value_sig4CDF, var_core_value_sig902F));
+        }
+      }), (0, m.jsx)(Hn, {
+        open: var_core_value_sig7504 === "textFormat",
+        values: var_core_value_sig6B84,
+        horizontalAlignOptions: var_core_value_sig5D76,
+        verticalAlignOptions: var_core_value_sigB8B6,
+        onOpenChange: var_core_value_sig6BD7 => var_core_value_sigFD72("textFormat", var_core_value_sig6BD7),
+        onToggleStyle: var_core_value_sig63E0 => var_core_value_sig2D04((var_core_value_sig3F79, var_core_value_sig880E) => L(var_core_value_sig3F79, var_core_value_sig880E, var_core_value_sig63E0)),
+        onHorizontalAlign: var_core_value_sig1B87 => var_core_value_sig2D04((var_core_value_sigC9ED, var_core_value_sigB57B) => ne(var_core_value_sigC9ED, var_core_value_sigB57B, {
+          axis: "horizontal",
+          value: var_core_value_sig1B87
+        })),
+        onVerticalAlign: var_core_value_sig580B => var_core_value_sig2D04((var_core_value_sig780B, var_core_value_sig7D1B) => ne(var_core_value_sig780B, var_core_value_sig7D1B, {
+          axis: "vertical",
+          value: var_core_value_sig580B
+        }))
+      })]
+    }), (0, m.jsx)(u.Separator, {
+      orientation: "vertical"
+    }), (0, m.jsxs)(zn, {
+      children: [(0, m.jsx)(Kn, {
+        "data-toolbar-item": "text-color",
+        title: var_core_value_sig4F79.t("slides-table-ui.editorToolbar.textColor"),
+        color: var_core_value_sig6B84.textColor,
+        mixed: !!(var_core_value_sig6B84.mixed["textColor"] || var_core_value_sig6B84.mixed["textFill"]),
+        icon: "font",
+        open: var_core_value_sig7504 === "textColor",
+        onOpenChange: var_core_value_sig4836 => var_core_value_sigFD72("textColor", var_core_value_sig4836),
+        onChange: var_core_value_sig4C06 => var_core_value_sig2D04((var_core_value_sig7BE0, var_core_value_sig7D40) => se(var_core_value_sig7BE0, var_core_value_sig7D40, {
+          type: "solid",
+          color: var_core_value_sig4C06,
+          opacity: 1
+        }))
+      }), (0, m.jsx)(Kn, {
+        "data-toolbar-item": "text-background",
+        title: var_core_value_sig4F79.t("slides-table-ui.editorToolbar.textBackgroundColor"),
+        color: var_core_value_sig6B84.textBackgroundColor,
+        mixed: !!var_core_value_sig6B84.mixed["textBackgroundColor"],
+        icon: "bucket",
+        open: var_core_value_sig7504 === "textBackground",
+        onOpenChange: var_core_value_sig4D56 => var_core_value_sigFD72("textBackground", var_core_value_sig4D56),
+        onChange: var_core_value_sig7C26 => var_core_value_sig2D04((var_core_value_sig6C7E, var_core_value_sig68BE) => L(var_core_value_sig6C7E, var_core_value_sig68BE, {
+          bg: {
+            rgb: var_core_value_sig7C26
+          }
+        }))
+      })]
+    }), (0, m.jsx)(u.Separator, {
+      orientation: "vertical"
+    }), (0, m.jsx)(zn, {
+      children: (0, m.jsx)(Un, {
+        open: var_core_value_sig7504 === "theme",
+        onOpenChange: var_core_value_sigBC59 => var_core_value_sigFD72("theme", var_core_value_sigBC59),
+        children: (0, m.jsx)($n, {
+          currentStyleId: var_core_value_sigC733.styleId,
+          currentOptions: var_core_value_sigC733.options ?? {},
+          direction: var_core_value_sig2BD8,
+          palette: var_core_value_sig3FA8,
+          onApplyTheme: var_core_value_sig544E => {
+            var_core_value_sigD3D6(var_core_value_sig544E), var_core_value_sigFD72("theme", false);
+          },
+          onChangeOptions: var_core_value_sig5BE71
+        })
+      })
+    }), (0, m.jsx)(u.Separator, {
+      orientation: "vertical"
+    }), (0, m.jsx)(zn, {
+      children: (0, m.jsx)(Bn, {
+        "data-toolbar-item": "delete-table",
+        title: var_core_value_sig4F79.t("slides-table-ui.contextMenu.deleteTable"),
+        onClick: () => var_core_value_sig5FE7.executeCommand(Ve.id),
+        children: (0, m.jsx)(c.DeleteIcon, {})
+      })
+    })]
+  });
+}
+let Oa = class extends i.Plugin {
+  constructor(var_core_value_sigCE8A = y, var_core_value_sig0718, var_core_value_sig1B221, var_core_value_sig8854, var_core_value_sig5275, var_core_value_sig4F9D, var_core_value_sig278E, var_core_value_sig2921) {
+    super(), this._config = var_core_value_sigCE8A, this._injector = var_core_value_sig0718, this._configService = var_core_value_sig1B221, this._renderManagerService = var_core_value_sig8854, this._commandService = var_core_value_sig5275, this._menuManagerService = var_core_value_sig4F9D, this._shortcutService = var_core_value_sig278E, this._uiPartsService = var_core_value_sig2921;
+    let {
+      ...var_core_value_sig3959
+    } = (0, i.merge)({}, y, this._config);
+    this._configService["setConfig"](v, var_core_value_sig3959), this._initCommands(), this._initShortcuts();
+  }
+  onStarting() {
+    let var_core_value_sig926F = this._injector;
+    var_core_value_sig926F.has(H) || var_core_value_sig926F.add([H]), var_core_value_sig926F.add([gr]), var_core_value_sig926F.add([ni]), var_core_value_sig926F.has(E) || var_core_value_sig926F.add([E]), var_core_value_sig926F.has(Tt) || var_core_value_sig926F.add([Tt]), var_core_value_sig926F.has(va) || var_core_value_sig926F.add([va]), (0, i.touchDependencies)(var_core_value_sig926F, [[gr], [E], [Tt], [H], [va]]), this.disposeWithMe(var_core_value_sig926F.get(r.ISlideClipboardResourceAdapterService).registerAdapter(var_core_value_sig926F.get(va)));
+  }
+  onReady() {
+    this._menuManagerService["mergeMenu"]($r), this._injector["get"](ni), this.disposeWithMe(this._renderManagerService["registerRenderModule"](i.UniverInstanceType["UNIVER_SLIDE"], Ui)), this.disposeWithMe(this._uiPartsService["registerComponent"](o.BuiltInUIPart["CONTENT"], () => (0, o.connectInjector)(Da, this._injector)));
+  }
+  _initCommands() {
+    [...at, ...Pt, Bt].forEach(var_core_value_sig04C6 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sig04C6));
+    });
+  }
+  _initShortcuts() {
+    [...Ft, ...It].forEach(var_core_value_sigCA05 => {
+      this.disposeWithMe(this._shortcutService["registerShortcut"](var_core_value_sigCA05));
+    });
+  }
+};
+T(Oa, "type", i.UniverInstanceType["UNIVER_SLIDE"]), T(Oa, "pluginName", "UniverSlidesTableUIPlugin"), T(Oa, "packageName", b), T(Oa, "version", x), Oa = V([(0, i.DependentOn)(e.UniverLicensePlugin, a.UniverRenderEnginePlugin, n.UniverSlidesTablePlugin, t.UniverSlidesPlugin, r.UniverSlidesUIPlugin), B(1, (0, i.Inject)(i.Injector)), B(2, i.IConfigService), B(3, a.IRenderManagerService), B(4, i.ICommandService), B(5, o.IMenuManagerService), B(6, o.IShortcutService), B(7, o.IUIPartsService)], Oa);
+function ka(var_core_value_sigCDD1) {
+  return var_core_value_sigCDD1 === true || var_core_value_sigCDD1 === 1;
+}
+function Aa(var_core_value_sig6C50) {
+  return typeof (var_core_value_sig6C50 == null ? undefined : var_core_value_sig6C50.content) == "string" && var_core_value_sig6C50.content["trim"]().length > 0;
+}
+function ja(var_core_value_sig7926, var_core_value_sig88B3) {
+  let var_core_value_sig6044 = var_core_value_sig7926 == null ? undefined : var_core_value_sig7926.bBox,
+    var_core_value_sigEE54 = (var_core_value_sig6044 == null ? undefined : var_core_value_sig6044.aba) || (var_core_value_sig6044 == null ? undefined : var_core_value_sig6044.ba) || var_core_value_sig88B3.asc || 0,
+    var_core_value_sigBC8E = (var_core_value_sig6044 == null ? undefined : var_core_value_sig6044.abd) || (var_core_value_sig6044 == null ? undefined : var_core_value_sig6044.bd) || var_core_value_sig88B3.dsc || 0;
+  return var_core_value_sigEE54 === 0 && var_core_value_sigBC8E === 0 ? null : {
+    ascent: var_core_value_sigEE54,
+    descent: var_core_value_sigBC8E
+  };
+}
+function Ma(var_core_value_sig65B41, var_core_value_sig38F9, var_core_value_sig4EFC) {
+  var var_core_value_sigB70F;
+  if (var_core_value_sig4EFC === undefined || var_core_value_sig4EFC === i.VerticalAlign["UNSPECIFIED"]) return 0;
+  let var_core_value_sig50E51 = var_core_value_sig65B41.getSkeletonData();
+  if (!(var_core_value_sig50E51 != null && (var_core_value_sigB70F = var_core_value_sig50E51.pages) != null && var_core_value_sigB70F.length)) return 0;
+  let var_core_value_sig8AD2 = 1 / 0,
+    var_core_value_sigEF27 = -1 / 0,
+    var_core_value_sigD45F = 0;
+  for (let var_core_value_sig9414 of var_core_value_sig50E51.pages) {
+    let var_core_value_sig2F2B = var_core_value_sig9414.marginTop ?? 0;
+    for (let var_core_value_sig5237 of var_core_value_sig9414.sections ?? []) {
+      let var_core_value_sig186C = var_core_value_sig5237.top ?? 0;
+      for (let var_core_value_sig8061 of var_core_value_sig5237.columns ?? []) for (let var_core_value_sigBC46 of var_core_value_sig8061.lines ?? []) {
+        let var_core_value_sig3EEE = var_core_value_sigD45F + var_core_value_sig2F2B + var_core_value_sig186C + (var_core_value_sigBC46.top ?? 0) + (var_core_value_sigBC46.marginTop ?? 0) + (var_core_value_sigBC46.paddingTop ?? 0) + (var_core_value_sigBC46.asc ?? 0);
+        for (let var_core_value_sig2AD0 of var_core_value_sigBC46.divides ?? []) for (let var_core_value_sig2AD8 of var_core_value_sig2AD0.glyphGroup ?? []) {
+          if (!Aa(var_core_value_sig2AD8)) continue;
+          let var_core_value_sig7524 = ja(var_core_value_sig2AD8, var_core_value_sigBC46);
+          var_core_value_sig7524 && (var_core_value_sig8AD2 = Math.min(var_core_value_sig8AD2, var_core_value_sig3EEE - var_core_value_sig7524.ascent), var_core_value_sigEF27 = Math.max(var_core_value_sigEF27, var_core_value_sig3EEE + var_core_value_sig7524.descent));
+        }
+      }
+    }
+    let var_core_value_sig70AF = Number.isFinite(var_core_value_sig9414.pageHeight) ? var_core_value_sig9414.pageHeight : var_core_value_sig9414.height;
+    var_core_value_sigD45F += var_core_value_sig70AF ?? 0;
+  }
+  return !Number.isFinite(var_core_value_sig8AD2) || !Number.isFinite(var_core_value_sigEF27) ? 0 : var_core_value_sig4EFC === i.VerticalAlign["BOTTOM"] ? var_core_value_sig38F9 - var_core_value_sigEF27 : var_core_value_sig4EFC === i.VerticalAlign["MIDDLE"] ? var_core_value_sig38F9 / 2 - (var_core_value_sig8AD2 + var_core_value_sigEF27) / 2 : var_core_value_sig4EFC === i.VerticalAlign["TOP"] ? -var_core_value_sig8AD2 : 0;
+}
+function Na(var_core_value_sig9764, var_core_value_sig397B) {
+  let var_core_value_sigC2FF = i.Tools["deepClone"](var_core_value_sig9764),
+    var_core_value_sig8A75 = var_core_value_sigC2FF.documentStyle ?? {},
+    var_core_value_sigCA67 = {
+      ...var_core_value_sig8A75.renderConfig
+    };
+  if (var_core_value_sig397B.horizontalAlign !== undefined) {
+    var_core_value_sigCA67.horizontalAlign = var_core_value_sig397B.horizontalAlign;
+    let var_core_value_sig32E7 = var_core_value_sigC2FF.body,
+      var_core_value_sigD8C3 = var_core_value_sig32E7 == null ? undefined : var_core_value_sig32E7.paragraphs;
+    var_core_value_sigD8C3 && (var_core_value_sig32E7.paragraphs = var_core_value_sigD8C3.map(var_core_value_sigD04E => {
+      var var_core_value_sigB99B;
+      return ((var_core_value_sigB99B = var_core_value_sigD04E.paragraphStyle) == null ? undefined : var_core_value_sigB99B.horizontalAlign) === undefined ? {
+        ...var_core_value_sigD04E,
+        paragraphStyle: {
+          ...var_core_value_sigD04E.paragraphStyle,
+          horizontalAlign: var_core_value_sig397B.horizontalAlign
+        }
+      } : var_core_value_sigD04E;
+    }));
+  }
+  return var_core_value_sig397B.verticalAlign !== undefined && (var_core_value_sigCA67.verticalAlign = var_core_value_sig397B.verticalAlign), var_core_value_sigC2FF.documentStyle = {
+    ...var_core_value_sig8A75,
+    renderConfig: Object.keys(var_core_value_sigCA67).length > 0 ? var_core_value_sigCA67 : undefined
+  }, var_core_value_sigC2FF;
+}
+function Pa(var_core_value_sigDFDA) {
+  let var_core_value_sigEAA1 = var_core_value_sigDFDA.body,
+    var_core_value_sig77BA = var_core_value_sigEAA1 == null ? undefined : var_core_value_sigEAA1.paragraphs,
+    var_core_value_sig9ED0 = var_core_value_sigEAA1 == null ? undefined : var_core_value_sigEAA1.dataStream;
+  if (!var_core_value_sigEAA1 || !var_core_value_sig9ED0) return;
+  let var_core_value_sigB650 = [];
+  for (let var_core_value_sig3A441 = 0; var_core_value_sig3A441 < var_core_value_sig9ED0.length; var_core_value_sig3A441++) var_core_value_sig9ED0[var_core_value_sig3A441] === "\x0d" && var_core_value_sigB650.push(var_core_value_sig3A441);
+  let var_core_value_sig74A81 = new Set((var_core_value_sig77BA ?? []).map(var_core_value_sig0642 => var_core_value_sig0642.paragraphId).filter(var_core_value_sig786E => !!var_core_value_sig786E));
+  var_core_value_sigEAA1.paragraphs = var_core_value_sigB650.map((var_core_value_sigFC47, var_core_value_sig48E2) => {
+    var var_core_value_sig2FCA;
+    return {
+      ...(var_core_value_sig77BA == null ? undefined : var_core_value_sig77BA[var_core_value_sig48E2]),
+      startIndex: var_core_value_sigFC47,
+      paragraphId: (var_core_value_sig77BA == null || (var_core_value_sig2FCA = var_core_value_sig77BA[var_core_value_sig48E2]) == null ? undefined : var_core_value_sig2FCA.paragraphId) ?? (0, i.createParagraphId)(var_core_value_sig74A81)
+    };
+  });
+}
+function Fa(var_core_value_sigC129, var_core_value_sig59D5) {
+  var var_core_value_sig7A96, var_core_value_sigD72E;
+  let var_core_value_sig3E1F = (var_core_value_sig7A96 = var_core_value_sigC129.documentStyle) == null ? undefined : var_core_value_sig7A96.renderConfig,
+    var_core_value_sig7D3E = Na(var_core_value_sigC129, {
+      horizontalAlign: var_core_value_sig59D5.horizontalAlign ?? (var_core_value_sig3E1F == null ? undefined : var_core_value_sig3E1F.horizontalAlign),
+      verticalAlign: var_core_value_sig59D5.verticalAlign
+    });
+  Pa(var_core_value_sig7D3E);
+  let var_core_value_sig9D1B = var_core_value_sig7D3E.documentStyle ?? {},
+    var_core_value_sigC043 = var_core_value_sig59D5.isHorizontal !== false,
+    var_core_value_sig12F21 = {
+      ...var_core_value_sig9D1B.renderConfig,
+      wrapStrategy: var_core_value_sig59D5.wrapStrategy ?? ((var_core_value_sigD72E = var_core_value_sig9D1B.renderConfig) == null ? undefined : var_core_value_sigD72E.wrapStrategy) ?? i.WrapStrategy["WRAP"]
+    };
+  return delete var_core_value_sig12F21.horizontalAlign, var_core_value_sigC043 ? (delete var_core_value_sig12F21.centerAngle, delete var_core_value_sig12F21.vertexAngle) : (var_core_value_sig12F21.centerAngle = a.VERTICAL_ROTATE_ANGLE, var_core_value_sig12F21.vertexAngle = a.VERTICAL_ROTATE_ANGLE), var_core_value_sig7D3E.documentStyle = {
+    ...var_core_value_sig9D1B,
+    documentFlavor: i.DocumentFlavor["UNSPECIFIED"],
+    marginTop: 0,
+    marginBottom: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    pageSize: {
+      width: var_core_value_sigC043 ? var_core_value_sig59D5.width : var_core_value_sig59D5.height,
+      height: 1 / 0
+    },
+    renderConfig: var_core_value_sig12F21
+  }, var_core_value_sig7D3E;
+}
+function Ia(var_core_value_sig3B28) {
+  var var_core_value_sig9789;
+  let {
+      documentData: var_core_value_sig8475,
+      id: var_core_value_sigF462 = "slide-table-document-renderer",
+      isHorizontal: var_core_value_sig88B7,
+      localeService: var_core_value_sigB177,
+      horizontalAlign: var_core_value_sig9946,
+      verticalAlign: var_core_value_sig731A,
+      size: var_core_value_sig8E75
+    } = var_core_value_sig3B28,
+    var_core_value_sigF519 = {
+      width: var_core_value_sig8E75.width,
+      height: var_core_value_sig8E75.height
+    },
+    var_core_value_sig80A1 = (var_core_value_sig9789 = var_core_value_sig8475.documentStyle) == null ? undefined : var_core_value_sig9789.renderConfig,
+    var_core_value_sigA8D7 = var_core_value_sig731A ?? (var_core_value_sig80A1 == null ? undefined : var_core_value_sig80A1.verticalAlign),
+    var_core_value_sig5BB8 = ka(var_core_value_sig3B28.shapeTextOpticalVerticalAlign ?? (var_core_value_sig80A1 == null ? undefined : var_core_value_sig80A1.shapeTextOpticalVerticalAlign)),
+    var_core_value_sig784F = new i["DocumentDataModel"](Fa(var_core_value_sig8475, {
+      width: var_core_value_sigF519.width,
+      height: var_core_value_sigF519.height,
+      verticalAlign: var_core_value_sig5BB8 ? i.VerticalAlign["TOP"] : var_core_value_sigA8D7,
+      horizontalAlign: var_core_value_sig9946,
+      isHorizontal: var_core_value_sig88B7,
+      wrapStrategy: var_core_value_sig3B28.wrapStrategy
+    })),
+    var_core_value_sig29001 = new a["DocumentViewModel"](var_core_value_sig784F),
+    var_core_value_sigF735 = a.DocumentSkeleton["create"](var_core_value_sig29001, var_core_value_sigB177);
+  var_core_value_sigF735.calculate();
+  let var_core_value_sig893C = var_core_value_sigF735.getActualSize().actualHeight,
+    var_core_value_sigE82D = Math.max(var_core_value_sigF519.height, var_core_value_sig893C),
+    var_core_value_sig014E = 0;
+  !var_core_value_sig5BB8 && var_core_value_sig893C < var_core_value_sigF519.height && (var_core_value_sigA8D7 === i.VerticalAlign["MIDDLE"] ? var_core_value_sig014E = (var_core_value_sigF519.height - var_core_value_sig893C) / 2 : var_core_value_sigA8D7 === i.VerticalAlign["BOTTOM"] && (var_core_value_sig014E = var_core_value_sigF519.height - var_core_value_sig893C)), var_core_value_sig784F.updateDocumentStyle({
+    pageSize: {
+      width: var_core_value_sig88B7 === false ? var_core_value_sigF519.height : var_core_value_sigF519.width,
+      height: var_core_value_sigE82D
+    }
+  }), var_core_value_sig784F.updateDocumentDataMargin({
+    t: var_core_value_sig014E
+  }), var_core_value_sigF735.calculate();
+  let var_core_value_sig57A3 = new a["Documents"](var_core_value_sigF462, var_core_value_sigF735, {
+    pageMarginLeft: 0,
+    pageMarginTop: 0
+  });
+  var_core_value_sig57A3.resize(var_core_value_sigF519.width, var_core_value_sigE82D);
+  let var_core_value_sig4003 = var_core_value_sig5BB8 ? Ma(var_core_value_sigF735, var_core_value_sigF519.height, var_core_value_sigA8D7) : 0;
+  return {
+    documents: var_core_value_sig57A3,
+    skeleton: var_core_value_sigF735,
+    docViewModel: var_core_value_sig29001,
+    docModel: var_core_value_sig784F,
+    width: var_core_value_sigF519.width,
+    minHeight: var_core_value_sigF519.height,
+    actualHeight: var_core_value_sig893C,
+    contentHeight: var_core_value_sigE82D,
+    marginTop: var_core_value_sig014E,
+    opticalVerticalOffset: var_core_value_sig4003,
+    dispose: () => {
+      var_core_value_sig57A3.dispose(), var_core_value_sigF735.dispose(), var_core_value_sig29001.dispose(), var_core_value_sig784F.dispose();
+    }
+  };
+}
+function La(var_core_value_sig9454, var_core_value_sig9B63) {
+  if (var_core_value_sig9B63 !== undefined) return {
+    top: 0,
+    height: var_core_value_sig9B63
+  };
+  let var_core_value_sigA86B = var_core_value_sig9454.actualHeight > var_core_value_sig9454.minHeight && var_core_value_sig9454.opticalVerticalOffset < 0 ? var_core_value_sig9454.opticalVerticalOffset : 0;
+  return {
+    top: var_core_value_sigA86B,
+    height: var_core_value_sig9454.contentHeight - var_core_value_sigA86B
+  };
+}
+function Ra(var_core_value_sig8CE0, var_core_value_sig2D89, var_core_value_sig08CE, var_core_value_sig5C06, var_core_value_sigA267, var_core_value_sig9E58) {
+  if (var_core_value_sig8CE0.save(), var_core_value_sig8CE0.translateWithPrecision(var_core_value_sig08CE, var_core_value_sig5C06), var_core_value_sigA267) {
+    let var_core_value_sig04F2 = La(var_core_value_sig2D89, var_core_value_sig9E58);
+    var_core_value_sig8CE0.beginPath(), var_core_value_sig8CE0.rect(0, var_core_value_sig04F2.top, var_core_value_sig2D89.width, var_core_value_sig04F2.height), var_core_value_sig8CE0.clip();
+  }
+  var_core_value_sig2D89.opticalVerticalOffset && var_core_value_sig8CE0.translateWithPrecision(0, var_core_value_sig2D89.opticalVerticalOffset), var_core_value_sig2D89.documents["draw"](var_core_value_sig8CE0), var_core_value_sig8CE0.restore();
+}
+function za(var_core_value_sigD105) {
+  try {
+    return JSON.stringify(var_core_value_sigD105);
+  } catch {
+    return String(var_core_value_sigD105);
+  }
+}
+function Ba(var_core_value_sig6F7E) {
+  let var_core_value_sig3F21 = var_core_value_sig6F7E;
+  return typeof var_core_value_sig3F21.getCurrentLocale == "function" ? var_core_value_sig3F21.getCurrentLocale() : "";
+}
+function Va(var_core_value_sig22FF, var_core_value_sig3189, var_core_value_sigA5F8) {
+  var var_core_value_sigA71A;
+  let var_core_value_sig11F1 = (var_core_value_sigA71A = var_core_value_sig3189.documentStyle) == null ? undefined : var_core_value_sigA71A.renderConfig;
+  return za({
+    cacheKey: var_core_value_sig22FF.cacheKey,
+    key: var_core_value_sig22FF.key,
+    text: var_core_value_sig22FF.text,
+    documentData: var_core_value_sig22FF.cacheKey === undefined ? var_core_value_sig3189 : undefined,
+    left: var_core_value_sig22FF.left,
+    top: var_core_value_sig22FF.top,
+    width: var_core_value_sig22FF.width,
+    height: var_core_value_sig22FF.height,
+    horizontalAlign: var_core_value_sig22FF.horizontalAlign ?? (var_core_value_sig11F1 == null ? undefined : var_core_value_sig11F1.horizontalAlign),
+    verticalAlign: var_core_value_sig22FF.verticalAlign ?? (var_core_value_sig11F1 == null ? undefined : var_core_value_sig11F1.verticalAlign),
+    isHorizontal: var_core_value_sig22FF.isHorizontal,
+    wrapStrategy: var_core_value_sig22FF.wrapStrategy,
+    clip: var_core_value_sig22FF.clip,
+    viewportHeight: var_core_value_sig22FF.viewportHeight,
+    shapeTextOpticalVerticalAlign: var_core_value_sig22FF.shapeTextOpticalVerticalAlign ?? (var_core_value_sig11F1 == null ? undefined : var_core_value_sig11F1.shapeTextOpticalVerticalAlign),
+    locale: Ba(var_core_value_sigA5F8)
+  });
+}
+function Ha(var_core_value_sigA71D, var_core_value_sig669B) {
+  var var_core_value_sig0461;
+  if (var_core_value_sigA71D.clip !== undefined) return var_core_value_sigA71D.clip;
+  let var_core_value_sig4A6A = (var_core_value_sig0461 = var_core_value_sig669B.documentStyle) == null ? undefined : var_core_value_sig0461.renderConfig;
+  return (var_core_value_sigA71D.wrapStrategy ?? (var_core_value_sig4A6A == null ? undefined : var_core_value_sig4A6A.wrapStrategy)) !== i.WrapStrategy["OVERFLOW"];
+}
+function Ua(var_core_value_sig52B7) {
+  var var_core_value_sig5BA8;
+  var_core_value_sig52B7 == null || (var_core_value_sig5BA8 = var_core_value_sig52B7.resources) == null || var_core_value_sig5BA8.dispose(), var_core_value_sig52B7 && (var_core_value_sig52B7.signature = undefined, var_core_value_sig52B7.resources = undefined);
+}
+function Wa(var_core_value_sig6CA3, var_core_value_sig489C, var_core_value_sig9BF2) {
+  var var_core_value_sigAD59;
+  let {
+    documentData: var_core_value_sigD8D7,
+    height: var_core_value_sigDD66,
+    horizontalAlign: var_core_value_sigDCB6,
+    isHorizontal: var_core_value_sigA346,
+    key: var_core_value_sigDB37,
+    left: var_core_value_sig2400,
+    localeService: var_core_value_sig33E7,
+    text: var_core_value_sigCBAB,
+    top: var_core_value_sigE3A5,
+    verticalAlign: var_core_value_sig500F,
+    width: var_core_value_sig2D30
+  } = var_core_value_sig489C;
+  if (!var_core_value_sig33E7 || var_core_value_sig2D30 <= 0 || var_core_value_sigDD66 <= 0 || !var_core_value_sigD8D7 && !var_core_value_sigCBAB) return false;
+  let var_core_value_sig94E7 = (0, t.normalizeSlideDocumentDataStream)(var_core_value_sigD8D7 ?? ii(var_core_value_sigDB37, 0, 0, var_core_value_sigCBAB ?? "")),
+    var_core_value_sig7A7B = (var_core_value_sigAD59 = var_core_value_sig94E7.documentStyle) == null ? undefined : var_core_value_sigAD59.renderConfig,
+    var_core_value_sigA2D7 = var_core_value_sigDCB6 ?? (var_core_value_sig7A7B == null ? undefined : var_core_value_sig7A7B.horizontalAlign),
+    var_core_value_sig0A36 = var_core_value_sig500F ?? (var_core_value_sig7A7B == null ? undefined : var_core_value_sig7A7B.verticalAlign),
+    var_core_value_sig87E7 = var_core_value_sig9BF2 ? Va(var_core_value_sig489C, var_core_value_sig94E7, var_core_value_sig33E7) : undefined,
+    var_core_value_sig5276 = Ha(var_core_value_sig489C, var_core_value_sig94E7);
+  if (var_core_value_sig9BF2 != null && var_core_value_sig9BF2.resources && var_core_value_sig9BF2.signature === var_core_value_sig87E7) return Ra(var_core_value_sig6CA3, var_core_value_sig9BF2.resources, var_core_value_sig2400, var_core_value_sigE3A5, var_core_value_sig5276, var_core_value_sig489C.viewportHeight), true;
+  var_core_value_sig9BF2 != null && var_core_value_sig9BF2.resources && Ua(var_core_value_sig9BF2);
+  let var_core_value_sig0B66 = Ia({
+    id: "slide-table-text-" + var_core_value_sigDB37,
+    documentData: var_core_value_sig94E7,
+    size: {
+      width: var_core_value_sig2D30,
+      height: var_core_value_sigDD66
+    },
+    localeService: var_core_value_sig33E7,
+    horizontalAlign: var_core_value_sigA2D7,
+    verticalAlign: var_core_value_sig0A36,
+    isHorizontal: var_core_value_sigA346,
+    wrapStrategy: var_core_value_sig489C.wrapStrategy,
+    shapeTextOpticalVerticalAlign: var_core_value_sig489C.shapeTextOpticalVerticalAlign ?? (var_core_value_sig7A7B == null ? undefined : var_core_value_sig7A7B.shapeTextOpticalVerticalAlign)
+  });
+  return Ra(var_core_value_sig6CA3, var_core_value_sig0B66, var_core_value_sig2400, var_core_value_sigE3A5, var_core_value_sig5276, var_core_value_sig489C.viewportHeight), var_core_value_sig9BF2 ? (var_core_value_sig9BF2.signature = var_core_value_sig87E7, var_core_value_sig9BF2.resources = var_core_value_sig0B66) : var_core_value_sig0B66.dispose(), true;
+}
+const Ga = "#7f8ea3",
+  Ka = "#c7d2e3",
+  qa = "#ffffff",
+  Ja = "#1a73e8",
+  Ya = "#ffffff",
+  Xa = "#e8f1ff",
+  Za = "#9fb2cc",
+  Qa = "#3f8cff",
+  $a = "#5f6368",
+  eo = "#ffffff";
+function to(var_core_value_sig8E9E, var_core_value_sig9A69) {
+  let var_core_value_sig2A04 = var_core_value_sig8E9E.row + Math.max(1, var_core_value_sig8E9E.rowSpan) - 1,
+    var_core_value_sigA30D = var_core_value_sig8E9E.column + Math.max(1, var_core_value_sig8E9E.columnSpan) - 1;
+  return var_core_value_sig9A69.some(var_core_value_sig2CFC => {
+    let var_core_value_sig5CEB = Math.min(var_core_value_sig2CFC.startRow, var_core_value_sig2CFC.endRow),
+      var_core_value_sig4935 = Math.max(var_core_value_sig2CFC.startRow, var_core_value_sig2CFC.endRow),
+      var_core_value_sig1832 = Math.min(var_core_value_sig2CFC.startColumn, var_core_value_sig2CFC.endColumn),
+      var_core_value_sig79D7 = Math.max(var_core_value_sig2CFC.startColumn, var_core_value_sig2CFC.endColumn);
+    return var_core_value_sig8E9E.row <= var_core_value_sig4935 && var_core_value_sig2A04 >= var_core_value_sig5CEB && var_core_value_sig8E9E.column <= var_core_value_sig79D7 && var_core_value_sigA30D >= var_core_value_sig1832;
+  });
+}
+var no = class extends a.Rect {
+  constructor(var_core_value_sig5E01, var_core_value_sigBBE4) {
+    super(var_core_value_sig5E01, {
+      ...var_core_value_sigBBE4,
+      fill: qa,
+      stroke: Ga,
+      strokeWidth: 1,
+      evented: true
+    }), T(this, "isDrawingObject", true), T(this, "_controlButtonMode", undefined), T(this, "_table", undefined), T(this, "_previewTable", null), T(this, "_selection", null), T(this, "_cellHover", null), T(this, "_editingCell", null), T(this, "_controlHover", null), T(this, "_controlState", null), T(this, "_localeService", undefined), T(this, "_tableThemePalette", undefined), T(this, "_tableThemes", undefined), T(this, "_themeService", undefined), T(this, "_renderModelCache", null), T(this, "_visibleCellCache", null), T(this, "_textRenderCaches", new Map()), this._controlButtonMode = var_core_value_sigBBE4.controlButtonMode ?? "all", this._table = var_core_value_sigBBE4.table ?? null, this._localeService = var_core_value_sigBBE4.localeService, this._tableThemePalette = var_core_value_sigBBE4.tableThemePalette, this._tableThemes = var_core_value_sigBBE4.tableThemes, this._themeService = var_core_value_sigBBE4.themeService;
+  }
+  setTable(var_core_value_sig96B3) {
+    this._table = var_core_value_sig96B3 ?? null, this.makeDirty(true);
+  }
+  setTableThemes(var_core_value_sig9CF2) {
+    this._tableThemes = var_core_value_sig9CF2, this.makeDirty(true);
+  }
+  getTable() {
+    return this._table;
+  }
+  setPreviewTable(var_core_value_sig666D) {
+    this._previewTable = var_core_value_sig666D, this.makeDirty(true);
+  }
+  setLocaleService(var_core_value_sigBD53) {
+    this._localeService !== var_core_value_sigBD53 && (this._localeService = var_core_value_sigBD53, this._disposeTextRenderCaches(), this.makeDirty(true));
+  }
+  setTableThemePalette(var_core_value_sigD11F) {
+    this._tableThemePalette = var_core_value_sigD11F, this.makeDirty(true);
+  }
+  setTableSelection(var_core_value_sig62231) {
+    this._selection = var_core_value_sig62231 ? {
+      kind: var_core_value_sig62231.kind,
+      ranges: var_core_value_sig62231.ranges["map"](var_core_value_sig5A75 => ({
+        ...var_core_value_sig5A75
+      })),
+      active: var_core_value_sig62231.active ? {
+        ...var_core_value_sig62231.active
+      } : undefined
+    } : null, var_core_value_sig62231 || (this._cellHover = null, this._controlState = null), this.makeDirty(true);
+  }
+  getTableSelection() {
+    return this._selection ? {
+      kind: this._selection["kind"],
+      ranges: this._selection["ranges"].map(var_core_value_sig7BAF => ({
+        ...var_core_value_sig7BAF
+      })),
+      active: this._selection["active"] ? {
+        ...this._selection["active"]
+      } : undefined
+    } : null;
+  }
+  setEditingCell(var_core_value_sig7653) {
+    var var_core_value_sigF65B, var_core_value_sig4A94;
+    let var_core_value_sigEB59 = (var_core_value_sig7653 == null ? undefined : var_core_value_sig7653.row) ?? null,
+      var_core_value_sigD9B0 = (var_core_value_sig7653 == null ? undefined : var_core_value_sig7653.column) ?? null,
+      var_core_value_sigB7D6 = ((var_core_value_sigF65B = this._editingCell) == null ? undefined : var_core_value_sigF65B.row) ?? null,
+      var_core_value_sigCF1F = ((var_core_value_sig4A94 = this._editingCell) == null ? undefined : var_core_value_sig4A94.column) ?? null;
+    (var_core_value_sigEB59 !== var_core_value_sigB7D6 || var_core_value_sigD9B0 !== var_core_value_sigCF1F) && (this._editingCell = var_core_value_sig7653 ? {
+      row: var_core_value_sig7653.row,
+      column: var_core_value_sig7653.column
+    } : null, this.makeDirty(true));
+  }
+  getEditingCell() {
+    return this._editingCell ? {
+      ...this._editingCell
+    } : null;
+  }
+  setTableControlHover(var_core_value_sig4DD1) {
+    var var_core_value_sig1293, var_core_value_sigC999, var_core_value_sig9D8F;
+    let var_core_value_sig8270 = (var_core_value_sig4DD1 == null ? undefined : var_core_value_sig4DD1.kind) ?? null,
+      var_core_value_sig95D9 = (var_core_value_sig4DD1 == null ? undefined : var_core_value_sig4DD1.row) ?? null,
+      var_core_value_sig0E92 = (var_core_value_sig4DD1 == null ? undefined : var_core_value_sig4DD1.column) ?? null,
+      var_core_value_sig45CD = ((var_core_value_sig1293 = this._controlHover) == null ? undefined : var_core_value_sig1293.kind) ?? null,
+      var_core_value_sigAD84 = ((var_core_value_sigC999 = this._controlHover) == null ? undefined : var_core_value_sigC999.row) ?? null,
+      var_core_value_sigD513 = ((var_core_value_sig9D8F = this._controlHover) == null ? undefined : var_core_value_sig9D8F.column) ?? null;
+    return var_core_value_sig8270 === var_core_value_sig45CD && var_core_value_sig95D9 === var_core_value_sigAD84 && var_core_value_sig0E92 === var_core_value_sigD513 ? false : (this._controlHover = var_core_value_sig8270 === null && var_core_value_sig95D9 === null && var_core_value_sig0E92 === null ? null : {
+      kind: var_core_value_sig4DD1 == null ? undefined : var_core_value_sig4DD1.kind,
+      row: var_core_value_sig95D9,
+      column: var_core_value_sig0E92
+    }, this.makeDirty(true), true);
+  }
+  setTableCellHover(var_core_value_sig36BD) {
+    var var_core_value_sig0413, var_core_value_sig15B6;
+    let var_core_value_sigFEBF = ((var_core_value_sig0413 = this._cellHover) == null ? undefined : var_core_value_sig0413.row) ?? null,
+      var_core_value_sigBBA2 = ((var_core_value_sig15B6 = this._cellHover) == null ? undefined : var_core_value_sig15B6.column) ?? null,
+      var_core_value_sigC9A1 = (var_core_value_sig36BD == null ? undefined : var_core_value_sig36BD.row) ?? null,
+      var_core_value_sigE469 = (var_core_value_sig36BD == null ? undefined : var_core_value_sig36BD.column) ?? null;
+    return var_core_value_sigFEBF === var_core_value_sigC9A1 && var_core_value_sigBBA2 === var_core_value_sigE469 ? false : (this._cellHover = var_core_value_sig36BD ? {
+      row: var_core_value_sig36BD.row,
+      column: var_core_value_sig36BD.column
+    } : null, this.makeDirty(true), true);
+  }
+  setTableControlState(var_core_value_sigA499) {
+    let var_core_value_sig4CC3 = ko(var_core_value_sigA499);
+    return Ao(this._controlState, var_core_value_sig4CC3) ? false : (this._controlState = var_core_value_sig4CC3, this.makeDirty(true), true);
+  }
+  getInverseCoord(var_core_value_sig70B3) {
+    let var_core_value_sig422B = this.getRealBound(),
+      var_core_value_sig1038 = var_core_value_sig422B.left + var_core_value_sig422B.width / 2,
+      var_core_value_sigC3E6 = var_core_value_sig422B.top + var_core_value_sig422B.height / 2,
+      var_core_value_sig3710 = this.transform["getMatrix"](),
+      var_core_value_sig9726 = new a.Transform([var_core_value_sig3710[0], var_core_value_sig3710[1], var_core_value_sig3710[2], var_core_value_sig3710[3], var_core_value_sig1038, var_core_value_sigC3E6]),
+      var_core_value_sigFC9B = this.getParent();
+    return (this.isInGroup && (var_core_value_sigFC9B == null ? undefined : var_core_value_sigFC9B.classType) === a.RENDER_CLASS_TYPE["GROUP"] ? var_core_value_sigFC9B.ancestorTransform["multiply"](var_core_value_sig9726) : var_core_value_sig9726).invert().applyPoint(var_core_value_sig70B3);
+  }
+  isHit(var_core_value_sig943E) {
+    let var_core_value_sigEF36 = this.getInverseCoord(var_core_value_sig943E),
+      var_core_value_sigD4B1 = this.width / 2,
+      var_core_value_sigE5D8 = this.height / 2;
+    return var_core_value_sigEF36.x >= -var_core_value_sigD4B1 - this.strokeWidth / 2 && var_core_value_sigEF36.x <= var_core_value_sigD4B1 + this.strokeWidth / 2 && var_core_value_sigEF36.y >= -var_core_value_sigE5D8 - this.strokeWidth / 2 && var_core_value_sigEF36.y <= var_core_value_sigE5D8 + this.strokeWidth / 2 || this._isActiveOuterChromeHit(var_core_value_sigEF36);
+  }
+  getCellTextRect(var_core_value_sig74AF, var_core_value_sigBABA, var_core_value_sigA723 = this.width, var_core_value_sig991C = this.height) {
+    var var_core_value_sigF909;
+    let var_core_value_sigDD0E = this._getRenderTable();
+    if (!var_core_value_sigDD0E) return null;
+    let var_core_value_sigF2A0 = this._resolveRenderModel(var_core_value_sigDD0E),
+      var_core_value_sig116F = (var_core_value_sigF909 = this._resolveVisibleCellCache(var_core_value_sigF2A0).cellByOrigin[var_core_value_sig74AF]) == null ? undefined : var_core_value_sigF909[var_core_value_sigBABA];
+    return var_core_value_sig116F ? Eo(var_core_value_sig116F, var_core_value_sigF2A0, var_core_value_sigA723, var_core_value_sig991C) : null;
+  }
+  dispose() {
+    this._disposeTextRenderCaches(), super.dispose();
+  }
+  _resolveVisibleCellCache(var_core_value_sigA64C) {
+    var var_core_value_sigAF94;
+    if (((var_core_value_sigAF94 = this._visibleCellCache) == null ? undefined : var_core_value_sigAF94.model) === var_core_value_sigA64C) return this._visibleCellCache;
+    let var_core_value_sig1E9F = var_core_value_sigA64C.cells["filter"](var_core_value_sig8F69 => !var_core_value_sig8F69.hidden),
+      var_core_value_sig3CC6 = [],
+      var_core_value_sig041B = [];
+    return var_core_value_sig1E9F.forEach(var_core_value_sig6884 => {
+      (var_core_value_sig041B[var_core_value_sig6884.row] ??= [])[var_core_value_sig6884.column] = var_core_value_sig6884;
+      let var_core_value_sig066E = var_core_value_sig6884.row + Math.max(1, var_core_value_sig6884.rowSpan),
+        var_core_value_sig9B0D = var_core_value_sig6884.column + Math.max(1, var_core_value_sig6884.columnSpan);
+      for (let var_core_value_sigBB00 = var_core_value_sig6884.row; var_core_value_sigBB00 < var_core_value_sig066E; var_core_value_sigBB00 += 1) {
+        let var_core_value_sigD955 = var_core_value_sig3CC6[var_core_value_sigBB00] ??= [];
+        for (let var_core_value_sig4D4C = var_core_value_sig6884.column; var_core_value_sig4D4C < var_core_value_sig9B0D; var_core_value_sig4D4C += 1) var_core_value_sigD955[var_core_value_sig4D4C] = var_core_value_sig6884;
+      }
+    }), this._visibleCellCache = {
+      cells: var_core_value_sig1E9F,
+      cellAtPosition: var_core_value_sig3CC6,
+      cellByOrigin: var_core_value_sig041B,
+      model: var_core_value_sigA64C
+    }, this._visibleCellCache;
+  }
+  hitTestCellAtScenePoint(var_core_value_sig3610, var_core_value_sig62F3 = this.width, var_core_value_sig8063 = this.height) {
+    let var_core_value_sig555A = this._getRenderTable();
+    if (!var_core_value_sig555A) return null;
+    let var_core_value_sigF562 = this._resolveRenderModel(var_core_value_sig555A),
+      var_core_value_sig5913 = this.getInverseCoord(var_core_value_sig3610);
+    return Pi(var_core_value_sigF562, (var_core_value_sig5913.x + var_core_value_sig62F3 / 2) * Q(var_core_value_sigF562.width / var_core_value_sig62F3, 1), (var_core_value_sig5913.y + var_core_value_sig8063 / 2) * Q(var_core_value_sigF562.height / var_core_value_sig8063, 1));
+  }
+  hitTestControlAtScenePoint(var_core_value_sigA1AF, var_core_value_sig6324 = this.width, var_core_value_sig7EE4 = this.height) {
+    let var_core_value_sigE3D7 = this._getRenderTable();
+    if (!var_core_value_sigE3D7) return null;
+    let var_core_value_sig54C6 = this._resolveRenderModel(var_core_value_sigE3D7),
+      var_core_value_sigE843 = this.getInverseCoord(var_core_value_sigA1AF);
+    return (0, n.hitTestSlideTableControl)(this._buildControlButtons(var_core_value_sig54C6, var_core_value_sig6324, var_core_value_sig7EE4, {
+      showAll: true
+    }), var_core_value_sigE843.x + var_core_value_sig6324 / 2, var_core_value_sigE843.y + var_core_value_sig7EE4 / 2);
+  }
+  hitTestStructuralTriggerAtScenePoint(var_core_value_sig2EB2, var_core_value_sig683A = this.width, var_core_value_sig109B = this.height) {
+    let var_core_value_sig6DD0 = this._getRenderTable();
+    if (!var_core_value_sig6DD0) return null;
+    let var_core_value_sigB5D3 = this._resolveRenderModel(var_core_value_sig6DD0),
+      var_core_value_sig6085 = this.getInverseCoord(var_core_value_sig2EB2);
+    return (0, n.hitTestSlideTableTrigger)(this._buildStructuralTriggers(var_core_value_sigB5D3, var_core_value_sig683A, var_core_value_sig109B, ro(var_core_value_sig6DD0, var_core_value_sig683A), io(var_core_value_sig6DD0, var_core_value_sig109B)), var_core_value_sig6085.x + var_core_value_sig683A / 2, var_core_value_sig6085.y + var_core_value_sig109B / 2);
+  }
+  hitTestFloatingStructuralTriggerAtScenePoint(var_core_value_sig2507, var_core_value_sig5870 = this.width, var_core_value_sig827F = this.height) {
+    let var_core_value_sig2452 = this._getRenderTable();
+    if (!var_core_value_sig2452) return null;
+    let var_core_value_sig50D0 = this._resolveRenderModel(var_core_value_sig2452),
+      var_core_value_sig5EBB = this.getInverseCoord(var_core_value_sig2507);
+    return (0, n.hitTestSlideTableFloatingControl)(this._buildStructuralTriggers(var_core_value_sig50D0, var_core_value_sig5870, var_core_value_sig827F, ro(var_core_value_sig2452, var_core_value_sig5870), io(var_core_value_sig2452, var_core_value_sig827F)), var_core_value_sig5EBB.x + var_core_value_sig5870 / 2, var_core_value_sig5EBB.y + var_core_value_sig827F / 2);
+  }
+  render(var_core_value_sig5E99, var_core_value_sig3FB3) {
+    if (!this.visible) return this.makeDirty(false), this;
+    let var_core_value_sig0214 = this.getRealBound();
+    if (this.isRender(var_core_value_sig3FB3)) {
+      let {
+        top: var_core_value_sig3D2C,
+        left: var_core_value_sigC56D,
+        bottom: var_core_value_sig3A17,
+        right: var_core_value_sig938F
+      } = var_core_value_sig3FB3.viewBound;
+      if (var_core_value_sig0214.left + var_core_value_sig0214.width + this.strokeWidth < var_core_value_sigC56D || var_core_value_sig938F < var_core_value_sig0214.left - this.strokeWidth || var_core_value_sig0214.top + var_core_value_sig0214.height + this.strokeWidth < var_core_value_sig3D2C || var_core_value_sig3A17 < var_core_value_sig0214.top - this.strokeWidth) return this;
+    }
+    let var_core_value_sig5153 = this.transform["getMatrix"](),
+      var_core_value_sigF323 = var_core_value_sig0214.left + var_core_value_sig0214.width / 2,
+      var_core_value_sig0C32 = var_core_value_sig0214.top + var_core_value_sig0214.height / 2;
+    return var_core_value_sig5E99.save(), var_core_value_sig5E99.transform(var_core_value_sig5153[0], var_core_value_sig5153[1], var_core_value_sig5153[2], var_core_value_sig5153[3], var_core_value_sigF323, var_core_value_sig0C32), this._draw(var_core_value_sig5E99, var_core_value_sig3FB3, var_core_value_sig0214.width, var_core_value_sig0214.height), var_core_value_sig5E99.restore(), this.makeDirty(false), this;
+  }
+  _draw(var_core_value_sig1D89, var_core_value_sig2616, var_core_value_sig97EF, var_core_value_sigA0C0) {
+    let var_core_value_sigAD4B = var_core_value_sig97EF ?? this.width,
+      var_core_value_sig06EA = var_core_value_sigA0C0 ?? this.height,
+      var_core_value_sigF3C7 = this._getRenderTable(),
+      var_core_value_sig5633 = var_core_value_sigF3C7 ? this._resolveRenderModel(var_core_value_sigF3C7) : null,
+      var_core_value_sig2492 = ro(var_core_value_sigF3C7, var_core_value_sigAD4B),
+      var_core_value_sig39F2 = io(var_core_value_sigF3C7, var_core_value_sig06EA),
+      var_core_value_sigAD47 = co(var_core_value_sigF3C7),
+      var_core_value_sig1722 = lo(var_core_value_sigF3C7);
+    var_core_value_sig1D89.save(), var_core_value_sig1D89.beginPath(), _o(var_core_value_sig1D89, -var_core_value_sigAD4B / 2, -var_core_value_sig06EA / 2, var_core_value_sigAD4B, var_core_value_sig06EA, (var_core_value_sigAD47 == null ? undefined : var_core_value_sigAD47.borderRadius) ?? 0), var_core_value_sig1D89.clip(), var_core_value_sig5633 ? (this._drawCellFills(var_core_value_sig1D89, var_core_value_sig5633, var_core_value_sigAD4B, var_core_value_sig06EA), this._drawCellTexts(var_core_value_sig1D89, var_core_value_sigF3C7, var_core_value_sig5633, var_core_value_sigAD4B, var_core_value_sig06EA), this._drawCellBorders(var_core_value_sig1D89, var_core_value_sig5633, var_core_value_sigAD4B, var_core_value_sig06EA), this._drawSelection(var_core_value_sig1D89, var_core_value_sig5633, var_core_value_sigAD4B, var_core_value_sig06EA), this._drawCellHover(var_core_value_sig1D89, var_core_value_sig5633, var_core_value_sigAD4B, var_core_value_sig06EA)) : (this._drawRowFills(var_core_value_sig1D89, null, var_core_value_sig39F2, var_core_value_sigAD4B, var_core_value_sig06EA), this._drawGrid(var_core_value_sig1D89, var_core_value_sig2492, var_core_value_sig39F2, var_core_value_sigAD4B, var_core_value_sig06EA)), var_core_value_sig1D89.restore(), var_core_value_sigAD47 && ho(var_core_value_sig1D89, var_core_value_sigAD4B, var_core_value_sig06EA, var_core_value_sigAD47), var_core_value_sig1722 && go(var_core_value_sig1D89, var_core_value_sigAD4B, var_core_value_sig06EA, var_core_value_sig2492, var_core_value_sig39F2, var_core_value_sig1722), var_core_value_sig5633 && (this._drawStructuralHeaders(var_core_value_sig1D89, var_core_value_sigAD4B, var_core_value_sig06EA, var_core_value_sig2492, var_core_value_sig39F2), this._drawInsertDots(var_core_value_sig1D89, var_core_value_sig5633, var_core_value_sigAD4B, var_core_value_sig06EA, var_core_value_sig2492, var_core_value_sig39F2), this._drawInsertGuide(var_core_value_sig1D89, var_core_value_sigAD4B, var_core_value_sig06EA, var_core_value_sig2492, var_core_value_sig39F2), this._drawReorderGuide(var_core_value_sig1D89, var_core_value_sigAD4B, var_core_value_sig06EA, var_core_value_sig2492, var_core_value_sig39F2), this._drawTableHandle(var_core_value_sig1D89, var_core_value_sig5633, var_core_value_sigAD4B, var_core_value_sig06EA), this._drawControls(var_core_value_sig1D89, var_core_value_sig5633, var_core_value_sigAD4B, var_core_value_sig06EA));
+  }
+  _getRenderTable() {
+    return this._previewTable ?? this._table;
+  }
+  _resolveRenderModel(var_core_value_sig7F86) {
+    let var_core_value_sigF69D = this._renderModelCache;
+    if ((var_core_value_sigF69D == null ? undefined : var_core_value_sigF69D.table) === var_core_value_sig7F86 && var_core_value_sigF69D.revision === var_core_value_sig7F86.rev && var_core_value_sigF69D.palette === this._tableThemePalette && var_core_value_sigF69D.themes === this._tableThemes) return var_core_value_sigF69D.model;
+    let var_core_value_sig7CB9 = (0, n.resolveSlideTableRenderModel)(var_core_value_sig7F86, {
+      themes: {
+        ...(0, n.buildDefaultSlideTableThemes)(this._tableThemePalette),
+        ...this._tableThemes
+      }
+    });
+    return this._renderModelCache = {
+      model: var_core_value_sig7CB9,
+      palette: this._tableThemePalette,
+      revision: var_core_value_sig7F86.rev,
+      table: var_core_value_sig7F86,
+      themes: this._tableThemes
+    }, var_core_value_sig7CB9;
+  }
+  _drawRowFills(var_core_value_sigC1D8, var_core_value_sigCF8B, var_core_value_sigCD15, var_core_value_sig524D, var_core_value_sigD7F4) {
+    let var_core_value_sig7B87 = -var_core_value_sigD7F4 / 2;
+    var_core_value_sigCD15.forEach((var_core_value_sigD948, var_core_value_sigBE5E) => {
+      var_core_value_sigC1D8.beginPath(), var_core_value_sigC1D8.rect(-var_core_value_sig524D / 2, var_core_value_sig7B87, var_core_value_sig524D, var_core_value_sigD948), var_core_value_sigC1D8.fillStyle = vo(var_core_value_sigCF8B, var_core_value_sigBE5E), var_core_value_sigC1D8.fill(), var_core_value_sig7B87 += var_core_value_sigD948;
+    });
+  }
+  _drawCellFills(var_core_value_sig933D, var_core_value_sig6ACE, var_core_value_sig7675, var_core_value_sig21B8) {
+    let var_core_value_sigD545 = this._getRenderTable(),
+      var_core_value_sig91C9 = Q(var_core_value_sig7675 / var_core_value_sig6ACE.width, 1),
+      var_core_value_sig64BA1 = Q(var_core_value_sig21B8 / var_core_value_sig6ACE.height, 1);
+    var_core_value_sig6ACE.cells["forEach"](var_core_value_sig0281 => {
+      if (var_core_value_sig0281.hidden) return;
+      let var_core_value_sigED71 = -var_core_value_sig7675 / 2 + var_core_value_sig0281.bounds["left"] * var_core_value_sig91C9,
+        var_core_value_sig281C = -var_core_value_sig21B8 / 2 + var_core_value_sig0281.bounds["top"] * var_core_value_sig64BA1,
+        var_core_value_sig3C92 = var_core_value_sig0281.bounds["width"] * var_core_value_sig91C9,
+        var_core_value_sigB16B = var_core_value_sig0281.bounds["height"] * var_core_value_sig64BA1,
+        var_core_value_sig585D = var_core_value_sig0281.style["fill"] ? yo(var_core_value_sig0281.style["fill"]) : vo(var_core_value_sigD545, var_core_value_sig0281.row);
+      var_core_value_sig585D && (var_core_value_sig933D.beginPath(), var_core_value_sig933D.rect(var_core_value_sigED71, var_core_value_sig281C, var_core_value_sig3C92, var_core_value_sigB16B), var_core_value_sig933D.fillStyle = var_core_value_sig585D, var_core_value_sig933D.fill());
+    });
+  }
+  _drawCellTexts(var_core_value_sig3FD5, var_core_value_sig1008, var_core_value_sigB9F4, var_core_value_sig2D23, var_core_value_sigF2E0) {
+    var_core_value_sigB9F4.cells["forEach"](var_core_value_sigE722 => {
+      var var_core_value_sig062A, var_core_value_sig050A;
+      if (var_core_value_sigE722.hidden || this._isEditingCell(var_core_value_sigE722.row, var_core_value_sigE722.column)) return;
+      let var_core_value_sig8B32 = Eo(var_core_value_sigE722, var_core_value_sigB9F4, var_core_value_sig2D23, var_core_value_sigF2E0),
+        var_core_value_sig870F = (var_core_value_sig062A = var_core_value_sig1008.rows[var_core_value_sigE722.row]) == null || (var_core_value_sig062A = var_core_value_sig062A.cells[var_core_value_sigE722.column]) == null ? undefined : var_core_value_sig062A.textData;
+      !var_core_value_sig870F || !this._localeService || Wa(var_core_value_sig3FD5, {
+        key: this.oKey + "-cell-" + var_core_value_sigE722.row + "-" + var_core_value_sigE722.column,
+        documentData: var_core_value_sig870F,
+        left: -var_core_value_sig2D23 / 2 + var_core_value_sig8B32.left,
+        top: -var_core_value_sigF2E0 / 2 + var_core_value_sig8B32.top,
+        width: var_core_value_sig8B32.width,
+        height: var_core_value_sig8B32.height,
+        localeService: this._localeService,
+        horizontalAlign: Qt(var_core_value_sig870F),
+        verticalAlign: nn(var_core_value_sigE722.style["verticalAlign"]) ?? ((var_core_value_sig050A = var_core_value_sig870F.documentStyle) == null || (var_core_value_sig050A = var_core_value_sig050A.renderConfig) == null ? undefined : var_core_value_sig050A.verticalAlign),
+        isHorizontal: var_core_value_sigE722.style["textDirection"] !== n.SlideTableTextDirectionEnum["Vertical"] && var_core_value_sigE722.style["textDirection"] !== n.SlideTableTextDirectionEnum["Vertical270"],
+        wrapStrategy: i.WrapStrategy["WRAP"],
+        clip: true,
+        cacheKey: var_core_value_sig1008.rev,
+        viewportHeight: var_core_value_sig8B32.height
+      }, this._getTextRenderCache(var_core_value_sigE722.row, var_core_value_sigE722.column));
+    });
+  }
+  _isEditingCell(var_core_value_sig9214, var_core_value_sigC8B1) {
+    var var_core_value_sig35E2;
+    return ((var_core_value_sig35E2 = this._editingCell) == null ? undefined : var_core_value_sig35E2.row) === var_core_value_sig9214 && this._editingCell["column"] === var_core_value_sigC8B1;
+  }
+  _getTextRenderCache(var_core_value_sig9B13, var_core_value_sig60E6) {
+    let var_core_value_sig1F6E = var_core_value_sig9B13 + ":" + var_core_value_sig60E6,
+      var_core_value_sig7A6B = this._textRenderCaches["get"](var_core_value_sig1F6E);
+    if (var_core_value_sig7A6B) return var_core_value_sig7A6B;
+    let var_core_value_sig20F6 = {};
+    return this._textRenderCaches["set"](var_core_value_sig1F6E, var_core_value_sig20F6), var_core_value_sig20F6;
+  }
+  _disposeTextRenderCaches() {
+    this._textRenderCaches["forEach"](var_core_value_sigB683 => Ua(var_core_value_sigB683)), this._textRenderCaches["clear"]();
+  }
+  _drawCellBorders(var_core_value_sigAEE0, var_core_value_sig72B6, var_core_value_sig43E8, var_core_value_sigB1FB) {
+    let var_core_value_sig6876 = Q(var_core_value_sig43E8 / var_core_value_sig72B6.width, 1),
+      var_core_value_sig55FB = Q(var_core_value_sigB1FB / var_core_value_sig72B6.height, 1),
+      {
+        cells: var_core_value_sig2870,
+        cellAtPosition: var_core_value_sigC865
+      } = this._resolveVisibleCellCache(var_core_value_sig72B6);
+    var_core_value_sig2870.forEach(var_core_value_sig26EC1 => {
+      var var_core_value_sigEEDB, var_core_value_sig36E7, var_core_value_sig6A78, var_core_value_sigF7EF;
+      let var_core_value_sig27F9 = -var_core_value_sig43E8 / 2 + var_core_value_sig26EC1.bounds["left"] * var_core_value_sig6876,
+        var_core_value_sig393E = -var_core_value_sigB1FB / 2 + var_core_value_sig26EC1.bounds["top"] * var_core_value_sig55FB,
+        var_core_value_sigB609 = var_core_value_sig27F9 + var_core_value_sig26EC1.bounds["width"] * var_core_value_sig6876,
+        var_core_value_sig390D = var_core_value_sig393E + var_core_value_sig26EC1.bounds["height"] * var_core_value_sig55FB,
+        var_core_value_sigC928 = var_core_value_sig26EC1.style["borders"],
+        var_core_value_sig39B7 = (var_core_value_sigEEDB = var_core_value_sigC865[var_core_value_sig26EC1.row]) == null ? undefined : var_core_value_sigEEDB[var_core_value_sig26EC1.column + var_core_value_sig26EC1.columnSpan],
+        var_core_value_sig18E01 = (var_core_value_sig36E7 = var_core_value_sigC865[var_core_value_sig26EC1.row + var_core_value_sig26EC1.rowSpan]) == null ? undefined : var_core_value_sig36E7[var_core_value_sig26EC1.column],
+        var_core_value_sigE161 = var_core_value_sigC928 == null ? undefined : var_core_value_sigC928.top,
+        var_core_value_sigBDEE = (0, n.resolveSlideTableCellBoundaryBorder)(var_core_value_sigC928 == null ? undefined : var_core_value_sigC928.right, var_core_value_sig39B7 == null || (var_core_value_sig6A78 = var_core_value_sig39B7.style["borders"]) == null ? undefined : var_core_value_sig6A78.left),
+        var_core_value_sig1F40 = (0, n.resolveSlideTableCellBoundaryBorder)(var_core_value_sigC928 == null ? undefined : var_core_value_sigC928.bottom, var_core_value_sig18E01 == null || (var_core_value_sigF7EF = var_core_value_sig18E01.style["borders"]) == null ? undefined : var_core_value_sigF7EF.top),
+        var_core_value_sig3FC7 = var_core_value_sigC928 == null ? undefined : var_core_value_sigC928.left;
+      if (var_core_value_sig26EC1.row === 0) {
+        let var_core_value_sig7E54 = var_core_value_sig393E + xo(var_core_value_sigE161);
+        bo(var_core_value_sigAEE0, var_core_value_sigE161, var_core_value_sig27F9, var_core_value_sig7E54, var_core_value_sigB609, var_core_value_sig7E54);
+      }
+      {
+        let var_core_value_sig9A8D = var_core_value_sig39B7 ? var_core_value_sigB609 : var_core_value_sigB609 - xo(var_core_value_sigBDEE);
+        bo(var_core_value_sigAEE0, var_core_value_sigBDEE, var_core_value_sig9A8D, var_core_value_sig393E, var_core_value_sig9A8D, var_core_value_sig390D);
+      }
+      {
+        let var_core_value_sigC259 = var_core_value_sig18E01 ? var_core_value_sig390D : var_core_value_sig390D - xo(var_core_value_sig1F40);
+        bo(var_core_value_sigAEE0, var_core_value_sig1F40, var_core_value_sig27F9, var_core_value_sigC259, var_core_value_sigB609, var_core_value_sigC259);
+      }
+      if (var_core_value_sig26EC1.column === 0) {
+        let var_core_value_sig9C9F = var_core_value_sig27F9 + xo(var_core_value_sig3FC7);
+        bo(var_core_value_sigAEE0, var_core_value_sig3FC7, var_core_value_sig9C9F, var_core_value_sig393E, var_core_value_sig9C9F, var_core_value_sig390D);
+      }
+    });
+  }
+  _drawGrid(var_core_value_sig6788, var_core_value_sig7B1F, var_core_value_sig7E51, var_core_value_sigAE87, var_core_value_sigFD51) {
+    let var_core_value_sigF6D6 = -var_core_value_sigAE87 / 2,
+      var_core_value_sigCF95 = -var_core_value_sigFD51 / 2,
+      var_core_value_sig8793 = var_core_value_sigAE87 / 2,
+      var_core_value_sig1BE7 = var_core_value_sigFD51 / 2;
+    var_core_value_sig6788.beginPath(), var_core_value_sig6788.setLineDash([]), var_core_value_sig6788.strokeStyle = Ka, var_core_value_sig6788.lineWidth = 1;
+    let var_core_value_sig34F8 = var_core_value_sigF6D6;
+    var_core_value_sig7B1F.slice(0, -1).forEach(var_core_value_sig1E1B => {
+      var_core_value_sig34F8 += var_core_value_sig1E1B, var_core_value_sig6788.moveTo(var_core_value_sig34F8, var_core_value_sigCF95), var_core_value_sig6788.lineTo(var_core_value_sig34F8, var_core_value_sig1BE7);
+    });
+    let var_core_value_sig9F3D = var_core_value_sigCF95;
+    var_core_value_sig7E51.slice(0, -1).forEach(var_core_value_sig3B10 => {
+      var_core_value_sig9F3D += var_core_value_sig3B10, var_core_value_sig6788.moveTo(var_core_value_sigF6D6, var_core_value_sig9F3D), var_core_value_sig6788.lineTo(var_core_value_sig8793, var_core_value_sig9F3D);
+    }), var_core_value_sig6788.stroke(), this._drawTableOutline(var_core_value_sig6788, var_core_value_sigF6D6, var_core_value_sigCF95, var_core_value_sigAE87, var_core_value_sigFD51);
+  }
+  _drawTableOutline(var_core_value_sig785C, var_core_value_sig6537, var_core_value_sig72BB, var_core_value_sigC0DF, var_core_value_sig94B7) {
+    var_core_value_sig785C.beginPath(), var_core_value_sig785C.strokeStyle = Ga, var_core_value_sig785C.lineWidth = 1.5, var_core_value_sig785C.rect(var_core_value_sig6537, var_core_value_sig72BB, var_core_value_sigC0DF, var_core_value_sig94B7), var_core_value_sig785C.stroke();
+  }
+  _drawSelection(var_core_value_sig9865, var_core_value_sigA09D, var_core_value_sig1429, var_core_value_sigA339) {
+    var var_core_value_sig832A, var_core_value_sig7945;
+    if (!((var_core_value_sig832A = this._selection) != null && var_core_value_sig832A.ranges["length"]) || this._selection["kind"] === "text") return;
+    let var_core_value_sig1166 = ((var_core_value_sig7945 = this._themeService) == null ? undefined : var_core_value_sig7945.getColorFromTheme("primary.600")) ?? "#409cff",
+      var_core_value_sig7ABC = new i["ColorKit"](var_core_value_sig1166).setAlpha(0.07).toRgbString(),
+      var_core_value_sigF686 = Q(var_core_value_sig1429 / var_core_value_sigA09D.width, 1),
+      var_core_value_sigDFF0 = Q(var_core_value_sigA339 / var_core_value_sigA09D.height, 1);
+    if (this._selection["kind"] === "table") {
+      var_core_value_sig9865.beginPath(), var_core_value_sig9865.rect(-var_core_value_sig1429 / 2, -var_core_value_sigA339 / 2, var_core_value_sig1429, var_core_value_sigA339), var_core_value_sig9865.fillStyle = var_core_value_sig7ABC, var_core_value_sig9865.fill(), wo(var_core_value_sig9865, -var_core_value_sig1429 / 2, -var_core_value_sigA339 / 2, var_core_value_sig1429, var_core_value_sigA339, var_core_value_sig1166, var_core_value_sig1429, var_core_value_sigA339);
+      return;
+    }
+    let var_core_value_sig01301 = var_core_value_sigA09D.cells["filter"](var_core_value_sig89E6 => !var_core_value_sig89E6.hidden);
+    var_core_value_sig01301.filter(var_core_value_sig4743 => {
+      var var_core_value_sigEB6A;
+      return to(var_core_value_sig4743, ((var_core_value_sigEB6A = this._selection) == null ? undefined : var_core_value_sigEB6A.ranges) ?? []);
+    }).forEach(var_core_value_sig3D46 => {
+      var_core_value_sig9865.beginPath(), var_core_value_sig9865.rect(-var_core_value_sig1429 / 2 + var_core_value_sig3D46.bounds["left"] * var_core_value_sigF686, -var_core_value_sigA339 / 2 + var_core_value_sig3D46.bounds["top"] * var_core_value_sigDFF0, var_core_value_sig3D46.bounds["width"] * var_core_value_sigF686, var_core_value_sig3D46.bounds["height"] * var_core_value_sigDFF0), var_core_value_sig9865.fillStyle = var_core_value_sig7ABC, var_core_value_sig9865.fill();
+    }), this._selection["ranges"].forEach(var_core_value_sigCC93 => {
+      let var_core_value_sig5964 = var_core_value_sig01301.filter(var_core_value_sigFDEA => to(var_core_value_sigFDEA, [var_core_value_sigCC93]));
+      if (!var_core_value_sig5964.length) return;
+      let var_core_value_sig808B = -var_core_value_sig1429 / 2 + Math.min(...var_core_value_sig5964.map(var_core_value_sig86D0 => var_core_value_sig86D0.bounds["left"])) * var_core_value_sigF686,
+        var_core_value_sig2A26 = -var_core_value_sigA339 / 2 + Math.min(...var_core_value_sig5964.map(var_core_value_sig4CD2 => var_core_value_sig4CD2.bounds["top"])) * var_core_value_sigDFF0,
+        var_core_value_sig1179 = -var_core_value_sig1429 / 2 + Math.max(...var_core_value_sig5964.map(var_core_value_sig48CA => var_core_value_sig48CA.bounds["left"] + var_core_value_sig48CA.bounds["width"])) * var_core_value_sigF686,
+        var_core_value_sigEA92 = -var_core_value_sigA339 / 2 + Math.max(...var_core_value_sig5964.map(var_core_value_sig50AF => var_core_value_sig50AF.bounds["top"] + var_core_value_sig50AF.bounds["height"])) * var_core_value_sigDFF0;
+      wo(var_core_value_sig9865, var_core_value_sig808B, var_core_value_sig2A26, var_core_value_sig1179 - var_core_value_sig808B, var_core_value_sigEA92 - var_core_value_sig2A26, var_core_value_sig1166, var_core_value_sig1429, var_core_value_sigA339);
+    });
+  }
+  _drawCellHover(var_core_value_sigFD90, var_core_value_sig702C, var_core_value_sig03A4, var_core_value_sigB6F5) {
+    var var_core_value_sig82931;
+    if (!this._cellHover) return;
+    let var_core_value_sig43AE = (var_core_value_sig82931 = this._resolveVisibleCellCache(var_core_value_sig702C).cellAtPosition[this._cellHover["row"]]) == null ? undefined : var_core_value_sig82931[this._cellHover["column"]];
+    if (!var_core_value_sig43AE) return;
+    let var_core_value_sigEF2E = Q(var_core_value_sig03A4 / var_core_value_sig702C.width, 1),
+      var_core_value_sigD83C = Q(var_core_value_sigB6F5 / var_core_value_sig702C.height, 1);
+    var_core_value_sigFD90.beginPath(), var_core_value_sigFD90.rect(-var_core_value_sig03A4 / 2 + var_core_value_sig43AE.bounds["left"] * var_core_value_sigEF2E, -var_core_value_sigB6F5 / 2 + var_core_value_sig43AE.bounds["top"] * var_core_value_sigD83C, var_core_value_sig43AE.bounds["width"] * var_core_value_sigEF2E, var_core_value_sig43AE.bounds["height"] * var_core_value_sigD83C), var_core_value_sigFD90.strokeStyle = "rgba(64, 156, 255, 0.42)", var_core_value_sigFD90.lineWidth = 1, var_core_value_sigFD90.stroke();
+  }
+  _drawControls(var_core_value_sigAC2B, var_core_value_sigFBBE, var_core_value_sigC982, var_core_value_sig59DA) {
+    this._shouldDrawControls() && this._buildControlButtons(var_core_value_sigFBBE, var_core_value_sigC982, var_core_value_sig59DA, {
+      showAll: true
+    }).filter(var_core_value_sig8FD9 => var_core_value_sig8FD9.kind !== "table-handle").forEach(var_core_value_sig1AE5 => {
+      let var_core_value_sig7100 = -var_core_value_sigC982 / 2 + var_core_value_sig1AE5.rect["x"],
+        var_core_value_sigA19A = -var_core_value_sig59DA / 2 + var_core_value_sig1AE5.rect["y"],
+        var_core_value_sigD3F5 = this._isControlHovered(var_core_value_sig1AE5),
+        var_core_value_sig3082 = this._isControlSelected(var_core_value_sig1AE5);
+      var_core_value_sigAC2B.beginPath(), var_core_value_sigAC2B.rect(var_core_value_sig7100, var_core_value_sigA19A, var_core_value_sig1AE5.rect["width"], var_core_value_sig1AE5.rect["height"]), var_core_value_sigAC2B.fillStyle = var_core_value_sig3082 ? "#d8e8ff" : var_core_value_sigD3F5 ? Xa : Ya, var_core_value_sigAC2B.fill(), var_core_value_sigAC2B.strokeStyle = var_core_value_sigD3F5 || var_core_value_sig3082 ? Qa : Za, var_core_value_sigAC2B.lineWidth = 1, var_core_value_sigAC2B.stroke();
+    });
+  }
+  _drawStructuralHeaders(var_core_value_sig3002, var_core_value_sig33D2, var_core_value_sig8D4A, var_core_value_sigB5D7, var_core_value_sig797B) {
+    if (!this._shouldDrawStructuralHeaders()) return;
+    let var_core_value_sig5094 = uo(this._getRenderTable());
+    if (var_core_value_sig5094.rows) {
+      let var_core_value_sigF5D1 = -var_core_value_sig8D4A / 2;
+      var_core_value_sig797B.forEach((var_core_value_sigA942, var_core_value_sigA621) => {
+        this._drawStructuralHeaderRect(var_core_value_sig3002, {
+          kind: "row",
+          index: var_core_value_sigA621,
+          x: -var_core_value_sig33D2 / 2 - 10,
+          y: var_core_value_sigF5D1,
+          width: 10,
+          height: var_core_value_sigA942
+        }), var_core_value_sigF5D1 += var_core_value_sigA942;
+      });
+    }
+    if (var_core_value_sig5094.columns) {
+      let var_core_value_sig8775 = -var_core_value_sig33D2 / 2;
+      var_core_value_sigB5D7.forEach((var_core_value_sigBBFF, var_core_value_sig8889) => {
+        this._drawStructuralHeaderRect(var_core_value_sig3002, {
+          kind: "column",
+          index: var_core_value_sig8889,
+          x: var_core_value_sig8775,
+          y: -var_core_value_sig8D4A / 2 - 10,
+          width: var_core_value_sigBBFF,
+          height: 10
+        }), var_core_value_sig8775 += var_core_value_sigBBFF;
+      });
+    }
+  }
+  _drawStructuralHeaderRect(var_core_value_sig8883, var_core_value_sig488F) {
+    var_core_value_sig8883.beginPath(), var_core_value_sig8883.rect(var_core_value_sig488F.x, var_core_value_sig488F.y, var_core_value_sig488F.width, var_core_value_sig488F.height), var_core_value_sig8883.fillStyle = this._isStructuralRangeSelected(var_core_value_sig488F.kind, var_core_value_sig488F.index) ? "#1a73e8" : this._isStructuralHeaderHovered(var_core_value_sig488F.kind, var_core_value_sig488F.index) ? "#d2e3fc" : "#f1f3f4", var_core_value_sig8883.fill();
+  }
+  _drawInsertDots(var_core_value_sigB4401, var_core_value_sigF5CC, var_core_value_sigA1B6, var_core_value_sig66A0, var_core_value_sig7876, var_core_value_sig2C69) {
+    if (!this._shouldDrawInsertDots()) return;
+    let var_core_value_sigAF19 = this._getStructuralControlZoom();
+    this._buildStructuralTriggers(var_core_value_sigF5CC, var_core_value_sigA1B6, var_core_value_sig66A0, var_core_value_sig7876, var_core_value_sig2C69).filter(var_core_value_sig481B => var_core_value_sig481B.kind === "row-insert-dot" || var_core_value_sig481B.kind === "column-insert-dot").forEach(var_core_value_sig13D7 => {
+      let var_core_value_sig90C0 = -var_core_value_sigA1B6 / 2 + var_core_value_sig13D7.rect["x"] + var_core_value_sig13D7.rect["width"] / 2,
+        var_core_value_sigF1B2 = -var_core_value_sig66A0 / 2 + var_core_value_sig13D7.rect["y"] + var_core_value_sig13D7.rect["height"] / 2,
+        var_core_value_sigC2BB = this._isHoveredStructuralTrigger(var_core_value_sig13D7),
+        var_core_value_sigD9DB = var_core_value_sigC2BB ? Math.min(var_core_value_sig13D7.rect["width"], var_core_value_sig13D7.rect["height"]) / 2 : 2 / var_core_value_sigAF19;
+      if (var_core_value_sigB4401.beginPath(), var_core_value_sigB4401.arc(var_core_value_sig90C0, var_core_value_sigF1B2, var_core_value_sigD9DB, 0, Math.PI * 2), var_core_value_sigB4401.fillStyle = var_core_value_sigC2BB ? Ja : "rgba(95, 99, 104, 0.45)", var_core_value_sigB4401.fill(), !var_core_value_sigC2BB) return;
+      var_core_value_sigB4401.beginPath(), var_core_value_sigB4401.strokeStyle = eo, var_core_value_sigB4401.lineWidth = 1.5 / var_core_value_sigAF19;
+      let var_core_value_sigA363 = 3 / var_core_value_sigAF19;
+      var_core_value_sigB4401.moveTo(var_core_value_sig90C0 - var_core_value_sigA363, var_core_value_sigF1B2), var_core_value_sigB4401.lineTo(var_core_value_sig90C0 + var_core_value_sigA363, var_core_value_sigF1B2), var_core_value_sigB4401.moveTo(var_core_value_sig90C0, var_core_value_sigF1B2 - var_core_value_sigA363), var_core_value_sigB4401.lineTo(var_core_value_sig90C0, var_core_value_sigF1B2 + var_core_value_sigA363), var_core_value_sigB4401.stroke();
+    });
+  }
+  _drawInsertGuide(var_core_value_sigCE75, var_core_value_sigF27A, var_core_value_sig47B3, var_core_value_sig5E75, var_core_value_sigC266) {
+    var var_core_value_sig77A3;
+    !((var_core_value_sig77A3 = this._controlState) != null && var_core_value_sig77A3.visible) || !this._controlState["insertGuide"] || mo(this._controlState["insertGuide"], uo(this._getRenderTable())) && this._drawGuideLine(var_core_value_sigCE75, this._controlState["insertGuide"], var_core_value_sigF27A, var_core_value_sig47B3, var_core_value_sig5E75, var_core_value_sigC266);
+  }
+  _drawReorderGuide(var_core_value_sigD85C, var_core_value_sig3957, var_core_value_sigA101, var_core_value_sig2ADC, var_core_value_sig1386) {
+    var var_core_value_sig96F5;
+    !((var_core_value_sig96F5 = this._controlState) != null && var_core_value_sig96F5.visible) || !this._controlState["reorderGuide"] || mo(this._controlState["reorderGuide"], uo(this._getRenderTable())) && this._drawGuideLine(var_core_value_sigD85C, this._controlState["reorderGuide"], var_core_value_sig3957, var_core_value_sigA101, var_core_value_sig2ADC, var_core_value_sig1386);
+  }
+  _drawGuideLine(var_core_value_sig7F54, var_core_value_sigEB45, var_core_value_sig0623, var_core_value_sigBF43, var_core_value_sigBC08, var_core_value_sig3F28) {
+    let var_core_value_sig0A16 = -var_core_value_sig0623 / 2,
+      var_core_value_sig0A96 = -var_core_value_sigBF43 / 2;
+    if (var_core_value_sig7F54.beginPath(), var_core_value_sig7F54.setLineDash([]), var_core_value_sig7F54.strokeStyle = Ja, var_core_value_sig7F54.lineWidth = 2, var_core_value_sigEB45.kind === "row") {
+      let var_core_value_sigFBA5 = var_core_value_sig0A96 + Co(var_core_value_sig3F28, var_core_value_sigEB45.index);
+      var_core_value_sig7F54.moveTo(var_core_value_sig0A16, var_core_value_sigFBA5), var_core_value_sig7F54.lineTo(var_core_value_sig0A16 + var_core_value_sig0623, var_core_value_sigFBA5);
+    } else {
+      let var_core_value_sigAC47 = var_core_value_sig0A16 + Co(var_core_value_sigBC08, var_core_value_sigEB45.index);
+      var_core_value_sig7F54.moveTo(var_core_value_sigAC47, var_core_value_sig0A96), var_core_value_sig7F54.lineTo(var_core_value_sigAC47, var_core_value_sig0A96 + var_core_value_sigBF43);
+    }
+    var_core_value_sig7F54.stroke();
+  }
+  _drawTableHandle(var_core_value_sig72FE, var_core_value_sigE8ED, var_core_value_sig6DD3, var_core_value_sig8E87) {
+    var var_core_value_sigCDF2;
+    if (!this._selection) return;
+    let var_core_value_sig1043 = this._buildControlButtons(var_core_value_sigE8ED, var_core_value_sig6DD3, var_core_value_sig8E87).find(var_core_value_sigA06F => var_core_value_sigA06F.kind === "table-handle");
+    if (!var_core_value_sig1043) return;
+    let {
+        rect: var_core_value_sig4289
+      } = var_core_value_sig1043,
+      var_core_value_sig2729 = -var_core_value_sig6DD3 / 2 + var_core_value_sig4289.x,
+      var_core_value_sig5BB6 = -var_core_value_sig8E87 / 2 + var_core_value_sig4289.y,
+      var_core_value_sig5C75 = ((var_core_value_sigCDF2 = this._controlHover) == null ? undefined : var_core_value_sigCDF2.kind) === "table-handle";
+    Oo(var_core_value_sig72FE, var_core_value_sig2729, var_core_value_sig5BB6, var_core_value_sig4289.width, var_core_value_sig4289.height, var_core_value_sig5C75), Do(var_core_value_sig72FE, var_core_value_sig2729, var_core_value_sig5BB6, var_core_value_sig4289.width, var_core_value_sig4289.height, var_core_value_sig5C75 ? eo : $a);
+  }
+  _shouldDrawControls() {
+    var var_core_value_sigCB46, var_core_value_sig0177;
+    return !!((var_core_value_sigCB46 = this._selection) != null && var_core_value_sigCB46.ranges["length"]) || !!this._controlHover || !!((var_core_value_sig0177 = this._controlState) != null && var_core_value_sig0177.visible);
+  }
+  _shouldDrawStructuralHeaders() {
+    var var_core_value_sigC674, var_core_value_sigC11B, var_core_value_sig5461;
+    return !!this._selection || !!((var_core_value_sigC674 = this._controlState) != null && var_core_value_sigC674.visible) || !!((var_core_value_sigC11B = this._controlState) != null && var_core_value_sigC11B.hoveredTrigger) || !!((var_core_value_sig5461 = this._controlState) != null && var_core_value_sig5461.selectedStructuralRange);
+  }
+  _shouldDrawInsertDots() {
+    var var_core_value_sigBA12;
+    return !!this._selection || !!((var_core_value_sigBA12 = this._controlState) != null && var_core_value_sigBA12.visible);
+  }
+  _isActiveOuterChromeHit(var_core_value_sig65CB) {
+    var var_core_value_sig8AF4;
+    if (!this._selection && !((var_core_value_sig8AF4 = this._controlState) != null && var_core_value_sig8AF4.visible)) return false;
+    let var_core_value_sig7C2D = this.width,
+      var_core_value_sig5F54 = this.height,
+      var_core_value_sig668D = this._getRenderTable();
+    if (!var_core_value_sig668D) return false;
+    let var_core_value_sig6883 = {
+        x: var_core_value_sig65CB.x + var_core_value_sig7C2D / 2,
+        y: var_core_value_sig65CB.y + var_core_value_sig5F54 / 2
+      },
+      var_core_value_sig2A05 = this._resolveRenderModel(var_core_value_sig668D),
+      var_core_value_sig9CA8 = this._buildStructuralTriggers(var_core_value_sig2A05, var_core_value_sig7C2D, var_core_value_sig5F54, ro(var_core_value_sig668D, var_core_value_sig7C2D), io(var_core_value_sig668D, var_core_value_sig5F54)),
+      var_core_value_sig3C9C = (0, n.hitTestSlideTableTrigger)(var_core_value_sig9CA8, var_core_value_sig6883.x, var_core_value_sig6883.y);
+    return var_core_value_sig3C9C && jo(var_core_value_sig3C9C) || var_core_value_sig9CA8.some(var_core_value_sig770E => this._isPointInStructuralTriggerEnvelope(var_core_value_sig770E, var_core_value_sig6883.x, var_core_value_sig6883.y)) ? true : !!(0, n.hitTestSlideTableControl)(this._buildControlButtons(var_core_value_sig2A05, var_core_value_sig7C2D, var_core_value_sig5F54).filter(var_core_value_sig4654 => var_core_value_sig4654.kind === "table-handle"), var_core_value_sig6883.x, var_core_value_sig6883.y);
+  }
+  _buildControlButtons(var_core_value_sig7651, var_core_value_sig6E4E, var_core_value_sigC2E8, var_core_value_sig3A04) {
+    let var_core_value_sig935E = uo(this._getRenderTable()),
+      var_core_value_sigDC45 = (0, n.buildSlideTableControls)(var_core_value_sig7651, var_core_value_sig6E4E, var_core_value_sigC2E8, var_core_value_sig3A04).filter(var_core_value_sigB26B => fo(var_core_value_sigB26B, var_core_value_sig935E));
+    return this._controlButtonMode === "all" ? var_core_value_sigDC45 : var_core_value_sigDC45.filter(var_core_value_sig019B => var_core_value_sig019B.kind === "table-handle");
+  }
+  _isPointInStructuralTriggerEnvelope(var_core_value_sig7C31, var_core_value_sig8B54, var_core_value_sigC19B) {
+    return jo(var_core_value_sig7C31) ? (0, n.isPointInRect)(var_core_value_sig8B54, var_core_value_sigC19B, var_core_value_sig7C31.rect) : false;
+  }
+  _isControlHovered(var_core_value_sigFB87) {
+    return !this._controlHover || var_core_value_sigFB87.kind !== this._controlHover["kind"] ? false : var_core_value_sigFB87.kind === "row-select" ? var_core_value_sigFB87.row === this._controlHover["row"] : var_core_value_sigFB87.kind !== "column-select" || var_core_value_sigFB87.column === this._controlHover["column"];
+  }
+  _isControlSelected(var_core_value_sigA318) {
+    return this._selection ? var_core_value_sigA318.kind === "table-handle" ? this._selection["kind"] === "table" : var_core_value_sigA318.kind === "row-select" ? this._selection["kind"] === "row" && var_core_value_sigA318.row !== undefined && this._selection["ranges"].some(var_core_value_sigC6BC => var_core_value_sigA318.row >= Math.min(var_core_value_sigC6BC.startRow, var_core_value_sigC6BC.endRow) && var_core_value_sigA318.row <= Math.max(var_core_value_sigC6BC.startRow, var_core_value_sigC6BC.endRow)) : var_core_value_sigA318.kind === "column-select" && this._selection["kind"] === "column" && var_core_value_sigA318.column !== undefined && this._selection["ranges"].some(var_core_value_sig8EC2 => var_core_value_sigA318.column >= Math.min(var_core_value_sig8EC2.startColumn, var_core_value_sig8EC2.endColumn) && var_core_value_sigA318.column <= Math.max(var_core_value_sig8EC2.startColumn, var_core_value_sig8EC2.endColumn)) : false;
+  }
+  _isStructuralHeaderHovered(var_core_value_sig51A4, var_core_value_sig2966) {
+    var var_core_value_sigF4C4;
+    let var_core_value_sig5617 = (var_core_value_sigF4C4 = this._controlState) == null ? undefined : var_core_value_sigF4C4.hoveredTrigger;
+    return var_core_value_sig51A4 === "row" ? (var_core_value_sig5617 == null ? undefined : var_core_value_sig5617.kind) === "row-header" && var_core_value_sig5617.row === var_core_value_sig2966 : (var_core_value_sig5617 == null ? undefined : var_core_value_sig5617.kind) === "column-header" && var_core_value_sig5617.column === var_core_value_sig2966;
+  }
+  _isHoveredStructuralTrigger(var_core_value_sig450E) {
+    var var_core_value_sig92A31;
+    let var_core_value_sig61E5 = (var_core_value_sig92A31 = this._controlState) == null ? undefined : var_core_value_sig92A31.hoveredTrigger;
+    return !var_core_value_sig61E5 || var_core_value_sig61E5.kind !== var_core_value_sig450E.kind ? false : var_core_value_sig450E.kind === "row-header" || var_core_value_sig450E.kind === "row-insert-dot" ? var_core_value_sig61E5.row !== undefined && var_core_value_sig61E5.row === var_core_value_sig450E.row : var_core_value_sig450E.kind === "column-header" || var_core_value_sig450E.kind === "column-insert-dot" ? var_core_value_sig61E5.column !== undefined && var_core_value_sig61E5.column === var_core_value_sig450E.column : false;
+  }
+  _isStructuralRangeSelected(var_core_value_sig9E17, var_core_value_sigB97D) {
+    var var_core_value_sigFE1E;
+    let var_core_value_sig5F541 = (var_core_value_sigFE1E = this._controlState) == null ? undefined : var_core_value_sigFE1E.selectedStructuralRange;
+    return !var_core_value_sig5F541 || var_core_value_sig5F541.kind !== var_core_value_sig9E17 ? false : var_core_value_sigB97D >= Math.min(var_core_value_sig5F541.start, var_core_value_sig5F541.end) && var_core_value_sigB97D <= Math.max(var_core_value_sig5F541.start, var_core_value_sig5F541.end);
+  }
+  _buildStructuralTriggers(var_core_value_sig84B9, var_core_value_sig09DF, var_core_value_sig3A251, var_core_value_sig5B2B, var_core_value_sigE5FE) {
+    var var_core_value_sig78A5;
+    let var_core_value_sig9A4C = uo(this._getRenderTable());
+    return (0, n.buildSlideTableTriggers)({
+      tableId: (var_core_value_sig78A5 = this._getRenderTable()) == null ? undefined : var_core_value_sig78A5.id,
+      tableWidth: var_core_value_sig09DF,
+      tableHeight: var_core_value_sig3A251,
+      rowHeights: var_core_value_sigE5FE,
+      columnWidths: var_core_value_sig5B2B,
+      mergedCells: var_core_value_sig84B9.cells["filter"](var_core_value_sigA8C3 => !var_core_value_sigA8C3.hidden && (var_core_value_sigA8C3.rowSpan > 1 || var_core_value_sigA8C3.columnSpan > 1)).map(var_core_value_sig52761 => ({
+        startRow: var_core_value_sig52761.row,
+        endRow: var_core_value_sig52761.row + var_core_value_sig52761.rowSpan - 1,
+        startColumn: var_core_value_sig52761.column,
+        endColumn: var_core_value_sig52761.column + var_core_value_sig52761.columnSpan - 1
+      })),
+      zoom: this._getStructuralControlZoom()
+    }).filter(var_core_value_sig031B => po(var_core_value_sig031B, var_core_value_sig9A4C));
+  }
+  _getStructuralControlZoom() {
+    var var_core_value_sigC723, var_core_value_sig1E32;
+    let var_core_value_sig22AF = (var_core_value_sigC723 = this.getScene()) == null || (var_core_value_sig1E32 = var_core_value_sigC723.getAncestorScale) == null ? undefined : var_core_value_sig1E32.call(var_core_value_sigC723);
+    return Q((var_core_value_sig22AF == null ? undefined : var_core_value_sig22AF.scaleX) ?? (var_core_value_sig22AF == null ? undefined : var_core_value_sig22AF.scaleY), 1);
+  }
+};
+function ro(var_core_value_sig4F28, var_core_value_sigE7DA) {
+  let var_core_value_sig56D11 = var_core_value_sig4F28 == null ? undefined : var_core_value_sig4F28.columns["map"](var_core_value_sig0F31 => var_core_value_sig0F31.width).filter(var_core_value_sig8F25 => var_core_value_sig8F25 > 0);
+  return ao(var_core_value_sig56D11 != null && var_core_value_sig56D11.length ? var_core_value_sig56D11 : [1, 1, 1], var_core_value_sigE7DA);
+}
+function io(var_core_value_sig2EDE, var_core_value_sig70CD) {
+  let var_core_value_sig60A5 = var_core_value_sig2EDE == null ? undefined : var_core_value_sig2EDE.rows["map"](var_core_value_sigCBED => var_core_value_sigCBED.height ?? 24).filter(var_core_value_sig6224 => var_core_value_sig6224 > 0);
+  return ao(var_core_value_sig60A5 != null && var_core_value_sig60A5.length ? var_core_value_sig60A5 : [1, 1, 1], var_core_value_sig70CD);
+}
+function ao(var_core_value_sig89B2, var_core_value_sigE594) {
+  let var_core_value_sig63D7 = var_core_value_sig89B2.reduce((var_core_value_sigFC3E, var_core_value_sig4D33) => var_core_value_sigFC3E + var_core_value_sig4D33, 0);
+  return var_core_value_sig63D7 <= 0 ? [var_core_value_sigE594] : var_core_value_sig89B2.map(var_core_value_sig08BF => var_core_value_sig08BF / var_core_value_sig63D7 * var_core_value_sigE594);
+}
+function oo(var_core_value_sig2E441, var_core_value_sig6814 = 0) {
+  return typeof var_core_value_sig2E441 == "number" && Number.isFinite(var_core_value_sig2E441) ? var_core_value_sig2E441 : var_core_value_sig6814;
+}
+function Q(var_core_value_sig0A10, var_core_value_sig9E19) {
+  let var_core_value_sigC832 = oo(var_core_value_sig0A10, var_core_value_sig9E19);
+  return var_core_value_sigC832 > 0 ? var_core_value_sigC832 : var_core_value_sig9E19;
+}
+function so(var_core_value_sig9DD2) {
+  return var_core_value_sig9DD2 && typeof var_core_value_sig9DD2 == "object" ? var_core_value_sig9DD2 : null;
+}
+function co(var_core_value_sigDB97) {
+  let var_core_value_sigD1A5 = so(var_core_value_sigDB97 == null ? undefined : var_core_value_sigDB97.custom);
+  if (!var_core_value_sigD1A5) return null;
+  let var_core_value_sigA91A = oo(var_core_value_sigD1A5.outerBorderRadius, 0);
+  return var_core_value_sigA91A > 0 || typeof var_core_value_sigD1A5.outerBorderWidth == "number" || typeof var_core_value_sigD1A5.outerBorderColor == "string" ? {
+    borderRadius: Math.max(0, var_core_value_sigA91A),
+    borderWidth: Q(var_core_value_sigD1A5.outerBorderWidth, 1.5),
+    borderColor: typeof var_core_value_sigD1A5.outerBorderColor == "string" ? var_core_value_sigD1A5.outerBorderColor : Ga
+  } : null;
+}
+function lo(var_core_value_sig2DE0) {
+  let var_core_value_sig0513 = so(var_core_value_sig2DE0 == null ? undefined : var_core_value_sig2DE0.custom);
+  if (!var_core_value_sig0513) return null;
+  let var_core_value_sig35D1 = so(var_core_value_sig0513.sequenceFrame);
+  return var_core_value_sig35D1 ? {
+    titleRow: Math.max(0, Math.floor(oo(var_core_value_sig35D1.titleRow, 0))),
+    titleColumn: Math.max(0, Math.floor(oo(var_core_value_sig35D1.titleColumn, 0))),
+    notchWidth: Q(var_core_value_sig35D1.notchWidth, 24),
+    borderWidth: Q(var_core_value_sig0513.outerBorderWidth, 1.5),
+    borderColor: typeof var_core_value_sig0513.outerBorderColor == "string" ? var_core_value_sig0513.outerBorderColor : Ga
+  } : null;
+}
+function uo(var_core_value_sig5CE7) {
+  let var_core_value_sig3662 = so(var_core_value_sig5CE7 == null ? undefined : var_core_value_sig5CE7.custom);
+  if (!var_core_value_sig3662) return {
+    rows: true,
+    columns: true
+  };
+  let var_core_value_sigABC5 = so(var_core_value_sig3662.structuralControls);
+  return var_core_value_sigABC5 ? {
+    rows: var_core_value_sigABC5.rows !== false,
+    columns: var_core_value_sigABC5.columns !== false
+  } : {
+    rows: true,
+    columns: true
+  };
+}
+function fo(var_core_value_sig033B, var_core_value_sig2BCC) {
+  return var_core_value_sig033B.kind === "row-select" ? var_core_value_sig2BCC.rows : var_core_value_sig033B.kind !== "column-select" || var_core_value_sig2BCC.columns;
+}
+function po(var_core_value_sigC260, var_core_value_sig15611) {
+  return var_core_value_sigC260.kind === "row-header" || var_core_value_sigC260.kind === "row-insert-dot" || var_core_value_sigC260.kind === "resize-row" ? var_core_value_sig15611.rows : var_core_value_sigC260.kind === "column-header" || var_core_value_sigC260.kind === "column-insert-dot" || var_core_value_sigC260.kind === "resize-column" ? var_core_value_sig15611.columns : true;
+}
+function mo(var_core_value_sigAAA8, var_core_value_sigA0B9) {
+  return var_core_value_sigAAA8.kind === "row" ? var_core_value_sigA0B9.rows : var_core_value_sigA0B9.columns;
+}
+function ho(var_core_value_sigB40F, var_core_value_sig86F1, var_core_value_sig078D, var_core_value_sig60D5) {
+  var_core_value_sigB40F.beginPath(), _o(var_core_value_sigB40F, -var_core_value_sig86F1 / 2, -var_core_value_sig078D / 2, var_core_value_sig86F1, var_core_value_sig078D, var_core_value_sig60D5.borderRadius), var_core_value_sigB40F.setLineDash([]), var_core_value_sigB40F.strokeStyle = var_core_value_sig60D5.borderColor, var_core_value_sigB40F.lineWidth = var_core_value_sig60D5.borderWidth, var_core_value_sigB40F.stroke();
+}
+function go(var_core_value_sigD888, var_core_value_sig5337, var_core_value_sig2381, var_core_value_sig573D, var_core_value_sigC09F, var_core_value_sig205A) {
+  let var_core_value_sig16E2 = -var_core_value_sig5337 / 2 + Co(var_core_value_sig573D, var_core_value_sig205A.titleColumn),
+    var_core_value_sig8904 = -var_core_value_sig2381 / 2 + Co(var_core_value_sigC09F, var_core_value_sig205A.titleRow),
+    var_core_value_sigBA69 = var_core_value_sig573D[var_core_value_sig205A.titleColumn],
+    var_core_value_sig4AC2 = var_core_value_sigC09F[var_core_value_sig205A.titleRow];
+  if (!var_core_value_sigBA69 || !var_core_value_sig4AC2) return;
+  let var_core_value_sig08B2 = var_core_value_sig16E2 + var_core_value_sigBA69,
+    var_core_value_sigDE7F = var_core_value_sig8904 + var_core_value_sig4AC2,
+    var_core_value_sigD898 = Math.min(var_core_value_sig205A.notchWidth, Math.max(0, var_core_value_sigBA69 - 1), Math.max(0, var_core_value_sig4AC2 - 1));
+  var_core_value_sigD888.beginPath(), var_core_value_sigD888.setLineDash([]), var_core_value_sigD888.strokeStyle = var_core_value_sig205A.borderColor, var_core_value_sigD888.lineWidth = var_core_value_sig205A.borderWidth, var_core_value_sigD888.moveTo(var_core_value_sig16E2, var_core_value_sig8904), var_core_value_sigD888.lineTo(var_core_value_sig08B2, var_core_value_sig8904), var_core_value_sigD888.lineTo(var_core_value_sig08B2, var_core_value_sigDE7F - var_core_value_sigD898), var_core_value_sigD888.lineTo(var_core_value_sig08B2 - var_core_value_sigD898, var_core_value_sigDE7F), var_core_value_sigD888.lineTo(var_core_value_sig16E2, var_core_value_sigDE7F), var_core_value_sigD888.lineTo(var_core_value_sig16E2, var_core_value_sig8904), var_core_value_sigD888.stroke();
+}
+function _o(var_core_value_sig0386, var_core_value_sig577B, var_core_value_sigF342, var_core_value_sig7871, var_core_value_sig7CBA, var_core_value_sigC924) {
+  let var_core_value_sig718D = var_core_value_sig577B + var_core_value_sig7871,
+    var_core_value_sigCC47 = var_core_value_sigF342 + var_core_value_sig7CBA,
+    var_core_value_sig12EE = Math.min(Math.max(0, var_core_value_sigC924), var_core_value_sig7871 / 2, var_core_value_sig7CBA / 2);
+  if (var_core_value_sig12EE <= 0) {
+    var_core_value_sig0386.rect(var_core_value_sig577B, var_core_value_sigF342, var_core_value_sig7871, var_core_value_sig7CBA);
+    return;
+  }
+  var_core_value_sig0386.moveTo(var_core_value_sig577B + var_core_value_sig12EE, var_core_value_sigF342), var_core_value_sig0386.lineTo(var_core_value_sig718D - var_core_value_sig12EE, var_core_value_sigF342), var_core_value_sig0386.quadraticCurveTo(var_core_value_sig718D, var_core_value_sigF342, var_core_value_sig718D, var_core_value_sigF342 + var_core_value_sig12EE), var_core_value_sig0386.lineTo(var_core_value_sig718D, var_core_value_sigCC47 - var_core_value_sig12EE), var_core_value_sig0386.quadraticCurveTo(var_core_value_sig718D, var_core_value_sigCC47, var_core_value_sig718D - var_core_value_sig12EE, var_core_value_sigCC47), var_core_value_sig0386.lineTo(var_core_value_sig577B + var_core_value_sig12EE, var_core_value_sigCC47), var_core_value_sig0386.quadraticCurveTo(var_core_value_sig577B, var_core_value_sigCC47, var_core_value_sig577B, var_core_value_sigCC47 - var_core_value_sig12EE), var_core_value_sig0386.lineTo(var_core_value_sig577B, var_core_value_sigF342 + var_core_value_sig12EE), var_core_value_sig0386.quadraticCurveTo(var_core_value_sig577B, var_core_value_sigF342, var_core_value_sig577B + var_core_value_sig12EE, var_core_value_sigF342);
+}
+function vo(var_core_value_sigEB89, var_core_value_sig405C) {
+  return var_core_value_sigEB89 != null && var_core_value_sigEB89.options["firstRow"] && var_core_value_sig405C === 0 ? "#e8f1ff" : var_core_value_sigEB89 != null && var_core_value_sigEB89.options["bandRow"] && var_core_value_sig405C % 2 == 1 ? "#f7faff" : qa;
+}
+function yo(var_core_value_sig820E) {
+  return var_core_value_sig820E.type === n.SlideTableFillTypeEnum["None"] ? null : var_core_value_sig820E.color ?? qa;
+}
+function bo(var_core_value_sigA753, var_core_value_sigEF41, var_core_value_sig9793, var_core_value_sigDB87, var_core_value_sig2858, var_core_value_sig2683) {
+  !var_core_value_sigEF41 || var_core_value_sigEF41.dash === "none" || (var_core_value_sigA753.beginPath(), var_core_value_sigA753.setLineDash(So(var_core_value_sigEF41.dash)), var_core_value_sigA753.strokeStyle = var_core_value_sigEF41.color || Ka, var_core_value_sigA753.lineWidth = Q(var_core_value_sigEF41.width, 1), var_core_value_sigA753.moveTo(var_core_value_sig9793, var_core_value_sigDB87), var_core_value_sigA753.lineTo(var_core_value_sig2858, var_core_value_sig2683), var_core_value_sigA753.stroke(), var_core_value_sigA753.setLineDash([]));
+}
+function xo(var_core_value_sigEA13) {
+  return !var_core_value_sigEA13 || var_core_value_sigEA13.dash === "none" ? 0 : Q(var_core_value_sigEA13.width, 1) / 2;
+}
+function So(var_core_value_sig1699) {
+  return var_core_value_sig1699 === "dash" ? [6, 3] : var_core_value_sig1699 === "dot" ? [1, 3] : var_core_value_sig1699 === "dashDot" ? [6, 3, 1, 3] : [];
+}
+function Co(var_core_value_sig42E9, var_core_value_sig0B64) {
+  let var_core_value_sig3BFC = Math.min(var_core_value_sig42E9.length, Math.max(0, var_core_value_sig0B64));
+  return var_core_value_sig42E9.slice(0, var_core_value_sig3BFC).reduce((var_core_value_sig1814, var_core_value_sig2B5D) => var_core_value_sig1814 + var_core_value_sig2B5D, 0);
+}
+function wo(var_core_value_sig9CF5, var_core_value_sig5BFB, var_core_value_sig47A3, var_core_value_sig7CA8, var_core_value_sig1B33, var_core_value_sig041A, var_core_value_sig7E4F, var_core_value_sig5A6A) {
+  let var_core_value_sig7E71 = 0.5,
+    var_core_value_sig14B7 = Math.max(var_core_value_sig5BFB, -var_core_value_sig7E4F / 2 + var_core_value_sig7E71),
+    var_core_value_sig7D2C = Math.max(var_core_value_sig47A3, -var_core_value_sig5A6A / 2 + var_core_value_sig7E71),
+    var_core_value_sigE10A = Math.min(var_core_value_sig5BFB + var_core_value_sig7CA8, var_core_value_sig7E4F / 2 - var_core_value_sig7E71),
+    var_core_value_sig0AE5 = Math.min(var_core_value_sig47A3 + var_core_value_sig1B33, var_core_value_sig5A6A / 2 - var_core_value_sig7E71);
+  var_core_value_sigE10A <= var_core_value_sig14B7 || var_core_value_sig0AE5 <= var_core_value_sig7D2C || (var_core_value_sig9CF5.beginPath(), var_core_value_sig9CF5.setLineDash([]), var_core_value_sig9CF5.rect(var_core_value_sig14B7, var_core_value_sig7D2C, var_core_value_sigE10A - var_core_value_sig14B7, var_core_value_sig0AE5 - var_core_value_sig7D2C), var_core_value_sig9CF5.strokeStyle = var_core_value_sig041A, var_core_value_sig9CF5.lineWidth = 1, var_core_value_sig9CF5.stroke());
+}
+function To(var_core_value_sig57CC, var_core_value_sig2932) {
+  let {
+    bottom: var_core_value_sigA067,
+    left: var_core_value_sig0CB3,
+    right: var_core_value_sigE0F3,
+    top: var_core_value_sig7330
+  } = (0, n.resolveSlideTableCellTextMargins)(var_core_value_sig2932);
+  return {
+    left: var_core_value_sig57CC.left + var_core_value_sig0CB3,
+    top: var_core_value_sig57CC.top + var_core_value_sig7330,
+    width: Math.max(1, var_core_value_sig57CC.width - var_core_value_sig0CB3 - var_core_value_sigE0F3),
+    height: Math.max(1, var_core_value_sig57CC.height - var_core_value_sig7330 - var_core_value_sigA067)
+  };
+}
+function Eo(var_core_value_sig2766, var_core_value_sig1BD2, var_core_value_sig2CA0, var_core_value_sigDD2D) {
+  let var_core_value_sig8880 = Q(var_core_value_sig2CA0 / var_core_value_sig1BD2.width, 1),
+    var_core_value_sig005B = Q(var_core_value_sigDD2D / var_core_value_sig1BD2.height, 1);
+  return {
+    ...To({
+      left: var_core_value_sig2766.bounds["left"] * var_core_value_sig8880,
+      top: var_core_value_sig2766.bounds["top"] * var_core_value_sig005B,
+      width: var_core_value_sig2766.bounds["width"] * var_core_value_sig8880,
+      height: var_core_value_sig2766.bounds["height"] * var_core_value_sig005B
+    }, var_core_value_sig2766.style["margins"]),
+    row: var_core_value_sig2766.row,
+    column: var_core_value_sig2766.column
+  };
+}
+function Do(var_core_value_sig6383, var_core_value_sigCDBE, var_core_value_sig8589, var_core_value_sig2F83, var_core_value_sig4AD6, var_core_value_sig83CC = $a) {
+  let var_core_value_sigECB51 = var_core_value_sigCDBE + var_core_value_sig2F83 / 2 - 3,
+    var_core_value_sigEC7A = var_core_value_sig8589 + var_core_value_sig4AD6 / 2 - 3;
+  var_core_value_sig6383.fillStyle = var_core_value_sig83CC;
+  for (let var_core_value_sig9B0B = 0; var_core_value_sig9B0B < 2; var_core_value_sig9B0B += 1) for (let var_core_value_sig9DC0 = 0; var_core_value_sig9DC0 < 2; var_core_value_sig9DC0 += 1) var_core_value_sig6383.beginPath(), var_core_value_sig6383.arc(var_core_value_sigECB51 + var_core_value_sig9DC0 * 6, var_core_value_sigEC7A + var_core_value_sig9B0B * 6, 1.5, 0, Math.PI * 2), var_core_value_sig6383.fill();
+}
+function Oo(var_core_value_sig3C20, var_core_value_sig55A0, var_core_value_sig6F0A, var_core_value_sig193F, var_core_value_sig5227, var_core_value_sig8CB8 = false) {
+  var var_core_value_sigBE77;
+  var_core_value_sig3C20.save(), var_core_value_sig3C20.shadowColor = var_core_value_sig8CB8 ? "rgba(26, 115, 232, 0.22)" : "rgba(60, 64, 67, 0.16)", var_core_value_sig3C20.shadowBlur = var_core_value_sig8CB8 ? 10 : 8, var_core_value_sig3C20.shadowOffsetY = 2, var_core_value_sig3C20.beginPath(), (var_core_value_sigBE77 = var_core_value_sig3C20.roundRect) == null || var_core_value_sigBE77.call(var_core_value_sig3C20, var_core_value_sig55A0, var_core_value_sig6F0A, var_core_value_sig193F, var_core_value_sig5227, 6), var_core_value_sig3C20.roundRect || var_core_value_sig3C20.rect(var_core_value_sig55A0, var_core_value_sig6F0A, var_core_value_sig193F, var_core_value_sig5227), var_core_value_sig3C20.fillStyle = var_core_value_sig8CB8 ? Xa : Ya, var_core_value_sig3C20.fill(), var_core_value_sig3C20.shadowBlur = 0, var_core_value_sig3C20.shadowOffsetY = 0, var_core_value_sig3C20.strokeStyle = var_core_value_sig8CB8 ? Qa : Za, var_core_value_sig3C20.lineWidth = 1, var_core_value_sig3C20.stroke(), var_core_value_sig3C20.restore();
+}
+function ko(var_core_value_sig9700) {
+  return var_core_value_sig9700 ? {
+    visible: var_core_value_sig9700.visible,
+    hoveredTrigger: var_core_value_sig9700.hoveredTrigger ? {
+      ...var_core_value_sig9700.hoveredTrigger,
+      rect: {
+        ...var_core_value_sig9700.hoveredTrigger["rect"]
+      }
+    } : null,
+    selectedStructuralRange: var_core_value_sig9700.selectedStructuralRange ? {
+      ...var_core_value_sig9700.selectedStructuralRange
+    } : null,
+    insertGuide: var_core_value_sig9700.insertGuide ? {
+      ...var_core_value_sig9700.insertGuide
+    } : null,
+    reorderGuide: var_core_value_sig9700.reorderGuide ? {
+      ...var_core_value_sig9700.reorderGuide
+    } : null
+  } : null;
+}
+function Ao(var_core_value_sigB461, var_core_value_sigDDFF) {
+  return JSON.stringify(var_core_value_sigB461) === JSON.stringify(var_core_value_sigDDFF);
+}
+function jo(var_core_value_sig52C1) {
+  return var_core_value_sig52C1.kind === "row-header" || var_core_value_sig52C1.kind === "column-header" || var_core_value_sig52C1.kind === "row-insert-dot" || var_core_value_sig52C1.kind === "column-insert-dot";
+}
+var Mo = class extends i.Disposable {
+  constructor(...var_core_value_sigF21D) {
+    super(...var_core_value_sigF21D), T(this, "_session$", new s["BehaviorSubject"](null)), T(this, "session$", this._session$["asObservable"]());
+  }
+  open(var_core_value_sig9B55) {
+    let var_core_value_sigB8F4 = $(var_core_value_sig9B55);
+    return this._session$["next"](var_core_value_sigB8F4), (0, i.toDisposable)(() => {
+      this._session$["getValue"]() === var_core_value_sigB8F4 && this.close();
+    });
+  }
+  update(var_core_value_sig5E41) {
+    var var_core_value_sig310E;
+    let var_core_value_sig2E97 = this._session$["getValue"]();
+    if (!var_core_value_sig2E97) return;
+    let var_core_value_sig4B00 = $({
+      ...var_core_value_sig2E97,
+      ...var_core_value_sig5E41,
+      documentData: var_core_value_sig5E41.documentData ?? var_core_value_sig2E97.documentData,
+      measurement: var_core_value_sig5E41.measurement ?? var_core_value_sig2E97.measurement,
+      rect: var_core_value_sig5E41.rect ?? var_core_value_sig2E97.rect,
+      tableTransform: var_core_value_sig5E41.tableTransform ?? var_core_value_sig2E97.tableTransform
+    });
+    this._session$["next"](var_core_value_sig4B00), (var_core_value_sig310E = var_core_value_sig2E97.onChange) == null || var_core_value_sig310E.call(var_core_value_sig2E97, $(var_core_value_sig4B00));
+  }
+  complete(var_core_value_sig9896) {
+    var var_core_value_sigA725;
+    let var_core_value_sig9FB3 = this._session$["getValue"]();
+    if (!var_core_value_sig9FB3) return;
+    let var_core_value_sig0E44 = $({
+      ...var_core_value_sig9FB3,
+      documentData: var_core_value_sig9896 ?? var_core_value_sig9FB3.documentData
+    });
+    (var_core_value_sigA725 = var_core_value_sig9FB3.onComplete) == null || var_core_value_sigA725.call(var_core_value_sig9FB3, var_core_value_sig0E44), this.close();
+  }
+  cancel() {
+    var var_core_value_sig243C;
+    let var_core_value_sigB3A4 = this._session$["getValue"]();
+    var_core_value_sigB3A4 && ((var_core_value_sig243C = var_core_value_sigB3A4.onCancel) == null || var_core_value_sig243C.call(var_core_value_sigB3A4, $(var_core_value_sigB3A4)), this.close());
+  }
+  close() {
+    this._session$["next"](null);
+  }
+  getSession() {
+    let var_core_value_sigAF1B = this._session$["getValue"]();
+    return var_core_value_sigAF1B ? $(var_core_value_sigAF1B) : null;
+  }
+  subscribe(var_core_value_sig906D) {
+    let var_core_value_sig6AFB = this.session$["subscribe"](var_core_value_sig95F0 => {
+      var_core_value_sig906D(var_core_value_sig95F0 ? $(var_core_value_sig95F0) : null);
+    });
+    return (0, i.toDisposable)(() => var_core_value_sig6AFB.unsubscribe());
+  }
+  dispose() {
+    this.close(), this._session$["complete"](), super.dispose();
+  }
+};
+function $(var_core_value_sigFA8C) {
+  return {
+    ...var_core_value_sigFA8C,
+    measurement: var_core_value_sigFA8C.measurement ? {
+      ...var_core_value_sigFA8C.measurement
+    } : undefined,
+    rect: {
+      ...var_core_value_sigFA8C.rect
+    },
+    tableTransform: {
+      ...var_core_value_sigFA8C.tableTransform
+    },
+    documentData: i.Tools["deepClone"](var_core_value_sigFA8C.documentData)
+  };
+}
+function No(var_core_value_sig19C6) {
+  return !var_core_value_sig19C6 || var_core_value_sig19C6.kind === "none" || !var_core_value_sig19C6.ranges["length"] ? null : {
+    kind: var_core_value_sig19C6.kind,
+    ranges: var_core_value_sig19C6.ranges["map"](var_core_value_sig2830 => ({
+      ...var_core_value_sig2830
+    })),
+    active: var_core_value_sig19C6.focus ?? var_core_value_sig19C6.anchor ?? (Fo(var_core_value_sig19C6.kind) ? Po(var_core_value_sig19C6) : undefined)
+  };
+}
+function Po(var_core_value_sigDB89) {
+  let var_core_value_sigCBF6 = var_core_value_sigDB89.ranges[0];
+  if (var_core_value_sigCBF6) return {
+    row: Math.min(var_core_value_sigCBF6.startRow, var_core_value_sigCBF6.endRow),
+    column: Math.min(var_core_value_sigCBF6.startColumn, var_core_value_sigCBF6.endColumn)
+  };
+}
+function Fo(var_core_value_sigE0DD) {
+  return var_core_value_sigE0DD === "cell" || var_core_value_sigE0DD === "range" || var_core_value_sigE0DD === "text";
+}
+exports.SLIDES_TABLE_UI_PLUGIN_CONFIG_KEY = v, exports.SLIDE_TABLE_CONTEXT_MENU_ACTIONS = k, exports.SLIDE_TABLE_DEFAULT_BACKGROUND_COLOR = Vt, exports.SLIDE_TABLE_KEYBOARD_SHORTCUT_DESCRIPTORS = Et, exports.SLIDE_TABLE_TOOLBAR_ACTIONS = un, exports.SlideTableCellEditorService = Mo, exports.SlideTableObject = no, exports.SlideTableSelectionService = E, exports.TableKeyboardServiceBase = wt, exports.TableThemeGallery = $n, exports.TableToolbarDropdownInteractionGuard = W, Object.defineProperty(exports, "UniverSlidesTableUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return Oa;
+  }
+}), exports.buildSlideTableBackgroundColorPatch = N, exports.buildSlideTableBackgroundFillPatch = ae, exports.buildSlideTableBorderPresetCommandParams = _n, exports.buildSlideTableBorderPresetPatch = le, exports.buildSlideTableBorderStylePatch = ce, exports.buildSlideTableCellEditorCommitCommand = si, exports.buildSlideTableCellStyleCommandParams = gn, exports.buildSlideTableClearTextPatch = Ci, exports.buildSlideTableContextMenuCommand = te, exports.buildSlideTableDeleteToolbarCommand = hn, exports.buildSlideTableFontFamilyPatch = ue, exports.buildSlideTableFontSizePatch = de, exports.buildSlideTableInsertDotControlState = Li, exports.buildSlideTableKeyboardShortcutBindings = Dt, exports.buildSlideTableMergeCellsCommandParams = fn, exports.buildSlideTableMergeToolbarCommand = mn, exports.buildSlideTablePasteHtmlPatch = Si, exports.buildSlideTablePasteTextPatch = xi, exports.buildSlideTableTextAlignPatch = ne, exports.buildSlideTableTextColorPatch = oe, exports.buildSlideTableTextFillPatch = se, exports.buildSlideTableTextStylePatch = L, exports.buildSlideTableUnmergeCellsCommandParams = pn, exports.defaultPluginConfig = y, exports.ensureOption = ln, exports.getSlideTableFillPreviewStyle = on, exports.getSlideTableFillType = $t, exports.getSlideTableGradientValue = rn, exports.getSlideTableSelectionContext = A, exports.gradientValueToSlideTableFill = an, exports.isSlideTableDocumentEditorTarget = St, exports.isSlideTableEditableTarget = xt, exports.isSlideTableInsertDotTrigger = Ii, exports.normalizeSlideTableCellDocumentData = ci, exports.replaceSlideTableCellDocumentText = ai, exports.resolveFirstSlideTableSelectionCell = Po, exports.resolveNextSlideTableKeyboardCell = kt, exports.resolveSlideTableCellEditorLayout = oi, exports.resolveSlideTableCellEditorTarget = ri, exports.resolveSlideTableContextMenuActions = ee, exports.resolveSlideTableDocumentHorizontalAlign = Qt, exports.resolveSlideTableKeyboardMovement = Ot, exports.resolveSlideTableMergeToolbarAction = vn, exports.resolveSlideTableObjectSelection = No, exports.resolveSlideTableSelectionValues = Gt, exports.resolveSlideTableToolbarActions = dn, exports.serializeSlideTableCellStyleAttribute = bi, exports.serializeSlideTableSelectionToHtml = yi, exports.serializeSlideTableSelectionToText = vi, exports.toCoreVerticalAlign = nn;

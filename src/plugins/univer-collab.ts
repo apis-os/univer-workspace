@@ -4,6 +4,16 @@
  */
 import type { Context } from "@deepseek-ai/cordis";
 import type { SqlExec } from "../kernel/sql.ts";
+import { generateDefaultSnapshot } from "./univer-default-snapshots.ts";
+import {
+  resolveWelcomeUnitSnapshot,
+  shouldSkipDemoSnapshot
+} from "./univer-demo-snapshot.ts";
+import {
+  applyChangesetMutations,
+  bumpSnapshotRevision,
+  cloneSnapshot
+} from "./univer-snapshot.ts";
 
 export const UNIVER_COLLAB_DDL = `
 CREATE TABLE IF NOT EXISTS univer_units (
@@ -128,7 +138,7 @@ export class UniverCollabService {
     }
   }
 
-  applyChangeset(payload: ChangesetPayload, clientId: string = "") {
+  async applyChangeset(payload: ChangesetPayload, clientId: string = "") {
     const now = Date.now();
     const unitId = payload.unitID || payload.unitId || "";
     const rev = payload.revision ?? payload.rev ?? 1;
@@ -160,7 +170,38 @@ export class UniverCollabService {
       unitId
     );
 
+    await this.materializeChangesetSnapshot(unitId, rev, rawChangeset as Record<string, unknown>);
+
     return { success: true, rev };
+  }
+
+  /**
+   * Keep the stored snapshot at the changeset revision so GET /snapshot
+   * (and late-joining collab clients) see agent/human OT edits.
+   */
+  private async materializeChangesetSnapshot(
+    unitId: string,
+    rev: number,
+    changeset: Record<string, unknown>
+  ): Promise<void> {
+    if (!unitId) return;
+    const mutations = changeset.mutations;
+    const hasMutations = Array.isArray(mutations) && mutations.length > 0;
+    const latest = this.getLatestSnapshot(unitId);
+    if (latest && latest.rev >= rev) return;
+    if (!hasMutations && !latest) return;
+    const base = latest?.data ?? generateDefaultSnapshot(unitId, this.getUnit(unitId)?.type ?? 2);
+    if (!hasMutations) {
+      this.saveSnapshot(unitId, rev, bumpSnapshotRevision(cloneSnapshot(base), rev));
+      return;
+    }
+    try {
+      const next = await applyChangesetMutations(base, { ...changeset, rev, revision: rev });
+      if (next && typeof next === "object") this.saveSnapshot(unitId, rev, next);
+    } catch (err) {
+      this.saveSnapshot(unitId, rev, bumpSnapshotRevision(cloneSnapshot(base), rev));
+      console.warn("materialize changeset failed", err);
+    }
   }
 
   listChangesetEntries(unitId: string): Array<{
@@ -246,6 +287,20 @@ export class UniverCollabService {
       inverseMutation: row.inverse_mutation ? JSON.parse(row.inverse_mutation) : {},
       createdAt: row.created_at
     };
+  }
+
+  ensureUnit(unitId: string, type: number, name: string) {
+    if (!this.getUnit(unitId)) {
+      const snapshot = generateDefaultSnapshot(unitId, type, name);
+      this.createUnit(unitId, type, name, snapshot);
+    }
+    if (unitId === "unit_welcome_sheet") {
+      const latest = this.getLatestSnapshot(unitId);
+      if (latest && !shouldSkipDemoSnapshot(latest.data)) {
+        this.saveSnapshot(unitId, latest.rev || 1, resolveWelcomeUnitSnapshot(unitId, latest.data));
+      }
+    }
+    return this.getUnit(unitId);
   }
 }
 

@@ -1,0 +1,173 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+declare const locale: {
+    ui: {
+        objectPermission: {
+            operationDenied: string;
+            remove: string;
+            roleOwner: string;
+            roleEditor: string;
+            selectedCount: string;
+            searchPeople: string;
+            noMatchingPeople: string;
+            loadMore: string;
+            fileHint: string;
+            documentParent: string;
+            paragraphParent: string;
+            documentObjectParent: string;
+            slideParent: string;
+            slideObjectParent: string;
+            baseParent: string;
+            baseObjectParent: string;
+            recordParent: string;
+            boardParent: string;
+            ownerInherit: string;
+            peopleError: string;
+            document: string;
+            section: string;
+            paragraph: string;
+            entity: string;
+            presentation: string;
+            page: string;
+            master: string;
+            base: string;
+            table: string;
+            field: string;
+            record: string;
+            view: string;
+            board: string;
+            objectName: string;
+            search: string;
+            empty: string;
+            more: string;
+            title: string;
+            cancel: string;
+            save: string;
+            saving: string;
+            loading: string;
+            conflict: string;
+            error: string;
+            reload: string;
+            denied: string;
+            edit: string;
+            all: string;
+            owner: string;
+            members: string;
+            copy: string;
+            print: string;
+            export: string;
+            comment: string;
+            parentHint: string;
+        };
+        featureSearch: {
+            title: string;
+            placeholder: string;
+            empty: string;
+            ribbon: string;
+            contextMenu: string;
+        };
+        emojiPicker: {
+            emojiSearchIndex: Record<string, string>;
+            emojiTitles: Record<string, string>;
+            search: string;
+            random: string;
+            recents: string;
+            emojis: string;
+            animals: string;
+            food: string;
+            activities: string;
+            places: string;
+            objects: string;
+            symbols: string;
+            searchResults: string;
+            noResults: string;
+        };
+        symbolPicker: {
+            mathematics: string;
+            greek: string;
+            common: string;
+        };
+        toolbar: {
+            heading: {
+                normal: string;
+                title: string;
+                subTitle: string;
+                1: string;
+                2: string;
+                3: string;
+                4: string;
+                5: string;
+            };
+        };
+        ribbon: {
+            start: string;
+            startDesc: string;
+            insert: string;
+            insertDesc: string;
+            formulas: string;
+            formulasDesc: string;
+            data: string;
+            dataDesc: string;
+            view: string;
+            viewDesc: string;
+            others: string;
+            othersDesc: string;
+            more: string;
+        };
+        fontFamily: {
+            'not-supported': string;
+        };
+        'shortcut-panel': {
+            title: string;
+        };
+        shortcut: {
+            undo: string;
+            redo: string;
+            cut: string;
+            copy: string;
+            paste: string;
+            'shortcut-panel': string;
+        };
+        'common-edit': string;
+        'toggle-shortcut-panel': string;
+        navigation: {
+            back: string;
+            previous: string;
+            next: string;
+        };
+        sidebar: {
+            panel: string;
+            resize: string;
+            close: string;
+        };
+        beforeClose: {
+            title: string;
+        };
+        clipboard: {
+            authentication: {
+                title: string;
+                content: string;
+            };
+        };
+        rangeSelector: {
+            cancel: string;
+        };
+        'global-shortcut': string;
+        row: string;
+        column: string;
+    };
+};
+export default locale;

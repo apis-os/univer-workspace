@@ -1,0 +1,162 @@
+import { BooleanNumber, ColorKit, CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, IConfirmService, IImageIoService, ILogService, IPermissionService, IUniverInstanceService, Inject, Injector, LOCALE_META, LRUMap, LocaleService, ObjectMatrix, Plugin, RANGE_TYPE, RxDisposable, ThemeService, Univer, UniverInstanceType, Workbook, dateKit, debounce, merge, toDisposable } from "@univerjs/core";
+import { AddRangeProtectionMutation, AddRangeThemeMutation, AddWorksheetMergeMutation, AddWorksheetProtectionMutation, CopyWorksheetEndMutation, DeleteRangeProtectionMutation, DeleteWorksheetProtectionMutation, DeleteWorksheetRangeThemeStyleMutation, InsertColMutation, InsertRowMutation, InsertSheetMutation, MoveColsMutation, MoveRangeMutation, MoveRowsMutation, RangeMergeUtil, RangeProtectionPermissionEditPoint, RangeProtectionRuleModel, RemoveColMutation, RemoveNumfmtMutation, RemoveRangeThemeMutation, RemoveRowMutation, RemoveSheetMutation, RemoveWorksheetMergeMutation, ReorderRangeMutation, SetColDataMutation, SetColHiddenMutation, SetColVisibleMutation, SetFrozenMutation, SetGridlinesColorMutation, SetNumfmtMutation, SetRangeProtectionMutation, SetRangeThemeMutation, SetRangeValuesMutation, SetRowDataMutation, SetRowHiddenMutation, SetRowVisibleMutation, SetTabColorMutation, SetWorkbookNameMutation, SetWorksheetActivateCommand, SetWorksheetActiveOperation, SetWorksheetColWidthMutation, SetWorksheetColumnCountMutation, SetWorksheetDefaultStyleMutation, SetWorksheetHideMutation, SetWorksheetNameMutation, SetWorksheetOrderMutation, SetWorksheetPermissionPointsMutation, SetWorksheetProtectionMutation, SetWorksheetRangeThemeStyleMutation, SetWorksheetRightToLeftMutation, SetWorksheetRowAutoHeightMutation, SetWorksheetRowCountMutation, SetWorksheetRowHeightMutation, SetWorksheetRowIsAutoHeightMutation, SheetPermissionInitController, ToggleGridlinesMutation, UniverSheetsPlugin, WorkbookEditablePermission, WorkbookHideSheetPermission, WorkbookMoveSheetPermission, WorkbookRecoverHistoryPermission, WorkbookRenameSheetPermission, WorkbookViewHistoryPermission, WorksheetEditPermission, findAllRectangle, getSheetCommandTarget } from "@univerjs/sheets";
+import { CollaborationEvent, CompressMutationService, CreateUnitMutation, ISnapshotServerService, ITransformService, RevertRevisionMutation, UniverCollaborationPlugin, isTransformMutationsSuccess, parseProtocolChangeset, transformSnapshotToWorkbookData } from "@univerjs-pro/collaboration";
+import { AuthzIoHttpService, COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY, CollaborationController, CollaborationImageIoService, CollaborationStatus, DataLoaderService, ILocalCacheService, SnapshotServerOverHTTPService, UniverCollaborationClientPlugin } from "@univerjs-pro/collaboration-client";
+import { UniverProFormulaEnginePlugin } from "@univerjs-pro/engine-formula";
+import { LS_CONFIG_KEY, UniverLicensePlugin } from "@univerjs-pro/license";
+import { ChartUpdateConfigMutation, ChartUpdateSourceConfigMutation, InsertSheetsChartMutation, RemoveSheetsChartMutation, SheetsChartService, UniverSheetsChartPlugin } from "@univerjs-pro/sheets-chart";
+import { UniverSheetsChartUIPlugin } from "@univerjs-pro/sheets-chart-ui";
+import { AddPivotFieldMutation, AddPivotTableMutation, RemovePivotFieldMutation, RemovePivotTableMutation, RenamePivotFieldMutation, SetPivotCollapseMutation, SetPivotFieldFormatMutation, SetPivotFilterMutation, SetPivotOptionMutation, SetPivotPositionMutation, SetPivotSortMutation, SetPivotSubtotalTypeMutation, SetPivotValueFilterMutation, SheetsPivotTableConfigModel, UniverSheetsPivotTablePlugin, UpdateFieldPositionMutation, UpdatePivotFieldSourceInfoMutation, UpdatePivotTableSourceRangeMutation, UpdateValuePositionMutation, unionPivotViewRange } from "@univerjs-pro/sheets-pivot";
+import { InsertSheetsShapeMutation, RemoveSheetsShapeMutation, UniverSheetsShapePlugin, UpdateSheetsShapeDataMutation, UpdateSheetsShapeTypeMutation } from "@univerjs-pro/sheets-shape";
+import { UniverSheetsShapeUIPlugin } from "@univerjs-pro/sheets-shape-ui";
+import { AddSheetSparklineMutation, RemoveSheetSparklineMutation, SetSheetSparklineMutation, SparklineDataSourceModel, UniverSheetSparklinePlugin } from "@univerjs-pro/sheets-sparkline";
+import { UniverSheetSparklineUIPlugin } from "@univerjs-pro/sheets-sparkline-ui";
+import { AddDataValidationMutation, RemoveDataValidationMutation, UniverDataValidationPlugin, UpdateDataValidationMutation } from "@univerjs/data-validation";
+import { Button, Checkbox, Dropdown, MessageType, Segmented, Tooltip, borderBottomClassName, clsx } from "@univerjs/design";
+import { UniverDocsPlugin } from "@univerjs/docs";
+import { UniverDocsUIPlugin } from "@univerjs/docs-ui";
+import { IDrawingManagerService, UniverDrawingPlugin } from "@univerjs/drawing";
+import { UniverDrawingUIPlugin } from "@univerjs/drawing-ui";
+import { IRenderManagerService, Rect, SHEET_VIEWPORT_KEY, Shape, UniverRenderEnginePlugin, Vector2 } from "@univerjs/engine-render";
+import { HTTPService, UniverNetworkPlugin } from "@univerjs/network";
+import { IRemoteInstanceService, UniverRPCMainThreadPlugin } from "@univerjs/rpc";
+import { AddConditionalRuleMutation, ConditionalFormattingRuleModel, DeleteConditionalRuleMutation, MoveConditionalRuleMutation, SetConditionalRuleMutation, UniverSheetsConditionalFormattingPlugin } from "@univerjs/sheets-conditional-formatting";
+import { UniverSheetsConditionalFormattingUIPlugin } from "@univerjs/sheets-conditional-formatting-ui";
+import { SheetDataValidationModel, UniverSheetsDataValidationPlugin } from "@univerjs/sheets-data-validation";
+import { UniverSheetsDataValidationMobileUIPlugin, UniverSheetsDataValidationUIPlugin } from "@univerjs/sheets-data-validation-ui";
+import { DrawingApplyType, SetDrawingApplyMutation, UniverSheetsDrawingPlugin } from "@univerjs/sheets-drawing";
+import { UniverSheetsDrawingUIPlugin } from "@univerjs/sheets-drawing-ui";
+import { ReCalcSheetsFilterMutation, RemoveSheetsFilterMutation, SetSheetsFilterCriteriaMutation, SetSheetsFilterRangeMutation, SheetsFilterService, UniverSheetsFilterPlugin } from "@univerjs/sheets-filter";
+import { UniverSheetsFilterUIPlugin } from "@univerjs/sheets-filter-ui";
+import { UniverSheetsFormulaPlugin } from "@univerjs/sheets-formula";
+import { UniverSheetsFormulaUIPlugin } from "@univerjs/sheets-formula-ui";
+import { UniverSheetsHyperLinkPlugin } from "@univerjs/sheets-hyper-link";
+import { UniverSheetsHyperLinkUIPlugin } from "@univerjs/sheets-hyper-link-ui";
+import { UniverSheetsNumfmtPlugin } from "@univerjs/sheets-numfmt";
+import { AddSheetTableMutation, DeleteSheetTableMutation, SetSheetTableFilterMutation, SetSheetTableMutation, SheetTableService, UniverSheetsTablePlugin } from "@univerjs/sheets-table";
+import { ICellEditorManagerService, SheetSkeletonManagerService, UniverSheetsMobileUIPlugin, UniverSheetsUIPlugin, getCoordByCell, getCurrentRangeDisable$, getSheetObject } from "@univerjs/sheets-ui";
+import { BuiltInUIPart, ComponentManager, IDialogService, IMenuManagerService, IMessageService, ISidebarService, IUIPartsService, IconManager, MenuItemType, RibbonStartGroup, UI_PLUGIN_CONFIG_KEY, UniverMobileUIPlugin, UniverUIPlugin, connectInjector, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { BehaviorSubject, Subject, combineLatest, filter, map, of, skip, switchMap, take, takeUntil, timeout } from "rxjs";
+import { AiAssistantMultiIcon, ArrowLeftIcon, FunnelIcon, HistoryIcon, LoadingMultiIcon, MoreDownIcon, MoreRightIcon, RestoreIcon } from "@univerjs/icons";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ErrorCode, UnitAction, isError } from "@univerjs/protocol";
+import { Fragment as fragment, jsx, jsxs } from "react/jsx-runtime";
+import { IURLService, SheetCollabCursorShape, UniverCollaborationClientUIPlugin } from "@univerjs-pro/collaboration-client-ui";
+import { UniverSheetsHistoryPlugin } from "@univerjs-pro/sheets-history";
+import { K, Q, da, la, ua, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461880 } from "./internal-core-endo.js";
+import { oa, sa } from "./sheets-history-ui-toggle-edit-history-operation.js";
+import { G, W } from "./sheets-history-ui-plugin-config-key.js";
+let Sa = class extends RxDisposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461489, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461490, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461491, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461492, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461493, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461494, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461495, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461496, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461497, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461498) {
+    super(), this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461489, this._menuManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461490, this._historyManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461491, this._localeService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461492, this._messageService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461493, this._collaborationController = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461494, this._localCacheService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461495, this._dataLoaderService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461496, this._univerInstanceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461497, this._urlService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461498, K(this, "_revertAcknowledgementSubscription", null), this.disposeWithMe(toDisposable(() => this._clearRevertAcknowledgement())), this._init();
+  }
+  _init() {
+    [oa, sa].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46646 => this.disposeWithMe(toDisposable(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46646)))), this._menuManagerService["mergeMenu"](la), this.disposeWithMe(this._commandService["onCommandExecuted"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46647, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46648) => {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46647.id === RevertRevisionMutation.id && ua(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46647.params)) {
+        let {
+          revision: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46376,
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46647.params;
+        this._messageService["show"]({
+          content: this._localeService["t"]("sheets-history-ui.loader.panel.reverting"),
+          type: MessageType.Loading,
+          duration: 5000
+        });
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378 = this._collaborationController["getCollabEntity"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377);
+        if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378) {
+          this._showRevertFailed();
+          return;
+        }
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46648 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46648.fromCollab ? this._handleRevertAcknowledgement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378, {
+          revision: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46376,
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377
+        }, async () => (setTimeout(() => window.location["reload"]()), true), true) : this._handleRevertAcknowledgement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378, {
+          revision: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46376,
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377
+        }, async () => {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119 = this._univerInstanceService["getCurrentUnitOfType"](UniverInstanceType.UNIVER_SHEET),
+            var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119.getActiveSheet();
+          if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120) return false;
+          this._univerInstanceService["disposeUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377);
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 = await this._dataLoaderService["loadUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377, UniverInstanceType.UNIVER_SHEET);
+          return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 instanceof Workbook ? (await this._setupSubUnitSync(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120.getSheetId()), true) : false;
+        });
+      }
+    }));
+  }
+  _handleRevertAcknowledgement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461509, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461510, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461512 = false) {
+    this._clearRevertAcknowledgement();
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461513 = combineLatest([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461509.session["event$"], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461509.state$]).pipe(filter(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46651, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46652]) => da(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46651, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461510) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46652 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46652.status) === CollaborationStatus.SYNCED), take(1)),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461514 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461513;
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461512 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461514 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461513.pipe(timeout({
+      first: 5000
+    }))), this._revertAcknowledgementSubscription = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461514.pipe(switchMap(async () => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653 = await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511();
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653 && (this._historyManagerService["unMountHistoryContent"](), await this._localCacheService["exhaustSavingTask"]()), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653;
+    }), takeUntil(this.dispose$)).subscribe({
+      next: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46655 => {
+        this._clearRevertAcknowledgement(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46655 || this._showRevertFailed();
+      },
+      error: () => {
+        this._clearRevertAcknowledgement(), this._showRevertFailed();
+      }
+    });
+  }
+  _clearRevertAcknowledgement() {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461521;
+    (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461521 = this._revertAcknowledgementSubscription) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461521.unsubscribe(), this._revertAcknowledgementSubscription = null;
+  }
+  _showRevertFailed() {
+    this._messageService["show"]({
+      content: this._localeService["t"]("sheets-history-ui.loader.panel.revertFailed"),
+      type: MessageType.Error,
+      duration: 3000
+    });
+  }
+  async _setupSubUnitSync(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461523, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461524) {
+    await this._updateSubUnitFromURLParams(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461523, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461524), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461523.activeSheet$["pipe"](takeUntil(this.dispose$)).subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46657 => {
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46657 && this._updateURLWithCurrentState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46657);
+    }), this._urlService["urlChange$"].pipe(takeUntil(this.dispose$)).subscribe(() => this._updateSubUnitFromURLParams(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461523, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461524));
+  }
+  _updateURLWithCurrentState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461527, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461528 = false) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461529 = this._urlService["getParam"]("subunit");
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461527.getSheetId() !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461529 && this._urlService["setParam"]("subunit", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461527.getSheetId(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461528);
+  }
+  async _updateSubUnitFromURLParams(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461534) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461535;
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461534 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533.getSheetBySheetId(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461534)) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46659 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533.getUnhiddenWorksheets()[0],
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46660 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533.getSheetBySheetId(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46659);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46660) return;
+      this._updateURLWithCurrentState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46660, true), await this._commandService["executeCommand"](SetWorksheetActivateCommand.id, {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533.getUnitId(),
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46659
+      });
+      return;
+    }
+    ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461535 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533.getActiveSheet()) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461535.getSheetId()) !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461534 && (await this._commandService["executeCommand"](SetWorksheetActivateCommand.id, {
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533.getUnitId(),
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461534
+    }));
+  }
+};
+let Ca = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461539 = G, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461540, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461541) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461539, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461540, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461541;
+    let {
+      menu: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461542,
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461543
+    } = merge({}, G, this._config);
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461542 && this._configService["setConfig"]("menu", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461542, {
+      merge: true
+    }), this._configService["setConfig"](W, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461543);
+  }
+  onStarting() {
+    this._injector["add"]([Q]), this._injector["get"](Q), [[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461880], [Sa]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661 => this._injector["add"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661));
+  }
+  onSteady() {
+    this._injector["get"](Sa);
+  }
+};
+export { Ca as UniverSheetsHistoryUIPlugin };
+export { Sa };

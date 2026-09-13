@@ -1,0 +1,33 @@
+import type { ISmartArtColorStyleCatalogItem, ISmartArtData, ISmartArtQuickStyleCatalogItem } from '@univerjs-pro/engine-shape';
+import type { ISmartArtLayoutCatalogItem } from './smart-art-layout-catalog.generated';
+import { SmartArtInsertPositionEnum } from '@univerjs-pro/engine-shape';
+export interface ISmartArtRibbonControlProps {
+    data: ISmartArtData;
+    onOpenTextPane: () => void;
+    onAddNode: (position: SmartArtInsertPositionEnum) => void;
+    onPromoteNode: () => void;
+    onDemoteNode: () => void;
+    onMoveNode: (position: SmartArtInsertPositionEnum.Before | SmartArtInsertPositionEnum.After) => void;
+    onDeleteNode: () => void;
+    onToggleDirection: () => void;
+    onReset: () => void;
+    onSelectLayout: (layout: ISmartArtLayoutCatalogItem) => void;
+    onSelectStyle: (style: ISmartArtQuickStyleCatalogItem) => void;
+    onSelectColor: (style: ISmartArtColorStyleCatalogItem) => void;
+    onConvertToShapes: () => void;
+    canAddAfter?: boolean;
+    canAddBelow?: boolean;
+    canAddAssistant?: boolean;
+    canPromote?: boolean;
+    canDemote?: boolean;
+    canMoveUp?: boolean;
+    canMoveDown?: boolean;
+    canDelete?: boolean;
+}
+type CreateGraphicProps = Pick<ISmartArtRibbonControlProps, 'data' | 'onOpenTextPane' | 'onAddNode' | 'onPromoteNode' | 'onDemoteNode' | 'onMoveNode' | 'onDeleteNode' | 'onToggleDirection' | 'canAddAfter' | 'canAddBelow' | 'canAddAssistant' | 'canPromote' | 'canDemote' | 'canMoveUp' | 'canMoveDown' | 'canDelete'>;
+export declare function SmartArtCreateGraphicRibbonControl(props: CreateGraphicProps): import("react").JSX.Element;
+export declare function SmartArtLayoutRibbonControl(props: Pick<ISmartArtRibbonControlProps, 'data' | 'onSelectLayout'>): import("react").JSX.Element;
+export declare function SmartArtStyleRibbonControl(props: Pick<ISmartArtRibbonControlProps, 'data' | 'onSelectStyle' | 'onSelectColor'>): import("react").JSX.Element;
+export declare function SmartArtResetRibbonControl(props: Pick<ISmartArtRibbonControlProps, 'onReset' | 'onConvertToShapes'>): import("react").JSX.Element;
+export declare function SmartArtRibbonControl(props: ISmartArtRibbonControlProps): import("react").JSX.Element;
+export {};

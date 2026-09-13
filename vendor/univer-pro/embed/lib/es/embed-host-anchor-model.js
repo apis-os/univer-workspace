@@ -1,0 +1,56 @@
+import { BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, ObjectMatrix, Plugin, Rectangle, Tools, UniverInstanceType, createBaseFormulaTableNameMap, createIdentifier, getOriginCellValue, merge, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { InsertColMutation, InsertRowMutation, InsertSheetMutation, RemoveColMutation, RemoveRowMutation, RemoveSheetMutation, ReorderRangeMutation, SetRangeValuesMutation, SheetSkeletonService } from "@univerjs/sheets";
+import { DrawingApplyType, ISheetDrawingService, SetDrawingApplyMutation, SheetDrawingAnchorType, applySheetDrawingPlacement, getSheetDrawingPlacement } from "@univerjs/sheets-drawing";
+import { IFormulaReferenceDataProviderRegistry, createUnavailableReferenceDataResponse } from "@univerjs-pro/engine-formula";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { AddBoardElementMutation, IBoardElementService, RemoveBoardElementMutation, UpdateBoardElementMutation, collectBoardElementIdsForRemoveWithBoundConnectors, createEmbedBoardsFloatingElement, isEmbedBoardsFloatingElement } from "@univerjs-pro/boards";
+import { AddSlideElementMutation, AddSlidePageMutation, ISlideDrawingService, RemoveSlideElementMutation, RemoveSlidePageMutation, UpdateSlideElementMutation, createEmbedSlidesFloatingElement, createEmbedSlidesPage, getEmbedSlidesFloatingCustomData, resolvedSlideLayersToDrawingMap } from "@univerjs-pro/slides";
+import { IDrawingManagerService } from "@univerjs/drawing";
+import { ApplyBaseJson1Mutation, BaseJson1OpApplier, createEmbedBasesTable, createEmbedBasesTableAddMutation, createEmbedBasesTableRemoveMutation, ensureBaseTableCellLayout, getBaseCellFormulaValue } from "@univerjs-pro/bases";
+import { createDocsCustomBlockInsertMutation, createDocsCustomBlockRemoveMutation } from "@univerjs/docs";
+import { BehaviorSubject } from "rxjs";
+import { x } from "./internal-core-endo.js";
+var M = class {
+  constructor() {
+    x(this, "_records", new Map());
+  }
+  clearUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173) {
+    this._records["delete"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173);
+  }
+  setAnchor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177 = this._ensureRecords(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175.hostUnitId),
+      var_L0_core_endo_timestampMs_pure_O1_zalloc_nothrow_sig2242 = Date.now();
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175.hostAnchorId] = {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175,
+      lifecycle: "active",
+      createdAt: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175.createdAt ?? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175.hostAnchorId]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176.createdAt) ?? var_L0_core_endo_timestampMs_pure_O1_zalloc_nothrow_sig2242,
+      updatedAt: var_L0_core_endo_timestampMs_pure_O1_zalloc_nothrow_sig2242
+    };
+  }
+  removeAnchor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183 = this._ensureRecords(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182];
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182] = {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184,
+      lifecycle: "removed",
+      updatedAt: Date.now()
+    });
+  }
+  getAnchor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 = this._ensureRecords(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189)[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190];
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 ? {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191
+    } : undefined;
+  }
+  listAnchors(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195) {
+    return Object.values(this._ensureRecords(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195)).map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 => ({
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626
+    }));
+  }
+  _ensureRecords(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198 = this._records["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198 || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198 = {}, this._records["set"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198)), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198;
+  }
+};
+export { M as EmbedHostAnchorModelService };

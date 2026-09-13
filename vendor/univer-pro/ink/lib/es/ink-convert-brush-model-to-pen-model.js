@@ -1,0 +1,59 @@
+import { ShapeFillEnum, ShapeLineCapEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeTypeEnum } from '@univerjs-pro/engine-shape';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { CommandType, DependentOn, ICommandService, IConfigService, Inject, Injector, Plugin, UniverInstanceType, createIdentifier, merge, toDisposable } from '@univerjs/core';
+import { O, fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1 } from "./internal-core-endo.js";
+function re(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194) {
+  return O(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194).distance ** 2;
+}
+function k(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199) {
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198.length <= 2) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198.map(fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1);
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D23 = 0,
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D24 = 0,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198[0],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198.length - 1],
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D25 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199 * var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199;
+  for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 = 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3++) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 = re(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201);
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 > var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D23 && (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D23 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D24 = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3);
+  }
+  if (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D23 <= var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D25) return [fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200), fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201)];
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202 = k(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198.slice(0, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D24 + 1), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203 = k(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198.slice(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D24), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199);
+  return [...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.slice(0, -1), ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203];
+}
+function ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211 + 1],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211 - 1] ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212;
+  return {
+    'x': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212.x + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213.x - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.x) / 6,
+    'y': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212.y + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213.y - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.y) / 6
+  };
+}
+function A(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46220, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46220[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46220[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221 - 1],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46220[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221 + 1] ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222;
+  return {
+    'x': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222.x - (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224.x - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223.x) / 6,
+    'y': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222.y - (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224.y - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223.y) / 6
+  };
+}
+function oe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46255 = {}) {
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D31 = Math.max(0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46255.tolerance ?? Math.max(4, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254.width * 0.35)),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46256 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46255.createId ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644 => "ink-centerline-" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257 = k(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254.points, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D31),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257.map((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646) => ({
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46256(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646),
+      'x': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645.x,
+      'y': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645.y,
+      'pointType': 'free'
+    }));
+  for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 < var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4++) var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4].out = ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 + 1].in = A(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 + 1);
+  return {
+    'kind': "pen",
+    'closed': false,
+    'anchors': var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1
+  };
+}
+export { oe as convertBrushModelToPenModel };

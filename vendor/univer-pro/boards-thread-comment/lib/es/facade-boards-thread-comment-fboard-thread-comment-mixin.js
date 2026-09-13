@@ -1,0 +1,73 @@
+import { FBoard } from "@univerjs-pro/boards/facade";
+import * as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 from "@univerjs/thread-comment";
+var n = class extends FBoard {
+  _initialize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469;
+    Object.defineProperty(this, "_threadCommentService", {
+      get: () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469 ??= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.get(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentFacadeService)
+    });
+  }
+  createElementCommentAsync(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614 = {}) {
+    if (!this._boardModel["getActivePage"]().elements[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612]) throw Error('Board element "' + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612 + '" was not found.');
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615 = this._boardModel["getActivePageId"]();
+    return this._threadCommentService["createCommentAsync"]({
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614,
+      unitId: this._boardModel["getUnitId"](),
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615,
+      anchor: {
+        kind: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_ELEMENT"],
+        pageId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615,
+        elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612
+      },
+      content: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613
+    });
+  }
+  createPositionCommentAsync(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622 = {}) {
+    if (!Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620.x) || !Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620.y)) throw TypeError("Board comment position must contain finite x and y values.");
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623 = this._boardModel["getActivePageId"]();
+    return this._threadCommentService["createCommentAsync"]({
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622,
+      unitId: this._boardModel["getUnitId"](),
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623,
+      anchor: {
+        kind: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_POSITION"],
+        pageId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623,
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620
+      },
+      content: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621
+    });
+  }
+  getElementComments(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628) {
+    return this._threadCommentService["getComments"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      subUnitIds: [this._boardModel["getActivePageId"]()],
+      anchorKinds: [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_ELEMENT"]]
+    }).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461;
+      return ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.anchor) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461.kind) === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_ELEMENT"] && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.anchor["elementId"] === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628;
+    });
+  }
+  async listElementCommentsAsync(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630) {
+    return (await this._threadCommentService["listCommentsAsync"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      subUnitIds: [this._boardModel["getActivePageId"]()],
+      anchorKinds: [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_ELEMENT"]]
+    })).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464 => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465;
+      return ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464.anchor) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465.kind) === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_ELEMENT"] && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464.anchor["elementId"] === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630;
+    });
+  }
+  getComments() {
+    return this._threadCommentService["getComments"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      anchorKinds: [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_ELEMENT"], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_POSITION"]]
+    });
+  }
+  listCommentsAsync() {
+    return this._threadCommentService["listCommentsAsync"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      anchorKinds: [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_ELEMENT"], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.ThreadCommentAnchorKind["BOARD_POSITION"]]
+    });
+  }
+};
+export { n as FBoardThreadCommentMixin };

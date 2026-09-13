@@ -1,0 +1,37 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-collate-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M4 2H16L10 10L16 18H4L10 10L4 2Z",
+			"strokeLinejoin": "round",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartCollateIcon = (0, react.forwardRef)(function ShapeFlowChartCollateIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-collate-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartCollateIcon.displayName = "ShapeFlowChartCollateIcon";
+//#endregion
+exports.ShapeFlowChartCollateIcon = ShapeFlowChartCollateIcon;
+exports.default = ShapeFlowChartCollateIcon;

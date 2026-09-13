@@ -5,6 +5,7 @@ import { hashToken } from "./auth.ts";
 import type {
   BlobResource,
   BlobUploadSession,
+  CliAuthorization,
   LoginSession,
   NodeGrant,
   NodeItem,
@@ -184,6 +185,57 @@ export class ControlPlaneDb {
       .prepare("DELETE FROM login_sessions WHERE secret_hash = ?")
       .bind(secret_hash)
       .run();
+  }
+
+  // ==========================================
+  // CLI device-code authorizations
+  // ==========================================
+
+  async createCliAuthorization(input: {
+    userCode: string;
+    deviceCodeHash: string;
+    expiresAt: number;
+  }): Promise<CliAuthorization> {
+    const row: CliAuthorization = {
+      user_code: input.userCode,
+      device_code_hash: input.deviceCodeHash,
+      user_id: null,
+      status: "pending",
+      expires_at: input.expiresAt
+    };
+    await this.db
+      .prepare(
+        `INSERT INTO cli_authorizations (user_code, device_code_hash, user_id, status, expires_at)
+         VALUES (?, ?, NULL, 'pending', ?)`
+      )
+      .bind(row.user_code, row.device_code_hash, row.expires_at)
+      .run();
+    return row;
+  }
+
+  async getCliAuthorizationByUserCode(userCode: string): Promise<CliAuthorization | null> {
+    return this.db
+      .prepare("SELECT * FROM cli_authorizations WHERE user_code = ?")
+      .bind(userCode)
+      .first<CliAuthorization>();
+  }
+
+  async getCliAuthorizationByDeviceCodeHash(deviceCodeHash: string): Promise<CliAuthorization | null> {
+    return this.db
+      .prepare("SELECT * FROM cli_authorizations WHERE device_code_hash = ?")
+      .bind(deviceCodeHash)
+      .first<CliAuthorization>();
+  }
+
+  async approveCliAuthorization(userCode: string, userId: string): Promise<void> {
+    await this.db
+      .prepare("UPDATE cli_authorizations SET user_id = ?, status = 'approved' WHERE user_code = ?")
+      .bind(userId, userCode)
+      .run();
+  }
+
+  async deleteCliAuthorization(userCode: string): Promise<void> {
+    await this.db.prepare("DELETE FROM cli_authorizations WHERE user_code = ?").bind(userCode).run();
   }
 
   // ==========================================
@@ -975,6 +1027,7 @@ export class ControlPlaneDb {
       kind: input.kind ?? "user",
       team_space_id: input.teamSpaceId ?? null,
       visibility: input.visibility ?? "private",
+      status: "draft",
       processed_at: null,
       created_at: now,
       updated_at: now
@@ -982,13 +1035,25 @@ export class ControlPlaneDb {
 
     await this.db
       .prepare(
-        `INSERT INTO worktrees (id, name, summary, creator_user_id, kind, team_space_id, visibility, processed_at, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)`
+        `INSERT INTO worktrees (id, name, summary, creator_user_id, kind, team_space_id, visibility, status, processed_at, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', NULL, ?, ?)`
       )
       .bind(wt.id, wt.name, wt.summary, wt.creator_user_id, wt.kind, wt.team_space_id, wt.visibility, wt.created_at, wt.updated_at)
       .run();
 
     return wt;
+  }
+
+  async setWorktreeStatus(
+    id: string,
+    status: NonNullable<WorktreeItem["status"]>
+  ): Promise<WorktreeItem | null> {
+    const processed = status === "merged" || status === "discarded" ? Date.now() : null;
+    await this.db
+      .prepare("UPDATE worktrees SET status = ?, processed_at = ?, updated_at = ? WHERE id = ?")
+      .bind(status, processed, Date.now(), id)
+      .run();
+    return this.getWorktree(id);
   }
 
   async discardWorktree(id: string): Promise<void> {

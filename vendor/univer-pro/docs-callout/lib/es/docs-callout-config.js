@@ -1,0 +1,41 @@
+import { BooleanNumber, BuildTextUtils, CommandType, DashStyleType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentBlockRangeType, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, TextXActionType, UniverInstanceType, containsInteriorInsertionOffset, containsStreamIndex, createParagraphId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getParagraphContentStartOffset, getParagraphContentStartOffsets, getParagraphFollowingBlockOffset, getSingleDataStreamChange, intersectsOperationalIntervals, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { Subject } from "rxjs";
+import { DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange, isHeaderFooterSelection } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { y } from "./docs-callout-default-callout-config.js";
+import { T } from "./docs-callout-model.js";
+function x(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173) {
+  return {
+    icon: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "icon"),
+    showIcon: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "showIcon"),
+    backgroundColor: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "backgroundColor"),
+    borderColor: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "borderColor"),
+    borderWidth: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "borderWidth"),
+    borderOpacity: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "borderOpacity"),
+    borderStyle: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "borderStyle"),
+    borderRadius: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "borderRadius"),
+    paddingTop: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "paddingTop"),
+    paddingRight: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "paddingRight"),
+    paddingBottom: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "paddingBottom"),
+    paddingLeft: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "paddingLeft"),
+    iconSize: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "iconSize"),
+    iconGap: S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, "iconGap")
+  };
+}
+function S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176]) ?? y[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176];
+}
+const E = {
+    id: "docs-callout.mutation.set-config",
+    type: CommandType.MUTATION,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214) => !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.unitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.blockId ? false : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213.get(T).setCalloutConfig(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.blockId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.config), true)
+  },
+  D = {
+    id: "docs-callout.mutation.remove-config",
+    type: CommandType.MUTATION,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216) => !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216.unitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216.blockId ? false : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215.get(T).removeCallout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216.blockId), true)
+  },
+  Oe = y.paddingLeft + y.iconSize + y.iconGap,
+  ke = y.paddingRight;
+export { x as normalizeDocsCalloutConfig, E as SetDocsCalloutConfigMutation, D as RemoveDocsCalloutConfigMutation };
+export { Oe, ke };

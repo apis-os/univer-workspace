@@ -38,6 +38,22 @@ export {
   type WorkspaceRequestOptions,
 } from "./http.js";
 export {
+  DEMO_UNIT_ID,
+  DEMO_UNIVER_FILE,
+  SUM_E2_CODE,
+  WorkspaceUniverFileClient,
+  fileKeyOf,
+  runCliEdgeProof,
+  type CliEdgeProofInput,
+  type CliEdgeProofResult,
+  type CliEdgeProofScreenshot,
+  type UniverFileExecuteInput,
+  type UniverFileExportInput,
+  type UniverFileImportInput,
+  type UniverFileInspectInput,
+  type UniverFileScreenshotInput,
+} from "./univer-file.js";
+export {
   parseDetachedNode,
   parseNode,
   parseNodePage,

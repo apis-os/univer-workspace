@@ -1,0 +1,7 @@
+import { BuildTextUtils, CommandType, DOC_RANGE_TYPE, DependentOn, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, JSONX, ListGlyphType, PRESET_LIST_TYPE, Plugin, Tools, UniverInstanceType, getParagraphContentStartOffset, getParagraphContentStartOffsets, merge } from "@univerjs/core";
+import { DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+let te = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4660) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4660.Item = "item", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4660.Level = "level", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4660.List = "list", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4660;
+}({});
+export { te as DocsListSelectionMode };

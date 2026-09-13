@@ -1,0 +1,39 @@
+import { CommandType, CustomRangeType, DataStreamTreeTokenType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, UniverInstanceType, generateRandomId, getBodySliceForTextXAction, getCustomRangeInterval, getRichTextEditPath, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { DOC_SELECTION_OPTION_PRESERVE_CARET, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { S } from "./docs-latex-metadata-resource.js";
+import { L } from "./docs-latex-model.js";
+import { B, Ne, Pe, R, V, z } from "./docs-latex-insert-docs-latex-formula.js";
+const q = "DOC_LATEX_PLUGIN",
+  J = "docs-latex.config",
+  Y = {};
+let Q = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46111) {
+    super(), this._resourceManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110, this._docsLatexModel = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46111, this._initResource();
+  }
+  _initResource() {
+    this.disposeWithMe(this._resourceManagerService["registerPluginResource"]({
+      pluginName: q,
+      businesses: [UniverInstanceType.UNIVER_DOC],
+      toJson: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 => JSON.stringify(this._docsLatexModel["serialize"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467)),
+      parseJson: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 => S(JSON.parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468)),
+      onLoad: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610) => this._docsLatexModel["deserialize"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610),
+      onUnLoad: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611 => this._docsLatexModel["removeUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611)
+    }));
+  }
+};
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46624 = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114 = Y, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115, this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117;
+    let {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118
+    } = merge({}, Y, this._config);
+    this._configService["setConfig"](J, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118);
+  }
+  onStarting() {
+    this._injector["add"]([L]), this._injector["add"]([Q]), this._injector["get"](L), this._injector["get"](Q), [Pe, Ne, R, B, V, z].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612 => this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612)));
+  }
+};
+export { q as DOCS_LATEX_PLUGIN, J as DOCS_LATEX_PLUGIN_CONFIG_KEY, Y as defaultPluginConfig, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46624 as UniverDocsLatexPlugin };
+export { Q };

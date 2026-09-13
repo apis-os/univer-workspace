@@ -1,0 +1,108 @@
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { ISlideDrawingService, PageElementTypeEnum, ReorderSlideElementsCommand, UniverSlidesPlugin, UpdateSlideDrawingCommand, getSlidePermissionValue, normalizeSlideDocumentDataStream, slideDocumentDataToPlainText } from "@univerjs-pro/slides";
+import { DEFAULT_SLIDE_TABLE_THEME_PRESETS, DeleteSlideTableColumnsCommand, DeleteSlideTableRowsCommand, InsertSlideTableColumnsCommand, InsertSlideTableRowsCommand, MergeSlideTableCellsCommand, MoveSlideTableColumnsCommand, MoveSlideTableRowsCommand, RemoveSlideTableCommand, RemoveSlideTableMutation, SLIDE_TABLE_CONTROL_GUTTER, SetSlideTableMutation, SlideTableBorderDashEnum, SlideTableBorderPresetEnum, SlideTableFillTypeEnum, SlideTableModelService, SlideTablePictureFillModeEnum, SlideTableResourceService, SlideTableTextDirectionEnum, SlideTableVerticalAlignEnum, UniverSlidesTablePlugin, UnmergeSlideTableCellsCommand, UpdateSlideTableCommand, buildBorderPresetPatch, buildDefaultSlideTableThemes, buildSlideTableCellTextDataPatch, buildSlideTableControls, buildSlideTableTriggers, canMoveSlideTableColumns, canMoveSlideTableRows, collectSlideTableMergeRanges, expandSlideTableRangeToMergedCells, findSlideTableMergeRange, freezeSlideTableTheme, getDefaultSlideTableBorder, hitTestSlideTableControl, hitTestSlideTableFloatingControl, hitTestSlideTableTrigger, isPointInRect, isSlideTableMultiCellRange, iterateSelectedSlideTableCells, mergeSlideTableCellStyle, mergeSlideTableCells, normalizeSlideTableCellRange, resolveSlideTableCellBoundaryBorder, resolveSlideTableCellRect, resolveSlideTableCellTextMargins, resolveSlideTableRenderModel, resolveSlideTableThemePalette, unmergeSlideTableCells } from "@univerjs-pro/slides-table";
+import { IEditorUIService, ISlideAlignmentGuideService, ISlideClipboardResourceAdapterService, ISlideDrawingStateService, ISlideEmbedFloatingActiveService, ISlideEmbedFocusOwnerService, ISlideEmbedMountService, ISlideTransformerVisibilityService, SLIDES_UI_PLUGIN_CONFIG_KEY, SLIDE_MAIN_VIEWPORT_KEY, SlideHitTestService, SlideInsertService, UniverSlidesUIPlugin, buildDrawingOKey, stripEditorUIDocumentData, withSlideEditPermission } from "@univerjs-pro/slides-ui";
+import { ArrangeTypeEnum, BooleanNumber, ColorKit, CommandType, DEFAULT_STYLES, DependentOn, Disposable, DocumentDataModel, DocumentFlavor, EDITOR_ACTIVATED, FOCUSING_COMMON_DRAWINGS, FOCUSING_SLIDE, HorizontalAlign, ICommandService, IConfigService, IContextService, IImageIoService, IPermissionService, IUniverInstanceService, Inject, Injector, LocaleService, Optional, Plugin, PresetListType, RxDisposable, ThemeService, Tools, UniverInstanceType, VerticalAlign, WrapStrategy, createParagraphId, generateRandomId, merge, toDisposable, touchDependencies } from "@univerjs/core";
+import { CURSOR_TYPE, DocumentSkeleton, DocumentViewModel, Documents, IRenderManagerService, RENDER_CLASS_TYPE, Rect, Transform, UniverRenderEnginePlugin, VERTICAL_ROTATE_ANGLE, Vector2, pxToNum } from "@univerjs/engine-render";
+import { BuiltInUIPart, ComponentManager, ContextMenuGroup, FONT_SIZE_LIST, FontFamilyDropdown, IContextMenuService, IMenuManagerService, IRibbonService, IShortcutService, IUIPartsService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, connectInjector, useDependency, useObservable } from "@univerjs/ui";
+import { BehaviorSubject, combineLatest, map, merge as mergeLocal, of, startWith } from "rxjs";
+import { AdjustHeightDoubleIcon, AdjustWidthDoubleIcon, AlignBottomIcon, AlignTextBothIcon, AlignTopIcon, AllBorderIcon, BoldIcon, CancelMergeIcon, CheckMarkIcon, DeleteColumnDoubleIcon, DeleteIcon, DeleteRowDoubleIcon, DownBorderDoubleIcon, FontColorDoubleIcon, FontSizeIncreaseIcon, FontSizeReduceIcon, HorizontalBorderDoubleIcon, HorizontallyIcon, InnerBorderDoubleIcon, InsertRowAboveDoubleIcon, InsertRowBelowDoubleIcon, ItalicIcon, LeftBorderDoubleIcon, LeftInsertColumnDoubleIcon, LeftJustifyingIcon, MergeAllIcon, MoreDownIcon, NoBorderIcon, OrderIcon, OuterBorderDoubleIcon, PaintBucketDoubleIcon, PaintIcon, RightBorderDoubleIcon, RightInsertColumnDoubleIcon, RightJustifyingIcon, ShapeBackgroundColorDoubleIcon, StrikethroughIcon, TextIcon, UnderlineIcon, UnorderIcon, UpBorderDoubleIcon, VerticalBorderDoubleIcon, VerticalCenterIcon } from "@univerjs/icons";
+import { FillStyleTabsEditor, keepFloatingToolbarPanelInteraction } from "@univerjs-pro/shape-editor-ui";
+import { Button, Checkbox, ColorPicker, Dropdown, InputNumber, Select, Separator, Tooltip, borderClassName, clsx } from "@univerjs/design";
+import { BulletListTypePicker, OrderListTypePicker, convertBodyToHtml, convertClipboardHtmlToDocumentData, removeClipboardHtmlImages } from "@univerjs/docs-ui";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getImageSize } from "@univerjs/drawing";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { extractClipboardHtmlImageFiles, extractClipboardImageFiles, extractClipboardTextImageFile, isClipboardTextImage, normalizeClipboardImageFile } from "@univerjs/drawing-ui";
+import { UnitAction } from "@univerjs/protocol";
+import { parseHtmlTableClipboard } from "@univerjs-pro/docs-table";
+import { Us, mc } from "./internal-core-endo.js";
+import { qs } from "./slides-table-ui-slide-table-cell-document-data.js";
+function lc(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464181, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464182) {
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464181 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464182) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464183 = mc(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464181);
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464183) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464184 = parseHtmlTableClipboard(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464182),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A57 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464184.rows["length"] > 0 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464184.rows["map"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461000 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461000.cells) : [[{
+      html: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464182,
+      text: "",
+      rowSpan: 1,
+      colSpan: 1
+    }]];
+  if (!var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A57.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461001 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461001.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210 !== null))) return null;
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D201 = Math.max(1, ...var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A57.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461002 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461002.length)),
+    var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB62 = {
+      startRow: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464183.row,
+      endRow: Math.min(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180.rows["length"] - 1, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464183.row + var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A57.length - 1),
+      startColumn: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464183.column,
+      endColumn: Math.min(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180.columns["length"] - 1, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464183.column + var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D201 - 1)
+    },
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464185 = collectSlideTableMergeRanges(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461003 => bc(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461003, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB62)).reduce((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461004, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461005) => unmergeSlideTableCells(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461004, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461005.startRow, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461005.startColumn), Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180)),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A58 = [],
+    var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 = false;
+  return var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A57.forEach((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461007) => {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006.forEach((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212) => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213;
+      let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB9 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464183.row + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461007,
+        var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464183.column + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464185.rows[var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB9]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213.cells[var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10];
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214) return;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215 = fn_L0_core_endo_routine_pure_O1_zalloc_orNull_sigD23F(removeClipboardHtmlImages(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211.html)) ?? Us(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180.id, var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB9, var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211.text);
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464185.rows[var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB9].cells[var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10] = {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214,
+        textData: qs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180.id + "-" + var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB9 + "-" + var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10),
+        style: vc(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.style, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211)
+      };
+      let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10 = Math.min(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211.rowSpan, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180.rows["length"] - var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB9),
+        var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11 = Math.min(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211.colSpan, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464180.columns["length"] - var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10);
+      (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10 > 1 || var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11 > 1) && var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A58.push({
+        startRow: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB9,
+        endRow: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB9 + var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10 - 1,
+        startColumn: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10,
+        endColumn: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10 + var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11 - 1
+      }), var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 = true;
+    });
+  }), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A58.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461010 => {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464185 = mergeSlideTableCells(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464185, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461010);
+  }), var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 ? {
+    rows: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464185.rows
+  } : null;
+}
+function fn_L0_core_endo_routine_pure_O1_zalloc_orNull_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464226) {
+  try {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464227;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019 = convertClipboardHtmlToDocumentData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464226);
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464227 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019.body) != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464227.dataStream ? {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019,
+      id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019.id || generateRandomId(6),
+      body: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019.body,
+      documentStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019.documentStyle ?? {}
+    } : null;
+  } catch {
+    return null;
+  }
+}
+function vc(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464230, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464231) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB64 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464231.borderColor || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464231.borderWidth ? {
+    color: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464231.borderColor,
+    width: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464231.borderWidth,
+    dash: SlideTableBorderDashEnum.Solid
+  } : undefined;
+  return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464231.backgroundColor && !var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB64 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464230 : {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464230,
+    fill: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464231.backgroundColor ? {
+      type: SlideTableFillTypeEnum.Solid,
+      color: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464231.backgroundColor
+    } : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464230 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464230.fill,
+    borders: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB64 ? {
+      top: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB64,
+      right: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB64,
+      bottom: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB64,
+      left: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB64
+    } : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464230 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464230.borders
+  };
+}
+function bc(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464236, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464237) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464236.startRow <= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464237.endRow && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464236.endRow >= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464237.startRow && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464236.startColumn <= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464237.endColumn && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464236.endColumn >= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464237.startColumn;
+}
+export { lc as buildSlideTablePasteHtmlPatch };

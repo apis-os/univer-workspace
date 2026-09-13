@@ -1,0 +1,29 @@
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
+import { M } from "./bases-record-link-field-config.js";
+function Le(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463040, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463041) {
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463041.type !== BaseFieldType.RecordLink) return {
+    'valid': true
+  };
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463042 = M(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463041),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463043 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463042 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463040.tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463042.targetTableId] : undefined;
+  if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463042 || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463043) return {
+    'valid': false,
+    'reason': "[RecordLink]: target table does not exist in this Base."
+  };
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463044 = [...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463042.displayFieldId ? [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463042.displayFieldId] : []), ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463042.pickerFieldIds ?? [])].find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46780 => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46781 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463043.fields[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46780];
+    return !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46781 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46781.system === true || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46781.type === BaseFieldType.RecordId;
+  });
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463044 ? {
+    'valid': false,
+    'reason': "[RecordLink]: display field \"" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463044 + "\" must be a non-system field in the target table."
+  } : {
+    'valid': true
+  };
+}
+export { Le as validateRecordLinkField };

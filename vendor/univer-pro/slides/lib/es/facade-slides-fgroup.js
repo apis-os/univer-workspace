@@ -1,0 +1,39 @@
+import { FConnectorShape, FShape } from '@univerjs-pro/engine-shape/facade';
+import { AddSlideElementCommand, AddSlidePageCommand, CancelSlideGroupMutation, MoveSlidePageCommand, PageElementTypeEnum, PageTypeEnum, PlaceholderTypeEnum, RemoveSlideElementCommand, RemoveSlidePageCommand, SLIDE_INSERT_DEFAULT_SIZE, SLIDE_MASTER_VIEW_PERMISSION_OBJECT_ID, SetActiveSlideCommand, SetPresentationBackgroundGraphicsCommand, SetSlideGroupMutation, SetSlideNameCommand, SetSlidePageSizeCommand, SetSlidePermissionCommand, SetSlideSpeakerNotesCommand, SetSlideTransitionCommand, SlideBackgroundTypeEnum, SlidePageSizePresetEnum, SlidePresentationBackgroundGraphicFitEnum, SlidePresentationBackgroundGraphicsTargetEnum, SlideTransitionDirectionEnum, SlideTransitionSpeedEnum, SlideTransitionTypeEnum, UpdateSlideDrawingCommand, UpdateSlidePageBackgroundCommand, applySlideElementTextDocument, canEditSlideTargets, getPresentationBackgroundGraphics, getSlideElementPermissionObjectId, getSlidePagePermissionObjectId, getSlidePermissionValue, resolvePresentationBackgroundTargetMasterIds, resolveSlideElementTextDocument, resolveSlideTransition } from '@univerjs-pro/slides';
+import { FBase, FBaseInitialable, FEnum, FUniver } from '@univerjs/core/facade';
+import { ICommandService, IPermissionService, IResourceLoaderService, IUniverInstanceService, Inject, Injector, RichTextValue, Tools, UniverInstanceType, generateRandomId } from '@univerjs/core';
+import { IShapeHostAdapterRegistry, ShapeTypeEnum, createSmartArtDataFromLayout, isConnectorShape } from '@univerjs-pro/engine-shape';
+import { UnitAction } from '@univerjs/protocol';
+import { K } from "./facade-slides-fpage-element.js";
+let q = class extends K {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46102, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46104, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105) {
+    super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46102, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46104, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105);
+  }
+  getChildren() {
+    return this.getData().children["map"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 => this._createChildElement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461)).filter(Boolean);
+  }
+  ungroup() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113 = this.getChildren();
+    return this._commandService["syncExecuteCommand"](CancelSlideGroupMutation.id, {
+      'unitId': this.unitId,
+      'subUnitId': this.subUnitId,
+      'drawingIds': [this.getId()]
+    }) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113 : [];
+  }
+  _createChildElement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116 = this._slideModel['getSnapshot']().slides[this.subUnitId]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116.elements[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115];
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117.type === PageElementTypeEnum.Connector || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117.type === PageElementTypeEnum.Shape && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117.shapeData["shapeType"] && isConnectorShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117.shapeData["shapeType"]) ? this._injector['createInstance'](FConnectorShape, {
+      'unitId': this.unitId,
+      'subUnitId': this.subUnitId,
+      'shapeId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115,
+      'hostType': UniverInstanceType.UNIVER_SLIDE
+    }, this._injector) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117.type === PageElementTypeEnum.Shape ? this._injector['createInstance'](FShape, {
+      'unitId': this.unitId,
+      'subUnitId': this.subUnitId,
+      'shapeId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115,
+      'hostType': UniverInstanceType.UNIVER_SLIDE
+    }, this._injector) : new K(this.unitId, this.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115, this._slideModel, this._injector, this._commandService, this._permissionService) : null;
+  }
+};
+export { q as FGroup };

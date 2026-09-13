@@ -1,0 +1,35 @@
+import type { ISlideTableBorder, ISlideTableCellRange, ISlideTableFill, ISlideTableSnapshot } from '@univerjs-pro/slides-table';
+import type { IDocTextFill, IDocumentData } from '@univerjs/core';
+import { SlideTableVerticalAlignEnum } from '@univerjs-pro/slides-table';
+import { HorizontalAlign, VerticalAlign } from '@univerjs/core';
+export declare const SLIDE_TABLE_DEFAULT_BACKGROUND_COLOR = "#FFFFFF";
+export declare const SLIDE_TABLE_DEFAULT_BORDER_COLOR = "#1F1F1F";
+export declare const SLIDE_TABLE_DEFAULT_TEXT_COLOR = "#111827";
+export type SlideTableFillType = 'none' | 'solid' | 'gradient' | 'picture';
+export interface ISlideTableToolbarCellValues {
+    backgroundColor: string;
+    backgroundFill: ISlideTableFill;
+    borderColor: string;
+    borderDash: NonNullable<ISlideTableBorder['dash']>;
+    borderWidth: number;
+    bold: boolean;
+    fontFamily: string;
+    fontSize: number;
+    horizontalAlign: HorizontalAlign;
+    italic: boolean;
+    strike: boolean;
+    textBackgroundColor: string;
+    textColor: string;
+    textFill: IDocTextFill;
+    underline: boolean;
+    verticalAlign: VerticalAlign;
+    mixed: Partial<Record<SlideTableToolbarValueKey, true>>;
+}
+export type SlideTableToolbarValueKey = Exclude<keyof ISlideTableToolbarCellValues, 'mixed'>;
+export declare function getDefaultSlideTableCellValues(): ISlideTableToolbarCellValues;
+export declare function resolveSlideTableSelectionValues(table: ISlideTableSnapshot | null | undefined, sourceRange: ISlideTableCellRange | undefined): ISlideTableToolbarCellValues;
+export declare function resolveSlideTableDocumentHorizontalAlign(documentData: IDocumentData | undefined): HorizontalAlign | undefined;
+export declare function getSlideTableFillType(fill: ISlideTableFill | undefined): SlideTableFillType;
+export declare function getSlideTableFillFallbackColor(fill: ISlideTableFill | undefined, fallbackColor: string): string;
+export declare function getDocTextFillFallbackColor(fill: IDocTextFill | undefined, fallbackColor: string | undefined): string;
+export declare function toCoreVerticalAlign(value: SlideTableVerticalAlignEnum | `${SlideTableVerticalAlignEnum}` | undefined): VerticalAlign | undefined;

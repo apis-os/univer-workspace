@@ -1,0 +1,31 @@
+import { ChartElementFloatMenuAdapterRegistry } from '@univerjs-pro/chart-ui';
+import { SlideChartModelService } from '@univerjs-pro/slides-chart';
+import { SlideCanvasPopManagerService } from '@univerjs-pro/slides-ui';
+import { Disposable, ICommandService, Injector, IUniverInstanceService } from '@univerjs/core';
+import { SlideChartEditSessionService } from '../services/slide-chart-edit-session.service';
+import { SlideChartHostProviderService } from '../services/slide-chart-host-provider.service';
+import { SlideChartRenderService } from '../services/slide-chart-render.service';
+import { ISlideChartUIService } from '../services/slide-chart-ui.service';
+export declare class SlideChartElementFloatMenuController extends Disposable {
+    private readonly _chartModelService;
+    private readonly _editSessionService;
+    private readonly _chartRenderService;
+    private readonly _chartHostProvider;
+    private readonly _slideCanvasPopManagerService;
+    private readonly _chartUIService;
+    private readonly _adapterRegistry;
+    private readonly _commandService;
+    private readonly _univerInstanceService;
+    private readonly _injector;
+    private _popupDisposable;
+    private _popupChartId;
+    private _popupSessionKey;
+    constructor(_chartModelService: SlideChartModelService, _editSessionService: SlideChartEditSessionService, _chartRenderService: SlideChartRenderService, _chartHostProvider: SlideChartHostProviderService, _slideCanvasPopManagerService: SlideCanvasPopManagerService, _chartUIService: ISlideChartUIService, _adapterRegistry: ChartElementFloatMenuAdapterRegistry, _commandService: ICommandService, _univerInstanceService: IUniverInstanceService, _injector: Injector);
+    dispose(): void;
+    private _registerAdapter;
+    private _subscribeChartEvents;
+    private _setActiveChart;
+    private _openFloatMenu;
+    private _closePopup;
+    private _clearSelectedTarget;
+}

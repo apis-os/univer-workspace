@@ -1,0 +1,15 @@
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
+import { z } from "./bases-date-to-excel-serial.js";
+function sn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463491 = DateSystem.Date1900) {
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490 == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490 === '') return null;
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490 instanceof Date) return z(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463491);
+  if (typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490 == "number") return Number.isFinite(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490 > 1000000 ? z(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463491) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490 : null;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463492 = Date.parse(String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463490));
+  return Number.isNaN(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463492) ? null : z(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463492, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463491);
+}
+export { sn as normalizeBaseDateSerial };

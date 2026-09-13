@@ -1,0 +1,13 @@
+export declare const SHEET_SHAPE_EDIT_PANEL_KEY = "sheet.shape.edit.panel";
+export declare const SHEET_SHAPE_OBJECT_LIST_PANEL_KEY = "sheet.shape.object-list.panel";
+export declare const SHEET_SHAPE_FLOATING_TOOLBAR_KEY = "sheet.shape.floating-toolbar";
+export declare const SHEETS_SHAPE_FORMAT_RIBBON_TAB = "sheets-shape-ui.ribbon.shape-format";
+export declare const SHEETS_SHAPE_FORMAT_RIBBON_GROUP_QUICK_STYLES = "sheets-shape-ui.ribbon.shape-format.quick-styles";
+export declare const SHEETS_SHAPE_FORMAT_RIBBON_GROUP_STYLE = "sheets-shape-ui.ribbon.shape-format.style";
+export declare const SHEETS_SHAPE_FORMAT_RIBBON_GROUP_TEXT = "sheets-shape-ui.ribbon.shape-format.text";
+export declare const SHEETS_SHAPE_FORMAT_RIBBON_GROUP_ARRANGE = "sheets-shape-ui.ribbon.shape-format.arrange";
+export declare const SHEETS_SHAPE_FORMAT_RIBBON_GROUP_FORMULA = "sheets-shape-ui.ribbon.shape-format.formula";
+export declare const SHEETS_SHAPE_FORMAT_RIBBON_GROUP_ADVANCED = "sheets-shape-ui.ribbon.shape-format.advanced";
+export declare const DOCS_SHAPE_EDITOR_UNIT_ID_KEY: string;
+export declare const SHAPE_TEXT_FLOAT_MENU_COMPONENT_KEY = "sheet.shape.text.float-menu";
+export declare const SHEET_SHAPE_TEXT_EDITOR_CONTAINER_KEY = "SheetShapeTextEditorContainer";

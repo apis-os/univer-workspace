@@ -1,0 +1,120 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+declare const locale: {
+    'drawing-ui': {
+        'image-cropper': {
+            error: string;
+        };
+        objectListPanel: {
+            title: string;
+            empty: string;
+            showAll: string;
+            hideAll: string;
+            lockAll: string;
+            unlockAll: string;
+            moveForward: string;
+            moveBackward: string;
+            close: string;
+            show: string;
+            hide: string;
+            lock: string;
+            unlock: string;
+            lockHint: string;
+            unlockHint: string;
+            name: string;
+            nameInput: string;
+            description: string;
+            descriptionPlaceholder: string;
+            details: string;
+            locate: string;
+            expand: string;
+            collapse: string;
+            dragToReorder: string;
+            search: string;
+            filterAll: string;
+            filterHidden: string;
+            filterLocked: string;
+            sectionCanvas: string;
+            sectionFloating: string;
+            typeNames: {
+                object: string;
+                shape: string;
+                connector: string;
+                image: string;
+                chart: string;
+                table: string;
+                smartArt: string;
+                video: string;
+                group: string;
+                unit: string;
+                dom: string;
+                text: string;
+                placeholder: string;
+                container: string;
+            };
+            noSelection: string;
+        };
+        'image-panel': {
+            arrange: {
+                title: string;
+                forward: string;
+                backward: string;
+                front: string;
+                back: string;
+            };
+            transform: {
+                title: string;
+                rotate: string;
+                x: string;
+                y: string;
+                width: string;
+                height: string;
+                lock: string;
+            };
+            crop: {
+                title: string;
+                start: string;
+                mode: string;
+            };
+            group: {
+                title: string;
+                group: string;
+                unGroup: string;
+            };
+            align: {
+                title: string;
+                default: string;
+                left: string;
+                center: string;
+                right: string;
+                top: string;
+                middle: string;
+                bottom: string;
+                horizon: string;
+                vertical: string;
+            };
+            null: string;
+        };
+        'image-text-wrap': {
+            square: string;
+            topAndBottom: string;
+            inline: string;
+            behindText: string;
+            inFrontText: string;
+        };
+    };
+};
+export default locale;

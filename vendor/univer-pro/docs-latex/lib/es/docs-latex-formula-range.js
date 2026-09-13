@@ -1,0 +1,9 @@
+import { CommandType, CustomRangeType, DataStreamTreeTokenType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, UniverInstanceType, generateRandomId, getBodySliceForTextXAction, getCustomRangeInterval, getRichTextEditPath, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { DOC_SELECTION_OPTION_PRESERVE_CARET, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+function E(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191;
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.rangeType) === CustomRangeType.CUSTOM && ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.properties) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.kind) === "univer-docs-latex-formula";
+}
+export { E as isDocsLatexFormulaRange };

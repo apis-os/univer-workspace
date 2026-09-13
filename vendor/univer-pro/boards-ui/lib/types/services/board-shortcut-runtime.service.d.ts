@@ -1,0 +1,36 @@
+import type { BoardModel } from '@univerjs-pro/boards';
+import type { IAccessor, IExecutionOptions } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { IBoardElementService } from '@univerjs-pro/boards';
+import { Disposable, ICommandService, IConfigService, IUniverInstanceService } from '@univerjs/core';
+import { BoardClipboardService } from './board-clipboard.service';
+import { BoardElementEditService } from './board-element-edit.service';
+import { BoardElementInsertService } from './board-element-insert.service';
+import { IBoardElementStateService } from './board-element-state.service';
+import { BoardImageInsertService } from './board-image-insert.service';
+import { BoardSettingsService } from './board-settings.service';
+import { BoardSwimlaneLaneRenameService } from './board-swimlane-lane-rename.service';
+import { BoardTextEditingService } from './board-text-editing.service';
+import { BoardToolService } from './board-tool.service';
+import { IBoardUIStateService } from './board-ui-state.service';
+import { BoardViewportService } from './board-viewport.service';
+export declare class BoardShortcutRuntimeService extends Disposable implements IRenderModule {
+    readonly renderContext: IRenderContext<BoardModel>;
+    readonly instanceService: IUniverInstanceService;
+    readonly commandService: ICommandService;
+    readonly configService: IConfigService;
+    readonly elementService: IBoardElementService;
+    readonly elementStateService: IBoardElementStateService;
+    readonly uiStateService: IBoardUIStateService;
+    readonly clipboardService: BoardClipboardService;
+    readonly elementEditService: BoardElementEditService;
+    readonly elementInsertService: BoardElementInsertService;
+    readonly imageInsertService: BoardImageInsertService;
+    readonly settingsService: BoardSettingsService;
+    readonly swimlaneLaneRenameService: BoardSwimlaneLaneRenameService;
+    readonly textEditingService: BoardTextEditingService;
+    readonly toolService: BoardToolService;
+    readonly viewportService: BoardViewportService;
+    constructor(renderContext: IRenderContext<BoardModel>, instanceService: IUniverInstanceService, commandService: ICommandService, configService: IConfigService, elementService: IBoardElementService, elementStateService: IBoardElementStateService, uiStateService: IBoardUIStateService, clipboardService: BoardClipboardService, elementEditService: BoardElementEditService, elementInsertService: BoardElementInsertService, imageInsertService: BoardImageInsertService, settingsService: BoardSettingsService, swimlaneLaneRenameService: BoardSwimlaneLaneRenameService, textEditingService: BoardTextEditingService, toolService: BoardToolService, viewportService: BoardViewportService);
+}
+export declare function resolveBoardShortcutRuntime(accessor: IAccessor, options?: IExecutionOptions): BoardShortcutRuntimeService | null;

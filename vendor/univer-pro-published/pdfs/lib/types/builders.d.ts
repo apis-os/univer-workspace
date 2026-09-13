@@ -1,0 +1,13 @@
+import type { ICreatePdfDocumentParams, ICreatePdfPageParams, IPdfAssetStore, IPdfDocument, IPdfEditState, IPdfPage, IPdfStreamAsset, IPdfStyleStore, PdfCssPx, PdfEmu, PdfObject, PdfObjectId, PdfPageId, PdfPt } from './types';
+export declare function createEmptyAssetStore(): IPdfAssetStore;
+export declare function createEmptyStyleStore(): IPdfStyleStore;
+export declare function createEmptyEditState(): IPdfEditState;
+export declare function ptToEmu(value: PdfPt): PdfEmu;
+export declare function emuToPt(value: PdfEmu): PdfPt;
+export declare function cssPxToEmu(value: PdfCssPx): PdfEmu;
+export declare function emuToCssPx(value: PdfEmu): PdfCssPx;
+export declare function createPdfPage(params: ICreatePdfPageParams): IPdfPage;
+export declare function createPdfDocument(params: ICreatePdfDocumentParams): IPdfDocument;
+export declare function getPageObjectIds(document: IPdfDocument, pageId: PdfPageId): PdfObjectId[];
+export declare function isSemanticEditableObject(object: PdfObject): boolean;
+export declare function createNativeStreamAsset(id: string, objectRef: string, uri?: string): IPdfStreamAsset;

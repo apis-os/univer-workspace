@@ -1,0 +1,46 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-magnetic-drum-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "ellipse",
+		"attrs": {
+			"cx": 13,
+			"cy": 10,
+			"stroke": "currentColor",
+			"rx": 4,
+			"ry": 8,
+			"strokeWidth": 1.6
+		}
+	}, {
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M13 2H8C5.8 2 3.5 5.6 3.5 10C3.5 14.4 5.8 18 8 18H13",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartMagneticDrumIcon = (0, react.forwardRef)(function ShapeFlowChartMagneticDrumIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-magnetic-drum-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartMagneticDrumIcon.displayName = "ShapeFlowChartMagneticDrumIcon";
+//#endregion
+exports.ShapeFlowChartMagneticDrumIcon = ShapeFlowChartMagneticDrumIcon;
+exports.default = ShapeFlowChartMagneticDrumIcon;

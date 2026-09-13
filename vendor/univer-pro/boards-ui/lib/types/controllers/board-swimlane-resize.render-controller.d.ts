@@ -1,0 +1,33 @@
+import type { UnitModel } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { IBoardElementService } from '@univerjs-pro/boards';
+import { ICommandService, IUniverInstanceService, RxDisposable } from '@univerjs/core';
+import { IBoardElementStateService } from '../services/board-element-state.service';
+import { IBoardUIStateService } from '../services/board-ui-state.service';
+export declare class BoardSwimlaneResizeRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _instanceSrv;
+    private readonly _boardElementService;
+    private readonly _elementStateService;
+    private readonly _uiStateService;
+    private readonly _commandService;
+    private _resizeObject;
+    private _draft;
+    private _ownsResizeCursor;
+    constructor(_renderContext: IRenderContext<UnitModel>, _instanceSrv: IUniverInstanceService, _boardElementService: IBoardElementService, _elementStateService: IBoardElementStateService, _uiStateService: IBoardUIStateService, _commandService: ICommandService);
+    private _init;
+    private _handlePointerDown;
+    private _handlePointerMove;
+    private _handlePointerUp;
+    private _clearDraft;
+    private _syncResizeAffordance;
+    private _syncHoverAffordance;
+    private _clearHoverAffordance;
+    private _resolveHoverAffordance;
+    private _resolveResizeAffordance;
+    private _canStartResize;
+    private _canHoverResizeFromState;
+    private _resolveHitHandle;
+    private _getBoardPointFromEvent;
+    private _setResizeCursor;
+}

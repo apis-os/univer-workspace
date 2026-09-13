@@ -1,0 +1,11 @@
+import type { IAccessor } from '@univerjs/core';
+import type { IMenuButtonItem, IMenuItem } from '@univerjs/ui';
+export declare const BOARD_CONTAINER_MANAGE_MENU_ID = "board.menu.container";
+export declare function BoardContainerManageMenuFactory(): IMenuItem;
+export declare function BoardContainerContextMenuRenameFactory(accessor?: IAccessor): IMenuButtonItem;
+export declare function BoardContainerContextMenuFitFactory(accessor?: IAccessor): IMenuButtonItem;
+export declare function BoardContainerContextMenuSelectContentsFactory(accessor?: IAccessor): IMenuButtonItem;
+export declare function BoardContainerContextMenuToggleMembershipLockFactory(accessor?: IAccessor): IMenuButtonItem;
+export declare function BoardContainerContextMenuToggleAutoResizeFactory(accessor?: IAccessor): IMenuButtonItem;
+export declare function BoardContainerContextMenuDisbandFactory(accessor?: IAccessor): IMenuButtonItem;
+export declare function BoardContainerContextMenuDeleteFactory(accessor?: IAccessor): IMenuButtonItem;

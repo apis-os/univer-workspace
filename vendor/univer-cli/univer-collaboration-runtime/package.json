@@ -1,0 +1,34 @@
+{
+  "name": "@univer-cli/univer-collaboration-runtime",
+  "type": "module",
+  "version": "1.0.0-insiders.20260907-70fc579",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "README.zh-CN.md"
+  ],
+  "dependencies": {
+    "@oxc-project/runtime": "0.142.0",
+    "@univerjs-pro/bases": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/boards": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/collaboration": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/engine-formula": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/slides": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/core": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/docs": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/engine-formula": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/engine-render": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/protocol": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/sheets": "1.0.0-insiders.20260907-70fc579"
+  }
+}

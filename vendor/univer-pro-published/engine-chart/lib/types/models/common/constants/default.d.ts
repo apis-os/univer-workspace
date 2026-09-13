@@ -1,0 +1,14 @@
+import type { ChartDirection, ChartRuntimeStyle } from '../../../types';
+export declare const DEFAULT_CHART_DIRECTION: ChartDirection;
+export declare const EChartRenderEngineName = "EChartRenderEngine";
+export declare const defaultChartWidth = 468;
+export declare const defaultChartHeight = 369;
+export declare const LegendPadding = 15;
+export declare const TitleOrLegendPadding = 12;
+export declare const TitleDefaultStartPosition = 8;
+export declare const DEFAULT_CHART_LAYOUT_PADDING = 14;
+export declare function getChartLayoutPadding(style: ChartRuntimeStyle): number;
+export declare const TitleLineHeightBase = 1.2;
+export declare const AxisLabelMaxPercent = 0.15;
+export declare const defaultBubbleSize = 0.12;
+export declare const defaultRelationSize = 0.08;

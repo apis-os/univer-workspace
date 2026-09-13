@@ -1,0 +1,133 @@
+import { registerBoardDocumentTextExtension } from "@univerjs-pro/boards-ui";
+import { DOCS_LATEX_PLUGIN, DocsLatexModel, InsertDocsLatexFormulaCommand, UniverDocsLatexPlugin, UpdateDocsLatexFormulaCommand, getFormulaLatexFromRange, isDocsLatexFormulaRange } from "@univerjs-pro/docs-latex";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, ThemeService, UniverInstanceType, getColorStyle, merge, toDisposable } from "@univerjs/core";
+import { DOC_PARAGRAPH_T_EDIT_MENU_ID, DOC_PARAGRAPH_T_INSERT_MENU_ID, DocCanvasPopManagerService, DocRenderController, EMPTY_PARAGRAPH_MENU_ID, FLOAT_TEXT_STYLE_MENU_ID, FLOAT_TOOLBAR_MENU_POSITION, UniverDocsUIPlugin, disableMenuWhenHeaderFooterEditing, drawDocCustomRangeChrome, hideMenuWhenSelectionInBlockRange, resolveDocCustomRangeChromeTheme } from "@univerjs/docs-ui";
+import { CURSOR_TYPE, ComponentExtension, Documents, GlyphType, IRenderManagerService, UniverRenderEnginePlugin, ptToPixel } from "@univerjs/engine-render";
+import { ComponentManager, ContextMenuGroup, ContextMenuPosition, IMenuManagerService, IRibbonService, IconManager, MenuItemType, MenuManagerPosition, RibbonInsertGroup, RibbonPosition, getMenuHiddenObservable, useDependency } from "@univerjs/ui";
+import { DOC_INTERCEPTOR_POINT, DocInterceptorService, DocLayoutExecutorService, DocSelectionManagerService, DocSkeletonManagerService, UniverDocsPlugin, canEditDocumentTargets, getDocumentEntityParentPermissionObjectIds, getDocumentEntityPermissionObjectId } from "@univerjs/docs";
+import { BehaviorSubject, Subject, combineLatest, map } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { FormulaAccentIcon, FormulaBracketIcon, FormulaFractionIcon, FormulaFunctionIcon, FormulaIntegralIcon, FormulaLargeOperatorIcon, FormulaLimitLogarithmIcon, FormulaMatrixIcon, FormulaOperatorIcon, FormulaRadicalIcon, FormulaScriptIcon, FunctionIcon } from "@univerjs/icons";
+import { Button, Textarea, clsx } from "@univerjs/design";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { K, Zt, an, nn, on, rn, tn } from "./internal-glue.js";
+function J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46696) {
+  return {
+    id: K.id,
+    type: MenuItemType.BUTTON,
+    icon: "FunctionIcon",
+    title: "docs-latex-ui.menu.formula",
+    tooltip: "docs-latex-ui.menu.formula",
+    hidden$: getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46696, UniverInstanceType.UNIVER_DOC),
+    disabled$: disableMenuWhenHeaderFooterEditing(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46696)
+  };
+}
+function sn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698) {
+  return {
+    ...J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698),
+    hidden$: combineLatest([getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698, UniverInstanceType.UNIVER_DOC), hideMenuWhenSelectionInBlockRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698)]).pipe(map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281]) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281))
+  };
+}
+function cn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700) {
+  return () => ({
+    id: an(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700),
+    type: MenuItemType.SELECTOR,
+    icon: rn[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700],
+    tooltip: nn[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700],
+    slot: true,
+    selections: [{
+      label: {
+        name: on(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700),
+        hoverable: false,
+        selectable: false
+      }
+    }]
+  });
+}
+const ln = {
+    order: 0,
+    ...Object.fromEntries(Zt.map((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46703) => [an(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702), {
+      order: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46703,
+      gridLayout: {
+        row: 1,
+        column: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46703 + 1,
+        rowSpan: 2,
+        showLabel: true
+      },
+      menuItemFactory: cn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702)
+    }]))
+  },
+  un = {
+    [MenuManagerPosition.RIBBON]: {
+      [tn]: {
+        order: 100,
+        contextual: true,
+        "docs-latex-ui.ribbon.group.formula": ln
+      }
+    }
+  },
+  dn = {
+    [RibbonInsertGroup.MEDIA]: {
+      [K.id]: {
+        order: 8,
+        menuItemFactory: J
+      }
+    }
+  },
+  fn = {
+    [MenuManagerPosition.RIBBON]: {
+      [RibbonPosition.INSERT]: dn
+    },
+    [FLOAT_TOOLBAR_MENU_POSITION]: {
+      [FLOAT_TEXT_STYLE_MENU_ID]: {
+        [K.id]: {
+          order: 13,
+          menuItemFactory: sn
+        }
+      }
+    }
+  },
+  pn = {
+    ...dn,
+    [FLOAT_TEXT_STYLE_MENU_ID]: {
+      [K.id]: {
+        order: 13,
+        menuItemFactory: sn
+      }
+    },
+    [ContextMenuPosition.PARAGRAPH]: {
+      [EMPTY_PARAGRAPH_MENU_ID]: {
+        [ContextMenuGroup.LAYOUT]: {
+          [K.id]: {
+            order: 8,
+            menuItemFactory: J
+          }
+        }
+      },
+      [DOC_PARAGRAPH_T_INSERT_MENU_ID]: {
+        quickBottom: {
+          [K.id]: {
+            order: 4,
+            menuItemFactory: J
+          }
+        },
+        insert: {
+          [K.id]: {
+            order: 3,
+            menuItemFactory: J
+          }
+        }
+      },
+      [DOC_PARAGRAPH_T_EDIT_MENU_ID]: {
+        quickBottom: {
+          [K.id]: {
+            order: 5,
+            menuItemFactory: J
+          }
+        }
+      }
+    }
+  };
+export { pn as DocsLatexUIMenuSchema };
+export { un, fn };

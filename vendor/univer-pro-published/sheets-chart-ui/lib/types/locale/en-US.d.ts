@@ -1,0 +1,94 @@
+declare const locale: {
+    'sheets-chart-ui': {
+        permission: {
+            editErr: string;
+        };
+        common: {
+            setup: string;
+            customize: string;
+            editChart: string;
+            useAsCategoryLabels: string;
+            switchRowColumn: string;
+            dataRange: string;
+            invalidDataRange: string;
+            insertChart: string;
+            openChartPanel: string;
+            deleteChart: string;
+            hideChartPanel: string;
+            chartAndAxisTitles: string;
+            chartStyle: string;
+            heatmap: string;
+            horizontalAxis: string;
+            legend: string;
+            rightVerticalAxis: string;
+            series: string;
+            trendline: string;
+            verticalAxis: string;
+            category: string;
+            copy: string;
+            exportImage: string;
+        };
+        waterfall: {
+            subtotal: string;
+            positive: string;
+            negative: string;
+        };
+        chartTypes: {
+            line: string;
+            column: string;
+            columnStacked: string;
+            columnPercentStacked: string;
+            bar: string;
+            barStacked: string;
+            barPercentStacked: string;
+            pie: string;
+            donut: string;
+            pieOfPie: string;
+            barOfPie: string;
+            area: string;
+            areaStacked: string;
+            areaPercentStacked: string;
+            radar: string;
+            scatter: string;
+            combination: string;
+            wordCloud: string;
+            funnel: string;
+            bubble: string;
+            relation: string;
+            waterfall: string;
+            pareto: string;
+            sankey: string;
+            heatmap: string;
+            boxplot: string;
+            candlestick: string;
+            histogram: string;
+            treemap: string;
+            sunburst: string;
+            gauge: string;
+            chord: string;
+        };
+        section: {
+            candlestick: string;
+            chord: string;
+            funnel: string;
+            gauge: string;
+            gridlinesAndTicks: string;
+            histogram: string;
+            indicatorLine: string;
+            lineAndArea: string;
+            paretoBar: string;
+            paretoLine: string;
+            pie: string;
+            radar: string;
+            relation: string;
+            sunburst: string;
+            treemap: string;
+            waterfall: string;
+            wordCloud: string;
+        };
+        chord: {
+            target: string;
+        };
+    };
+};
+export default locale;

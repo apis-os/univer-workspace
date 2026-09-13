@@ -1,0 +1,11 @@
+import { Y } from "./engine-pivot-pivot-table-value-field.js";
+function qe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463203) {
+  let {
+      dataFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463204,
+      id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463205,
+      sourceName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463206
+    } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463203,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207 = new Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463204, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463205, '', var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463206);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207.fromJSON(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463203), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207;
+}
+export { qe as createValueField };

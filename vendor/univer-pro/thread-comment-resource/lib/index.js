@@ -1,0 +1,102 @@
+import { UniverLicensePlugin as var_core_value_sig2259 } from "@univerjs-pro/license";
+import { DependentOn as var_core_value_sig9E2F, IConfigService as var_core_value_sigD082, Inject as var_core_value_sigDBB7, Injector as var_core_value_sigD0A8, Plugin as var_core_value_sigF4B9, merge as var_core_value_sig5CEE } from "@univerjs/core";
+import { IThreadCommentDataSourceService as var_core_value_sigE92A, UniverThreadCommentPlugin as var_core_value_sig362B } from "@univerjs/thread-comment";
+var l = "@univerjs-pro/thread-comment-resource",
+  u = "1.0.0-insiders.20260907-70fc579";
+const d = {};
+var f = class {
+  async addComment(var_core_value_sig2AD8) {
+    return var_core_value_sig2AD8;
+  }
+  async updateComment(var_core_value_sig2AD0) {
+    return true;
+  }
+  async resolveComment(var_core_value_sig3EEE) {
+    return true;
+  }
+  async deleteComment(var_core_value_sigBC46, var_core_value_sig3D7D, var_core_value_sig27E5, var_core_value_sig8061) {
+    return true;
+  }
+  async listComments(var_core_value_sig4D4C, var_core_value_sigC9E0, var_core_value_sig76BA) {
+    return [];
+  }
+  saveCommentToSnapshot(var_core_value_sigFBFA) {
+    return {
+      id: var_core_value_sigFBFA.id,
+      threadId: var_core_value_sigFBFA.threadId,
+      ref: var_core_value_sigFBFA.ref
+    };
+  }
+};
+function p(var_core_value_sig4383, var_core_value_sig186C) {
+  return function (var_core_value_sigF602, var_core_value_sig1BBD) {
+    var_core_value_sig186C(var_core_value_sigF602, var_core_value_sig1BBD, var_core_value_sig4383);
+  };
+}
+function m(var_core_value_sigD955, var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigF62A) {
+  var var_core_value_sig8178 = ox312324,
+    var_core_value_sigE9ED = arguments.length,
+    var_core_value_sigB577 = var_core_value_sigE9ED < 3 ? var_core_value_sig48BD : var_core_value_sigF62A === null ? var_core_value_sigF62A = Object[var_core_value_sig8178(286)](var_core_value_sig48BD, var_core_value_sig429F) : var_core_value_sigF62A,
+    var_core_value_sig9572;
+  if (typeof Reflect == var_core_value_sig8178(268) && typeof Reflect[var_core_value_sig8178(263)] == "function") var_core_value_sigB577 = Reflect[var_core_value_sig8178(263)](var_core_value_sigD955, var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigF62A);else {
+    for (var var_core_value_sigD873 = var_core_value_sigD955[var_core_value_sig8178(248)] - 1; var_core_value_sigD873 >= 0; var_core_value_sigD873--) (var_core_value_sig9572 = var_core_value_sigD955[var_core_value_sigD873]) && (var_core_value_sigB577 = (var_core_value_sigE9ED < 3 ? var_core_value_sig9572(var_core_value_sigB577) : var_core_value_sigE9ED > 3 ? var_core_value_sig9572(var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigB577) : var_core_value_sig9572(var_core_value_sig48BD, var_core_value_sig429F)) || var_core_value_sigB577);
+  }
+  return var_core_value_sigE9ED > 3 && var_core_value_sigB577 && Object[var_core_value_sig8178(288)](var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigB577), var_core_value_sigB577;
+}
+let h = class {
+  constructor(var_core_value_sigF704, var_core_value_sig2BCF) {
+    this._dataSource = var_core_value_sigF704, this._threadCommentDataSourceService = var_core_value_sig2BCF, this.init();
+  }
+  init() {
+    this._threadCommentDataSourceService["dataSource"] = this._dataSource;
+  }
+};
+h = m([p(0, var_core_value_sigDBB7(f)), p(1, var_core_value_sigE92A)], h);
+function g(var_core_value_sigA12B) {
+  "@babel/helpers - typeof";
+
+  return g = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig0D69) {
+    return typeof var_core_value_sig0D69;
+  } : function (var_core_value_sig480E) {
+    return var_core_value_sig480E && typeof Symbol == "function" && var_core_value_sig480E.constructor === Symbol && var_core_value_sig480E !== Symbol.prototype ? "symbol" : typeof var_core_value_sig480E;
+  }, g(var_core_value_sigA12B);
+}
+function _(var_core_value_sigF230, var_core_value_sig09B8) {
+  if (g(var_core_value_sigF230) != "object" || !var_core_value_sigF230) return var_core_value_sigF230;
+  var var_core_value_sig6F91 = var_core_value_sigF230[Symbol.toPrimitive];
+  if (var_core_value_sig6F91 !== undefined) {
+    var var_core_value_sigF9C7 = var_core_value_sig6F91.call(var_core_value_sigF230, var_core_value_sig09B8 || "default");
+    if (g(var_core_value_sigF9C7) != "object") return var_core_value_sigF9C7;
+    throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");
+  }
+  return (var_core_value_sig09B8 === "string" ? String : Number)(var_core_value_sigF230);
+}
+function v(var_core_value_sig8895) {
+  var var_core_value_sigC80B = ox312324,
+    var_core_value_sig284F = _(var_core_value_sig8895, var_core_value_sigC80B(259));
+  return g(var_core_value_sig284F) == var_core_value_sigC80B(271) ? var_core_value_sig284F : var_core_value_sig284F + "";
+}
+function y(var_core_value_sigE154, var_core_value_sig4632, var_core_value_sig12F2) {
+  return (var_core_value_sig4632 = v(var_core_value_sig4632)) in var_core_value_sigE154 ? Object.defineProperty(var_core_value_sigE154, var_core_value_sig4632, {
+    value: var_core_value_sig12F2,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigE154[var_core_value_sig4632] = var_core_value_sig12F2, var_core_value_sigE154;
+}
+let b = class extends var_core_value_sigF4B9 {
+  constructor(var_core_value_sig26DB = d, var_core_value_sigF0F9, var_core_value_sig1A0F) {
+    super(), this._config = var_core_value_sig26DB, this._injector = var_core_value_sigF0F9, this._configService = var_core_value_sig1A0F;
+    let {
+      ...var_core_value_sigFBA4
+    } = var_core_value_sig5CEE({}, d, this._config);
+    this._configService["setConfig"]("thread-comment-resource.config", var_core_value_sigFBA4);
+  }
+  onStarting() {
+    [[f], [h]].forEach(var_core_value_sig7524 => {
+      this._injector["add"](var_core_value_sig7524);
+    }), this._injector["get"](h);
+  }
+};
+y(b, "pluginName", "UniverThreadCommentResourcePlugin"), y(b, "packageName", l), y(b, "version", u), b = m([var_core_value_sig9E2F(var_core_value_sig2259, var_core_value_sig362B), p(1, var_core_value_sigDBB7(var_core_value_sigD0A8)), p(2, var_core_value_sigD082)], b);
+export { b as UniverThreadCommentResourcePlugin };

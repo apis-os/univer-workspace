@@ -1,0 +1,47 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/graph-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 17 16",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M6.89541 10.66A4.66667 4.66667 0 1 1 11.8957 6.00527",
+			"strokeWidth": 1.2
+		}
+	}, {
+		"tag": "rect",
+		"attrs": {
+			"width": 8.67,
+			"height": 8.67,
+			"x": 6.9,
+			"y": 6.01,
+			"stroke": "currentColor",
+			"rx": 2,
+			"strokeWidth": 1.2
+		}
+	}]
+};
+const GraphIcon = (0, react.forwardRef)(function GraphIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "graph-icon",
+		ref,
+		icon: element
+	}));
+});
+GraphIcon.displayName = "GraphIcon";
+//#endregion
+exports.GraphIcon = GraphIcon;
+exports.default = GraphIcon;

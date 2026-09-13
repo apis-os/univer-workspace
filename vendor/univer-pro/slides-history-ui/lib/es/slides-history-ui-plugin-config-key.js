@@ -1,0 +1,27 @@
+import { AuthzIoHttpService, COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY, CollaborationController, CollaborationImageIoService, DataLoaderService, SnapshotServerOverHTTPService, UniverCollaborationClientPlugin } from "@univerjs-pro/collaboration-client";
+import { LS_CONFIG_KEY, UniverLicensePlugin } from "@univerjs-pro/license";
+import { SlidesHistoryDiffService, UniverSlidesHistoryPlugin } from "@univerjs-pro/slides-history";
+import { SLIDE_PAGE_RECT_KEY, UniverSlidesUIPlugin, buildDrawingOKey } from "@univerjs-pro/slides-ui";
+import { CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, IImageIoService, ILogService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, ThemeService, Univer, UniverInstanceType, merge, registerDependencies } from "@univerjs/core";
+import { HistoryIcon } from "@univerjs/icons";
+import { IMenuManagerService, IconManager, MenuItemType, RibbonStartGroup, UI_PLUGIN_CONFIG_KEY, UniverUIPlugin, getMenuHiddenObservable } from "@univerjs/ui";
+import { CollaborationEvent, ISnapshotServerService, SnapshotService, UniverCollaborationPlugin } from "@univerjs-pro/collaboration";
+import { HistoryRestoreService, HistoryUnitAdapterRegistryService, UniverEditHistoryPlugin, isHistoryRestoreAcknowledgement } from "@univerjs-pro/edit-history";
+import { AddSlideElementCommand, AddSlideElementMutation, AddSlidePageCommand, CancelSlideGroupMutation, ConvertSlideSmartArtToShapesCommand, CreateSlideByLayoutCommand, MoveSlidePageCommand, PageElementTypeEnum, RemoveSlideElementCommand, RemoveSlideElementMutation, RemoveSlidePageCommand, ReorderSlideElementsCommand, SetPresentationBackgroundGraphicsCommand, SetSlideGroupMutation, SetSlideNameCommand, SetSlidePageSizeCommand, SetSlideSpeakerNotesCommand, SetSlideTransitionCommand, UniverSlidesPlugin, UpdateSlideDrawingCommand, UpdateSlideElementMutation, UpdateSlidePageBackgroundCommand, UpdateSlideSmartArtCommand, getSlidesEmptySnapshot } from "@univerjs-pro/slides";
+import { ChangeSlideChartDataSourceCommand, DuplicateSlideChartDataSourceCommand, InsertSlideChartCommand, RemoveSlideChartCommand, UniverSlidesChartPlugin, UpdateSlideChartConfigCommand, UpdateSlideChartDataSourceCommand, UpdateSlideChartSnapshotCommand } from "@univerjs-pro/slides-chart";
+import { UniverSlidesChartUIPlugin } from "@univerjs-pro/slides-chart-ui";
+import { DeleteSlideTableColumnsCommand, DeleteSlideTableRowsCommand, InsertSlideTableColumnsCommand, InsertSlideTableCommand, InsertSlideTableRowsCommand, MergeSlideTableCellsCommand, MoveSlideTableColumnsCommand, MoveSlideTableRowsCommand, RemoveSlideTableCommand, UniverSlidesTablePlugin, UnmergeSlideTableCellsCommand, UpdateSlideTableCommand } from "@univerjs-pro/slides-table";
+import { UniverSlidesTableUIPlugin } from "@univerjs-pro/slides-table-ui";
+import { UniverDocsPlugin } from "@univerjs/docs";
+import { UniverDocsUIPlugin } from "@univerjs/docs-ui";
+import { UniverDrawingPlugin } from "@univerjs/drawing";
+import { UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { UniverNetworkPlugin } from "@univerjs/network";
+import { Subject, filter, firstValueFrom, takeUntil, timeout } from "rxjs";
+import { HistoryActionSummaryService, HistoryCanvasHighlightService, HistoryRenderAdapterRegistryService, UniverEditHistoryUIPlugin } from "@univerjs-pro/edit-history-ui";
+const P = "slides-history-ui.config",
+  F = {
+    historyServerUrl: "/universer-api/history"
+  };
+export { P as SLIDES_HISTORY_UI_PLUGIN_CONFIG_KEY };
+export { F };

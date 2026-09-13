@@ -1,0 +1,37 @@
+const e = {
+  "slides-print": {
+    menu: "打印",
+    header: {
+      pages: "共 {0} 页",
+      cancel: "取消",
+      next: "下一步",
+      printing: "正在打印…",
+    },
+    settings: {
+      range: "打印范围",
+      rangePlaceholder: "全部幻灯片，或输入\x201-3,5",
+      rangeInvalid: "请输入演示文稿范围内的页码，例如 1-3,5。",
+      layout: "打印版式",
+      fullPage: "整页幻灯片",
+      notesPage: "备注页",
+      handout: "讲义",
+      slidesPerPage: "每页幻灯片数",
+      order: "排列顺序",
+      horizontal: "横向",
+      vertical: "纵向",
+      paperSize: "纸张大小",
+      orientation: "纸张方向",
+      portrait: "纵向",
+      landscape: "横向",
+      margin: "页边距",
+      normal: "普通",
+      narrow: "窄",
+      wide: "宽",
+      none: "无",
+      formatting: "格式",
+      frameSlides: "幻灯片加框",
+      slideNumber: "打印幻灯片编号",
+    },
+  },
+};
+export { e as default };

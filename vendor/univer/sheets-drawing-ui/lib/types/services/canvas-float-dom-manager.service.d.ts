@@ -1,0 +1,345 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { IDisposable, IPosition, IRange, ITransformState, Nullable, Serializable, Worksheet } from '@univerjs/core';
+import type { BaseObject, IBoundRectNoAngle, IRectProps, Scene, SpreadsheetSkeleton } from '@univerjs/engine-render';
+import type { IFloatDomData } from '@univerjs/sheets-drawing';
+import type { IFloatDom, IFloatDomLayout } from '@univerjs/ui';
+import { Disposable, DrawingTypeEnum, ICommandService, IUniverInstanceService, LifecycleService } from '@univerjs/core';
+import { IDrawingManagerService } from '@univerjs/drawing';
+import { IRenderManagerService, Rect } from '@univerjs/engine-render';
+import { ISheetDrawingService } from '@univerjs/sheets-drawing';
+import { CanvasFloatDomPreviewService, CanvasFloatDomService } from '@univerjs/ui';
+import { BehaviorSubject } from 'rxjs';
+export interface ICanvasFloatDom {
+    /**
+     * whether allow transform float-dom
+     */
+    allowTransform?: boolean;
+    /**
+     * initial position of float-dom
+     */
+    initPosition: IPosition;
+    componentKey: string;
+    /**
+     * unitId of workbook, if not set, will use current workbook
+     */
+    unitId?: string;
+    /**
+     * subUnitId of worksheet, if not set, will use current worksheet
+     */
+    subUnitId?: string;
+    /**
+     * data of component, will save to snapshot, json-like data
+     */
+    data?: Serializable;
+    /**
+     * the float-dom type
+     */
+    type?: DrawingTypeEnum;
+    /**
+     * whether allow event pass through float dom to canvas.
+     */
+    eventPassThrough?: boolean;
+}
+declare enum ScrollDirectionResponse {
+    ALL = "ALL",
+    HORIZONTAL = "HORIZONTAL",
+    VERTICAL = "VERTICAL"
+}
+export declare const SHEET_FLOAT_DOM_PREFIX = "univer-sheet-float-dom-";
+export interface ICanvasFloatDomInfo {
+    position$: BehaviorSubject<IFloatDomLayout>;
+    dispose: IDisposable;
+    rect: BaseObject;
+    unitId: string;
+    subUnitId: string;
+    boundsOfViewArea?: IBoundRectNoAngle;
+    scrollDirectionResponse?: ScrollDirectionResponse;
+    domAnchor?: IDOMAnchor;
+    id: string;
+    domId?: string;
+    floatDomConfig?: IFloatDom;
+    runtimeMounted?: boolean;
+    runtimeStage?: 'inactive' | 'stage1' | 'stage2';
+    previewObjectKey?: string;
+}
+/**
+ * Context passed to a sheet float-dom render object factory.
+ *
+ * This shape is consumed by the sheet drawing render pipeline when it creates
+ * canvas-side render objects. Plugins normally use it through the callback
+ * passed to {@link SheetCanvasFloatDomManagerService.registerRenderObjectFactory}.
+ */
+export interface ISheetFloatDomRenderObjectFactoryContext {
+    key: string;
+    config: IRectProps;
+    unitId: string;
+    subUnitId: string;
+    drawingId: string;
+    drawingType: DrawingTypeEnum;
+    data?: Serializable;
+}
+/**
+ * Creates the canvas-side render object for a sheet float-dom drawing.
+ *
+ * The returned object must be a {@link Rect} or a {@link Rect} subclass because
+ * the sheet drawing manager owns transform, selection, order, and grouping
+ * through that render object.
+ *
+ * Prefer registering factories through
+ * {@link SheetCanvasFloatDomManagerService.registerRenderObjectFactory} instead
+ * of constructing render objects inside sheet drawing code.
+ */
+export type SheetFloatDomRenderObjectFactory = (context: ISheetFloatDomRenderObjectFactoryContext) => Rect;
+export interface IDOMAnchor {
+    width: number;
+    height: number;
+    horizonOffsetAlign?: 'left' | 'right';
+    verticalOffsetAlign?: 'top' | 'bottom';
+    marginX?: number | string;
+    marginY?: number | string;
+}
+/**
+ * Keep a chart selection outline outside the chart's own rounded frame.
+ * Charts retain resize handles but do not expose a rotation control.
+ */
+export declare const SHEET_CHART_TRANSFORMER_CONFIG: {
+    readonly rotateEnabled: false;
+    readonly keepRatio: false;
+    readonly moveBoundaryEnabled: false;
+    readonly moveEnabled: true;
+    readonly resizeEnabled: true;
+    readonly rotateAnchorOffset: number;
+    readonly rotateAnchorPosition: "bottom";
+    readonly rotateLineEnabled: false;
+    readonly rotateSize: number;
+    readonly rotateCornerRadius: number;
+    readonly rotateFill: string;
+    readonly rotateStroke: string;
+    readonly rotateStrokeWidth: number;
+    readonly rotateIconEnabled: true;
+    readonly rotateIconStroke: string;
+    readonly rotateIconStrokeWidth: number;
+    readonly borderEnabled: true;
+    readonly borderStroke: string;
+    readonly borderStrokeWidth: number;
+    readonly borderSpacing: number;
+    readonly anchorFill: string;
+    readonly anchorStroke: string;
+    readonly anchorStrokeWidth: number;
+    readonly anchorSize: number;
+    readonly anchorCornerRadius: number;
+    readonly anchorStyle: "canva";
+};
+export declare const EMBED_FLOAT_DRAG_HANDLE_POINTER_DOWN_EVENT = "univer:embed-float-drag-handle:pointerdown";
+export interface IFloatDomHostClickIntent {
+    pointerId?: number;
+    startOffsetX: number;
+    startOffsetY: number;
+    startedAt: number;
+}
+export interface IEmbedFloatDragHandlePointerDownDetail {
+    embedId?: string;
+    hostUnitId?: string;
+    hostAnchorId?: string;
+    pointerId?: number;
+    clientX?: number;
+    clientY?: number;
+    button?: number;
+}
+export interface IFloatDomMoveDragState {
+    pointerId?: number;
+    startClientX: number;
+    startClientY: number;
+    startLeft: number;
+    startTop: number;
+}
+export declare function shouldStartFloatDomMoveFromHandle(info: Pick<ICanvasFloatDomInfo, 'id' | 'unitId'>, detail: IEmbedFloatDragHandlePointerDownDetail): boolean;
+export declare function createFloatDomMoveDragState(info: Pick<ICanvasFloatDomInfo, 'rect'>, detail: IEmbedFloatDragHandlePointerDownDetail): IFloatDomMoveDragState | undefined;
+export declare function resolveFloatDomMoveDragTransform(state: IFloatDomMoveDragState, event: Pick<PointerEvent, 'clientX' | 'clientY'>, scene: Pick<Scene, 'getAncestorScale'>): Pick<ITransformState, 'left' | 'top'>;
+export declare function applyFloatDomTransformerConfig(rect: BaseObject, floatDomParam: IFloatDomData): void;
+export declare function applySheetChartTransformerConfig(rect: BaseObject): void;
+export declare function isEmbedFloatDomData(floatDomParam: Pick<IFloatDomData, 'data'>): boolean;
+export declare function isSheetHostedEmbedFloatDom(floatDomParam: Pick<IFloatDomData, 'data'>): boolean;
+export declare function resolveSheetFloatDomRuntimePolicy(floatDomParam: Pick<IFloatDomData, 'data'>, stage?: ICanvasFloatDomInfo['runtimeStage']): {
+    autoMountRuntime: boolean;
+    passThroughRuntimeEvents: boolean;
+    preserveOnFocusChange: boolean;
+    usePreviewObject: boolean;
+};
+export declare function shouldAutoMountFloatDomRuntime(floatDomParam: Pick<IFloatDomData, 'data'>): boolean;
+export declare function shouldPreserveFloatDomOnFocusChange(floatDomParam: Pick<IFloatDomData, 'data'>): boolean;
+export declare function shouldUseFloatDomPreviewObject(floatDomParam: Pick<IFloatDomData, 'data'>): boolean;
+export declare function shouldPassThroughFloatDomRuntimeEvents(floatDomParam: Pick<IFloatDomData, 'data'>, stage?: ICanvasFloatDomInfo['runtimeStage']): boolean;
+export declare function shouldUpdateFloatDomLayerOnRuntimeStageChange(floatDomParam: Pick<IFloatDomData, 'data'>): boolean;
+export declare function shouldForwardSheetHostedEmbedFloatDomEvent(floatDomParam: Pick<IFloatDomData, 'data'>, event: Pick<Event, 'target'>): boolean;
+export declare function shouldPassThroughFloatDomActivationEvent(nextStage: ICanvasFloatDomInfo['runtimeStage'] | undefined): boolean;
+export declare function syncFloatDomHostSelectionOnStageEnter(stage: ICanvasFloatDomInfo['runtimeStage'] | undefined, renderObject: {
+    transformer: {
+        clearControlByIds: (ids: string[]) => void;
+    };
+    scene: {
+        attachTransformerTo?: (object: BaseObject) => void;
+        getTransformer?: () => Nullable<{
+            clearSelectedObjects?: () => void;
+        }>;
+    };
+} | null | undefined, rect: BaseObject & {
+    oKey?: string;
+}): void;
+export declare function isCanvasFloatDomDrawingType(drawingType: DrawingTypeEnum): boolean;
+export declare function shouldActivateStage2FromHostPointer(info: Pick<ICanvasFloatDomInfo, 'position$' | 'rect' | 'runtimeMounted' | 'runtimeStage'>, event: {
+    offsetX?: number;
+    offsetY?: number;
+}): boolean;
+export declare function createFloatDomHostClickIntent(info: Pick<ICanvasFloatDomInfo, 'position$' | 'rect' | 'runtimeMounted' | 'runtimeStage'>, event: {
+    type?: string;
+    pointerId?: number;
+    offsetX?: number;
+    offsetY?: number;
+}): IFloatDomHostClickIntent | undefined;
+export declare function shouldActivateStage2FromHostClickIntent(info: Pick<ICanvasFloatDomInfo, 'position$' | 'rect' | 'runtimeMounted' | 'runtimeStage'>, intent: IFloatDomHostClickIntent | undefined, event: {
+    type?: string;
+    pointerId?: number;
+    offsetX?: number;
+    offsetY?: number;
+}): boolean;
+export interface ILimitBound extends IBoundRectNoAngle {
+    /**
+     * Actually, it means fixed.
+     * When left is true, dom is fixed to left of dom pos when dom width is shrinking. or dom is fixed to right of dom pos when dom width is shrinking.
+     * When top is true, dom is fixed to top of dom pos when dom height is shrinking. or dom is fixed to bottom of dom pos when dom height is shrinking.
+     */
+    absolute: {
+        left: boolean;
+        top: boolean;
+    };
+}
+/**
+ * Adjust dom bound size when scrolling (dom bound would shrink when scrolling if over the edge of viewMain)
+ * @param posOfFloatObject  The position of float object, relative to sheet content, scale & scrolling does not affect it.
+ * @param scene
+ * @param skeleton
+ * @param worksheet
+ * @returns ILimitBound
+ */
+export declare function transformBound2DOMBound(posOfFloatObject: IBoundRectNoAngle, scene: Scene, skeleton: SpreadsheetSkeleton, worksheet: Worksheet, floatDomInfo?: ICanvasFloatDomInfo, skipBoundsOfViewArea?: boolean): ILimitBound;
+/**
+ * Calculate the position of the floating dom, limited by bounds of viewMain in transformBound2DOMBound
+ * @param floatObject
+ * @param renderUnit
+ * @param skeleton
+ * @param worksheet
+ * @returns {IFloatDomLayout} position
+ */
+export declare const calcSheetFloatDomPosition: (floatObject: BaseObject, scene: Scene, skeleton: SpreadsheetSkeleton, worksheet: Worksheet, floatDomInfo?: ICanvasFloatDomInfo) => IFloatDomLayout;
+export declare class SheetCanvasFloatDomManagerService extends Disposable {
+    private _renderManagerService;
+    private _univerInstanceService;
+    private _commandService;
+    private _drawingManagerService;
+    private readonly _canvasFloatDomService;
+    private readonly _sheetDrawingService;
+    protected readonly _lifecycleService: LifecycleService;
+    private readonly _canvasFloatDomPreviewService?;
+    /**
+     * for update dom container position when scrolling and zoom
+     */
+    private _domLayerInfoMap;
+    private _transformChange$;
+    transformChange$: import("rxjs").Observable<{
+        id: string;
+        value: ITransformState;
+    }>;
+    private _add$;
+    add$: import("rxjs").Observable<{
+        unitId: string;
+        subUnitId: string;
+        id: string;
+        data?: Record<string, any>;
+    }>;
+    private _remove$;
+    remove$: import("rxjs").Observable<{
+        unitId: string;
+        subUnitId: string;
+        id: string;
+    }>;
+    private readonly _renderObjectFactories;
+    constructor(_renderManagerService: IRenderManagerService, _univerInstanceService: IUniverInstanceService, _commandService: ICommandService, _drawingManagerService: IDrawingManagerService, _canvasFloatDomService: CanvasFloatDomService, _sheetDrawingService: ISheetDrawingService, _lifecycleService: LifecycleService, _canvasFloatDomPreviewService?: CanvasFloatDomPreviewService | undefined);
+    /**
+     * Register a factory that creates the canvas-side render object for a sheet
+     * float-dom drawing type. The latest registered factory wins; disposing the
+     * returned handle unregisters it and restores the previous factory or the
+     * default {@link Rect} fallback.
+     */
+    registerRenderObjectFactory(drawingType: DrawingTypeEnum, factory: SheetFloatDomRenderObjectFactory): IDisposable;
+    private _createRenderObject;
+    private _bindScrollEvent;
+    getFloatDomInfo(id: string): ICanvasFloatDomInfo | undefined;
+    getFloatDomsBySubUnitId(unitId: string, subUnitId: string): ICanvasFloatDomInfo[];
+    private static _disposeExternalFloatDom;
+    private _createFloatDomDisposable;
+    private _bindEmbedFloatDragHandleEvent;
+    private _handleEmbedFloatDragHandlePointerDown;
+    private _commitFloatDomMove;
+    isFloatDomRuntimeMounted(id: string): boolean;
+    private _getFloatDomPreviewObjectKey;
+    private _syncPreviewObjectTransform;
+    private _requestFloatDomPreview;
+    private _upsertFloatDomPreviewObject;
+    mountFloatDomRuntime(id: string): boolean;
+    unmountFloatDomRuntime(id: string): void;
+    private _syncFloatDomVisibilityForActiveSheet;
+    promoteFloatDomRuntimeStage(id: string): ICanvasFloatDomInfo['runtimeStage'] | undefined;
+    private _getSceneAndTransformerByDrawingSearch;
+    private _getDrawingZIndex;
+    private _drawingAddListener;
+    private _scrollUpdateListener;
+    private _bindFloatDomScroll;
+    updateFloatDomProps(unitId: string, subUnitId: string, id: string, props: Record<string, any>): void;
+    private _getObjectIncludingGroup;
+    private _getChildObjectFromGroup;
+    private _findChildObject;
+    private _removeTopLevelDuplicateIfGrouped;
+    private _syncFloatDomRect;
+    private _getChartDataBackground;
+    private _getPosition;
+    private _featureUpdateListener;
+    private _deleteListener;
+    addFloatDomToPosition(layer: ICanvasFloatDom, propId?: string): (IDisposable & {
+        id: string;
+    }) | undefined;
+    private _removeDom;
+    removeFloatDom(id: string, removeDrawing?: boolean): void;
+    addFloatDomToRange(range: IRange, config: ICanvasFloatDom, domAnchor: Partial<IDOMAnchor>, propId?: string): (IDisposable & {
+        id: string;
+    }) | undefined;
+    addFloatDomToColumnHeader(column: number, config: ICanvasFloatDom, domLayoutParam: IDOMAnchor, propId?: string): (IDisposable & {
+        id: string;
+    }) | undefined;
+    /**
+     * Unlike _createCellPositionObserver, this accept a range not a single cell.
+     *
+     * @param initialRow
+     * @param initialCol
+     * @param currentRender
+     * @param skeleton
+     * @param activeViewport
+     * @returns position of cell to canvas.
+     */
+    private _createRangePositionObserver;
+}
+export {};

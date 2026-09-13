@@ -1,0 +1,11 @@
+import type { IAccessor } from '@univerjs/core';
+import type { IMenuButtonItem } from '@univerjs/ui';
+import type { LocaleKey } from '../locale/types';
+export declare const SLIDE_PRESENTATION_START_FROM_BEGINNING_MENU_ID: string;
+export declare const SLIDE_PRESENTATION_START_FROM_CURRENT_MENU_ID: string;
+export declare const SLIDE_PRESENTATION_START_DUAL_SCREEN_FROM_CURRENT_MENU_ID: string;
+export declare const SLIDE_PRESENTATION_START_DUAL_SCREEN_FROM_BEGINNING_MENU_ID: string;
+export declare function SlideStartPresentationFromBeginningFactory(): IMenuButtonItem<LocaleKey>;
+export declare function SlideStartPresentationFromCurrentFactory(): IMenuButtonItem<LocaleKey>;
+export declare function SlideStartDualScreenPresentationFromCurrentFactory(accessor: IAccessor): IMenuButtonItem<LocaleKey>;
+export declare function SlideStartDualScreenPresentationFromBeginningFactory(accessor: IAccessor): IMenuButtonItem<LocaleKey>;

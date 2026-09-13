@@ -1,0 +1,112 @@
+import { UniverDocsPlugin } from "@univerjs/docs";
+import { UniverDocsUIPlugin } from "@univerjs/docs-ui";
+import { UniverFormulaEnginePlugin } from "@univerjs/engine-formula";
+import { UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { UniverNetworkPlugin } from "@univerjs/network";
+import { UniverRPCMainThreadPlugin } from "@univerjs/rpc";
+import { UniverSheetsPlugin } from "@univerjs/sheets";
+import { UniverSheetsFormulaPlugin } from "@univerjs/sheets-formula";
+import { UniverSheetsFormulaUIPlugin } from "@univerjs/sheets-formula-ui";
+import { UniverSheetsNumfmtPlugin } from "@univerjs/sheets-numfmt";
+import { UniverSheetsNumfmtUIPlugin } from "@univerjs/sheets-numfmt-ui";
+import { UniverSheetsUIPlugin } from "@univerjs/sheets-ui";
+import { UniverUIPlugin } from "@univerjs/ui";
+import "@univerjs/network/facade";
+import "@univerjs/sheets/facade";
+import "@univerjs/ui/facade";
+import "@univerjs/docs-ui/facade";
+import "@univerjs/sheets-ui/facade";
+import "@univerjs/engine-formula/facade";
+import "@univerjs/sheets-formula/facade";
+import "@univerjs/sheets-numfmt/facade";
+import "@univerjs/sheets-formula-ui/facade";
+
+export * from "@univerjs/docs"
+
+export * from "@univerjs/docs-ui"
+
+export * from "@univerjs/engine-formula"
+
+export * from "@univerjs/engine-render"
+
+export * from "@univerjs/network"
+
+export * from "@univerjs/rpc"
+
+export * from "@univerjs/sheets"
+
+export * from "@univerjs/sheets-formula"
+
+export * from "@univerjs/sheets-formula-ui"
+
+export * from "@univerjs/sheets-numfmt"
+
+export * from "@univerjs/sheets-numfmt-ui"
+
+export * from "@univerjs/sheets-ui"
+
+export * from "@univerjs/ui"
+
+export * from "@univerjs/design"
+
+//#region src/preset.ts
+/**
+* This presets helps you to create a Univer sheet with open sourced features.
+*/
+function UniverSheetsCorePreset(config = {}) {
+	const { container = "app", workerURL: workerSrc, header, footer, toolbar, ribbonType, formulaBar, menu, contextMenu, disableAutoFocus, customFontFamily, docs, sheets, formula, disableTextFormatAlert, disableTextFormatMark } = config;
+	const useWorker = !!workerSrc;
+	return { plugins: [
+		UniverNetworkPlugin,
+		[UniverDocsPlugin, { hasScroll: docs === null || docs === void 0 ? void 0 : docs.hasScroll }],
+		UniverRenderEnginePlugin,
+		[UniverUIPlugin, {
+			container,
+			header,
+			toolbar,
+			ribbonType,
+			menu,
+			contextMenu,
+			disableAutoFocus,
+			customFontFamily
+		}],
+		UniverDocsUIPlugin,
+		useWorker ? [UniverRPCMainThreadPlugin, { workerURL: workerSrc }] : null,
+		[UniverFormulaEnginePlugin, {
+			notExecuteFormula: useWorker,
+			function: formula === null || formula === void 0 ? void 0 : formula.function
+		}],
+		[UniverSheetsPlugin, {
+			notExecuteFormula: useWorker,
+			onlyRegisterFormulaRelatedMutations: false,
+			isRowStylePrecedeColumnStyle: sheets === null || sheets === void 0 ? void 0 : sheets.isRowStylePrecedeColumnStyle,
+			autoHeightForMergedCells: sheets === null || sheets === void 0 ? void 0 : sheets.autoHeightForMergedCells,
+			freezeSync: sheets === null || sheets === void 0 ? void 0 : sheets.freezeSync
+		}],
+		[UniverSheetsUIPlugin, {
+			formulaBar,
+			footer,
+			maxAutoHeightCount: sheets === null || sheets === void 0 ? void 0 : sheets.maxAutoHeightCount,
+			clipboardConfig: sheets === null || sheets === void 0 ? void 0 : sheets.clipboardConfig,
+			scrollConfig: sheets === null || sheets === void 0 ? void 0 : sheets.scrollConfig,
+			protectedRangeShadow: (sheets === null || sheets === void 0 ? void 0 : sheets.protectedRangeShadow) ?? true,
+			protectedRangeUserSelector: sheets === null || sheets === void 0 ? void 0 : sheets.protectedRangeUserSelector,
+			disableForceStringAlert: sheets === null || sheets === void 0 ? void 0 : sheets.disableForceStringAlert,
+			disableForceStringMark: sheets === null || sheets === void 0 ? void 0 : sheets.disableForceStringMark
+		}],
+		[UniverSheetsNumfmtPlugin, {
+			disableTextFormatAlert,
+			disableTextFormatMark
+		}],
+		UniverSheetsNumfmtUIPlugin,
+		[UniverSheetsFormulaPlugin, {
+			notExecuteFormula: useWorker,
+			description: formula === null || formula === void 0 ? void 0 : formula.description,
+			initialFormulaComputing: formula === null || formula === void 0 ? void 0 : formula.initialFormulaComputing
+		}],
+		[UniverSheetsFormulaUIPlugin, { functionScreenTips: formula === null || formula === void 0 ? void 0 : formula.functionScreenTips }]
+	].filter((v) => !!v) };
+}
+
+//#endregion
+export { UniverSheetsCorePreset };

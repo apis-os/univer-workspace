@@ -1,0 +1,10 @@
+export { LS_CONFIG_KEY } from "./license-ls-config-key.js";
+export { ReleaseType } from "./license-release-type.js";
+export { UniverLicensePlugin } from "./license-plugin.js";
+export { WORKER_INIT_LICENSE } from "./license-worker-init-license.js";
+export { getDocFeatureLimit } from "./license-doc-feature-limit.js";
+export { getGlobalObject } from "./license-global-object.js";
+export { getLicenseInfo } from "./license-info.js";
+export { getSheetFeatureLimit } from "./license-sheet-feature-limit.js";
+export { isFeatureAuthorizedWithinTime } from "./license-feature-authorized-within-time.js";
+export { isLocalCheck } from "./license-local-check.js";

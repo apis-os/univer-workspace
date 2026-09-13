@@ -1,0 +1,150 @@
+const e = {
+  "boards-chart-ui": {
+    dataEditor: {
+      unavailable: "Los datos del gráfico no están disponibles.",
+      updateFailed:
+        "No\x20se\x20pudieron\x20actualizar\x20los\x20datos\x20del\x20gráfico.",
+    },
+    common: {
+      editChart: "Editor\x20de\x20gráficos",
+      deleteChart: "Eliminar gráfico",
+      editData: "Editar datos",
+      insertChartFailed: "No se pudo insertar el gráfico",
+      data: "Datos",
+      cancel: "Cancelar",
+      insert: "Insertar",
+      setup: "Configurar",
+      customize: "Personalizar",
+      switchRowColumn: "Cambiar a fila/columna",
+      duplicate: "Duplicar",
+      apply: "Aplicar",
+      chartAndAxisTitles: "Títulos del gráfico y ejes",
+      chartStyle: "Estilo de gráfico",
+      heatmap: "Mapa\x20de\x20calor",
+      horizontalAxis: "Eje horizontal",
+      legend: "Leyenda",
+      rightVerticalAxis: "Eje vertical derecho",
+      series: "Serie",
+      trendline: "Línea de tendencia",
+      verticalAxis: "Eje vertical",
+      tableDataEmpty: "Los datos de la tabla están vacíos",
+      category: "Categoría",
+      label: "Etiqueta",
+      value: "Valor",
+      valueField: "Campo de valor",
+      chartType: "Tipo de gráfico",
+    },
+    chartTypes: {
+      line: "Gráfico de líneas",
+      column: "Gráfico\x20de\x20columnas",
+      columnStacked: "Apilar · Gráfico de columnas",
+      columnPercentStacked: "Apilar porcentaje · Gráfico de columnas",
+      bar: "Gráfico\x20de\x20barras",
+      barStacked: "Gráfico de barras apiladas",
+      barPercentStacked: "Gráfico\x20de\x20barras\x20apiladas\x20porcentual",
+      pie: "Gráfico\x20circular",
+      donut: "Gráfico de dona",
+      pieOfPie: "Gráfico circular con subgráfico circular",
+      barOfPie: "Gráfico circular con subgráfico de barras",
+      area: "Gráfico de área",
+      areaStacked: "Gráfico de área apilada",
+      areaPercentStacked: "Gráfico de área apilada porcentual",
+      radar: "Gráfico de radar",
+      scatter: "Gráfico de dispersión",
+      combination: "Gráfico\x20combinado",
+      wordCloud: "Nube\x20de\x20palabras",
+      funnel: "Gráfico de embudo",
+      bubble: "Gráfico de burbujas",
+      relation: "Gráfico de relación",
+      waterfall: "Gráfico de cascada",
+      pareto: "Gráfico de Pareto",
+      sankey: "Gráfico de Sankey",
+      heatmap: "Mapa de calor",
+      boxplot: "Diagrama de caja",
+      candlestick: "Gráfico de velas",
+      histogram: "Histograma",
+      treemap: "Mapa de árbol",
+      sunburst: "Diagrama de rayos solares",
+      gauge: "Gráfico de indicador",
+      chord: "Diagrama de cuerdas",
+    },
+    section: {
+      candlestick: "gráfico de velas",
+      chord: "tabla de acordes",
+      funnel: "Gráfico\x20de\x20embudo",
+      gauge: "Tabla de calibres",
+      gridlinesAndTicks: "Líneas\x20de\x20cuadrícula\x20y\x20marcas",
+      histogram: "gráfico de histograma",
+      indicatorLine: "Línea indicadora",
+      lineAndArea: "Gráfico de líneas / Gráfico de área",
+      paretoBar: "Serie de gráfico de barras",
+      paretoLine: "Serie de porcentaje acumulado",
+      pie: "Gráfico circular",
+      radar: "Gráfico de radar",
+      relation: "Gráfico de relación",
+      sunburst: "gráfico de rayos solares",
+      treemap: "Gráfico de mapa de árbol",
+      waterfall: "Gráfico de cascada",
+      wordCloud: "Nube de palabras",
+    },
+    candlestick: {
+      columnsError:
+        "Los datos del gráfico de velas requieren las columnas Categoría, Apertura, Máximo, Mínimo y Cierre.",
+      close: "Cierre",
+      high: "Máximo",
+      low: "Mínimo",
+      open: "Apertura",
+      series: "Serie OHLC",
+    },
+    chord: {
+      source: "Fuente",
+      target: "Objetivo",
+      emptyDiagnostic:
+        "El diagrama de cuerdas requiere al menos una relación con peso positivo entre dos nodos distintos.",
+      mappingDiagnostic:
+        "El diagrama de cuerdas requiere campos de origen y destino distintos y, opcionalmente, un campo de valor diferente.",
+      configDiagnostic:
+        "La configuración del diagrama de cuerdas no es válida. Compruebe los ángulos, los radios, la opacidad y los tamaños.",
+      count: "recuento de relaciones",
+      associatedValue: "Valor\x20asociado",
+    },
+    sunburst: {
+      hierarchy: "Jerarquía",
+      ownValue: "Valor\x20propio",
+      children: "Elementos\x20secundarios",
+      diagnostic:
+        "El gráfico radial jerárquico requiere al menos un campo de jerarquía y un campo de valor numérico.",
+    },
+    histogram: { frequency: "Frecuencia" },
+    pie: { aggregateOther: "Otro", aggregateMembers: "Elementos" },
+    treemap: {
+      hierarchy: "Campos de jerarquía",
+      ownValue: "Valor\x20propio",
+      children: "Elementos secundarios",
+      diagnostic:
+        "El\x20mapa\x20de\x20árbol\x20requiere\x20al\x20menos\x20un\x20campo\x20de\x20jerarquía\x20y\x20un\x20campo\x20de\x20valor\x20numérico.",
+    },
+    gauge: {
+      emptyDiagnostic:
+        "El gráfico de indicador requiere al menos un valor numérico finito.",
+      mappingDiagnostic:
+        "El gráfico de indicador requiere un campo de etiqueta y exactamente un campo de valor.",
+      configDiagnostic:
+        "La\x20configuración\x20del\x20gráfico\x20de\x20indicador\x20no\x20es\x20válida.\x20Compruebe\x20la\x20escala,\x20los\x20intervalos,\x20las\x20proporciones\x20y\x20los\x20tamaños.",
+    },
+    chartField: {
+      missingCategoryFields: "Este gráfico requiere más campos de etiquetas.",
+      missingSeriesFields:
+        "Este gráfico requiere más campos de valores numéricos.",
+      invalidFieldIndex:
+        "Uno de los campos seleccionados para el gráfico ya no está disponible.",
+      invalidValueFieldType:
+        "El campo de valores seleccionado no contiene datos numéricos.",
+      invalidDataStructure:
+        "Los\x20campos\x20seleccionados\x20no\x20forman\x20una\x20estructura\x20de\x20datos\x20válida\x20para\x20este\x20gráfico.",
+      unsupportedChartType:
+        "Este tipo de gráfico no tiene una política de consumo de campos.",
+    },
+  },
+};
+module.exports = e;

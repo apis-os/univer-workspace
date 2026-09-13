@@ -1,0 +1,62 @@
+{
+  "name": "@univerjs-pro/slides-thread-comment",
+  "version": "1.0.0-insiders.20260907-70fc579",
+  "private": false,
+  "description": "Thread comment integration for Univer Slides.",
+  "author": "DreamNum Co., Ltd. <developer@univer.ai>",
+  "homepage": "https://univer.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dream-num/univer-pro"
+  },
+  "exports": {
+    ".": {
+      "import": "./lib/es/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/types/index.d.ts"
+    },
+    "./*": {
+      "import": "./lib/es/*",
+      "require": "./lib/cjs/*",
+      "types": "./lib/types/index.d.ts"
+    },
+    "./facade": {
+      "import": "./lib/es/facade.js",
+      "require": "./lib/cjs/facade.js",
+      "types": "./lib/types/facade/index.d.ts"
+    },
+    "./lib/facade": {
+      "import": "./lib/es/facade.js",
+      "require": "./lib/cjs/facade.js",
+      "types": "./lib/types/facade/index.d.ts"
+    },
+    "./lib/*": "./lib/*"
+  },
+  "main": "./lib/es/index.js",
+  "types": "./lib/types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@univerjs-pro/license": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/slides": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/thread-comment": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/core": "1.0.0-insiders.20260907-70fc579"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10",
+    "@univerjs-infra/shared": "1.0.0-beta.2"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "build:bundle": "univer-cli build",
+    "build:types": "tsc -p tsconfig.node.json",
+    "build": "pnpm run build:bundle && pnpm run build:types"
+  },
+  "module": "./lib/es/index.js"
+}

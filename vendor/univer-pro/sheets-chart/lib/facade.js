@@ -1,0 +1,153 @@
+import { chartTypeToBits as var_core_value_sigDBB7, toChartModelConfig as var_core_value_sigD0A8 } from "@univerjs-pro/engine-chart";
+import { FChart as var_core_value_sigF4B9, createChartBuilder as var_core_value_sig5CEE } from "@univerjs-pro/engine-chart/facade";
+import { ChartDiagnosticSeverity as var_core_value_sigE92A, ChartSourceKind as var_core_value_sig362B, ChartSourceOrientation as var_core_value_sig5CA5, InsertChartCommand as var_core_value_sigE90F, SheetChartConfigAdapter as var_core_value_sigEFD4, SheetsChartService as var_core_value_sig861B, resolveInitialChartPosition as var_core_value_sig5237, resolveSourceSeries as var_core_value_sigBB00, resolveSourceSpec as var_core_value_sig7E54 } from "@univerjs-pro/sheets-chart";
+import { ICommandService as var_core_value_sig9A8D, generateRandomId as var_core_value_sigC259 } from "@univerjs/core";
+import { FWorksheet as var_core_value_sig9C9F } from "@univerjs/sheets/facade";
+import { FEnum as var_core_value_sigFDEA } from "@univerjs/core/facade";
+var _ = class extends var_core_value_sigF4B9 {
+    constructor(var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sig2BCF, var_core_value_sig0D69) {
+      super(var_core_value_sig2BCF, () => new var_core_value_sigEFD4({
+        unitId: var_core_value_sig1BBD,
+        subUnitId: var_core_value_sigF704,
+        chartId: var_core_value_sig2BCF,
+        injector: var_core_value_sig0D69
+      }), (var_core_value_sigBC46, var_core_value_sig3D7D, var_core_value_sig27E5) => var_core_value_sig5CEE({
+        info: var_core_value_sigBC46,
+        description: var_core_value_sig3D7D,
+        type: var_core_value_sig27E5,
+        normalizeSource: var_core_value_sig2AD8 => var_core_value_sig2AD8,
+        extension: ({
+          setInfo: var_core_value_sig2AD0
+        }) => ({
+          setPosition(var_core_value_sig7524) {
+            return var_core_value_sig2AD0("anchor", var_core_value_sig7524), this;
+          }
+        })
+      }), var_core_value_sig0D69), this.unitId = var_core_value_sig1BBD, this.subUnitId = var_core_value_sigF704, this.chartId = var_core_value_sig2BCF;
+    }
+    getRange() {
+      let var_core_value_sig480E = this._injector["get"](var_core_value_sig861B).getChartSourceSpec(this.chartId);
+      return var_core_value_sig480E && !Array.isArray(var_core_value_sig480E) ? var_core_value_sig480E : undefined;
+    }
+    setPosition(var_core_value_sig26DB) {
+      return this._createSheetAdapter().commitHost({
+        layout: {
+          anchor: var_core_value_sig26DB
+        }
+      }), this;
+    }
+    _createSheetAdapter() {
+      return new var_core_value_sigEFD4({
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        chartId: this.chartId,
+        injector: this._injector
+      });
+    }
+  },
+  v = class extends var_core_value_sig9C9F {
+    newChart(var_core_value_sigF0F9) {
+      return var_core_value_sig5CEE({
+        type: var_core_value_sigF0F9,
+        injector: this._injector,
+        commitError: "Insert the Sheet chart before updating it.",
+        normalizeSource: var_core_value_sig8061 => var_core_value_sig8061,
+        createInfo: () => ({
+          anchor: undefined
+        }),
+        extension: ({
+          setInfo: var_core_value_sig4D4C
+        }) => ({
+          setPosition(var_core_value_sig3EEE) {
+            return var_core_value_sig4D4C("anchor", var_core_value_sig3EEE), this;
+          }
+        })
+      });
+    }
+    async insertChart(var_core_value_sig1A0F) {
+      var var_core_value_sigFBA4, var_core_value_sig4383, var_core_value_sig186C;
+      let {
+          config: var_core_value_sigD955,
+          dataSource: var_core_value_sig48BD,
+          anchor: var_core_value_sig429F,
+          position: var_core_value_sigF62A,
+          size: var_core_value_sig8178
+        } = var_core_value_sig1A0F,
+        var_core_value_sigE9ED = {
+          ...var_core_value_sigD955,
+          source: var_core_value_sig48BD,
+          anchor: var_core_value_sig429F,
+          position: var_core_value_sigF62A,
+          size: var_core_value_sig8178
+        },
+        var_core_value_sigB577 = var_core_value_sigDBB7(var_core_value_sigE9ED.type),
+        var_core_value_sig9572 = this._chartSourceContext(var_core_value_sigB577),
+        var_core_value_sigD873 = [],
+        var_core_value_sigA12B = var_core_value_sig7E54(var_core_value_sigE9ED.source, var_core_value_sig9572, var_core_value_sigD873);
+      if (!var_core_value_sigA12B || var_core_value_sigD873.some(var_core_value_sigC9E0 => var_core_value_sigC9E0.severity === var_core_value_sigE92A.Error)) throw Error(var_core_value_sigD873.map(var_core_value_sig76BA => var_core_value_sig76BA.message).join(";\x20") || "Invalid Sheet chart source.");
+      let var_core_value_sigF230 = var_core_value_sigC259(),
+        var_core_value_sig09B8 = var_core_value_sigD0A8(var_core_value_sigE9ED, {
+          series: var_core_value_sigBB00(var_core_value_sigA12B, var_core_value_sig9572, ((var_core_value_sigFBA4 = var_core_value_sigE9ED.mapping) == null ? undefined : var_core_value_sigFBA4.categoryIndex) ?? 0)
+        }),
+        var_core_value_sig6F91 = var_core_value_sig5237({
+          unitId: var_core_value_sig9572.unitId,
+          subUnitId: var_core_value_sig9572.subUnitId,
+          injector: this.getInject()
+        }, var_core_value_sigE9ED, var_core_value_sigD873),
+        var_core_value_sigF9C7 = {
+          unitId: var_core_value_sig9572.unitId,
+          subUnitId: var_core_value_sig9572.subUnitId,
+          chartId: var_core_value_sigF230,
+          chartType: var_core_value_sigB577,
+          source: var_core_value_sigA12B.kind === var_core_value_sig362B.Range ? var_core_value_sigA12B.rangeInfo : var_core_value_sigA12B.ranges,
+          position: var_core_value_sig6F91,
+          width: (var_core_value_sig4383 = var_core_value_sigE9ED.size) == null ? undefined : var_core_value_sig4383.width,
+          height: (var_core_value_sig186C = var_core_value_sigE9ED.size) == null ? undefined : var_core_value_sig186C.height,
+          theme: var_core_value_sigE9ED.theme ?? undefined,
+          config: {
+            unitId: var_core_value_sig9572.unitId,
+            chartModelId: var_core_value_sigF230,
+            style: var_core_value_sig09B8.style,
+            context: var_core_value_sig09B8.context,
+            dataAggregation: var_core_value_sig09B8.dataAggregation
+          }
+        };
+      if (!(await this.getInject().get(var_core_value_sig9A8D).executeCommand(var_core_value_sigE90F.id, var_core_value_sigF9C7))) throw Error("Failed to create Sheet chart.");
+      return this._injector["createInstance"](_, var_core_value_sig9572.unitId, var_core_value_sig9572.subUnitId, var_core_value_sigF230, this._injector);
+    }
+    getChart(var_core_value_sig8895) {
+      let {
+          unitId: var_core_value_sigC80B,
+          subUnitId: var_core_value_sig284F
+        } = this._chartSourceContext(),
+        var_core_value_sigE154 = this.getInject().get(var_core_value_sig861B);
+      return var_core_value_sigE154.getChartModel(var_core_value_sig8895) && var_core_value_sigE154.getSubUnitId(var_core_value_sigC80B, var_core_value_sig8895) === var_core_value_sig284F ? this._injector["createInstance"](_, var_core_value_sigC80B, var_core_value_sig284F, var_core_value_sig8895, this._injector) : null;
+    }
+    getCharts() {
+      let {
+        unitId: var_core_value_sig4632,
+        subUnitId: var_core_value_sig12F2
+      } = this._chartSourceContext();
+      return this.getInject().get(var_core_value_sig861B).getUnitChartModels(var_core_value_sig4632, var_core_value_sig12F2).filter(Boolean).map(var_core_value_sigFBFA => this._injector["createInstance"](_, var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sigFBFA.id, this._injector));
+    }
+    _chartSourceContext(var_core_value_sig2259) {
+      let var_core_value_sig9E2F = this.getWorkbook(),
+        var_core_value_sigD082 = this.getInject().get(var_core_value_sig861B);
+      return {
+        unitId: var_core_value_sig9E2F.getUnitId(),
+        subUnitId: this.getSheetId(),
+        workbook: var_core_value_sig9E2F,
+        ...(var_core_value_sig2259 === undefined ? {} : {
+          inferInitialChartSource: var_core_value_sigF602 => var_core_value_sigD082.inferInitialChartSource(var_core_value_sigF602, var_core_value_sig2259)
+        })
+      };
+    }
+  };
+var_core_value_sig9C9F.extend(v);
+var y = class extends var_core_value_sigFDEA {
+  get ChartSourceOrientation() {
+    return var_core_value_sig5CA5;
+  }
+};
+var_core_value_sigFDEA.extend(y);
+export { _ as FSheetChart };

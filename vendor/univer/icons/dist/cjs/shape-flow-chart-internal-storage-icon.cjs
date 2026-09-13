@@ -1,0 +1,43 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-internal-storage-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M1.8 2.8H18.2V17.2H1.8z",
+			"strokeWidth": 1.6
+		}
+	}, {
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M6 2.8V17.2M1.8 7H18.2",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartInternalStorageIcon = (0, react.forwardRef)(function ShapeFlowChartInternalStorageIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-internal-storage-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartInternalStorageIcon.displayName = "ShapeFlowChartInternalStorageIcon";
+//#endregion
+exports.ShapeFlowChartInternalStorageIcon = ShapeFlowChartInternalStorageIcon;
+exports.default = ShapeFlowChartInternalStorageIcon;

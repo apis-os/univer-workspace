@@ -18,6 +18,9 @@
       "/universer-api/*",
       "/auth/*",
       "/healthz",
+      "/healthz.ai",
+      "/uf",
+      "/uf/*",
       "/spaces/*"
     ]
   },
@@ -51,5 +54,8 @@
       "database_name": "univer-workspace-db",
       "database_id": "6dafe15b-fb54-4ef1-99ad-6b4c09be3d19"
     }
-  ]
+  ],
+  "ai": { "binding": "AI" },
+  "browser": { "binding": "BROWSER", "remote": true },
+  "worker_loaders": [{ "binding": "LOADER" }]
 }

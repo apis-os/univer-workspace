@@ -1,0 +1,37 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-line-inv-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M16.5 3.5L3.5 16.5",
+			"strokeLinecap": "round",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeLineInvIcon = (0, react.forwardRef)(function ShapeLineInvIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-line-inv-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeLineInvIcon.displayName = "ShapeLineInvIcon";
+//#endregion
+exports.ShapeLineInvIcon = ShapeLineInvIcon;
+exports.default = ShapeLineInvIcon;

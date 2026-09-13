@@ -1,0 +1,144 @@
+import { IMenuManagerService, MenuItemType, RibbonStartGroup, getMenuHiddenObservable } from "@univerjs/ui";
+import { ClientSnapshotServerService, ExchangeDocType, ExchangeFormat, IExchangeOperateService, IExchangeService, UniverExchangeClientPlugin, isCurrentUnitLoadedFromServer } from "@univerjs-pro/exchange-client";
+import { CommandType, DependentOn, Disposable, DocumentFlavor, ICommandService, IConfigService, IResourceLoaderService, IUniverInstanceService, Inject, Injector, Plugin, UniverInstanceType, createIdentifier, merge, touchDependencies } from "@univerjs/core";
+import { b64EncodeUnicode, textDecoder, transformDocumentDataToSnapshot, transformSnapshotToDocumentData } from "@univerjs-pro/collaboration";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { I, R, z } from "./internal-glue.js";
+import { W } from "./docs-exchange-client-menu-schema.js";
+import { N } from "./docs-exchange-client-idoc-exchange.js";
+function M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4697) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4698 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4697.doc;
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4698) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699 = b64EncodeUnicode(textDecoder.decode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4698.originalMeta));
+  return {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4697,
+    workbook: {},
+    doc: {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4698,
+      originalMeta: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699
+    },
+    slide: undefined,
+    board: undefined,
+    pdf: undefined
+  };
+}
+let P = class {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469) {
+    this._exchangeService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469;
+  }
+  importDocToUnitId(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612) {
+    return this._exchangeService["importFileToUnitId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611, UniverInstanceType.UNIVER_DOC, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612 ? {
+      doc: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612
+    } : undefined);
+  }
+  async importDocToSnapshot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 = await this._exchangeService["importFileToJson"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615, UniverInstanceType.UNIVER_DOC, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 ? {
+      doc: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616
+    } : undefined);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617.snapshot ? this.transformSnapshotJsonToDocumentData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617) : undefined;
+  }
+  exportDocByUnitId(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621) {
+    return this._exchangeService["exportFileByUnitId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621, UniverInstanceType.UNIVER_DOC, ExchangeFormat.DOCX);
+  }
+  async exportDocBySnapshot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624 = await this.transformDocumentDataToSnapshotJson(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623);
+    return this._exchangeService["exportFileBySnapshot"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624, UniverInstanceType.UNIVER_DOC, ExchangeFormat.DOCX);
+  }
+  async transformSnapshotJsonToDocumentData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627) {
+    return transformSnapshotToDocumentData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.snapshot);
+  }
+  async transformDocumentDataToSnapshotJson(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629) {
+    let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB = {
+        metadata: undefined
+      },
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 = new ClientSnapshotServerService(),
+      {
+        snapshot: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631
+      } = await transformDocumentDataToSnapshot(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.rev ?? 0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 = M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632) throw Error("Failed to transform Document snapshot to string");
+    return {
+      snapshot: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632,
+      sheetBlocks: {}
+    };
+  }
+};
+function F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103) {
+  switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103) {
+    case DocumentFlavor.MODERN:
+      return {
+        docType: ExchangeDocType.MODERN
+      };
+    case DocumentFlavor.TRADITIONAL:
+      return {
+        docType: ExchangeDocType.TRADITIONAL
+      };
+    default:
+      return;
+  }
+}
+let L = class {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640) {
+    this._docExchangeService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637, this._exchangeOperateService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638, this._univerInstanceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639, this._resourceLoaderService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640;
+  }
+  importDocToUnitId() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645 = F(this._getCurrentDocument().getDocumentStyle().documentFlavor);
+    return this._exchangeOperateService["importFileToUnitId"](UniverInstanceType.UNIVER_DOC, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 => this._docExchangeService["importDocToUnitId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645));
+  }
+  importDocToSnapshot() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647 = F(this._getCurrentDocument().getDocumentStyle().documentFlavor);
+    return this._exchangeOperateService["importFileToSnapshot"](UniverInstanceType.UNIVER_DOC, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 => this._docExchangeService["importDocToSnapshot"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647));
+  }
+  exportDocByUnitId(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651 = this._getCurrentDocument();
+    return this._exchangeOperateService["exportFile"](() => this._docExchangeService["exportDocByUnitId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649 ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651.getUnitId()), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650 ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651.getSnapshot().title, ExchangeFormat.DOCX);
+  }
+  exportDocBySnapshot() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655 = this._getCurrentDocument(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656 = this._resourceLoaderService["saveUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655.getUnitId()) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655.getSnapshot();
+    return this._exchangeOperateService["exportFile"](() => this._docExchangeService["exportDocBySnapshot"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656.title, ExchangeFormat.DOCX);
+  }
+  _getCurrentDocument() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659 = this._univerInstanceService["getCurrentUnitOfType"](UniverInstanceType.UNIVER_DOC);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659) throw Error("No unit of type " + UniverInstanceType.UNIVER_DOC + "\x20is\x20currently\x20active.");
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659;
+  }
+};
+const q = {};
+let J = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4662) {
+    super(), this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661, this._menuManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4662, this._initCommands(), this._initMenus();
+  }
+  _initCommands() {
+    [R, z].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462));
+    });
+  }
+  _initMenus() {
+    this._menuManagerService["mergeMenu"](W);
+  }
+};
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135 = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669 = q, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671;
+    let {
+      menu: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4672,
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673
+    } = merge({}, q, this._config);
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4672 && this._configService["setConfig"]("menu", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4672, {
+      merge: true
+    }), this._configService["setConfig"]("docs-exchange-client.config", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673);
+  }
+  onStarting() {
+    [[N, {
+      useClass: P
+    }], [I, {
+      useClass: L
+    }], [J]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464 => this._injector["add"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464));
+  }
+  onReady() {
+    touchDependencies(this._injector, [[J]]);
+  }
+};
+export { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135 as UniverDocsExchangeClientPlugin };
+export { P, L, J };

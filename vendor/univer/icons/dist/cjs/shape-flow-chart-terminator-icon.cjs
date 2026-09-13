@@ -1,0 +1,40 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-terminator-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "rect",
+		"attrs": {
+			"width": 18.4,
+			"height": 12.4,
+			"x": .8,
+			"y": 3.8,
+			"stroke": "currentColor",
+			"rx": 6.2,
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartTerminatorIcon = (0, react.forwardRef)(function ShapeFlowChartTerminatorIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-terminator-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartTerminatorIcon.displayName = "ShapeFlowChartTerminatorIcon";
+//#endregion
+exports.ShapeFlowChartTerminatorIcon = ShapeFlowChartTerminatorIcon;
+exports.default = ShapeFlowChartTerminatorIcon;

@@ -1,0 +1,45 @@
+import { createIdentifier, toDisposable } from "@univerjs/core";
+function u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629) {
+  "@babel/helpers - typeof";
+
+  return u = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463;
+  }, u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629);
+}
+function d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632) {
+  if (u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 || "default");
+    if (u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631);
+}
+function f(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640 = ox3ee768,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 = d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640(538));
+  return u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 + "";
+}
+function p(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646 = f(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645;
+}
+var h = class {
+  constructor() {
+    p(this, "_contributions", new Set());
+  }
+  registerContribution(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465) {
+    return this._contributions["add"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465), toDisposable(() => this._contributions["delete"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465));
+  }
+  async prepare(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467) {
+    await Promise.all(Array.from(this._contributions, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.prepare(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467)));
+  }
+};
+export { h as PrintPreparationService };

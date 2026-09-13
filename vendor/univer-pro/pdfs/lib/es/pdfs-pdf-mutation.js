@@ -1,0 +1,56 @@
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+const bt = {
+    'id': "pdf-editor.mutation.apply-batch",
+    'type': CommandType.MUTATION,
+    'handler': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462355, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462356) => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462357 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462355.get(IUniverInstanceService).getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462356.unitId, UniverInstanceType.UNIVER_PDF);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462357 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462357.applyMutationBatch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462356.batch) : false;
+    }
+  },
+  xt = {
+    'id': "pdf.command.apply-history",
+    'type': CommandType.COMMAND,
+    'handler': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462361, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362) => {
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.mutations["length"] === 0) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462363 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462361.get(IUniverInstanceService).getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.unitId, UniverInstanceType.UNIVER_PDF);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462363) return false;
+      let var_L0_core_endo_timestampMs_pure_O1_zalloc_nothrow_sig2242 = Date.now(),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462364 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462363.getEditState().revision,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462365 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46707 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.unitId + ':' + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46707 + ':' + generateRandomId(12),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462366 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.mutations["map"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46708, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46709) => ({
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46708,
+          'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462365("mutation"),
+          'documentId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.unitId,
+          'clientId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.clientId,
+          'sequence': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462364 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46709 + 1,
+          'timestamp': var_L0_core_endo_timestampMs_pure_O1_zalloc_nothrow_sig2242,
+          'source': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.source,
+          'baseRevision': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462364,
+          'inverse': undefined
+        })),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB50 = {
+          'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462365("batch"),
+          'documentId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.unitId,
+          'reason': 'history',
+          'mutations': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462366,
+          'createdAt': var_L0_core_endo_timestampMs_pure_O1_zalloc_nothrow_sig2242,
+          'atomic': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.atomic,
+          'baseRevision': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462364
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462361.get(ICommandService).syncExecuteCommand(bt.id, {
+        'unitId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462362.unitId,
+        'batch': var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB50
+      }) ? var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB50 : false;
+    }
+  },
+  St = {
+    'id': "pdf.mutation.append-document",
+    'type': CommandType.MUTATION,
+    'handler': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462373, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374) => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462375 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462373.get(IUniverInstanceService).getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.unitId, UniverInstanceType.UNIVER_PDF);
+      return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462375 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.appendPlan ? false : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.sourceUnitData ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462375.appendUnitData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.sourceUnitData, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.appendPlan) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.sourceDocument ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462375.appendDocument(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.sourceDocument, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.sourceResourceBindings, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462374.appendPlan) : false;
+    }
+  };
+export { bt as ApplyPdfMutationBatchMutation, xt as ApplyPdfHistoryCommand, St as AppendPdfDocumentMutation };

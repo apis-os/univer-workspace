@@ -1,0 +1,5759 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+let _univerjs_core = require("@univerjs/core");
+let _univerjs_sheets_drawing = require("@univerjs/sheets-drawing");
+let _univerjs_engine_render = require("@univerjs/engine-render");
+let _univerjs_design = require("@univerjs/design");
+let _univerjs_docs = require("@univerjs/docs");
+let _univerjs_drawing = require("@univerjs/drawing");
+let _univerjs_sheets = require("@univerjs/sheets");
+let _univerjs_sheets_ui = require("@univerjs/sheets-ui");
+let _univerjs_ui = require("@univerjs/ui");
+let _univerjs_drawing_ui = require("@univerjs/drawing-ui");
+let rxjs = require("rxjs");
+let _univerjs_docs_drawing = require("@univerjs/docs-drawing");
+let react = require("react");
+let react_jsx_runtime = require("react/jsx-runtime");
+let _univerjs_docs_ui = require("@univerjs/docs-ui");
+
+//#region src/commands/commands/delete-drawings.command.ts
+const DeleteDrawingsCommand = {
+	id: "sheet.command.delete-drawing",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor) => {
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const drawings = accessor.get(_univerjs_sheets_drawing.ISheetDrawingService).getFocusDrawings();
+		if (drawings.length === 0) return false;
+		const unitId = drawings[0].unitId;
+		const newDrawings = drawings.map((drawing) => {
+			const { unitId, subUnitId, drawingId, drawingType } = drawing;
+			return {
+				unitId,
+				subUnitId,
+				drawingId,
+				drawingType
+			};
+		});
+		return commandService.executeCommand(_univerjs_sheets_drawing.RemoveSheetDrawingCommand.id, {
+			unitId,
+			drawings: newDrawings
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/utils.ts
+function ungroupToGroup(ungroupParams) {
+	const newGroupParams = [];
+	ungroupParams.forEach((ungroupParam) => {
+		const { parent, children } = ungroupParam;
+		const { unitId, subUnitId, drawingId: groupId } = parent;
+		const groupTransform = (0, _univerjs_engine_render.getGroupState)(0, 0, children.map((o) => o.transform || {}));
+		const newChildren = children.map((drawing) => {
+			const transform = drawing.transform || {
+				left: 0,
+				top: 0
+			};
+			const { unitId, subUnitId, drawingId } = drawing;
+			return {
+				unitId,
+				subUnitId,
+				drawingId,
+				transform: {
+					...transform,
+					left: transform.left,
+					top: transform.top
+				},
+				groupId
+			};
+		});
+		const groupParam = {
+			unitId,
+			subUnitId,
+			drawingId: groupId,
+			drawingType: _univerjs_core.DrawingTypeEnum.DRAWING_GROUP,
+			groupBaseBound: { ...parent.groupBaseBound },
+			transform: groupTransform
+		};
+		newGroupParams.push({
+			parent: groupParam,
+			children: newChildren
+		});
+	});
+	return newGroupParams;
+}
+function groupToUngroup(groupParams) {
+	const newGroupParams = [];
+	groupParams.forEach((groupParam) => {
+		const { parent, children } = groupParam;
+		const { unitId, subUnitId, drawingId: groupId, transform: groupTransform = {
+			width: 0,
+			height: 0
+		} } = parent;
+		if (groupTransform == null) return;
+		const newChildren = children.map((object) => {
+			const { transform } = object;
+			const { unitId, subUnitId, drawingId } = object;
+			return {
+				unitId,
+				subUnitId,
+				drawingId,
+				transform: (0, _univerjs_engine_render.transformObjectOutOfGroup)(transform || {}, groupTransform, groupTransform.width || 0, groupTransform.height || 0, parent.groupBaseBound),
+				groupId: void 0
+			};
+		});
+		const ungroupParam = {
+			unitId,
+			subUnitId,
+			drawingId: groupId,
+			drawingType: _univerjs_core.DrawingTypeEnum.DRAWING_GROUP,
+			transform: {
+				left: 0,
+				top: 0
+			}
+		};
+		newGroupParams.push({
+			parent: ungroupParam,
+			children: newChildren
+		});
+	});
+	return newGroupParams;
+}
+function cloneGroupParams(groupParams) {
+	var _groupParams$flatChil;
+	const idMap = /* @__PURE__ */ new Map();
+	(_groupParams$flatChil = groupParams.flatChildren) === null || _groupParams$flatChil === void 0 || _groupParams$flatChil.forEach((p) => idMap.set(p.drawingId, (0, _univerjs_core.generateRandomId)(10)));
+	groupParams.groups.forEach((p) => idMap.set(p.drawingId, (0, _univerjs_core.generateRandomId)(10)));
+	const clonedNestedIdRecord = {};
+	for (const [oldGroupId, entry] of Object.entries(groupParams.nestedIdRecord)) {
+		var _entry$children;
+		const newGroupId = idMap.get(oldGroupId) ?? oldGroupId;
+		clonedNestedIdRecord[newGroupId] = {
+			drawingId: newGroupId,
+			children: (_entry$children = entry.children) === null || _entry$children === void 0 ? void 0 : _entry$children.map((id) => idMap.get(id) ?? id)
+		};
+	}
+	const flatChildren = [];
+	const groups = [];
+	for (const group of groupParams.groups) {
+		const groupDrawingId = idMap.get(group.drawingId) ?? group.drawingId;
+		const parentGroupId = group.groupId ? idMap.get(group.groupId) ?? group.groupId : void 0;
+		groups.push(cloneDrawingParam(group, groupDrawingId, parentGroupId));
+	}
+	for (const child of groupParams.flatChildren || []) {
+		const childDrawingId = idMap.get(child.drawingId) ?? child.drawingId;
+		const parentGroupId = child.groupId ? idMap.get(child.groupId) ?? child.groupId : void 0;
+		flatChildren.push(cloneDrawingParam(child, childDrawingId, parentGroupId));
+	}
+	return {
+		cloned: {
+			nestedIdRecord: clonedNestedIdRecord,
+			flatChildren,
+			groups
+		},
+		idMap
+	};
+}
+function cloneDrawingParam(param, newDrawingId, parentGroupId) {
+	const newParam = { ...param };
+	if (newDrawingId) newParam.drawingId = newDrawingId;
+	if (parentGroupId) newParam.groupId = parentGroupId;
+	else delete newParam.groupId;
+	return JSON.parse(JSON.stringify(newParam));
+}
+
+//#endregion
+//#region src/commands/commands/group-sheet-drawing.command.ts
+/**
+* The command to insert new defined name
+*/
+const GroupSheetDrawingCommand = {
+	id: "sheet.command.group-sheet-image",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+		const sheetDrawingService = accessor.get(_univerjs_sheets_drawing.ISheetDrawingService);
+		if (!params) return false;
+		const unitIds = [];
+		params.forEach(({ parent, children }) => {
+			unitIds.push(parent.unitId);
+			children.forEach((child) => {
+				unitIds.push(child.unitId);
+			});
+		});
+		const { unitId, subUnitId, undo, redo, objects } = sheetDrawingService.getGroupDrawingOp(params);
+		if (commandService.syncExecuteCommand(_univerjs_sheets_drawing.SetDrawingApplyMutation.id, {
+			op: redo,
+			unitId,
+			subUnitId,
+			objects,
+			type: _univerjs_sheets_drawing.DrawingApplyType.GROUP
+		})) {
+			undoRedoService.pushUndoRedo({
+				unitID: unitId,
+				undoMutations: [{
+					id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+					params: {
+						op: undo,
+						unitId,
+						subUnitId,
+						objects: groupToUngroup(objects),
+						type: _univerjs_sheets_drawing.DrawingApplyType.UNGROUP
+					}
+				}, {
+					id: _univerjs_sheets_drawing.ClearSheetDrawingTransformerOperation.id,
+					params: unitIds
+				}],
+				redoMutations: [{
+					id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+					params: {
+						op: redo,
+						unitId,
+						subUnitId,
+						objects,
+						type: _univerjs_sheets_drawing.DrawingApplyType.GROUP
+					}
+				}, {
+					id: _univerjs_sheets_drawing.ClearSheetDrawingTransformerOperation.id,
+					params: unitIds
+				}]
+			});
+			return true;
+		}
+		return false;
+	}
+};
+
+//#endregion
+//#region src/commands/commands/ungroup-sheet-drawing.command.ts
+/**
+* The command to insert new defined name
+*/
+const UngroupSheetDrawingCommand = {
+	id: "sheet.command.ungroup-sheet-image",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+		const sheetDrawingService = accessor.get(_univerjs_sheets_drawing.ISheetDrawingService);
+		if (!params) return false;
+		const unitIds = [];
+		params.forEach(({ parent, children }) => {
+			unitIds.push(parent.unitId);
+			children.forEach((child) => {
+				unitIds.push(child.unitId);
+			});
+		});
+		const { unitId, subUnitId, undo, redo, objects } = sheetDrawingService.getUngroupDrawingOp(params);
+		if (commandService.syncExecuteCommand(_univerjs_sheets_drawing.SetDrawingApplyMutation.id, {
+			op: redo,
+			unitId,
+			subUnitId,
+			objects,
+			type: _univerjs_sheets_drawing.DrawingApplyType.UNGROUP
+		})) {
+			undoRedoService.pushUndoRedo({
+				unitID: unitId,
+				undoMutations: [{
+					id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+					params: {
+						op: undo,
+						unitId,
+						subUnitId,
+						objects: ungroupToGroup(objects),
+						type: _univerjs_sheets_drawing.DrawingApplyType.GROUP
+					}
+				}, {
+					id: _univerjs_sheets_drawing.ClearSheetDrawingTransformerOperation.id,
+					params: unitIds
+				}],
+				redoMutations: [{
+					id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+					params: {
+						op: redo,
+						unitId,
+						subUnitId,
+						objects,
+						type: _univerjs_sheets_drawing.DrawingApplyType.UNGROUP
+					}
+				}, {
+					id: _univerjs_sheets_drawing.ClearSheetDrawingTransformerOperation.id,
+					params: unitIds
+				}]
+			});
+			return true;
+		}
+		return false;
+	}
+};
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/sheet-drawing-update.controller.ts
+/**
+* Calculate the bounding box after rotation
+* @param {number} width  Width
+* @param {number} height Height
+* @param {number} angleDegrees Rotation angle in degrees (0-360)
+* @returns {{ rotatedWidth: number; rotatedHeight: number }} Rotated width and height
+*/
+function rotatedBoundingBox(width, height, angleDegrees) {
+	const angle = angleDegrees * Math.PI / 180;
+	return {
+		rotatedWidth: Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle)),
+		rotatedHeight: Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle))
+	};
+}
+/**
+* Get the size of the drawing within the cell
+* @param {IAccessor} accessor Accessor
+* @param {ISheetLocationBase} location Cell location
+* @param {number} originImageWidth Original image width
+* @param {number} originImageHeight Original image height
+* @param {number} angle Rotation angle in degrees (0-360)
+* @returns {{ width: number; height: number }} Drawing size
+*/
+function getDrawingSizeByCell(accessor, location, originImageWidth, originImageHeight, angle) {
+	var _skeletonManagerServi;
+	const { rotatedHeight, rotatedWidth } = rotatedBoundingBox(originImageWidth, originImageHeight, angle);
+	const currentRender = accessor.get(_univerjs_engine_render.IRenderManagerService).getRenderUnitById(location.unitId);
+	if (!currentRender) return false;
+	const skeleton = (_skeletonManagerServi = currentRender.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(location.subUnitId)) === null || _skeletonManagerServi === void 0 ? void 0 : _skeletonManagerServi.skeleton;
+	if (skeleton == null) return false;
+	const cellInfo = skeleton.getCellWithCoordByIndex(location.row, location.col);
+	const cellWidth = cellInfo.mergeInfo.endX - cellInfo.mergeInfo.startX - 2;
+	const cellHeight = cellInfo.mergeInfo.endY - cellInfo.mergeInfo.startY - 2;
+	const imageRatio = rotatedWidth / rotatedHeight;
+	const scale = Math.ceil(Math.min(cellWidth, cellHeight * imageRatio)) / rotatedWidth;
+	const realScale = !scale || Number.isNaN(scale) ? .001 : scale;
+	return {
+		width: originImageWidth * realScale,
+		height: originImageHeight * realScale
+	};
+}
+let SheetDrawingUpdateController = class SheetDrawingUpdateController extends _univerjs_core.Disposable {
+	constructor(_context, _commandService, _sheetInterceptorService, _selectionRenderService, _imageIoService, _fileOpenerService, _sheetDrawingService, _drawingManagerService, _contextService, _messageService, _localeService, selectionManagerService, _sheetSkeletonService, _injector, _urlImageService) {
+		super();
+		this._context = _context;
+		this._commandService = _commandService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._selectionRenderService = _selectionRenderService;
+		this._imageIoService = _imageIoService;
+		this._fileOpenerService = _fileOpenerService;
+		this._sheetDrawingService = _sheetDrawingService;
+		this._drawingManagerService = _drawingManagerService;
+		this._contextService = _contextService;
+		this._messageService = _messageService;
+		this._localeService = _localeService;
+		this._sheetSkeletonService = _sheetSkeletonService;
+		this._injector = _injector;
+		this._urlImageService = _urlImageService;
+		_defineProperty(this, "_workbookSelections", void 0);
+		this._workbookSelections = selectionManagerService.getWorkbookSelections(this._context.unitId);
+		this._updateDrawingListener();
+		this._updateOrderListener();
+		this._groupDrawingListener();
+		this._focusDrawingListener();
+	}
+	async insertFloatImage() {
+		const files = await this._fileOpenerService.openFile({
+			multiple: true,
+			accept: _univerjs_drawing.DRAWING_IMAGE_ALLOW_IMAGE_LIST.map((image) => `.${image.replace("image/", "")}`).join(",")
+		});
+		const fileLength = files.length;
+		if (fileLength > _univerjs_drawing.DRAWING_IMAGE_COUNT_LIMIT) {
+			this._messageService.show({
+				type: _univerjs_design.MessageType.Error,
+				content: this._localeService.t("sheets-drawing-ui.update-status.exceedMaxCount", String(_univerjs_drawing.DRAWING_IMAGE_COUNT_LIMIT))
+			});
+			return false;
+		} else if (fileLength === 0) return false;
+		files.forEach(async (file) => await this.insertFloatImageByFile(file));
+		return true;
+	}
+	async insertCellImage() {
+		const file = (await this._fileOpenerService.openFile({
+			multiple: false,
+			accept: _univerjs_drawing.DRAWING_IMAGE_ALLOW_IMAGE_LIST.map((image) => `.${image.replace("image/", "")}`).join(",")
+		}))[0];
+		if (file) {
+			await this._insertCellImage(file);
+			return true;
+		}
+		return false;
+	}
+	insertCellImageByFile(file, location) {
+		return this._insertCellImage(file, location);
+	}
+	async insertFloatImageByFile(file) {
+		let imageParam;
+		try {
+			imageParam = await this._imageIoService.saveImage(file);
+		} catch (error) {
+			const type = error.message;
+			if (type === _univerjs_core.ImageUploadStatusType.ERROR_EXCEED_SIZE) this._messageService.show({
+				type: _univerjs_design.MessageType.Error,
+				content: this._localeService.t("sheets-drawing-ui.update-status.exceedMaxSize", String((0, _univerjs_drawing.getDrawingImageAllowSize)() / (1024 * 1024)))
+			});
+			else if (type === _univerjs_core.ImageUploadStatusType.ERROR_IMAGE_TYPE) this._messageService.show({
+				type: _univerjs_design.MessageType.Error,
+				content: this._localeService.t("sheets-drawing-ui.update-status.invalidImageType")
+			});
+			else if (type === _univerjs_core.ImageUploadStatusType.ERROR_IMAGE) this._messageService.show({
+				type: _univerjs_design.MessageType.Error,
+				content: this._localeService.t("sheets-drawing-ui.update-status.invalidImage")
+			});
+		}
+		if (imageParam == null) return;
+		const { unitId, subUnitId } = this._getUnitInfo();
+		const { imageId, imageSourceType, source, base64Cache } = imageParam;
+		const { width, height, image } = await (0, _univerjs_drawing.getImageSize)(base64Cache || "");
+		const { width: sceneWidth, height: sceneHeight } = this._context.scene;
+		this._imageIoService.addImageSourceCache(source, imageSourceType, image);
+		let scale = 1;
+		if (width > _univerjs_drawing.DRAWING_IMAGE_WIDTH_LIMIT || height > _univerjs_drawing.DRAWING_IMAGE_HEIGHT_LIMIT) {
+			const scaleWidth = _univerjs_drawing.DRAWING_IMAGE_WIDTH_LIMIT / width;
+			const scaleHeight = _univerjs_drawing.DRAWING_IMAGE_HEIGHT_LIMIT / height;
+			scale = Math.max(scaleWidth, scaleHeight);
+		}
+		const sheetSkeletonParam = this._sheetSkeletonService.getSkeletonParam(unitId, subUnitId);
+		if (!sheetSkeletonParam) return;
+		const { skeleton } = sheetSkeletonParam;
+		const sheetTransform = this._getImagePosition(width * scale, height * scale, sceneWidth, sceneHeight, skeleton);
+		if (!sheetTransform) return;
+		const newTransform = (0, _univerjs_sheets_drawing.drawingPositionToTransform)(sheetTransform, sheetSkeletonParam);
+		if (!newTransform) return;
+		const sheetDrawingParam = {
+			unitId,
+			subUnitId,
+			drawingId: imageId,
+			drawingType: _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE,
+			imageSourceType,
+			source,
+			transform: newTransform,
+			sheetTransform,
+			axisAlignSheetTransform: (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)(newTransform, skeleton) ?? sheetTransform
+		};
+		return this._commandService.executeCommand(_univerjs_sheets_drawing.InsertSheetDrawingCommand.id, {
+			unitId,
+			drawings: [sheetDrawingParam]
+		});
+	}
+	async _insertCellImage(file, location) {
+		let imageParam;
+		try {
+			imageParam = await this._imageIoService.saveImage(file);
+		} catch (error) {
+			const type = error.message;
+			if (type === _univerjs_core.ImageUploadStatusType.ERROR_EXCEED_SIZE) this._messageService.show({
+				type: _univerjs_design.MessageType.Error,
+				content: this._localeService.t("sheets-drawing-ui.update-status.exceedMaxSize", String((0, _univerjs_drawing.getDrawingImageAllowSize)() / (1024 * 1024)))
+			});
+			else if (type === _univerjs_core.ImageUploadStatusType.ERROR_IMAGE_TYPE) this._messageService.show({
+				type: _univerjs_design.MessageType.Error,
+				content: this._localeService.t("sheets-drawing-ui.update-status.invalidImageType")
+			});
+			else if (type === _univerjs_core.ImageUploadStatusType.ERROR_IMAGE) this._messageService.show({
+				type: _univerjs_design.MessageType.Error,
+				content: this._localeService.t("sheets-drawing-ui.update-status.invalidImage")
+			});
+		}
+		if (imageParam == null) return false;
+		const { imageId, imageSourceType, source, base64Cache } = imageParam;
+		const { width, height, image } = await (0, _univerjs_drawing.getImageSize)(base64Cache || "");
+		this._imageIoService.addImageSourceCache(source, imageSourceType, image);
+		const selection = this._workbookSelections.getCurrentLastSelection();
+		if (!selection) return false;
+		let row = selection.primary.actualRow;
+		let col = selection.primary.actualColumn;
+		if (selection.primary.isMerged) {
+			row = selection.primary.startRow;
+			col = selection.primary.startColumn;
+		}
+		const docDataModel = (0, _univerjs_core.createDocumentModelWithStyle)("", {});
+		const imageSize = getDrawingSizeByCell(this._injector, {
+			unitId: this._context.unitId,
+			subUnitId: this._context.unit.getActiveSheet().getSheetId(),
+			row,
+			col
+		}, width, height, 0);
+		if (!imageSize) return false;
+		const docTransform = (0, _univerjs_docs.buildDocTransform)(imageSize.width, imageSize.height);
+		const docDrawingParam = {
+			unitId: docDataModel.getUnitId(),
+			subUnitId: docDataModel.getUnitId(),
+			drawingId: imageId,
+			drawingType: _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE,
+			imageSourceType,
+			source,
+			transform: (0, _univerjs_docs.docDrawingPositionToTransform)(docTransform),
+			docTransform,
+			behindDoc: _univerjs_core.BooleanNumber.FALSE,
+			title: "",
+			description: "",
+			layoutType: _univerjs_core.PositionedObjectLayoutType.INLINE,
+			wrapText: _univerjs_core.WrapTextType.BOTH_SIDES,
+			distB: 0,
+			distL: 0,
+			distR: 0,
+			distT: 0
+		};
+		const jsonXActions = _univerjs_core.BuildTextUtils.drawing.add({
+			documentDataModel: docDataModel,
+			drawings: [docDrawingParam],
+			selection: {
+				collapsed: true,
+				startOffset: 0,
+				endOffset: 0
+			}
+		});
+		if (jsonXActions) {
+			docDataModel.apply(jsonXActions);
+			return this._commandService.syncExecuteCommand(_univerjs_sheets.SetRangeValuesCommand.id, {
+				value: { [(location === null || location === void 0 ? void 0 : location.row) ?? row]: { [(location === null || location === void 0 ? void 0 : location.col) ?? col]: {
+					p: docDataModel.getSnapshot(),
+					t: 1
+				} } },
+				unitId: location === null || location === void 0 ? void 0 : location.unitId,
+				subUnitId: location === null || location === void 0 ? void 0 : location.subUnitId
+			});
+		}
+		return false;
+	}
+	async insertCellImageByUrl(url, location) {
+		let src = url;
+		try {
+			src = await this._urlImageService.getImage(url);
+		} catch (error) {
+			console.error(`Failed to get image from URLImageService: ${url}`, error);
+		}
+		const { width, height, image } = await (0, _univerjs_drawing.getImageSize)(src || "");
+		this._imageIoService.addImageSourceCache(url, _univerjs_core.ImageSourceType.URL, image);
+		const selection = this._workbookSelections.getCurrentLastSelection();
+		if (!selection) return false;
+		const docDataModel = (0, _univerjs_core.createDocumentModelWithStyle)("", {});
+		const imageSize = getDrawingSizeByCell(this._injector, {
+			unitId: this._context.unitId,
+			subUnitId: this._context.unit.getActiveSheet().getSheetId(),
+			row: selection.primary.actualRow,
+			col: selection.primary.actualColumn
+		}, width, height, 0);
+		if (!imageSize) return false;
+		const docTransform = (0, _univerjs_docs.buildDocTransform)(imageSize.width, imageSize.height);
+		const docDrawingParam = {
+			unitId: docDataModel.getUnitId(),
+			subUnitId: docDataModel.getUnitId(),
+			drawingId: (0, _univerjs_core.generateRandomId)(),
+			drawingType: _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE,
+			imageSourceType: _univerjs_core.ImageSourceType.URL,
+			source: url,
+			transform: (0, _univerjs_docs.docDrawingPositionToTransform)(docTransform),
+			docTransform,
+			behindDoc: _univerjs_core.BooleanNumber.FALSE,
+			title: "",
+			description: "",
+			layoutType: _univerjs_core.PositionedObjectLayoutType.INLINE,
+			wrapText: _univerjs_core.WrapTextType.BOTH_SIDES,
+			distB: 0,
+			distL: 0,
+			distR: 0,
+			distT: 0
+		};
+		const jsonXActions = _univerjs_core.BuildTextUtils.drawing.add({
+			documentDataModel: docDataModel,
+			drawings: [docDrawingParam],
+			selection: {
+				collapsed: true,
+				startOffset: 0,
+				endOffset: 0
+			}
+		});
+		if (jsonXActions) {
+			docDataModel.apply(jsonXActions);
+			return this._commandService.syncExecuteCommand(_univerjs_sheets.SetRangeValuesCommand.id, {
+				value: { [(location === null || location === void 0 ? void 0 : location.row) ?? selection.primary.actualRow]: { [(location === null || location === void 0 ? void 0 : location.col) ?? selection.primary.actualColumn]: {
+					p: docDataModel.getSnapshot(),
+					t: 1
+				} } },
+				unitId: location === null || location === void 0 ? void 0 : location.unitId,
+				subUnitId: location === null || location === void 0 ? void 0 : location.subUnitId
+			});
+		}
+		return false;
+	}
+	_getUnitInfo() {
+		const workbook = this._context.unit;
+		const worksheet = workbook.getActiveSheet();
+		return {
+			unitId: workbook.getUnitId(),
+			subUnitId: worksheet.getSheetId()
+		};
+	}
+	_getImagePosition(imageWidth, imageHeight, sceneWidth, sceneHeight, skeleton) {
+		const selections = this._workbookSelections.getCurrentSelections();
+		let range = {
+			startRow: 0,
+			endRow: 0,
+			startColumn: 0,
+			endColumn: 0
+		};
+		if (selections && selections.length > 0) range = selections[selections.length - 1].range;
+		const rangeWithCoord = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, range);
+		if (rangeWithCoord == null) return;
+		let { startColumn, startRow, startX, startY } = rangeWithCoord;
+		let isChangeStart = false;
+		if (startX + imageWidth > sceneWidth) {
+			startX = sceneWidth - imageWidth;
+			if (startX < 0) {
+				startX = 0;
+				imageWidth = sceneWidth;
+			}
+			isChangeStart = true;
+		}
+		if (startY + imageHeight > sceneHeight) {
+			startY = sceneHeight - imageHeight;
+			if (startY < 0) {
+				startY = 0;
+				imageHeight = sceneHeight;
+			}
+			isChangeStart = true;
+		}
+		if (isChangeStart) {
+			const newCoord = this._selectionRenderService.getCellWithCoordByOffset(startX, startY);
+			if (newCoord == null) return;
+			startX = newCoord.startX;
+			startY = newCoord.startY;
+			startColumn = newCoord.actualColumn;
+			startRow = newCoord.actualRow;
+		}
+		const from = {
+			column: startColumn,
+			columnOffset: 0,
+			row: startRow,
+			rowOffset: 0
+		};
+		const endSelectionCell = this._selectionRenderService.getCellWithCoordByOffset(startX + imageWidth, startY + imageHeight);
+		if (endSelectionCell == null) return;
+		return {
+			from,
+			to: {
+				column: endSelectionCell.actualColumn,
+				columnOffset: startX + imageWidth - endSelectionCell.startX,
+				row: endSelectionCell.actualRow,
+				rowOffset: startY + imageHeight - endSelectionCell.startY
+			}
+		};
+	}
+	_updateOrderListener() {
+		this.disposeWithMe(this._drawingManagerService.featurePluginOrderUpdate$.subscribe((params) => {
+			const { unitId, subUnitId, drawingIds, arrangeType } = params;
+			this._commandService.executeCommand(_univerjs_sheets_drawing.SetDrawingArrangeCommand.id, {
+				unitId,
+				subUnitId,
+				drawingIds,
+				arrangeType
+			});
+		}));
+	}
+	_updateDrawingListener() {
+		this.disposeWithMe(this._drawingManagerService.featurePluginUpdate$.subscribe((params) => {
+			const drawings = [];
+			if (params.length === 0) return;
+			params.forEach((param) => {
+				const { unitId, subUnitId, drawingId, transform } = param;
+				const sheetSkeletonParam = this._sheetSkeletonService.getSkeletonParam(unitId, subUnitId);
+				if (!transform || !sheetSkeletonParam) return;
+				const { skeleton } = sheetSkeletonParam;
+				const sheetDrawing = this._sheetDrawingService.getDrawingByParam({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				if (sheetDrawing == null || sheetDrawing.unitId !== this._context.unitId) return;
+				const sheetTransform = (0, _univerjs_sheets_drawing.transformToDrawingPosition)({
+					...sheetDrawing.transform,
+					...transform
+				}, skeleton);
+				const axisAlignSheetTransform = (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)({
+					...sheetDrawing.transform,
+					...transform
+				}, skeleton);
+				if (sheetTransform == null || axisAlignSheetTransform == null) return;
+				const newDrawing = {
+					...param,
+					transform: {
+						...sheetDrawing.transform,
+						...transform,
+						...(0, _univerjs_sheets_drawing.drawingPositionToTransform)(sheetTransform, sheetSkeletonParam)
+					},
+					sheetTransform: { ...sheetTransform },
+					axisAlignSheetTransform: { ...axisAlignSheetTransform }
+				};
+				drawings.push(newDrawing);
+			});
+			if (drawings.length > 0) this._commandService.executeCommand(_univerjs_sheets_drawing.SetSheetDrawingCommand.id, {
+				unitId: params[0].unitId,
+				drawings
+			});
+		}));
+	}
+	_getSheetTransformByParam(param, isCreate) {
+		const { unitId, subUnitId, drawingId, transform } = param;
+		const skeleton = this._sheetSkeletonService.getSkeleton(unitId, subUnitId);
+		if (!transform || !skeleton) return null;
+		const sheetDrawing = this._sheetDrawingService.getDrawingByParam({
+			unitId,
+			subUnitId,
+			drawingId
+		});
+		let sheetDrawingTransform = sheetDrawing === null || sheetDrawing === void 0 ? void 0 : sheetDrawing.transform;
+		if (isCreate) sheetDrawingTransform = {};
+		if (!isCreate && (!sheetDrawing || sheetDrawing.unitId !== this._context.unitId)) return null;
+		const sheetTransform = (0, _univerjs_sheets_drawing.transformToDrawingPosition)({
+			...sheetDrawingTransform,
+			...transform
+		}, skeleton);
+		const axisAlignSheetTransform = (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)({
+			...sheetDrawingTransform,
+			...transform
+		}, skeleton);
+		if (!sheetTransform || !axisAlignSheetTransform) return null;
+		return {
+			sheetTransform,
+			axisAlignSheetTransform
+		};
+	}
+	_groupDrawingListener() {
+		this.disposeWithMe(this._drawingManagerService.featurePluginGroupUpdate$.subscribe((params) => {
+			const grpParams = [];
+			for (const param of params) {
+				const parent = param.parent;
+				const grpSheetTransform = this._getSheetTransformByParam(parent, true);
+				const children = [];
+				for (const child of param.children) {
+					const childSheetTransformInfo = this._getSheetTransformByParam(child, false);
+					if (childSheetTransformInfo != null) children.push({
+						...child,
+						sheetTransform: childSheetTransformInfo.sheetTransform,
+						axisAlignSheetTransform: childSheetTransformInfo.axisAlignSheetTransform
+					});
+				}
+				const grpParam = {
+					parent: {
+						...parent,
+						sheetTransform: grpSheetTransform === null || grpSheetTransform === void 0 ? void 0 : grpSheetTransform.sheetTransform,
+						axisAlignSheetTransform: grpSheetTransform === null || grpSheetTransform === void 0 ? void 0 : grpSheetTransform.axisAlignSheetTransform
+					},
+					children
+				};
+				grpParams.push(grpParam);
+			}
+			if (grpParams.length > 0) {
+				this._commandService.executeCommand(GroupSheetDrawingCommand.id, grpParams);
+				const { unitId, subUnitId, drawingId } = params[0].parent;
+				this._commandService.syncExecuteCommand(_univerjs_drawing.SetDrawingSelectedOperation.id, [{
+					unitId,
+					subUnitId,
+					drawingId
+				}]);
+			}
+		}));
+		this.disposeWithMe(this._drawingManagerService.featurePluginUngroupUpdate$.subscribe((params) => {
+			const unGroupParams = [];
+			for (const param of params) {
+				const { children } = param;
+				const childParams = [];
+				for (const child of children) {
+					const childSheetTransform = this._getSheetTransformByParam(child, false);
+					if (childSheetTransform != null) childParams.push({
+						...child,
+						sheetTransform: childSheetTransform.sheetTransform,
+						axisAlignSheetTransform: childSheetTransform.axisAlignSheetTransform
+					});
+				}
+				unGroupParams.push({
+					...param,
+					children: childParams
+				});
+			}
+			this._commandService.executeCommand(UngroupSheetDrawingCommand.id, unGroupParams);
+		}));
+	}
+	_focusDrawingListener() {
+		this.disposeWithMe(this._drawingManagerService.focus$.subscribe((params) => {
+			if (params == null || params.length === 0) {
+				this._contextService.setContextValue(_univerjs_core.FOCUSING_COMMON_DRAWINGS, false);
+				this._sheetDrawingService.focusDrawing([]);
+			} else {
+				this._contextService.setContextValue(_univerjs_core.FOCUSING_COMMON_DRAWINGS, true);
+				this._sheetDrawingService.focusDrawing(params);
+			}
+		}));
+	}
+};
+SheetDrawingUpdateController = __decorate([
+	__decorateParam(1, _univerjs_core.ICommandService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetInterceptorService)),
+	__decorateParam(3, _univerjs_sheets_ui.ISheetSelectionRenderService),
+	__decorateParam(4, _univerjs_core.IImageIoService),
+	__decorateParam(5, _univerjs_ui.ILocalFileService),
+	__decorateParam(6, _univerjs_sheets_drawing.ISheetDrawingService),
+	__decorateParam(7, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(8, _univerjs_core.IContextService),
+	__decorateParam(9, _univerjs_ui.IMessageService),
+	__decorateParam(10, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService)),
+	__decorateParam(11, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetsSelectionsService)),
+	__decorateParam(12, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetSkeletonService)),
+	__decorateParam(13, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(14, _univerjs_core.IURLImageService)
+], SheetDrawingUpdateController);
+
+//#endregion
+//#region src/commands/commands/insert-image.command.ts
+const InsertFloatImageCommand = {
+	id: "sheet.command.insert-float-image",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: async (accessor, params) => {
+		var _getCurrentTypeOfRend;
+		const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+		const renderManagerService = accessor.get(_univerjs_engine_render.IRenderManagerService);
+		const sheetDrawingUpdateController = (_getCurrentTypeOfRend = (0, _univerjs_engine_render.getCurrentTypeOfRenderer)(_univerjs_core.UniverInstanceType.UNIVER_SHEET, univerInstanceService, renderManagerService)) === null || _getCurrentTypeOfRend === void 0 ? void 0 : _getCurrentTypeOfRend.with(SheetDrawingUpdateController);
+		if (!sheetDrawingUpdateController) return false;
+		const files = params === null || params === void 0 ? void 0 : params.files;
+		if (files) {
+			const awaitFiles = files.map((file) => sheetDrawingUpdateController.insertFloatImageByFile(file));
+			return (await Promise.all(awaitFiles)).every((result) => result);
+		} else return sheetDrawingUpdateController.insertFloatImage() ?? false;
+	}
+};
+const InsertCellImageCommand = {
+	id: "sheet.command.insert-cell-image",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor) => {
+		var _getCurrentTypeOfRend2;
+		const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+		const renderManagerService = accessor.get(_univerjs_engine_render.IRenderManagerService);
+		return ((_getCurrentTypeOfRend2 = (0, _univerjs_engine_render.getCurrentTypeOfRenderer)(_univerjs_core.UniverInstanceType.UNIVER_SHEET, univerInstanceService, renderManagerService)) === null || _getCurrentTypeOfRend2 === void 0 ? void 0 : _getCurrentTypeOfRend2.with(SheetDrawingUpdateController).insertCellImage()) ?? false;
+	}
+};
+
+//#endregion
+//#region src/commands/commands/move-drawings.command.ts
+const MoveDrawingsCommand = {
+	id: "sheet.command.move-drawing",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const drawingManagerService = accessor.get(_univerjs_sheets_drawing.ISheetDrawingService);
+		const sheetSkeletonService = accessor.get(_univerjs_sheets.SheetSkeletonService);
+		const undoRedoGroupService = accessor.get(_univerjs_ui.UndoRedoGroupService);
+		const { direction } = params;
+		const drawings = drawingManagerService.getFocusDrawings();
+		if (drawings.length === 0) return false;
+		const unitId = drawings[0].unitId;
+		const newDrawings = drawings.map((drawing) => {
+			const { transform, unitId, subUnitId } = drawing;
+			const skeleton = sheetSkeletonService.getSkeleton(unitId, subUnitId);
+			if (!transform || !skeleton) return null;
+			const newTransform = { ...transform };
+			const { left = 0, top = 0 } = transform;
+			if (direction === _univerjs_core.Direction.UP) newTransform.top = top - 1;
+			else if (direction === _univerjs_core.Direction.DOWN) newTransform.top = top + 1;
+			else if (direction === _univerjs_core.Direction.LEFT) newTransform.left = left - 1;
+			else if (direction === _univerjs_core.Direction.RIGHT) newTransform.left = left + 1;
+			return {
+				...drawing,
+				transform: newTransform,
+				sheetTransform: (0, _univerjs_sheets_drawing.transformToDrawingPosition)(newTransform, skeleton),
+				axisAlignSheetTransform: (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)(newTransform, skeleton)
+			};
+		}).filter((drawing) => drawing != null);
+		if (undoRedoGroupService.runTimed(unitId, `sheet-drawing:nudge:${drawings[0].subUnitId}:${drawings.map((drawing) => drawing.drawingId).sort().join(",")}`, () => commandService.syncExecuteCommand(_univerjs_sheets_drawing.SetSheetDrawingCommand.id, {
+			unitId,
+			drawings: newDrawings
+		}))) {
+			commandService.syncExecuteCommand(_univerjs_sheets_drawing.ClearSheetDrawingTransformerOperation.id, [unitId]);
+			return true;
+		}
+		return false;
+	}
+};
+
+//#endregion
+//#region src/services/batch-save-images.service.ts
+/**
+* File name part type for multi-select
+*/
+let FileNamePart = /* @__PURE__ */ function(FileNamePart) {
+	/**
+	* Use cell address as part of file name (e.g., A1, B2)
+	*/
+	FileNamePart["CELL_ADDRESS"] = "cellAddress";
+	/**
+	* Use value from a specific column as part of file name
+	*/
+	FileNamePart["COLUMN_VALUE"] = "columnValue";
+	return FileNamePart;
+}({});
+const IBatchSaveImagesService = (0, _univerjs_core.createIdentifier)("sheets-drawing-ui.batch-save-images.service");
+/**
+* Convert column index to letter (0 -> A, 1 -> B, etc.)
+*/
+function columnIndexToLetter(index) {
+	let letter = "";
+	let temp = index;
+	while (temp >= 0) {
+		letter = String.fromCharCode(temp % 26 + 65) + letter;
+		temp = Math.floor(temp / 26) - 1;
+	}
+	return letter;
+}
+/**
+* Convert row and column to A1 notation
+*/
+function toA1Notation(row, col) {
+	return `${columnIndexToLetter(col)}${row + 1}`;
+}
+/**
+* Convert range to A1 notation
+*/
+function rangeToA1Notation(range) {
+	const start = toA1Notation(range.startRow, range.startColumn);
+	const end = toA1Notation(range.endRow, range.endColumn);
+	return start === end ? start : `${start}:${end}`;
+}
+/**
+* Get image data from cell
+*/
+function getCellImageData(cell) {
+	var _documentData$drawing;
+	const documentData = cell.p;
+	const drawingId = documentData === null || documentData === void 0 || (_documentData$drawing = documentData.drawingsOrder) === null || _documentData$drawing === void 0 ? void 0 : _documentData$drawing[0];
+	if (!(0, _univerjs_sheets.isCellImage)(documentData) || !drawingId || !(documentData === null || documentData === void 0 ? void 0 : documentData.drawings)) return null;
+	const drawing = documentData.drawings[drawingId];
+	if (!drawing || !("source" in drawing) || !("imageSourceType" in drawing)) return null;
+	return drawing;
+}
+/**
+* Get file extension from mime type or source
+*/
+function getFileExtension(source, imageSourceType) {
+	if (imageSourceType === _univerjs_core.ImageSourceType.BASE64) {
+		const match = source.match(/^data:image\/(\w+);/);
+		if (match) return match[1] === "jpeg" ? "jpg" : match[1];
+	}
+	if (imageSourceType === _univerjs_core.ImageSourceType.URL) {
+		const urlMatch = source.match(/\.(\w+)(?:\?|$)/);
+		if (urlMatch) return urlMatch[1].toLowerCase();
+	}
+	return "png";
+}
+/**
+* Convert image source to blob
+*/
+async function imageSourceToBlob(source, imageSourceType) {
+	if (imageSourceType === _univerjs_core.ImageSourceType.BASE64) return (await fetch(source)).blob();
+	if (imageSourceType === _univerjs_core.ImageSourceType.URL) return (await fetch(source)).blob();
+	throw new Error("UUID image type requires additional handling");
+}
+let BatchSaveImagesService = class BatchSaveImagesService extends _univerjs_core.Disposable {
+	constructor(_univerInstanceService, _selectionService, _imageIoService, _urlImageService) {
+		super();
+		this._univerInstanceService = _univerInstanceService;
+		this._selectionService = _selectionService;
+		this._imageIoService = _imageIoService;
+		this._urlImageService = _urlImageService;
+	}
+	getCellImagesInSelection() {
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return [];
+		const worksheet = workbook.getActiveSheet();
+		if (!worksheet) return [];
+		const selections = this._selectionService.getCurrentSelections();
+		if (!selections || selections.length === 0) return [];
+		const cellMatrix = worksheet.getCellMatrix();
+		const images = [];
+		for (const selection of selections) {
+			const { startRow, endRow, startColumn, endColumn } = selection.range;
+			for (let row = startRow; row <= endRow; row++) for (let col = startColumn; col <= endColumn; col++) {
+				const cell = cellMatrix.getValue(row, col);
+				if ((0, _univerjs_sheets.isCellImage)(cell === null || cell === void 0 ? void 0 : cell.p)) {
+					const imageData = getCellImageData(cell);
+					if (imageData) images.push({
+						row,
+						col,
+						cellAddress: toA1Notation(row, col),
+						source: imageData.source,
+						imageSourceType: imageData.imageSourceType,
+						imageId: imageData.drawingId
+					});
+				}
+			}
+		}
+		return images;
+	}
+	getCellImagesFromRanges(unitId, subUnitId, ranges) {
+		const workbook = this._univerInstanceService.getUnit(unitId, _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return [];
+		const worksheet = workbook.getSheetBySheetId(subUnitId);
+		if (!worksheet) return [];
+		const cellMatrix = worksheet.getCellMatrix();
+		const images = [];
+		for (const range of ranges) {
+			const { startRow, endRow, startColumn, endColumn } = range;
+			for (let row = startRow; row <= endRow; row++) for (let col = startColumn; col <= endColumn; col++) {
+				const cell = cellMatrix.getValue(row, col);
+				if ((0, _univerjs_sheets.isCellImage)(cell === null || cell === void 0 ? void 0 : cell.p)) {
+					const imageData = getCellImageData(cell);
+					if (imageData) images.push({
+						row,
+						col,
+						cellAddress: toA1Notation(row, col),
+						source: imageData.source,
+						imageSourceType: imageData.imageSourceType,
+						imageId: imageData.drawingId
+					});
+				}
+			}
+		}
+		return images;
+	}
+	getDataColumns() {
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return [];
+		const worksheet = workbook.getActiveSheet();
+		if (!worksheet) return [];
+		const selections = this._selectionService.getCurrentSelections();
+		if (!selections || selections.length === 0) return [];
+		const cellMatrix = worksheet.getCellMatrix();
+		const dataRange = cellMatrix.getDataRange();
+		let minRow = Infinity;
+		let maxRow = -Infinity;
+		const selectionColumnIndices = /* @__PURE__ */ new Set();
+		for (const selection of selections) {
+			minRow = Math.min(minRow, selection.range.startRow);
+			maxRow = Math.max(maxRow, selection.range.endRow);
+			for (let col = selection.range.startColumn; col <= selection.range.endColumn; col++) selectionColumnIndices.add(col);
+		}
+		const columnsWithData = /* @__PURE__ */ new Set();
+		for (let col = dataRange.startColumn; col <= dataRange.endColumn; col++) {
+			if (selectionColumnIndices.has(col)) continue;
+			for (let row = minRow; row <= maxRow; row++) {
+				const cell = cellMatrix.getValue(row, col);
+				if (cell) {
+					var _cell$v, _cell$p;
+					if (((_cell$v = cell.v) === null || _cell$v === void 0 ? void 0 : _cell$v.toString()) || ((_cell$p = cell.p) === null || _cell$p === void 0 || (_cell$p = _cell$p.body) === null || _cell$p === void 0 || (_cell$p = _cell$p.dataStream) === null || _cell$p === void 0 ? void 0 : _cell$p.trim()) || "") {
+						columnsWithData.add(col);
+						break;
+					}
+				}
+			}
+		}
+		const columns = [];
+		const sortedCols = Array.from(columnsWithData).sort((a, b) => a - b);
+		for (const col of sortedCols) columns.push({
+			index: col,
+			label: columnIndexToLetter(col)
+		});
+		return columns;
+	}
+	getDataColumnsForRanges(unitId, subUnitId, ranges) {
+		const workbook = this._univerInstanceService.getUnit(unitId, _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return [];
+		const worksheet = workbook.getSheetBySheetId(subUnitId);
+		if (!worksheet) return [];
+		const cellMatrix = worksheet.getCellMatrix();
+		const dataRange = cellMatrix.getDataRange();
+		let minRow = Infinity;
+		let maxRow = -Infinity;
+		const rangeColumnIndices = /* @__PURE__ */ new Set();
+		for (const range of ranges) {
+			minRow = Math.min(minRow, range.startRow);
+			maxRow = Math.max(maxRow, range.endRow);
+			for (let col = range.startColumn; col <= range.endColumn; col++) rangeColumnIndices.add(col);
+		}
+		const columnsWithData = /* @__PURE__ */ new Set();
+		for (let col = dataRange.startColumn; col <= dataRange.endColumn; col++) {
+			if (rangeColumnIndices.has(col)) continue;
+			for (let row = minRow; row <= maxRow; row++) {
+				const cell = cellMatrix.getValue(row, col);
+				if (cell) {
+					var _cell$v2, _cell$p2;
+					if (((_cell$v2 = cell.v) === null || _cell$v2 === void 0 ? void 0 : _cell$v2.toString()) || ((_cell$p2 = cell.p) === null || _cell$p2 === void 0 || (_cell$p2 = _cell$p2.body) === null || _cell$p2 === void 0 || (_cell$p2 = _cell$p2.dataStream) === null || _cell$p2 === void 0 ? void 0 : _cell$p2.trim()) || "") {
+						columnsWithData.add(col);
+						break;
+					}
+				}
+			}
+		}
+		const columns = [];
+		const sortedCols = Array.from(columnsWithData).sort((a, b) => a - b);
+		for (const col of sortedCols) columns.push({
+			index: col,
+			label: columnIndexToLetter(col)
+		});
+		return columns;
+	}
+	getSelectionRangeNotation() {
+		const selections = this._selectionService.getCurrentSelections();
+		if (!selections || selections.length === 0) return "";
+		return selections.map((s) => rangeToA1Notation(s.range)).join(", ");
+	}
+	getSelectionRowRange() {
+		const selections = this._selectionService.getCurrentSelections();
+		if (!selections || selections.length === 0) return null;
+		let minRow = Infinity;
+		let maxRow = -Infinity;
+		for (const selection of selections) {
+			minRow = Math.min(minRow, selection.range.startRow);
+			maxRow = Math.max(maxRow, selection.range.endRow);
+		}
+		return {
+			startRow: minRow,
+			endRow: maxRow
+		};
+	}
+	getSelectionColumnIndices() {
+		const selections = this._selectionService.getCurrentSelections();
+		if (!selections || selections.length === 0) return /* @__PURE__ */ new Set();
+		const columnIndices = /* @__PURE__ */ new Set();
+		for (const selection of selections) for (let col = selection.range.startColumn; col <= selection.range.endColumn; col++) columnIndices.add(col);
+		return columnIndices;
+	}
+	generateFileName(imageInfo, config) {
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const extension = getFileExtension(imageInfo.source, imageInfo.imageSourceType);
+		const parts = [];
+		for (const part of config.fileNameParts) if (part === "cellAddress") parts.push(imageInfo.cellAddress);
+		else if (part === "columnValue" && config.columnIndex !== void 0) {
+			const worksheet = workbook === null || workbook === void 0 ? void 0 : workbook.getActiveSheet();
+			if (worksheet) {
+				const cell = worksheet.getCellMatrix().getValue(imageInfo.row, config.columnIndex);
+				if (cell) {
+					var _cell$v3, _cell$p3;
+					const value = ((_cell$v3 = cell.v) === null || _cell$v3 === void 0 ? void 0 : _cell$v3.toString()) || ((_cell$p3 = cell.p) === null || _cell$p3 === void 0 || (_cell$p3 = _cell$p3.body) === null || _cell$p3 === void 0 || (_cell$p3 = _cell$p3.dataStream) === null || _cell$p3 === void 0 ? void 0 : _cell$p3.trim()) || "";
+					if (value) {
+						const sanitized = value.replace(/[<>:"/\\|?*]/g, "_").trim();
+						if (sanitized) parts.push(sanitized);
+					}
+				}
+			}
+		}
+		if (parts.length === 0) return `${imageInfo.cellAddress}.${extension}`;
+		return `${parts.join("_")}.${extension}`;
+	}
+	generateFileNameWithContext(imageInfo, config, unitId, subUnitId) {
+		const workbook = this._univerInstanceService.getUnit(unitId, _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const extension = getFileExtension(imageInfo.source, imageInfo.imageSourceType);
+		const parts = [];
+		for (const part of config.fileNameParts) if (part === "cellAddress") parts.push(imageInfo.cellAddress);
+		else if (part === "columnValue" && config.columnIndex !== void 0) {
+			const worksheet = workbook === null || workbook === void 0 ? void 0 : workbook.getSheetBySheetId(subUnitId);
+			if (worksheet) {
+				const cell = worksheet.getCellMatrix().getValue(imageInfo.row, config.columnIndex);
+				if (cell) {
+					var _cell$v4, _cell$p4;
+					const value = ((_cell$v4 = cell.v) === null || _cell$v4 === void 0 ? void 0 : _cell$v4.toString()) || ((_cell$p4 = cell.p) === null || _cell$p4 === void 0 || (_cell$p4 = _cell$p4.body) === null || _cell$p4 === void 0 || (_cell$p4 = _cell$p4.dataStream) === null || _cell$p4 === void 0 ? void 0 : _cell$p4.trim()) || "";
+					if (value) {
+						const sanitized = value.replace(/[<>:"/\\|?*]/g, "_").trim();
+						if (sanitized) parts.push(sanitized);
+					}
+				}
+			}
+		}
+		if (parts.length === 0) return `${imageInfo.cellAddress}.${extension}`;
+		return `${parts.join("_")}.${extension}`;
+	}
+	async saveImages(images, config) {
+		const dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+		const fileNameCounts = /* @__PURE__ */ new Map();
+		for (const imageInfo of images) {
+			var _fileName$match;
+			let fileName = this.generateFileName(imageInfo, config);
+			const baseName = fileName.replace(/\.\w+$/, "");
+			const ext = ((_fileName$match = fileName.match(/\.\w+$/)) === null || _fileName$match === void 0 ? void 0 : _fileName$match[0]) || ".png";
+			const count = fileNameCounts.get(baseName) || 0;
+			if (count > 0) fileName = `${baseName}_${count}${ext}`;
+			fileNameCounts.set(baseName, count + 1);
+			try {
+				const blob = await this._getImageBlob(imageInfo);
+				const writable = await (await dirHandle.getFileHandle(fileName, { create: true })).createWritable();
+				await writable.write(blob);
+				await writable.close();
+			} catch (error) {
+				console.error(`Failed to save image ${fileName}:`, error);
+				throw error;
+			}
+		}
+	}
+	async saveImagesWithContext(images, config, unitId, subUnitId) {
+		const dirHandle = await window.showDirectoryPicker({ mode: "readwrite" });
+		const fileNameCounts = /* @__PURE__ */ new Map();
+		for (const imageInfo of images) {
+			var _fileName$match2;
+			let fileName = this.generateFileNameWithContext(imageInfo, config, unitId, subUnitId);
+			const baseName = fileName.replace(/\.\w+$/, "");
+			const ext = ((_fileName$match2 = fileName.match(/\.\w+$/)) === null || _fileName$match2 === void 0 ? void 0 : _fileName$match2[0]) || ".png";
+			const count = fileNameCounts.get(baseName) || 0;
+			if (count > 0) fileName = `${baseName}_${count}${ext}`;
+			fileNameCounts.set(baseName, count + 1);
+			try {
+				const blob = await this._getImageBlob(imageInfo);
+				const writable = await (await dirHandle.getFileHandle(fileName, { create: true })).createWritable();
+				await writable.write(blob);
+				await writable.close();
+			} catch (error) {
+				console.error(`Failed to save image ${fileName}:`, error);
+				throw error;
+			}
+		}
+	}
+	async downloadSingleImage(imageInfo) {
+		const extension = getFileExtension(imageInfo.source, imageInfo.imageSourceType);
+		const fileName = `${imageInfo.cellAddress}.${extension}`;
+		try {
+			const blob = await this._getImageBlob(imageInfo);
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = fileName;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+		} catch (error) {
+			console.error(`Failed to download image ${fileName}:`, error);
+			throw error;
+		}
+	}
+	async _getImageBlob(imageInfo) {
+		if (imageInfo.imageSourceType === _univerjs_core.ImageSourceType.UUID) return imageSourceToBlob(await this._imageIoService.getImage(imageInfo.source), _univerjs_core.ImageSourceType.URL);
+		if (imageInfo.imageSourceType === _univerjs_core.ImageSourceType.URL) return this._urlImageService.downloadImage(imageInfo.source);
+		return imageSourceToBlob(imageInfo.source, imageInfo.imageSourceType);
+	}
+};
+BatchSaveImagesService = __decorate([
+	__decorateParam(0, _univerjs_core.IUniverInstanceService),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetsSelectionsService)),
+	__decorateParam(2, _univerjs_core.IImageIoService),
+	__decorateParam(3, _univerjs_core.IURLImageService)
+], BatchSaveImagesService);
+
+//#endregion
+//#region src/views/batch-save-images/component-name.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const BATCH_SAVE_IMAGES_DIALOG_ID = "sheet.dialog.batch-save-images";
+
+//#endregion
+//#region src/commands/commands/save-cell-images.command.ts
+const SaveCellImagesCommand = {
+	id: "sheet.command.save-cell-images",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: async (accessor) => {
+		const dialogService = accessor.get(_univerjs_ui.IDialogService);
+		const batchSaveService = accessor.get(IBatchSaveImagesService);
+		const images = batchSaveService.getCellImagesInSelection();
+		if (images.length === 1) try {
+			await batchSaveService.downloadSingleImage(images[0]);
+			return true;
+		} catch (error) {
+			console.error("Failed to download image:", error);
+			return false;
+		}
+		const localeService = accessor.get(_univerjs_core.LocaleService);
+		const selectionRange = batchSaveService.getSelectionRangeNotation();
+		const titleText = `${localeService.t("sheets-drawing-ui.save.title")} (${selectionRange})`;
+		dialogService.open({
+			id: BATCH_SAVE_IMAGES_DIALOG_ID,
+			draggable: true,
+			width: 360,
+			title: { title: titleText },
+			children: { label: BATCH_SAVE_IMAGES_DIALOG_ID },
+			preservePositionOnDestroy: true,
+			onClose: () => dialogService.close(BATCH_SAVE_IMAGES_DIALOG_ID)
+		});
+		return true;
+	}
+};
+
+//#endregion
+//#region src/views/sheet-image-panel/component-name.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const COMPONENT_SHEET_DRAWING_PANEL = "COMPONENT_SHEET_DRAWING_PANEL";
+
+//#endregion
+//#region src/commands/operations/open-drawing-panel.operation.ts
+const SidebarSheetDrawingOperation = {
+	id: "sidebar.operation.sheet-image",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: async (accessor, params) => {
+		const sidebarService = accessor.get(_univerjs_ui.ISidebarService);
+		const localeService = accessor.get(_univerjs_core.LocaleService);
+		const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+		const drawingManagerService = accessor.get(_univerjs_drawing.IDrawingManagerService);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		if (!(0, _univerjs_sheets.getSheetCommandTarget)(univerInstanceService)) return false;
+		switch (params.value) {
+			case "open":
+				sidebarService.open({
+					id: COMPONENT_SHEET_DRAWING_PANEL,
+					header: { title: localeService.t("sheets-drawing-ui.panel.title") },
+					children: { label: COMPONENT_SHEET_DRAWING_PANEL },
+					onClose: () => {
+						const focusedDrawings = drawingManagerService.getFocusDrawings();
+						if (focusedDrawings.length === 1 && focusedDrawings[0].drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE) commandService.syncExecuteCommand(_univerjs_drawing.SetDrawingSelectedOperation.id, []);
+					},
+					width: 360
+				});
+				break;
+			default:
+				sidebarService.close(COMPONENT_SHEET_DRAWING_PANEL);
+				break;
+		}
+		return true;
+	}
+};
+
+//#endregion
+//#region src/commands/operations/edit-sheet-drawing.operation.ts
+const EditSheetDrawingOperation = {
+	id: "sheet.operation.edit-sheet-image",
+	type: _univerjs_core.CommandType.OPERATION,
+	handler: (accessor, params) => {
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		if (params == null) return false;
+		commandService.syncExecuteCommand(_univerjs_drawing.SetDrawingSelectedOperation.id, [params]);
+		commandService.executeCommand(SidebarSheetDrawingOperation.id, { value: "open" });
+		return true;
+	}
+};
+
+//#endregion
+//#region src/controllers/sheet-drawing-group-copy-paste.controller.ts
+const specialPastes$1 = [
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_COL_WIDTH,
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_VALUE,
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_FORMAT,
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_FORMULA
+];
+let SheetsDrawingGroupCopyPasteController = class SheetsDrawingGroupCopyPasteController extends _univerjs_core.Disposable {
+	constructor(_sheetClipboardService, _renderManagerService, _sheetSkeletonService, _sheetDrawingService, _drawingManagerService) {
+		super();
+		this._sheetClipboardService = _sheetClipboardService;
+		this._renderManagerService = _renderManagerService;
+		this._sheetSkeletonService = _sheetSkeletonService;
+		this._sheetDrawingService = _sheetDrawingService;
+		this._drawingManagerService = _drawingManagerService;
+		_defineProperty(this, "_featurePasteHooks", []);
+		_defineProperty(this, "_copyInfo", void 0);
+		this._initCopyPaste();
+	}
+	get _focusedDrawings() {
+		return this._sheetDrawingService.getFocusDrawings();
+	}
+	_initCopyPaste() {
+		this._sheetClipboardService.addClipboardHook({
+			id: "SHEET_DRAWING_GROUP",
+			onBeforeCopyFocusedObject: (_unitId, _subUnitId) => {
+				this._copyInfo = null;
+				const focusDrawings = this._focusedDrawings;
+				if (focusDrawings.length === 0) return false;
+				const groupDrawing = focusDrawings.find((d) => d.drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_GROUP);
+				if (!groupDrawing) return false;
+				const groupNestedParam = this._drawingManagerService.getDrawingsByGroupNested({
+					unitId: groupDrawing.unitId,
+					subUnitId: groupDrawing.subUnitId,
+					drawingId: groupDrawing.drawingId
+				});
+				if (!groupNestedParam) return false;
+				this._copyInfo = {
+					unitId: groupDrawing.unitId,
+					subUnitId: groupDrawing.subUnitId,
+					groupNestedParam
+				};
+				return true;
+			},
+			onPasteCells: (pasteFrom, pasteTo, _data, payload) => {
+				if (!payload.copyId || !pasteFrom || !this._copyInfo) return {
+					redos: [],
+					undos: []
+				};
+				const { pasteType } = payload;
+				if (specialPastes$1.includes(pasteType)) return {
+					redos: [],
+					undos: []
+				};
+				return this._generateGroupPasteMutations(pasteTo);
+			}
+		});
+	}
+	registerFeaturePasteHook(hook) {
+		this._featurePasteHooks.push(hook);
+	}
+	_getGroupFeaturePasteMutations(params) {
+		const redos = [];
+		const undos = [];
+		for (const hook of this._featurePasteHooks) {
+			const result = hook(params);
+			redos.push(...result.redos);
+			undos.push(...result.undos);
+		}
+		return {
+			redos,
+			undos
+		};
+	}
+	_generateGroupPasteMutations(pasteTo) {
+		if (!this._copyInfo) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId, subUnitId, range } = pasteTo;
+		const pasteToSkeleton = this._sheetSkeletonService.getSkeleton(unitId, subUnitId);
+		if (!pasteToSkeleton) return {
+			redos: [],
+			undos: []
+		};
+		const { groupNestedParam } = this._copyInfo;
+		const origRootGroup = groupNestedParam.groups[groupNestedParam.groups.length - 1];
+		const { cloned, idMap } = cloneGroupParams(groupNestedParam);
+		const newRootGroupId = cloned.groups[cloned.groups.length - 1].drawingId;
+		const pasteRange = (0, _univerjs_sheets.discreteRangeToRange)(range);
+		const pasteRect = (0, _univerjs_sheets.attachRangeWithCoord)(pasteToSkeleton, {
+			startRow: pasteRange.startRow,
+			endRow: pasteRange.endRow,
+			startColumn: pasteRange.startColumn,
+			endColumn: pasteRange.endColumn
+		});
+		if (!pasteRect) return {
+			redos: [],
+			undos: []
+		};
+		const newTransform = {
+			...origRootGroup.transform,
+			left: pasteRect.startX,
+			top: pasteRect.startY
+		};
+		const allDrawings = [...(cloned.flatChildren ?? []).map((d) => ({
+			...d,
+			unitId,
+			subUnitId
+		})), ...cloned.groups.map((d) => {
+			if (d.drawingId !== newRootGroupId) return {
+				...d,
+				unitId,
+				subUnitId
+			};
+			return {
+				...d,
+				unitId,
+				subUnitId,
+				transform: newTransform,
+				sheetTransform: (0, _univerjs_sheets_drawing.transformToDrawingPosition)(newTransform, pasteToSkeleton) ?? origRootGroup.sheetTransform,
+				axisAlignSheetTransform: (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)(newTransform, pasteToSkeleton) ?? origRootGroup.sheetTransform
+			};
+		})];
+		const { undo: removeOp, redo: insertOp, objects } = this._sheetDrawingService.getBatchAddOp(allDrawings);
+		const redos = [{
+			id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+			params: {
+				op: insertOp,
+				unitId,
+				subUnitId,
+				objects,
+				type: _univerjs_sheets_drawing.DrawingApplyType.INSERT
+			}
+		}];
+		const undos = [{
+			id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+			params: {
+				op: removeOp,
+				unitId,
+				subUnitId,
+				objects,
+				type: _univerjs_sheets_drawing.DrawingApplyType.REMOVE
+			}
+		}];
+		const featureMutations = this._getGroupFeaturePasteMutations({
+			fromUnitId: this._copyInfo.unitId,
+			fromSubUnitId: this._copyInfo.subUnitId,
+			toUnitId: unitId,
+			toSubUnitId: subUnitId,
+			idMap,
+			cloned
+		});
+		redos.push(...featureMutations.redos);
+		undos.push(...featureMutations.undos);
+		return {
+			redos,
+			undos
+		};
+	}
+	dispose() {
+		this._copyInfo = null;
+		this._featurePasteHooks.length = 0;
+		super.dispose();
+	}
+};
+SheetsDrawingGroupCopyPasteController = __decorate([
+	__decorateParam(0, _univerjs_sheets_ui.ISheetClipboardService),
+	__decorateParam(1, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetSkeletonService)),
+	__decorateParam(3, _univerjs_sheets_drawing.ISheetDrawingService),
+	__decorateParam(4, _univerjs_drawing.IDrawingManagerService)
+], SheetsDrawingGroupCopyPasteController);
+
+//#endregion
+//#region src/services/sheet-chart-render-object.config.ts
+/** Shared Chart frame config for editor and isolated print Scene objects. */
+const SHEET_CHART_RENDER_OBJECT_CONFIG = Object.freeze({
+	borderEnabled: false,
+	paintFirst: "stroke",
+	radius: 8,
+	rotateEnabled: false,
+	strokeWidth: 1
+});
+
+//#endregion
+//#region src/services/canvas-float-dom-manager.service.ts
+var _SheetCanvasFloatDomManagerService;
+const SHEET_FLOAT_DOM_PREFIX = "univer-sheet-float-dom-";
+function createExternalRuntimeDisposable(owner, id, disposeById) {
+	const ownerRef = new WeakRef(owner);
+	let disposed = false;
+	return {
+		id,
+		dispose() {
+			if (disposed) return;
+			disposed = true;
+			const currentOwner = ownerRef.deref();
+			if (currentOwner) disposeById(currentOwner, id);
+		}
+	};
+}
+const SHEET_EMBED_FLOAT_DOM_TRANSFORMER_CONFIG = {
+	..._univerjs_engine_render.DEFAULT_TRANSFORMER_CONFIG,
+	rotateEnabled: false,
+	moveBoundaryEnabled: false
+};
+/**
+* Keep a chart selection outline outside the chart's own rounded frame.
+* Charts retain resize handles but do not expose a rotation control.
+*/
+const SHEET_CHART_TRANSFORMER_CONFIG = {
+	..._univerjs_engine_render.DEFAULT_TRANSFORMER_CONFIG,
+	rotateEnabled: false,
+	keepRatio: false,
+	moveBoundaryEnabled: false
+};
+const FLOAT_DOM_RUNTIME_ACTIVATION_EVENT_PRIORITY = -100;
+const FLOAT_DOM_STAGE2_CLICK_DISTANCE_THRESHOLD = 4;
+const FLOAT_DOM_PREVIEW_OBJECT_SUFFIX = "__preview";
+const EMBED_FLOAT_DRAG_HANDLE_POINTER_DOWN_EVENT = "univer:embed-float-drag-handle:pointerdown";
+function shouldStartFloatDomMoveFromHandle(info, detail) {
+	return detail.hostAnchorId === info.id && (detail.hostUnitId == null || detail.hostUnitId === info.unitId) && (detail.button == null || detail.button === 0) && typeof detail.clientX === "number" && typeof detail.clientY === "number";
+}
+function createFloatDomMoveDragState(info, detail) {
+	if (typeof detail.clientX !== "number" || typeof detail.clientY !== "number") return;
+	return {
+		pointerId: detail.pointerId,
+		startClientX: detail.clientX,
+		startClientY: detail.clientY,
+		startLeft: Number(info.rect.left ?? 0),
+		startTop: Number(info.rect.top ?? 0)
+	};
+}
+function resolveFloatDomMoveDragTransform(state, event, scene) {
+	const { scaleX, scaleY } = scene.getAncestorScale();
+	return {
+		left: state.startLeft + (event.clientX - state.startClientX) / (scaleX || 1),
+		top: state.startTop + (event.clientY - state.startClientY) / (scaleY || 1)
+	};
+}
+function applyFloatDomTransformerConfig(rect, floatDomParam) {
+	const data = floatDomParam.data;
+	if (!data || typeof data !== "object") return;
+	const embedData = data;
+	if (embedData.version !== 1 || typeof embedData.embedId !== "string") return;
+	rect.transformerConfig = {
+		...SHEET_EMBED_FLOAT_DOM_TRANSFORMER_CONFIG,
+		keepRatio: embedData.resizeBehavior === "aspect-ratio"
+	};
+}
+function applySheetChartTransformerConfig(rect) {
+	rect.transformerConfig = {
+		...rect.transformerConfig,
+		...SHEET_CHART_TRANSFORMER_CONFIG
+	};
+}
+function isStage2RuntimeEmbedFloatDom(floatDomParam) {
+	if (!isEmbedFloatDomData(floatDomParam)) return false;
+	const embedData = floatDomParam.data;
+	return embedData.hostType === _univerjs_core.UniverInstanceType.UNIVER_SHEET && embedData.childType === _univerjs_core.UniverInstanceType.UNIVER_SHEET && embedData.runtimeMountMode === "stage2";
+}
+function isEmbedFloatDomData(floatDomParam) {
+	const data = floatDomParam.data;
+	if (!data || typeof data !== "object") return false;
+	const embedData = data;
+	return embedData.version === 1 && typeof embedData.embedId === "string";
+}
+function isSheetHostedEmbedFloatDom(floatDomParam) {
+	if (!isEmbedFloatDomData(floatDomParam)) return false;
+	const embedData = floatDomParam.data;
+	return embedData.hostType === _univerjs_core.UniverInstanceType.UNIVER_SHEET && embedData.childType != null;
+}
+function resolveSheetFloatDomRuntimePolicy(floatDomParam, stage = "inactive") {
+	return {
+		autoMountRuntime: !isStage2RuntimeEmbedFloatDom(floatDomParam),
+		passThroughRuntimeEvents: !(isSheetHostedEmbedFloatDom(floatDomParam) && stage === "stage2"),
+		preserveOnFocusChange: isEmbedFloatDomData(floatDomParam),
+		usePreviewObject: isStage2RuntimeEmbedFloatDom(floatDomParam)
+	};
+}
+function shouldAutoMountFloatDomRuntime(floatDomParam) {
+	return resolveSheetFloatDomRuntimePolicy(floatDomParam).autoMountRuntime;
+}
+function shouldPreserveFloatDomOnFocusChange(floatDomParam) {
+	return resolveSheetFloatDomRuntimePolicy(floatDomParam).preserveOnFocusChange;
+}
+function shouldUseFloatDomPreviewObject(floatDomParam) {
+	return resolveSheetFloatDomRuntimePolicy(floatDomParam).usePreviewObject;
+}
+function shouldPassThroughFloatDomRuntimeEvents(floatDomParam, stage = "inactive") {
+	return resolveSheetFloatDomRuntimePolicy(floatDomParam, stage).passThroughRuntimeEvents;
+}
+function shouldUpdateFloatDomLayerOnRuntimeStageChange(floatDomParam) {
+	return isEmbedFloatDomData(floatDomParam) && !shouldAutoMountFloatDomRuntime(floatDomParam);
+}
+function shouldForwardSheetHostedEmbedFloatDomEvent(floatDomParam, event) {
+	var _target$closest, _runtime$dataset;
+	if (!isSheetHostedEmbedFloatDom(floatDomParam)) return true;
+	const target = event.target;
+	const runtime = target === null || target === void 0 || (_target$closest = target.closest) === null || _target$closest === void 0 ? void 0 : _target$closest.call(target, "[data-embed-float-dom=\"true\"]");
+	return (runtime === null || runtime === void 0 || (_runtime$dataset = runtime.dataset) === null || _runtime$dataset === void 0 ? void 0 : _runtime$dataset.embedFloatStage) !== "stage2";
+}
+function shouldPassThroughFloatDomActivationEvent(nextStage) {
+	return nextStage !== "stage2";
+}
+function syncFloatDomHostSelectionOnStageEnter(stage, renderObject, rect) {
+	if (!renderObject) return;
+	if (stage === "stage1") {
+		var _renderObject$scene$a, _renderObject$scene;
+		(_renderObject$scene$a = (_renderObject$scene = renderObject.scene).attachTransformerTo) === null || _renderObject$scene$a === void 0 || _renderObject$scene$a.call(_renderObject$scene, rect);
+		return;
+	}
+	if (stage === "stage2" && rect.oKey) {
+		var _renderObject$scene$g, _renderObject$scene2, _renderObject$scene$g2;
+		renderObject.transformer.clearControlByIds([rect.oKey]);
+		(_renderObject$scene$g = (_renderObject$scene2 = renderObject.scene).getTransformer) === null || _renderObject$scene$g === void 0 || (_renderObject$scene$g = _renderObject$scene$g.call(_renderObject$scene2)) === null || _renderObject$scene$g === void 0 || (_renderObject$scene$g2 = _renderObject$scene$g.clearSelectedObjects) === null || _renderObject$scene$g2 === void 0 || _renderObject$scene$g2.call(_renderObject$scene$g);
+	}
+}
+function isFloatDomInDomLayer(canvasFloatDomService, id) {
+	return canvasFloatDomService.domLayers.some(([layerId]) => layerId === id);
+}
+function isCanvasFloatDomDrawingType(drawingType) {
+	return drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_DOM || drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_BLOCK || drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_CHART;
+}
+function shouldActivateStage2FromHostPointer(info, event) {
+	if (info.runtimeMounted || info.runtimeStage !== "stage1") return false;
+	const { offsetX, offsetY } = event;
+	if (typeof offsetX !== "number" || typeof offsetY !== "number") return false;
+	const position = info.position$.getValue();
+	if (offsetX >= Math.min(position.startX, position.endX) && offsetX <= Math.max(position.startX, position.endX) && offsetY >= Math.min(position.startY, position.endY) && offsetY <= Math.max(position.startY, position.endY)) return true;
+	const rect = info.rect;
+	if (typeof rect.isHit === "function") try {
+		return rect.isHit({
+			x: offsetX,
+			y: offsetY
+		});
+	} catch {}
+	return offsetX >= rect.left && offsetX <= rect.left + rect.width && offsetY >= rect.top && offsetY <= rect.top + rect.height;
+}
+function createFloatDomHostClickIntent(info, event) {
+	if (event.type !== "pointerdown" || !shouldActivateStage2FromHostPointer(info, event)) return;
+	return {
+		pointerId: event.pointerId,
+		startOffsetX: event.offsetX,
+		startOffsetY: event.offsetY,
+		startedAt: Date.now()
+	};
+}
+function shouldActivateStage2FromHostClickIntent(info, intent, event) {
+	if (!intent || event.type !== "pointerup") return false;
+	if (intent.pointerId != null && event.pointerId != null && intent.pointerId !== event.pointerId) return false;
+	if (!shouldActivateStage2FromHostPointer(info, event)) return false;
+	return Math.hypot(event.offsetX - intent.startOffsetX, event.offsetY - intent.startOffsetY) <= FLOAT_DOM_STAGE2_CLICK_DISTANCE_THRESHOLD;
+}
+/**
+* Adjust dom bound size when scrolling (dom bound would shrink when scrolling if over the edge of viewMain)
+* @param posOfFloatObject  The position of float object, relative to sheet content, scale & scrolling does not affect it.
+* @param scene
+* @param skeleton
+* @param worksheet
+* @returns ILimitBound
+*/
+function transformBound2DOMBound(posOfFloatObject, scene, skeleton, worksheet, floatDomInfo, skipBoundsOfViewArea = false) {
+	const { scaleX, scaleY } = scene.getAncestorScale();
+	const viewMain = scene.getViewport(_univerjs_engine_render.SHEET_VIEWPORT_KEY.VIEW_MAIN);
+	const { startColumn: viewMainStartColumn, startRow: viewMainStartRow, xSplit: freezedCol, ySplit: freezedRow } = worksheet.getFreeze();
+	/**
+	* Actually, it means fixed.
+	*/
+	const absolute = {
+		left: true,
+		top: true
+	};
+	if (!viewMain) return {
+		...posOfFloatObject,
+		absolute
+	};
+	const { left, right, top, bottom } = posOfFloatObject;
+	let { top: viewBoundsTop, left: viewBoundsLeft, viewportScrollX, viewportScrollY } = viewMain;
+	const { boundsOfViewArea: specBoundsOfViewArea, scrollDirectionResponse } = floatDomInfo || {};
+	const { rowHeaderWidth, columnHeaderHeight } = skeleton;
+	const boundsOfViewArea = {
+		top: skipBoundsOfViewArea ? 0 : columnHeaderHeight,
+		left: skipBoundsOfViewArea ? 0 : rowHeaderWidth
+	};
+	if (specBoundsOfViewArea) {
+		if (_univerjs_core.Tools.isDefine(boundsOfViewArea.top)) boundsOfViewArea.top = specBoundsOfViewArea.top;
+		if (_univerjs_core.Tools.isDefine(boundsOfViewArea.left)) boundsOfViewArea.left = specBoundsOfViewArea.left;
+	}
+	if (scrollDirectionResponse === "HORIZONTAL") viewportScrollY = 0;
+	if (scrollDirectionResponse === "VERTICAL") viewportScrollX = 0;
+	let offsetLeft = 0;
+	let offsetRight = 0;
+	/**
+	* freezed viewport start & end position
+	*/
+	const freezeStartY = skeleton.rowStartY(viewMainStartRow - freezedRow) + columnHeaderHeight;
+	const freezeStartX = skeleton.colStartX(viewMainStartColumn - freezedCol) + rowHeaderWidth;
+	const freezeEndY = skeleton.rowStartY(viewMainStartRow) + columnHeaderHeight;
+	const freezeEndX = skeleton.colStartX(viewMainStartColumn) + rowHeaderWidth;
+	if (freezedCol === 0) {
+		absolute.left = false;
+		offsetLeft = (left - viewportScrollX) * scaleX;
+		offsetRight = (right - viewportScrollX) * scaleX;
+	} else {
+		const leftToCanvas = left - (freezeStartX - rowHeaderWidth);
+		const rightToCanvas = right - (freezeStartX - rowHeaderWidth);
+		if (right < freezeEndX) {
+			offsetLeft = leftToCanvas * scaleX;
+			offsetRight = rightToCanvas * scaleX;
+		} else if (left <= freezeEndX && right >= freezeEndX) {
+			offsetLeft = leftToCanvas * scaleX;
+			offsetRight = Math.max(viewBoundsLeft, (right - viewportScrollX) * scaleX);
+		} else if (left > freezeEndX) {
+			absolute.left = false;
+			offsetLeft = Math.max((left - viewportScrollX) * scaleX, viewBoundsLeft);
+			offsetRight = Math.max((right - viewportScrollX) * scaleX, viewBoundsLeft);
+		}
+	}
+	let offsetTop = 0;
+	let offsetBottom = 0;
+	if (freezedRow === 0) {
+		absolute.top = false;
+		offsetTop = (top - viewportScrollY) * scaleY;
+		offsetBottom = (bottom - viewportScrollY) * scaleY;
+	} else {
+		const topToCanvas = top - (freezeStartY - columnHeaderHeight);
+		const bottomToCanvas = bottom - (freezeStartY - columnHeaderHeight);
+		if (bottom < freezeEndY) {
+			offsetTop = topToCanvas * scaleY;
+			offsetBottom = bottomToCanvas * scaleY;
+		} else if (top <= freezeEndY && bottom >= freezeEndY) {
+			offsetTop = topToCanvas * scaleY;
+			offsetBottom = Math.max(viewBoundsTop, (bottom - viewportScrollY) * scaleY);
+		} else if (top > freezeEndY) {
+			absolute.top = false;
+			offsetTop = Math.max((top - viewportScrollY) * scaleY, viewBoundsTop);
+			offsetBottom = Math.max((bottom - viewportScrollY) * scaleY, viewBoundsTop);
+		}
+	}
+	offsetLeft = Math.max(offsetLeft, boundsOfViewArea.left);
+	offsetTop = Math.max(offsetTop, boundsOfViewArea.top);
+	offsetRight = Math.max(offsetRight, boundsOfViewArea.left);
+	offsetBottom = Math.max(offsetBottom, boundsOfViewArea.top);
+	return {
+		left: offsetLeft,
+		right: offsetRight,
+		top: offsetTop,
+		bottom: offsetBottom,
+		absolute
+	};
+}
+/**
+* Calculate the position of the floating dom, limited by bounds of viewMain in transformBound2DOMBound
+* @param floatObject
+* @param renderUnit
+* @param skeleton
+* @param worksheet
+* @returns {IFloatDomLayout} position
+*/
+const calcSheetFloatDomPosition = (floatObject, scene, skeleton, worksheet, floatDomInfo) => {
+	const { left, top, width, height, angle } = floatObject;
+	const offsetBound = transformBound2DOMBound({
+		left,
+		right: left + width,
+		top,
+		bottom: top + height
+	}, scene, skeleton, worksheet, floatDomInfo);
+	const { scaleX, scaleY } = scene.getAncestorScale();
+	return {
+		startX: offsetBound.left,
+		endX: offsetBound.right,
+		startY: offsetBound.top,
+		endY: offsetBound.bottom,
+		rotate: angle,
+		width: width * scaleX,
+		height: height * scaleY,
+		absolute: offsetBound.absolute
+	};
+};
+let SheetCanvasFloatDomManagerService = _SheetCanvasFloatDomManagerService = class SheetCanvasFloatDomManagerService extends _univerjs_core.Disposable {
+	constructor(_renderManagerService, _univerInstanceService, _commandService, _drawingManagerService, _canvasFloatDomService, _sheetDrawingService, _lifecycleService, _canvasFloatDomPreviewService) {
+		super();
+		this._renderManagerService = _renderManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._commandService = _commandService;
+		this._drawingManagerService = _drawingManagerService;
+		this._canvasFloatDomService = _canvasFloatDomService;
+		this._sheetDrawingService = _sheetDrawingService;
+		this._lifecycleService = _lifecycleService;
+		this._canvasFloatDomPreviewService = _canvasFloatDomPreviewService;
+		_defineProperty(this, "_domLayerInfoMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_transformChange$", new rxjs.Subject());
+		_defineProperty(this, "transformChange$", this._transformChange$.asObservable());
+		_defineProperty(this, "_add$", new rxjs.Subject());
+		_defineProperty(this, "add$", this._add$.asObservable());
+		_defineProperty(this, "_remove$", new rxjs.Subject());
+		_defineProperty(this, "remove$", this._remove$.asObservable());
+		_defineProperty(this, "_renderObjectFactories", /* @__PURE__ */ new Map());
+		this._drawingAddListener();
+		this._featureUpdateListener();
+		this._deleteListener();
+		this._bindScrollEvent();
+		this._bindEmbedFloatDragHandleEvent();
+	}
+	/**
+	* Register a factory that creates the canvas-side render object for a sheet
+	* float-dom drawing type. The latest registered factory wins; disposing the
+	* returned handle unregisters it and restores the previous factory or the
+	* default {@link Rect} fallback.
+	*/
+	registerRenderObjectFactory(drawingType, factory) {
+		const factories = this._renderObjectFactories.get(drawingType) ?? [];
+		factories.push(factory);
+		this._renderObjectFactories.set(drawingType, factories);
+		return { dispose: () => {
+			const currentFactories = this._renderObjectFactories.get(drawingType);
+			if (!currentFactories) return;
+			const index = currentFactories.indexOf(factory);
+			if (index >= 0) currentFactories.splice(index, 1);
+			if (currentFactories.length === 0) this._renderObjectFactories.delete(drawingType);
+		} };
+	}
+	_createRenderObject(context) {
+		const factories = this._renderObjectFactories.get(context.drawingType);
+		const factory = factories === null || factories === void 0 ? void 0 : factories[factories.length - 1];
+		return (factory === null || factory === void 0 ? void 0 : factory(context)) ?? new _univerjs_engine_render.Rect(context.key, context.config);
+	}
+	_bindScrollEvent() {
+		this._lifecycleService.lifecycle$.pipe((0, rxjs.filter)((s) => s === _univerjs_core.LifecycleStages.Rendered), (0, rxjs.take)(1)).subscribe(() => {
+			this._scrollUpdateListener();
+		});
+	}
+	getFloatDomInfo(id) {
+		return this._domLayerInfoMap.get(id);
+	}
+	getFloatDomsBySubUnitId(unitId, subUnitId) {
+		return Array.from(this._domLayerInfoMap.values()).filter((info) => info.subUnitId === subUnitId && info.unitId === unitId);
+	}
+	static _disposeExternalFloatDom(manager, id) {
+		manager._removeDom(id, true);
+	}
+	_createFloatDomDisposable(id) {
+		return createExternalRuntimeDisposable(this, id, _SheetCanvasFloatDomManagerService._disposeExternalFloatDom);
+	}
+	_bindEmbedFloatDragHandleEvent() {
+		if (typeof document === "undefined") return;
+		const listener = (event) => this._handleEmbedFloatDragHandlePointerDown(event);
+		document.addEventListener(EMBED_FLOAT_DRAG_HANDLE_POINTER_DOWN_EVENT, listener);
+		this.disposeWithMe(() => document.removeEventListener(EMBED_FLOAT_DRAG_HANDLE_POINTER_DOWN_EVENT, listener));
+	}
+	_handleEmbedFloatDragHandlePointerDown(event) {
+		const detail = event.detail;
+		if (!(detail === null || detail === void 0 ? void 0 : detail.hostAnchorId)) return;
+		const info = this._domLayerInfoMap.get(detail.hostAnchorId);
+		if (!info || !shouldStartFloatDomMoveFromHandle(info, detail)) return;
+		const dragState = createFloatDomMoveDragState(info, detail);
+		const renderObject = this._getSceneAndTransformerByDrawingSearch(info.unitId);
+		if (!dragState || !renderObject) return;
+		const { scene, transformer } = renderObject;
+		if (info.rect.oKey) {
+			var _scene$getTransformer;
+			transformer.clearControlByIds([info.rect.oKey]);
+			(_scene$getTransformer = scene.getTransformer()) === null || _scene$getTransformer === void 0 || _scene$getTransformer.clearSelectedObjects();
+		}
+		const handlePointerMove = (pointerEvent) => {
+			if (dragState.pointerId != null && pointerEvent.pointerId !== dragState.pointerId) return;
+			pointerEvent.preventDefault();
+			const nextTransform = resolveFloatDomMoveDragTransform(dragState, pointerEvent, scene);
+			info.rect.transformByState(nextTransform);
+		};
+		const handlePointerUp = (pointerEvent) => {
+			if (dragState.pointerId != null && pointerEvent.pointerId !== dragState.pointerId) return;
+			window.removeEventListener("pointermove", handlePointerMove, true);
+			window.removeEventListener("pointerup", handlePointerUp, true);
+			window.removeEventListener("pointercancel", handlePointerCancel, true);
+			pointerEvent.preventDefault();
+			if (info.rect.left !== dragState.startLeft || info.rect.top !== dragState.startTop) this._commitFloatDomMove(info);
+			if (info.runtimeStage === "stage1") {
+				var _scene$attachTransfor;
+				(_scene$attachTransfor = scene.attachTransformerTo) === null || _scene$attachTransfor === void 0 || _scene$attachTransfor.call(scene, info.rect);
+			}
+		};
+		const handlePointerCancel = (pointerEvent) => {
+			if (dragState.pointerId != null && pointerEvent.pointerId !== dragState.pointerId) return;
+			window.removeEventListener("pointermove", handlePointerMove, true);
+			window.removeEventListener("pointerup", handlePointerUp, true);
+			window.removeEventListener("pointercancel", handlePointerCancel, true);
+			info.rect.transformByState({
+				left: dragState.startLeft,
+				top: dragState.startTop
+			});
+			if (info.runtimeStage === "stage1") {
+				var _scene$attachTransfor2;
+				(_scene$attachTransfor2 = scene.attachTransformerTo) === null || _scene$attachTransfor2 === void 0 || _scene$attachTransfor2.call(scene, info.rect);
+			}
+		};
+		window.addEventListener("pointermove", handlePointerMove, true);
+		window.addEventListener("pointerup", handlePointerUp, true);
+		window.addEventListener("pointercancel", handlePointerCancel, true);
+	}
+	_commitFloatDomMove(info) {
+		var _this$_renderManagerS;
+		const skeletonParam = (_this$_renderManagerS = this._renderManagerService.getRenderUnitById(info.unitId)) === null || _this$_renderManagerS === void 0 ? void 0 : _this$_renderManagerS.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(info.subUnitId);
+		const drawing = this._sheetDrawingService.getDrawingByParam({
+			unitId: info.unitId,
+			subUnitId: info.subUnitId,
+			drawingId: info.id
+		});
+		if (!skeletonParam || !(drawing === null || drawing === void 0 ? void 0 : drawing.transform)) return;
+		const transform = {
+			...drawing.transform,
+			left: info.rect.left,
+			top: info.rect.top,
+			width: info.rect.width,
+			height: info.rect.height,
+			angle: info.rect.angle,
+			flipX: info.rect.flipX,
+			flipY: info.rect.flipY,
+			skewX: info.rect.skewX,
+			skewY: info.rect.skewY
+		};
+		const sheetTransform = (0, _univerjs_sheets_drawing.transformToDrawingPosition)(transform, skeletonParam.skeleton);
+		const axisAlignSheetTransform = (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)(transform, skeletonParam.skeleton);
+		if (!sheetTransform || !axisAlignSheetTransform) return;
+		this._commandService.syncExecuteCommand(_univerjs_sheets_drawing.SetSheetDrawingCommand.id, {
+			unitId: info.unitId,
+			drawings: [{
+				...drawing,
+				transform,
+				sheetTransform,
+				axisAlignSheetTransform
+			}]
+		});
+	}
+	isFloatDomRuntimeMounted(id) {
+		var _this$_domLayerInfoMa;
+		return ((_this$_domLayerInfoMa = this._domLayerInfoMap.get(id)) === null || _this$_domLayerInfoMa === void 0 ? void 0 : _this$_domLayerInfoMa.runtimeMounted) === true;
+	}
+	_getFloatDomPreviewObjectKey(rectShapeKey) {
+		return `${rectShapeKey}${FLOAT_DOM_PREVIEW_OBJECT_SUFFIX}`;
+	}
+	_syncPreviewObjectTransform(previewObject, rect) {
+		previewObject === null || previewObject === void 0 || previewObject.transformByState({
+			left: rect.left,
+			top: rect.top,
+			width: rect.width,
+			height: rect.height,
+			angle: rect.angle,
+			flipX: rect.flipX,
+			flipY: rect.flipY,
+			skewX: rect.skewX,
+			skewY: rect.skewY
+		});
+	}
+	_requestFloatDomPreview(drawingId, rect, data) {
+		if (!this._canvasFloatDomPreviewService) return;
+		this._canvasFloatDomPreviewService.requestPreview({
+			id: drawingId,
+			width: rect.width,
+			height: rect.height,
+			data
+		});
+	}
+	_upsertFloatDomPreviewObject(scene, rect, rectShapeKey, drawingId, data) {
+		var _this$_canvasFloatDom;
+		const preview = (_this$_canvasFloatDom = this._canvasFloatDomPreviewService) === null || _this$_canvasFloatDom === void 0 ? void 0 : _this$_canvasFloatDom.getPreview(drawingId);
+		if (!(preview === null || preview === void 0 ? void 0 : preview.image)) {
+			this._requestFloatDomPreview(drawingId, rect, data);
+			return;
+		}
+		const previewObjectKey = this._getFloatDomPreviewObjectKey(rectShapeKey);
+		const existingPreviewObject = scene.getObject(previewObjectKey);
+		if (existingPreviewObject instanceof _univerjs_engine_render.Image) {
+			existingPreviewObject.changeSource(preview.image);
+			this._syncPreviewObjectTransform(existingPreviewObject, rect);
+			return existingPreviewObject;
+		}
+		const previewObject = new _univerjs_engine_render.Image(previewObjectKey, {
+			left: rect.left,
+			top: rect.top,
+			width: rect.width,
+			height: rect.height,
+			angle: rect.angle,
+			flipX: rect.flipX,
+			flipY: rect.flipY,
+			skewX: rect.skewX,
+			skewY: rect.skewY,
+			url: preview.image,
+			evented: false,
+			rotateEnabled: false,
+			resizeEnabled: false
+		});
+		scene.addObject(previewObject, _univerjs_engine_render.DRAWING_OBJECT_LAYER_INDEX);
+		return previewObject;
+	}
+	mountFloatDomRuntime(id) {
+		const info = this._domLayerInfoMap.get(id);
+		if (!(info === null || info === void 0 ? void 0 : info.floatDomConfig)) return false;
+		if (info.runtimeMounted) return true;
+		if (isFloatDomInDomLayer(this._canvasFloatDomService, id)) this._canvasFloatDomService.updateFloatDom(id, {
+			eventPassThrough: false,
+			props: {
+				...info.floatDomConfig.props,
+				initialStage: "stage2",
+				onRuntimeStageExit: () => this.unmountFloatDomRuntime(id)
+			}
+		});
+		else this._canvasFloatDomService.addFloatDom({
+			...info.floatDomConfig,
+			eventPassThrough: false,
+			props: {
+				...info.floatDomConfig.props,
+				initialStage: "stage2",
+				onRuntimeStageExit: () => this.unmountFloatDomRuntime(id)
+			}
+		});
+		info.runtimeMounted = true;
+		info.runtimeStage = "stage2";
+		return true;
+	}
+	unmountFloatDomRuntime(id) {
+		const info = this._domLayerInfoMap.get(id);
+		if (!(info === null || info === void 0 ? void 0 : info.runtimeMounted)) return;
+		if (info.floatDomConfig && !shouldAutoMountFloatDomRuntime(info.floatDomConfig)) this._canvasFloatDomService.updateFloatDom(id, {
+			eventPassThrough: shouldPassThroughFloatDomRuntimeEvents(info.floatDomConfig, "inactive"),
+			props: info.floatDomConfig.props
+		});
+		else this._canvasFloatDomService.removeFloatDom(id);
+		info.runtimeMounted = false;
+		info.runtimeStage = "inactive";
+	}
+	_syncFloatDomVisibilityForActiveSheet(unitId, activeSubUnitId) {
+		Array.from(this._domLayerInfoMap.values()).filter((info) => info.unitId === unitId && info.floatDomConfig).forEach((info) => {
+			const isActiveSheet = info.subUnitId === activeSubUnitId;
+			const isInDomLayer = isFloatDomInDomLayer(this._canvasFloatDomService, info.id);
+			if (!isActiveSheet) {
+				if (isInDomLayer) this._canvasFloatDomService.removeFloatDom(info.id);
+				info.runtimeMounted = false;
+				info.runtimeStage = "inactive";
+				return;
+			}
+			if (isInDomLayer || !info.floatDomConfig) return;
+			this._canvasFloatDomService.addFloatDom(info.floatDomConfig);
+			const shouldAutoMountRuntime = shouldAutoMountFloatDomRuntime(info.floatDomConfig);
+			info.runtimeMounted = shouldAutoMountRuntime;
+			info.runtimeStage = isEmbedFloatDomData(info.floatDomConfig) ? "inactive" : shouldAutoMountRuntime ? "stage2" : "inactive";
+		});
+	}
+	promoteFloatDomRuntimeStage(id) {
+		const info = this._domLayerInfoMap.get(id);
+		if (!(info === null || info === void 0 ? void 0 : info.floatDomConfig)) return;
+		const sheetHostedEmbed = isSheetHostedEmbedFloatDom(info.floatDomConfig);
+		if (info.runtimeMounted && !sheetHostedEmbed) {
+			info.runtimeStage = "stage2";
+			return "stage2";
+		}
+		if (info.runtimeStage !== "stage1") {
+			info.runtimeStage = "stage1";
+			if (shouldUpdateFloatDomLayerOnRuntimeStageChange(info.floatDomConfig)) this._canvasFloatDomService.updateFloatDom(id, { eventPassThrough: shouldPassThroughFloatDomRuntimeEvents(info.floatDomConfig, "stage1") });
+			return "stage1";
+		}
+		if (info.runtimeMounted) {
+			info.runtimeStage = "stage2";
+			if (shouldUpdateFloatDomLayerOnRuntimeStageChange(info.floatDomConfig)) this._canvasFloatDomService.updateFloatDom(id, { eventPassThrough: shouldPassThroughFloatDomRuntimeEvents(info.floatDomConfig, "stage2") });
+			return "stage2";
+		}
+		this.mountFloatDomRuntime(id);
+		return "stage2";
+	}
+	_getSceneAndTransformerByDrawingSearch(unitId) {
+		if (unitId == null) return;
+		const renderUnit = this._renderManagerService.getRenderUnitById(unitId);
+		const scene = renderUnit === null || renderUnit === void 0 ? void 0 : renderUnit.scene;
+		if (renderUnit == null || scene == null) return null;
+		return {
+			scene,
+			transformer: scene.getTransformerByCreate(),
+			renderUnit,
+			canvas: renderUnit.engine.getCanvasElement()
+		};
+	}
+	_getDrawingZIndex(unitId, subUnitId, drawingId) {
+		const drawingOrder = this._drawingManagerService.getDrawingOrder(unitId, subUnitId);
+		const drawingIndex = drawingOrder.indexOf(drawingId);
+		return drawingIndex < 0 ? drawingOrder.length - 1 : drawingIndex;
+	}
+	_drawingAddListener() {
+		this.disposeWithMe(this._drawingManagerService.add$.subscribe((params) => {
+			params.forEach((param) => {
+				var _this$_renderManagerS2;
+				const { unitId, subUnitId, drawingId } = param;
+				const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+					unitId,
+					subUnitId
+				});
+				const floatDomParam = this._drawingManagerService.getDrawingByParam(param);
+				const workbook = this._univerInstanceService.getUnit(unitId, _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+				if (!workbook) return;
+				const activeSheetId = workbook.getActiveSheet().getSheetId();
+				if (!floatDomParam || !target) return;
+				const skeleton = (_this$_renderManagerS2 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS2 === void 0 ? void 0 : _this$_renderManagerS2.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(subUnitId);
+				if (!skeleton) return;
+				const { transform, drawingType, data, hidden, groupId } = floatDomParam;
+				if (!isCanvasFloatDomDrawingType(drawingType)) return;
+				const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+				if (renderObject == null) return;
+				if (hidden) return;
+				const { scene, canvas } = renderObject;
+				if (transform == null) return true;
+				if (activeSheetId !== subUnitId) return;
+				const { left, top, width, height, angle, flipX, flipY, skewX, skewY } = transform;
+				const rectShapeKey = (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				const groupShapeKey = groupId ? (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+					unitId,
+					subUnitId,
+					drawingId: groupId
+				}) : void 0;
+				const rectShape = this._getObjectIncludingGroup(scene, rectShapeKey, groupShapeKey);
+				if (rectShape != null) {
+					this._removeTopLevelDuplicateIfGrouped(scene, rectShapeKey, rectShape);
+					applyFloatDomTransformerConfig(rectShape, floatDomParam);
+					if (drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_CHART) applySheetChartTransformerConfig(rectShape);
+					rectShape.transformByState({
+						left,
+						top,
+						width,
+						height,
+						angle,
+						flipX,
+						flipY,
+						skewX,
+						skewY
+					});
+					this._syncFloatDomRect(drawingId, rectShape);
+					if (shouldUseFloatDomPreviewObject(floatDomParam)) {
+						this._syncPreviewObjectTransform(scene.getObject(this._getFloatDomPreviewObjectKey(rectShapeKey)), rectShape);
+						this._requestFloatDomPreview(drawingId, rectShape, data);
+					}
+					if (this._domLayerInfoMap.has(drawingId)) return;
+				}
+				const imageConfig = {
+					left,
+					top,
+					width,
+					height,
+					zIndex: this._getDrawingZIndex(unitId, subUnitId, drawingId)
+				};
+				const isChart = drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_CHART;
+				if (isChart) {
+					const backgroundColor = this._getChartDataBackground(data);
+					if (backgroundColor !== void 0) imageConfig.fill = backgroundColor;
+					if (data && data.border) imageConfig.stroke = data.border;
+					Object.assign(imageConfig, SHEET_CHART_RENDER_OBJECT_CONFIG);
+				} else imageConfig.rotateEnabled = false;
+				const rect = rectShape ?? this._createRenderObject({
+					key: rectShapeKey,
+					config: imageConfig,
+					unitId,
+					subUnitId,
+					drawingId,
+					drawingType,
+					data
+				});
+				applyFloatDomTransformerConfig(rect, floatDomParam);
+				if (isChart) applySheetChartTransformerConfig(rect);
+				if (isChart) rect.objectType = _univerjs_engine_render.ObjectType.CHART;
+				else if (drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_DOM || drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_BLOCK) rect.objectType = _univerjs_engine_render.ObjectType.DRAWING_DOM;
+				if (!rectShape) scene.addObject(rect, _univerjs_engine_render.DRAWING_OBJECT_LAYER_INDEX);
+				if (!rectShape && floatDomParam.allowTransform !== false) scene.attachTransformerTo(rect);
+				if (!rectShape && isChart && groupId) (0, _univerjs_drawing_ui.insertGroupObject)({
+					drawingId: groupId,
+					unitId,
+					subUnitId
+				}, rect, scene, this._drawingManagerService);
+				const disposableCollection = new _univerjs_core.DisposableCollection();
+				const shouldUsePreviewObject = shouldUseFloatDomPreviewObject(floatDomParam);
+				const previewObjectKey = shouldUsePreviewObject ? this._getFloatDomPreviewObjectKey(rectShapeKey) : void 0;
+				if (shouldUsePreviewObject) {
+					var _this$_canvasFloatDom2;
+					this._upsertFloatDomPreviewObject(scene, rect, rectShapeKey, drawingId, data);
+					const previewSubscription = (_this$_canvasFloatDom2 = this._canvasFloatDomPreviewService) === null || _this$_canvasFloatDom2 === void 0 ? void 0 : _this$_canvasFloatDom2.previewUpdated$.subscribe((preview) => {
+						if (preview.id !== drawingId) return;
+						this._upsertFloatDomPreviewObject(scene, rect, rectShapeKey, drawingId, data);
+					});
+					previewSubscription && disposableCollection.add(previewSubscription);
+				}
+				const position$ = new rxjs.BehaviorSubject(calcSheetFloatDomPosition(rect, renderObject.renderUnit.scene, skeleton.skeleton, target.worksheet));
+				const domId = `${SHEET_FLOAT_DOM_PREFIX}${(0, _univerjs_core.generateRandomId)(6)}`;
+				const shouldAutoMountRuntime = shouldAutoMountFloatDomRuntime(floatDomParam);
+				const shouldSyncEmbedRuntimeStage = isEmbedFloatDomData(floatDomParam);
+				let info;
+				const handleRuntimeStageEnter = (stage) => {
+					if (info) {
+						info.runtimeStage = stage;
+						info.runtimeMounted = shouldAutoMountRuntime || stage === "stage2";
+						if (shouldUpdateFloatDomLayerOnRuntimeStageChange(floatDomParam)) this._canvasFloatDomService.updateFloatDom(drawingId, { eventPassThrough: shouldPassThroughFloatDomRuntimeEvents(floatDomParam, stage) });
+					}
+					syncFloatDomHostSelectionOnStageEnter(stage, this._getSceneAndTransformerByDrawingSearch(unitId), rect);
+				};
+				const floatDomConfig = {
+					position$,
+					id: drawingId,
+					domId,
+					componentKey: floatDomParam.componentKey,
+					eventPassThrough: shouldPassThroughFloatDomRuntimeEvents(floatDomParam, "inactive"),
+					preserveOnFocusChange: shouldPreserveFloatDomOnFocusChange(floatDomParam),
+					onPointerDown: (evt) => {
+						if (shouldForwardSheetHostedEmbedFloatDomEvent(floatDomParam, evt)) canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+					},
+					onPointerMove: (evt) => {
+						if (shouldForwardSheetHostedEmbedFloatDomEvent(floatDomParam, evt)) canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+					},
+					onPointerUp: (evt) => {
+						if (shouldForwardSheetHostedEmbedFloatDomEvent(floatDomParam, evt)) canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+					},
+					onWheel: (evt) => {
+						if (shouldForwardSheetHostedEmbedFloatDomEvent(floatDomParam, evt)) canvas.dispatchEvent(new WheelEvent(evt.type, evt));
+					},
+					data,
+					props: shouldSyncEmbedRuntimeStage ? { onRuntimeStageEnter: handleRuntimeStageEnter } : void 0,
+					unitId
+				};
+				info = {
+					dispose: disposableCollection,
+					rect,
+					position$,
+					unitId,
+					subUnitId,
+					id: drawingId,
+					domId,
+					floatDomConfig,
+					runtimeMounted: shouldAutoMountRuntime,
+					runtimeStage: shouldSyncEmbedRuntimeStage ? "inactive" : shouldAutoMountRuntime ? "stage2" : "inactive",
+					previewObjectKey
+				};
+				this._canvasFloatDomService.addFloatDom(floatDomConfig);
+				if (!shouldAutoMountRuntime) {
+					let hostStage2ClickIntent;
+					const cancelStage2ClickIntentOnMove = (evt) => {
+						if (!hostStage2ClickIntent) return;
+						if (hostStage2ClickIntent.pointerId != null && evt.pointerId != null && hostStage2ClickIntent.pointerId !== evt.pointerId) return;
+						if (typeof evt.offsetX !== "number" || typeof evt.offsetY !== "number") {
+							hostStage2ClickIntent = void 0;
+							return;
+						}
+						if (Math.hypot(evt.offsetX - hostStage2ClickIntent.startOffsetX, evt.offsetY - hostStage2ClickIntent.startOffsetY) > FLOAT_DOM_STAGE2_CLICK_DISTANCE_THRESHOLD) hostStage2ClickIntent = void 0;
+					};
+					const runtimeActivationListener = rect.onPointerDown$.subscribeEvent({
+						priority: FLOAT_DOM_RUNTIME_ACTIVATION_EVENT_PRIORITY,
+						next: ([evt, state]) => {
+							if ((info === null || info === void 0 ? void 0 : info.runtimeStage) === "stage1") {
+								hostStage2ClickIntent = createFloatDomHostClickIntent(info, evt);
+								return;
+							}
+							const nextStage = this.promoteFloatDomRuntimeStage(drawingId);
+							if (nextStage === "stage2") {
+								syncFloatDomHostSelectionOnStageEnter(nextStage, renderObject, rect);
+								state.skipNextObservers = true;
+							}
+							if (!shouldPassThroughFloatDomActivationEvent(nextStage)) state.stopPropagation();
+						}
+					});
+					const sceneActivationListener = scene.onPointerDown$.subscribeEvent({
+						priority: FLOAT_DOM_RUNTIME_ACTIVATION_EVENT_PRIORITY,
+						next: ([evt]) => {
+							if (!info) return;
+							hostStage2ClickIntent = createFloatDomHostClickIntent(info, evt);
+						}
+					});
+					const sceneMoveListener = scene.onPointerMove$.subscribeEvent({
+						priority: FLOAT_DOM_RUNTIME_ACTIVATION_EVENT_PRIORITY,
+						next: ([evt]) => {
+							cancelStage2ClickIntentOnMove(evt);
+						}
+					});
+					const sceneUpListener = scene.onPointerUp$.subscribeEvent({
+						priority: FLOAT_DOM_RUNTIME_ACTIVATION_EVENT_PRIORITY,
+						next: ([evt, state]) => {
+							const shouldActivate = info && shouldActivateStage2FromHostClickIntent(info, hostStage2ClickIntent, evt);
+							hostStage2ClickIntent = void 0;
+							if (!shouldActivate) return;
+							const nextStage = this.promoteFloatDomRuntimeStage(drawingId);
+							if (nextStage === "stage2") {
+								syncFloatDomHostSelectionOnStageEnter(nextStage, renderObject, rect);
+								state.stopPropagation();
+								state.skipNextObservers = true;
+							}
+						}
+					});
+					disposableCollection.add(runtimeActivationListener);
+					disposableCollection.add(sceneActivationListener);
+					disposableCollection.add(sceneMoveListener);
+					disposableCollection.add(sceneUpListener);
+				}
+				const listener = rect.onTransformChange$.subscribeEvent(() => {
+					const newPosition = calcSheetFloatDomPosition(rect, renderObject.renderUnit.scene, skeleton.skeleton, target.worksheet);
+					position$.next(newPosition);
+					if (previewObjectKey) this._syncPreviewObjectTransform(scene.getObject(previewObjectKey), rect);
+				});
+				disposableCollection.add(() => {
+					this._canvasFloatDomService.removeFloatDom(drawingId);
+					if (previewObjectKey) scene.removeObject(previewObjectKey);
+				});
+				listener && disposableCollection.add(listener);
+				this._bindFloatDomScroll(disposableCollection, info, renderObject.renderUnit.scene, skeleton.skeleton, target.worksheet);
+				this._domLayerInfoMap.set(drawingId, info);
+			});
+		}));
+		this.disposeWithMe(this._drawingManagerService.remove$.subscribe((params) => {
+			params.forEach((param) => {
+				const { unitId, subUnitId, drawingId } = param;
+				const rectShapeKey = (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+				if (renderObject == null) return;
+				const { transformer, scene } = renderObject;
+				const rectShape = this._getObjectIncludingGroup(scene, rectShapeKey);
+				if (rectShape === null || rectShape === void 0 ? void 0 : rectShape.oKey) {
+					var _scene$getTransformer2;
+					transformer.clearControlByIds([rectShape === null || rectShape === void 0 ? void 0 : rectShape.oKey]);
+					(_scene$getTransformer2 = scene.getTransformer()) === null || _scene$getTransformer2 === void 0 || _scene$getTransformer2.clearSelectedObjects();
+				}
+			});
+		}));
+	}
+	_scrollUpdateListener() {
+		const updateSheet = (unitId, subUnitId) => {
+			var _this$_renderManagerS3;
+			const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+			const ids = Array.from(this._domLayerInfoMap.keys()).map((id) => ({
+				id,
+				...this._domLayerInfoMap.get(id)
+			})).filter((info) => info.subUnitId === subUnitId && info.unitId === unitId).map((info) => info.id);
+			const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+				unitId,
+				subUnitId
+			});
+			const skeleton = (_this$_renderManagerS3 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS3 === void 0 ? void 0 : _this$_renderManagerS3.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(subUnitId);
+			if (!renderObject || !target || !skeleton) return;
+			ids.forEach((id) => {
+				const floatDomInfo = this._domLayerInfoMap.get(id);
+				if (floatDomInfo) {
+					const position = calcSheetFloatDomPosition(floatDomInfo.rect, renderObject.renderUnit.scene, skeleton.skeleton, target.worksheet, floatDomInfo);
+					floatDomInfo.position$.next(position);
+				}
+			});
+		};
+		this.disposeWithMe(this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET).pipe((0, rxjs.switchMap)((workbook) => workbook ? workbook.activeSheet$ : (0, rxjs.of)(null))).subscribe((worksheet) => {
+			if (!worksheet) return;
+			const unitId = worksheet.getUnitId();
+			const subUnitId = worksheet.getSheetId();
+			this._syncFloatDomVisibilityForActiveSheet(unitId, subUnitId);
+			updateSheet(unitId, subUnitId);
+		}));
+		this.disposeWithMe(this._commandService.onCommandExecuted((commandInfo) => {
+			if (commandInfo.id === _univerjs_sheets_ui.SetZoomRatioOperation.id) {
+				const { unitId } = commandInfo.params;
+				new Set(Array.from(this._domLayerInfoMap.values()).filter((info) => info.unitId === unitId).map((info) => info.subUnitId)).forEach((subUnitId) => {
+					updateSheet(unitId, subUnitId);
+				});
+			} else if (commandInfo.id === _univerjs_sheets.SetFrozenMutation.id) {
+				const { unitId, subUnitId } = commandInfo.params;
+				updateSheet(unitId, subUnitId);
+			} else if (commandInfo.id === _univerjs_sheets.SetSelectionsOperation.id) {
+				const { unitId, subUnitId } = commandInfo.params;
+				updateSheet(unitId, subUnitId);
+			}
+		}));
+	}
+	_bindFloatDomScroll(disposableCollection, info, scene, skeleton, worksheet) {
+		const viewport = scene.getViewport(_univerjs_engine_render.SHEET_VIEWPORT_KEY.VIEW_MAIN);
+		if (!viewport) return;
+		disposableCollection.add((0, _univerjs_core.fromEventSubject)(viewport.onScrollAfter$).subscribe(() => {
+			info.position$.next(calcSheetFloatDomPosition(info.rect, scene, skeleton, worksheet, info));
+		}));
+	}
+	updateFloatDomProps(unitId, subUnitId, id, props) {
+		const info = this._domLayerInfoMap.get(id);
+		const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+		if (info && renderObject) {
+			const { scene } = renderObject;
+			const rectShapeKey = (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+				unitId,
+				subUnitId,
+				drawingId: id
+			});
+			const drawing = this._drawingManagerService.getDrawingByParam({
+				unitId,
+				subUnitId,
+				drawingId: id
+			});
+			const groupShapeKey = (drawing === null || drawing === void 0 ? void 0 : drawing.groupId) ? (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+				unitId,
+				subUnitId,
+				drawingId: drawing.groupId
+			}) : void 0;
+			const rectShape = this._getObjectIncludingGroup(scene, rectShapeKey, groupShapeKey);
+			if (rectShape && rectShape instanceof _univerjs_engine_render.Rect) {
+				this._removeTopLevelDuplicateIfGrouped(scene, rectShapeKey, rectShape);
+				rectShape.setProps(props);
+				this._syncFloatDomRect(id, rectShape);
+			}
+		}
+	}
+	_getObjectIncludingGroup(scene, key, groupKey) {
+		var _scene$getObjectInclu;
+		return this._getChildObjectFromGroup(scene, key, groupKey) ?? ((_scene$getObjectInclu = scene.getObjectIncludeInGroup) === null || _scene$getObjectInclu === void 0 ? void 0 : _scene$getObjectInclu.call(scene, key)) ?? scene.getObject(key) ?? null;
+	}
+	_getChildObjectFromGroup(scene, key, groupKey) {
+		var _scene$getObjectInclu2;
+		if (!groupKey) return null;
+		const groupObject = ((_scene$getObjectInclu2 = scene.getObjectIncludeInGroup) === null || _scene$getObjectInclu2 === void 0 ? void 0 : _scene$getObjectInclu2.call(scene, groupKey)) ?? scene.getObject(groupKey);
+		return this._findChildObject(groupObject, key);
+	}
+	_findChildObject(object, key) {
+		if (!object) return null;
+		const children = object.getObjects();
+		for (const child of children) {
+			if (child.oKey === key) return child;
+			const nested = this._findChildObject(child, key);
+			if (nested) return nested;
+		}
+		return null;
+	}
+	_removeTopLevelDuplicateIfGrouped(scene, key, object) {
+		if (!object.isInGroup) return;
+		const topLevelObject = scene.getObject(key);
+		if (topLevelObject && topLevelObject !== object) scene.removeObject(topLevelObject);
+	}
+	_syncFloatDomRect(id, object) {
+		if (!(object instanceof _univerjs_engine_render.Rect)) return;
+		const info = this._domLayerInfoMap.get(id);
+		if (info) info.rect = object;
+	}
+	_getChartDataBackground(data) {
+		if (!data || typeof data !== "object" || Array.isArray(data)) return;
+		const record = data;
+		const background = record.backgroundColor ?? record.background;
+		return typeof background === "string" ? background : void 0;
+	}
+	_getPosition(position, unitId) {
+		var _this$_renderManagerS4;
+		const { startX, endX, startY, endY } = position;
+		const selectionRenderService = (_this$_renderManagerS4 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS4 === void 0 ? void 0 : _this$_renderManagerS4.with(_univerjs_sheets_ui.ISheetSelectionRenderService);
+		if (selectionRenderService == null) return;
+		const start = selectionRenderService.getCellWithCoordByOffset(startX, startY);
+		if (start == null) return;
+		const from = {
+			column: start.actualColumn,
+			columnOffset: startX - start.startX,
+			row: start.actualRow,
+			rowOffset: startY - start.startY
+		};
+		const end = selectionRenderService.getCellWithCoordByOffset(endX, endY);
+		if (end == null) return;
+		return {
+			from,
+			to: {
+				column: end.actualColumn,
+				columnOffset: endX - end.startX,
+				row: end.actualRow,
+				rowOffset: endY - end.startY
+			}
+		};
+	}
+	_featureUpdateListener() {
+		this.disposeWithMe(this._drawingManagerService.update$.subscribe((params) => {
+			params.forEach((data) => {
+				const sheetDrawing = this._drawingManagerService.getDrawingByParam(data);
+				if (!sheetDrawing) return;
+				if (!isCanvasFloatDomDrawingType(sheetDrawing.drawingType)) return;
+				if (sheetDrawing.hidden) {
+					this._removeDom(data.drawingId);
+					return;
+				}
+				if (!this._domLayerInfoMap.has(data.drawingId)) {
+					this._drawingManagerService.addNotification([data]);
+					return;
+				}
+				const newValue = { ...sheetDrawing.transform };
+				this._transformChange$.next({
+					id: data.drawingId,
+					value: newValue
+				});
+				this._canvasFloatDomService.updateFloatDom(data.drawingId, { ...sheetDrawing });
+				const renderObject = this._getSceneAndTransformerByDrawingSearch(data.unitId);
+				if (renderObject && sheetDrawing.drawingType !== _univerjs_core.DrawingTypeEnum.DRAWING_CHART) {
+					const { scene } = renderObject;
+					const floatDomInfo = this._domLayerInfoMap.get(data.drawingId);
+					if (floatDomInfo === null || floatDomInfo === void 0 ? void 0 : floatDomInfo.rect) if (sheetDrawing.allowTransform === false) scene.detachTransformerFrom(floatDomInfo.rect);
+					else scene.attachTransformerTo(floatDomInfo.rect);
+				}
+			});
+		}));
+	}
+	_deleteListener() {
+		this.disposeWithMe(this._drawingManagerService.remove$.subscribe((params) => {
+			params.forEach((param) => {
+				this._removeDom(param.drawingId);
+			});
+		}));
+	}
+	addFloatDomToPosition(layer, propId) {
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+			unitId: layer.unitId,
+			subUnitId: layer.subUnitId
+		});
+		if (!target) throw new Error("cannot find current target!");
+		const { unitId, subUnitId } = target;
+		const { initPosition, componentKey, data, allowTransform = true } = layer;
+		const id = propId ?? (0, _univerjs_core.generateRandomId)();
+		const sheetTransform = this._getPosition(initPosition, unitId);
+		if (sheetTransform == null) return;
+		const sheetDrawingParam = {
+			unitId,
+			subUnitId,
+			drawingId: id,
+			drawingType: layer.type || _univerjs_core.DrawingTypeEnum.DRAWING_DOM,
+			componentKey,
+			sheetTransform,
+			transform: {
+				left: initPosition.startX,
+				top: initPosition.startY,
+				width: initPosition.endX - initPosition.startX,
+				height: initPosition.endY - initPosition.startY
+			},
+			axisAlignSheetTransform: sheetTransform,
+			data,
+			allowTransform
+		};
+		this._commandService.executeCommand(_univerjs_sheets_drawing.InsertSheetDrawingCommand.id, {
+			unitId,
+			drawings: [sheetDrawingParam]
+		});
+		this._add$.next({
+			unitId,
+			subUnitId,
+			id
+		});
+		return this._createFloatDomDisposable(id);
+	}
+	_removeDom(id, removeDrawing = false) {
+		const info = this._domLayerInfoMap.get(id);
+		if (!info) return;
+		const { unitId, subUnitId } = info;
+		this._domLayerInfoMap.delete(id);
+		info.dispose.dispose();
+		const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+		if (renderObject) {
+			const { scene, transformer } = renderObject;
+			if ((0, _univerjs_drawing_ui.disposeDrawingRenderObject)(scene, {
+				unitId,
+				subUnitId,
+				drawingId: id
+			})) {
+				var _scene$getTransformer3;
+				transformer.clearControlByIds([info.rect.oKey]);
+				(_scene$getTransformer3 = scene.getTransformer()) === null || _scene$getTransformer3 === void 0 || _scene$getTransformer3.clearSelectedObjects();
+			}
+		}
+		if (removeDrawing) {
+			const param = this._drawingManagerService.getDrawingByParam({
+				unitId,
+				subUnitId,
+				drawingId: id
+			});
+			if (!param) return;
+			const { redo, objects } = this._sheetDrawingService.getBatchRemoveOp([param]);
+			this._commandService.syncExecuteCommand(_univerjs_sheets_drawing.SetDrawingApplyMutation.id, {
+				unitId,
+				subUnitId,
+				op: redo,
+				objects,
+				type: _univerjs_sheets_drawing.DrawingApplyType.REMOVE
+			});
+		}
+	}
+	removeFloatDom(id, removeDrawing = true) {
+		this._removeDom(id, removeDrawing);
+	}
+	addFloatDomToRange(range, config, domAnchor, propId) {
+		var _this$_renderManagerS5;
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+			unitId: config.unitId,
+			subUnitId: config.subUnitId
+		});
+		if (!target) throw new Error("cannot find current target!");
+		const { unitId, subUnitId } = target;
+		const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+		if (!renderObject) return;
+		const currentRender = this._renderManagerService.getRenderUnitById(unitId);
+		if (!currentRender) return;
+		const skeletonParam = (_this$_renderManagerS5 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS5 === void 0 ? void 0 : _this$_renderManagerS5.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(subUnitId);
+		if (!skeletonParam) return;
+		const { componentKey, data, allowTransform = true } = config;
+		const id = propId ?? (0, _univerjs_core.generateRandomId)();
+		const { position: rangePosition, position$: rangePos$ } = this._createRangePositionObserver(range, currentRender, skeletonParam.skeleton);
+		const sheetTransform = this._getPosition(rangePosition, unitId);
+		if (sheetTransform == null) return;
+		const { scaleX } = renderObject.scene.getAncestorScale();
+		const domPosFromRange = calcDomPositionByAnchor(rangePosition, domAnchor, scaleX);
+		const sheetDrawingParam = {
+			unitId,
+			subUnitId,
+			drawingId: id,
+			drawingType: config.type || _univerjs_core.DrawingTypeEnum.DRAWING_DOM,
+			componentKey,
+			sheetTransform,
+			axisAlignSheetTransform: sheetTransform,
+			transform: {
+				left: domPosFromRange.startX,
+				top: domPosFromRange.startY,
+				width: domPosFromRange.width,
+				height: domPosFromRange.height
+			},
+			data,
+			allowTransform
+		};
+		{
+			var _this$_renderManagerS6, _this$_renderManagerS7;
+			const { unitId, subUnitId, drawingId } = sheetDrawingParam;
+			const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+				unitId,
+				subUnitId
+			});
+			const floatDomParam = sheetDrawingParam;
+			const workbook = this._univerInstanceService.getUnit(unitId, _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+			if (!workbook) return;
+			const activeSheetId = workbook.getActiveSheet().getSheetId();
+			if (!floatDomParam || !target) return;
+			const skMangerService = (_this$_renderManagerS6 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS6 === void 0 ? void 0 : _this$_renderManagerS6.with(_univerjs_sheets_ui.SheetSkeletonManagerService);
+			if (!skMangerService) return;
+			const skeletonParam = skMangerService.getSkeletonParam(subUnitId);
+			if (!skeletonParam) return;
+			const { transform, drawingType, data, groupId } = floatDomParam;
+			if (!isCanvasFloatDomDrawingType(drawingType)) return;
+			const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+			if (renderObject == null) return;
+			const { scene, canvas } = renderObject;
+			if (transform == null) return;
+			if (activeSheetId !== subUnitId) return;
+			const { left, top, width, height, angle, flipX, flipY, skewX, skewY } = transform;
+			const rectShapeKey = (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+				unitId,
+				subUnitId,
+				drawingId
+			});
+			const groupShapeKey = groupId ? (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+				unitId,
+				subUnitId,
+				drawingId: groupId
+			}) : void 0;
+			const rectShape = this._getObjectIncludingGroup(scene, rectShapeKey, groupShapeKey);
+			if (rectShape != null) {
+				this._removeTopLevelDuplicateIfGrouped(scene, rectShapeKey, rectShape);
+				if (drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_CHART) applySheetChartTransformerConfig(rectShape);
+				rectShape.transformByState({
+					left,
+					top,
+					width,
+					height,
+					angle,
+					flipX,
+					flipY,
+					skewX,
+					skewY
+				});
+				this._syncFloatDomRect(drawingId, rectShape);
+				return;
+			}
+			const domConfig = {
+				left,
+				top,
+				width,
+				height,
+				zIndex: this._drawingManagerService.getDrawingOrder(unitId, subUnitId).length - 1
+			};
+			const isChart = drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_CHART;
+			if (isChart) {
+				const backgroundColor = this._getChartDataBackground(data);
+				if (backgroundColor !== void 0) domConfig.fill = backgroundColor;
+				domConfig.rotateEnabled = false;
+				if (data && data.border) domConfig.stroke = data.border;
+				domConfig.paintFirst = "stroke";
+				domConfig.strokeWidth = 1;
+				domConfig.radius = 8;
+			}
+			const domRect = this._createRenderObject({
+				key: rectShapeKey,
+				config: domConfig,
+				unitId,
+				subUnitId,
+				drawingId,
+				drawingType,
+				data
+			});
+			if (isChart) {
+				domRect.setObjectType(_univerjs_engine_render.ObjectType.CHART);
+				applySheetChartTransformerConfig(domRect);
+			}
+			scene.addObject(domRect, _univerjs_engine_render.DRAWING_OBJECT_LAYER_INDEX);
+			if (floatDomParam.allowTransform !== false) scene.attachTransformerTo(domRect);
+			if (isChart && groupId) (0, _univerjs_drawing_ui.insertGroupObject)({
+				drawingId: groupId,
+				unitId,
+				subUnitId
+			}, domRect, scene, this._drawingManagerService);
+			const disposableCollection = new _univerjs_core.DisposableCollection();
+			const viewMain = scene.getMainViewport();
+			const { rowHeaderWidth, columnHeaderHeight } = skeletonParam.skeleton;
+			const floatDomInfo = {
+				dispose: disposableCollection,
+				rect: domRect,
+				boundsOfViewArea: {
+					top: columnHeaderHeight,
+					left: rowHeaderWidth,
+					bottom: viewMain.bottom,
+					right: viewMain.right
+				},
+				domAnchor,
+				unitId,
+				subUnitId,
+				id: drawingId
+			};
+			const position$ = new rxjs.BehaviorSubject(calcSheetFloatDomPosition(domRect, renderObject.renderUnit.scene, skeletonParam.skeleton, target.worksheet, floatDomInfo));
+			floatDomInfo.position$ = position$;
+			let floatDomCfg = {
+				position$,
+				id: drawingId,
+				componentKey: floatDomParam.componentKey,
+				onPointerDown: () => {},
+				onPointerMove: () => {},
+				onPointerUp: () => {},
+				onWheel: (evt) => {
+					canvas.dispatchEvent(new WheelEvent(evt.type, evt));
+				},
+				data,
+				unitId
+			};
+			if (config.eventPassThrough) floatDomCfg = {
+				...floatDomCfg,
+				onPointerDown: (evt) => {
+					canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+				},
+				onPointerMove: (evt) => {
+					canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+				},
+				onPointerUp: (evt) => {
+					canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+				}
+			};
+			this._canvasFloatDomService.addFloatDom(floatDomCfg);
+			this.disposeWithMe(rangePos$.subscribe((newRangePos) => {
+				const calcOffsetPos = calcDomPositionByAnchor({
+					rotate: 0,
+					startX: newRangePos.startX,
+					startY: newRangePos.startY,
+					endX: newRangePos.endX,
+					endY: newRangePos.endY,
+					width: domAnchor.width ?? newRangePos.width,
+					height: domAnchor.height ?? newRangePos.height,
+					absolute: {
+						left: rangePosition.absolute.left,
+						top: rangePosition.absolute.top
+					}
+				}, domAnchor);
+				const newRect = new _univerjs_engine_render.Rect((0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+					unitId,
+					subUnitId,
+					drawingId
+				}), {
+					left: calcOffsetPos.startX,
+					top: calcOffsetPos.startY,
+					width: domAnchor.width ?? newRangePos.width,
+					height: domAnchor.height ?? newRangePos.height,
+					zIndex: this._drawingManagerService.getDrawingOrder(unitId, subUnitId).length - 1
+				});
+				const newPos = calcSheetFloatDomPosition(newRect, renderObject.renderUnit.scene, skeletonParam.skeleton, target.worksheet, floatDomInfo);
+				position$.next(newPos);
+			}));
+			const skm = (_this$_renderManagerS7 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS7 === void 0 ? void 0 : _this$_renderManagerS7.with(_univerjs_sheets_ui.SheetSkeletonManagerService);
+			const skeletonSubscription = skm === null || skm === void 0 ? void 0 : skm.currentSkeleton$.subscribe((skeleton) => {
+				if (!skeleton) return;
+				if (skeletonParam.sheetId !== skeleton.sheetId) this._removeDom(id, true);
+			});
+			skeletonSubscription && disposableCollection.add(skeletonSubscription);
+			const listener = domRect.onTransformChange$.subscribeEvent(() => {
+				const newPosition = calcSheetFloatDomPosition(domRect, renderObject.renderUnit.scene, skeletonParam.skeleton, target.worksheet, floatDomInfo);
+				position$.next(newPosition);
+			});
+			disposableCollection.add(() => {
+				this._canvasFloatDomService.removeFloatDom(drawingId);
+			});
+			listener && disposableCollection.add(listener);
+			this._bindFloatDomScroll(disposableCollection, floatDomInfo, renderObject.renderUnit.scene, skeletonParam.skeleton, target.worksheet);
+			this._domLayerInfoMap.set(drawingId, floatDomInfo);
+		}
+		return this._createFloatDomDisposable(id);
+	}
+	addFloatDomToColumnHeader(column, config, domLayoutParam, propId) {
+		var _this$_renderManagerS8;
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+			unitId: config.unitId,
+			subUnitId: config.subUnitId
+		});
+		if (!target) throw new Error("cannot find current target!");
+		const { unitId, subUnitId } = target;
+		if (!this._getSceneAndTransformerByDrawingSearch(unitId)) return;
+		const currentRender = this._renderManagerService.getRenderUnitById(unitId);
+		if (!currentRender) return;
+		const skeletonParam = (_this$_renderManagerS8 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS8 === void 0 ? void 0 : _this$_renderManagerS8.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(subUnitId);
+		if (!skeletonParam) return;
+		const { componentKey, data, allowTransform = true } = config;
+		const id = propId ?? (0, _univerjs_core.generateRandomId)();
+		const { position: rangePosition, position$: rangePos$ } = this._createRangePositionObserver({
+			startRow: 0,
+			endRow: 0,
+			startColumn: column,
+			endColumn: column
+		}, currentRender, skeletonParam.skeleton);
+		const headerCellPosition = rangePosition;
+		headerCellPosition.startY = 0;
+		const sheetTransform = this._getPosition(rangePosition, unitId);
+		if (sheetTransform == null) return;
+		const sheetDrawingParam = {
+			unitId,
+			subUnitId,
+			drawingId: id,
+			drawingType: config.type || _univerjs_core.DrawingTypeEnum.DRAWING_DOM,
+			componentKey,
+			sheetTransform,
+			axisAlignSheetTransform: sheetTransform,
+			transform: {
+				left: headerCellPosition.startX,
+				top: headerCellPosition.startY,
+				width: headerCellPosition.width,
+				height: headerCellPosition.height
+			},
+			data,
+			allowTransform
+		};
+		{
+			var _this$_renderManagerS9, _this$_renderManagerS10;
+			const { unitId, subUnitId, drawingId } = sheetDrawingParam;
+			const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+				unitId,
+				subUnitId
+			});
+			const floatDomParam = sheetDrawingParam;
+			const workbook = this._univerInstanceService.getUnit(unitId, _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+			if (!workbook) return;
+			const activeSheetId = workbook.getActiveSheet().getSheetId();
+			if (!floatDomParam || !target) return;
+			const skMangerService = (_this$_renderManagerS9 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS9 === void 0 ? void 0 : _this$_renderManagerS9.with(_univerjs_sheets_ui.SheetSkeletonManagerService);
+			if (!skMangerService) return;
+			const skeleton = skMangerService.getSkeletonParam(subUnitId);
+			if (!skeleton) return;
+			const { transform, data } = floatDomParam;
+			const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+			if (renderObject == null) return;
+			const { scene, canvas } = renderObject;
+			if (transform == null) return;
+			if (activeSheetId !== subUnitId) return;
+			const { left, top, width, height, angle, flipX, flipY, skewX, skewY } = transform;
+			const rectShapeKey = (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+				unitId,
+				subUnitId,
+				drawingId
+			});
+			const rectShape = this._getObjectIncludingGroup(scene, rectShapeKey);
+			if (rectShape != null) {
+				this._removeTopLevelDuplicateIfGrouped(scene, rectShapeKey, rectShape);
+				rectShape.transformByState({
+					left,
+					top,
+					width,
+					height,
+					angle,
+					flipX,
+					flipY,
+					skewX,
+					skewY
+				});
+				this._syncFloatDomRect(drawingId, rectShape);
+				return;
+			}
+			const calcOffsetPos = calcDomPositionByAnchor({
+				rotate: 0,
+				startX: headerCellPosition.startX,
+				startY: 0,
+				endX: rangePosition.endX,
+				endY: rangePosition.endY,
+				width: domLayoutParam.width,
+				height: domLayoutParam.height,
+				absolute: {
+					left: rangePosition.absolute.left,
+					top: rangePosition.absolute.top
+				}
+			}, domLayoutParam);
+			const domRect = new _univerjs_engine_render.Rect(rectShapeKey, {
+				left: calcOffsetPos.startX,
+				top: calcOffsetPos.startY,
+				width: calcOffsetPos.width,
+				height: calcOffsetPos.height,
+				zIndex: this._drawingManagerService.getDrawingOrder(unitId, subUnitId).length - 1
+			});
+			scene.addObject(domRect, _univerjs_engine_render.DRAWING_OBJECT_LAYER_INDEX);
+			if (floatDomParam.allowTransform !== false) scene.attachTransformerTo(domRect);
+			const disposableCollection = new _univerjs_core.DisposableCollection();
+			const viewMain = scene.getMainViewport();
+			const floatDomInfo = {
+				dispose: disposableCollection,
+				rect: domRect,
+				unitId,
+				subUnitId,
+				id: drawingId,
+				boundsOfViewArea: {
+					top: 0,
+					left: viewMain.left,
+					bottom: viewMain.bottom,
+					right: viewMain.right
+				},
+				domAnchor: domLayoutParam,
+				scrollDirectionResponse: "HORIZONTAL"
+			};
+			const position$ = new rxjs.BehaviorSubject(calcSheetFloatDomPosition(domRect, renderObject.renderUnit.scene, skeleton.skeleton, target.worksheet, floatDomInfo));
+			floatDomInfo.position$ = position$;
+			let floatDomCfg = {
+				position$,
+				id: drawingId,
+				componentKey: floatDomParam.componentKey,
+				onPointerDown: () => {},
+				onPointerMove: () => {},
+				onPointerUp: () => {},
+				onWheel: (evt) => {
+					canvas.dispatchEvent(new WheelEvent(evt.type, evt));
+				},
+				data,
+				unitId
+			};
+			if (config.eventPassThrough) floatDomCfg = {
+				...floatDomCfg,
+				onPointerDown: (evt) => {
+					canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+				},
+				onPointerMove: (evt) => {
+					canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+				},
+				onPointerUp: (evt) => {
+					canvas.dispatchEvent(new PointerEvent(evt.type, evt));
+				}
+			};
+			this._canvasFloatDomService.addFloatDom(floatDomCfg);
+			const listener = domRect.onTransformChange$.subscribeEvent(() => {
+				const newPosition = calcSheetFloatDomPosition(domRect, renderObject.renderUnit.scene, skeleton.skeleton, target.worksheet, floatDomInfo);
+				position$.next(newPosition);
+			});
+			this.disposeWithMe(rangePos$.subscribe((newHeaderPos) => {
+				const calcOffsetPos = calcDomPositionByAnchor({
+					rotate: 0,
+					startX: newHeaderPos.startX,
+					startY: 0,
+					endX: newHeaderPos.endX,
+					endY: newHeaderPos.endY,
+					width: domLayoutParam.width,
+					height: domLayoutParam.height,
+					absolute: {
+						left: rangePosition.absolute.left,
+						top: rangePosition.absolute.top
+					}
+				}, domLayoutParam);
+				const newRect = new _univerjs_engine_render.Rect((0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+					unitId,
+					subUnitId,
+					drawingId
+				}), {
+					left: calcOffsetPos.startX,
+					top: 0,
+					width: domLayoutParam.width,
+					height: domLayoutParam.height,
+					zIndex: this._drawingManagerService.getDrawingOrder(unitId, subUnitId).length - 1
+				});
+				const newPos = calcSheetFloatDomPosition(newRect, renderObject.renderUnit.scene, skeleton.skeleton, target.worksheet, floatDomInfo);
+				position$.next(newPos);
+			}));
+			const skm = (_this$_renderManagerS10 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS10 === void 0 ? void 0 : _this$_renderManagerS10.with(_univerjs_sheets_ui.SheetSkeletonManagerService);
+			skm === null || skm === void 0 || skm.currentSkeleton$.subscribe((skeleton) => {
+				if (!skeleton) return;
+				if (skeletonParam.sheetId !== skeleton.sheetId) this._removeDom(id, true);
+			});
+			disposableCollection.add(() => {
+				this._canvasFloatDomService.removeFloatDom(drawingId);
+			});
+			listener && disposableCollection.add(listener);
+			this._bindFloatDomScroll(disposableCollection, floatDomInfo, renderObject.renderUnit.scene, skeleton.skeleton, target.worksheet);
+			this._domLayerInfoMap.set(drawingId, floatDomInfo);
+		}
+		return this._createFloatDomDisposable(id);
+	}
+	/**
+	* Unlike _createCellPositionObserver, this accept a range not a single cell.
+	*
+	* @param initialRow
+	* @param initialCol
+	* @param currentRender
+	* @param skeleton
+	* @param activeViewport
+	* @returns position of cell to canvas.
+	*/
+	_createRangePositionObserver(range, currentRender, skeleton) {
+		let { startRow, startColumn } = range;
+		const topLeftCoord = calcCellPositionByCell(startRow, startColumn, skeleton);
+		const topLeftPos$ = new rxjs.BehaviorSubject(topLeftCoord);
+		const rightBottomCoord = calcCellPositionByCell(range.endRow, range.endColumn, skeleton);
+		const rightBottomPos$ = new rxjs.BehaviorSubject(rightBottomCoord);
+		const updatePosition = () => {
+			const topLeftCoord = calcCellPositionByCell(startRow, startColumn, skeleton);
+			const rightBottomCoord = calcCellPositionByCell(range.endRow, range.endColumn, skeleton);
+			topLeftPos$.next(topLeftCoord);
+			rightBottomPos$.next(rightBottomCoord);
+		};
+		const disposable = new _univerjs_core.DisposableCollection();
+		disposable.add(currentRender.engine.clientRect$.subscribe({
+			next: () => updatePosition(),
+			error: () => {}
+		}));
+		disposable.add(this._commandService.onCommandExecuted((commandInfo) => {
+			if (commandInfo.id === _univerjs_sheets.SetWorksheetRowAutoHeightMutation.id) {
+				if (commandInfo.params.rowsAutoHeightInfo.findIndex((item) => item.row === startRow) > -1) {
+					updatePosition();
+					return;
+				}
+			}
+			if (_univerjs_sheets.COMMAND_LISTENER_SKELETON_CHANGE.indexOf(commandInfo.id) > -1 || commandInfo.id === _univerjs_sheets_ui.SetScrollOperation.id || commandInfo.id === _univerjs_sheets_ui.SetZoomRatioOperation.id) updatePosition();
+		}));
+		const updateRowCol = (newRow, newCol) => {
+			startRow = newRow;
+			startColumn = newCol;
+			updatePosition();
+		};
+		const genPosition = () => {
+			return {
+				rotate: 0,
+				width: rightBottomCoord.right - topLeftCoord.left,
+				height: rightBottomCoord.bottom - topLeftCoord.top,
+				absolute: {
+					left: true,
+					top: true
+				},
+				startX: topLeftCoord.left,
+				startY: topLeftCoord.top,
+				endX: rightBottomCoord.right,
+				endY: rightBottomCoord.bottom
+			};
+		};
+		return {
+			position$: topLeftPos$.pipe((0, rxjs.map)((topLeft) => {
+				const rightBottomCoord = calcCellPositionByCell(range.endRow, range.endColumn, skeleton);
+				return {
+					rotate: 0,
+					width: rightBottomCoord.right - topLeft.left,
+					height: rightBottomCoord.bottom - topLeft.top,
+					absolute: {
+						left: true,
+						top: true
+					},
+					startX: topLeft.left,
+					startY: topLeft.top,
+					endX: rightBottomCoord.right,
+					endY: rightBottomCoord.bottom
+				};
+			})),
+			position: genPosition(),
+			updateRowCol,
+			topLeftPos$,
+			rightBottomPos$,
+			disposable
+		};
+	}
+};
+SheetCanvasFloatDomManagerService = _SheetCanvasFloatDomManagerService = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_engine_render.IRenderManagerService)),
+	__decorateParam(1, _univerjs_core.IUniverInstanceService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.ICommandService)),
+	__decorateParam(3, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_ui.CanvasFloatDomService)),
+	__decorateParam(5, _univerjs_sheets_drawing.ISheetDrawingService),
+	__decorateParam(6, (0, _univerjs_core.Inject)(_univerjs_core.LifecycleService)),
+	__decorateParam(7, (0, _univerjs_core.Optional)(_univerjs_ui.CanvasFloatDomPreviewService))
+], SheetCanvasFloatDomManagerService);
+/**
+* Unlike sheet popup, this Position only relative to sheet content, not window.
+* @param row
+* @param col
+* @param currentRender
+* @param skeleton
+* @param activeViewport
+* @returns
+*/
+function calcCellPositionByCell(row, col, skeleton) {
+	const primaryWithCoord = skeleton.getCellWithCoordByIndex(row, col);
+	const cellInfo = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+	return {
+		left: cellInfo.startX,
+		right: cellInfo.endX,
+		top: cellInfo.startY,
+		bottom: cellInfo.endY
+	};
+}
+function calcDomPositionByAnchor(rangePosition, domAnchor, scale) {
+	scale = scale ?? 1;
+	const rangeWidth = rangePosition.endX - rangePosition.startX;
+	const rangeHeight = rangePosition.endY - rangePosition.startY;
+	const domWidth = (domAnchor === null || domAnchor === void 0 ? void 0 : domAnchor.width) ?? rangeWidth;
+	const domHeight = (domAnchor === null || domAnchor === void 0 ? void 0 : domAnchor.height) ?? rangeHeight;
+	let domLeft = 0;
+	let domTop = 0;
+	if (domAnchor) {
+		if (domAnchor.horizonOffsetAlign === "right") {
+			const offsetX = calculateOffset(domAnchor.marginX, rangeWidth * scale);
+			domLeft = rangePosition.endX - offsetX - domWidth;
+		} else domLeft = rangePosition.startX + calculateOffset(domAnchor.marginX, rangeWidth);
+		if (domAnchor.verticalOffsetAlign === "bottom") {
+			const offsetY = calculateOffset(domAnchor.marginY, rangeHeight * scale);
+			domTop = rangePosition.endY - offsetY - domHeight;
+		} else domTop = rangePosition.startY + calculateOffset(domAnchor.marginY, rangeHeight);
+	}
+	return {
+		rotate: 0,
+		startX: domLeft,
+		startY: domTop,
+		endX: rangePosition.endX,
+		endY: rangePosition.endY,
+		width: domWidth,
+		height: domHeight,
+		absolute: {
+			left: rangePosition.absolute.left,
+			top: rangePosition.absolute.top
+		}
+	};
+}
+function calculateOffset(value, rangeWidth) {
+	if (value === void 0) return 0;
+	if (typeof value === "number") return value;
+	return rangeWidth * Number.parseFloat(value) / 100;
+}
+
+//#endregion
+//#region src/embed/floating-host/register-sheets-drawing-floating-host.ts
+const SHEETS_DRAWING_FLOATING_HOST_DEPENDENCIES = [[SheetCanvasFloatDomManagerService]];
+function registerSheetsDrawingFloatingHostCapability(injector) {
+	if (!injector.has(SheetCanvasFloatDomManagerService)) (0, _univerjs_core.registerDependencies)(injector, SHEETS_DRAWING_FLOATING_HOST_DEPENDENCIES);
+	touchSheetsDrawingFloatingHostCapabilityWhenReady(injector);
+}
+function touchSheetsDrawingFloatingHostCapability(injector) {
+	(0, _univerjs_core.touchDependencies)(injector, [[SheetCanvasFloatDomManagerService]]);
+}
+function touchSheetsDrawingFloatingHostCapabilityWhenReady(injector) {
+	if (!injector.has(_univerjs_core.LifecycleService)) {
+		touchSheetsDrawingFloatingHostCapability(injector);
+		return;
+	}
+	const lifecycleService = injector.get(_univerjs_core.LifecycleService);
+	if (lifecycleService.stage >= _univerjs_core.LifecycleStages.Ready) {
+		touchSheetsDrawingFloatingHostCapability(injector);
+		return;
+	}
+	lifecycleService.onStage(_univerjs_core.LifecycleStages.Ready).then(() => {
+		touchSheetsDrawingFloatingHostCapability(injector);
+	});
+}
+
+//#endregion
+//#region src/menu/image.menu.ts
+const SHEETS_IMAGE_MENU_ID = "sheet.menu.image";
+function ImageMenuFactory(accessor) {
+	return {
+		id: SHEETS_IMAGE_MENU_ID,
+		type: _univerjs_ui.MenuItemType.SUBITEMS,
+		icon: "AddImageIcon",
+		tooltip: "sheets-drawing-ui.title",
+		hidden$: (0, _univerjs_ui.getMenuHiddenObservable)(accessor, _univerjs_core.UniverInstanceType.UNIVER_SHEET),
+		disabled$: (0, _univerjs_sheets_ui.getCurrentRangeDisable$)(accessor, {
+			workbookTypes: [_univerjs_sheets.WorkbookEditablePermission],
+			worksheetTypes: [_univerjs_sheets.WorksheetEditPermission],
+			rangeTypes: [_univerjs_sheets.RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function UploadFloatImageMenuFactory(accessor) {
+	return {
+		id: InsertFloatImageCommand.id,
+		title: "sheets-drawing-ui.upload.float",
+		type: _univerjs_ui.MenuItemType.BUTTON,
+		hidden$: (0, _univerjs_ui.getMenuHiddenObservable)(accessor, _univerjs_core.UniverInstanceType.UNIVER_SHEET)
+	};
+}
+function UploadCellImageMenuFactory(accessor) {
+	return {
+		id: InsertCellImageCommand.id,
+		title: "sheets-drawing-ui.upload.cell",
+		type: _univerjs_ui.MenuItemType.BUTTON,
+		hidden$: (0, _univerjs_ui.getMenuHiddenObservable)(accessor, _univerjs_core.UniverInstanceType.UNIVER_SHEET)
+	};
+}
+
+//#endregion
+//#region src/menu/save-images.menu.ts
+/**
+* Check if selection range has any images
+*/
+function selectionHasImages(workbook, selection) {
+	const worksheet = workbook.getActiveSheet();
+	if (!worksheet) return false;
+	const cellMatrix = worksheet.getCellMatrix();
+	const { startRow, endRow, startColumn, endColumn } = selection;
+	for (let row = startRow; row <= endRow; row++) for (let col = startColumn; col <= endColumn; col++) {
+		const cell = cellMatrix.getValue(row, col);
+		if ((0, _univerjs_sheets.isCellImage)(cell === null || cell === void 0 ? void 0 : cell.p)) return true;
+	}
+	return false;
+}
+/**
+* Check if File System Access API is supported
+*/
+function isFileSystemAccessSupported() {
+	return "showDirectoryPicker" in window;
+}
+function SaveCellImagesMenuFactory(accessor) {
+	const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+	const selectionService = accessor.get(_univerjs_sheets.SheetsSelectionsService);
+	const hidden$ = (0, rxjs.combineLatest)([(0, _univerjs_ui.getMenuHiddenObservable)(accessor, _univerjs_core.UniverInstanceType.UNIVER_SHEET), univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET).pipe((0, rxjs.switchMap)((workbook) => {
+		if (!workbook) return (0, rxjs.of)(true);
+		return selectionService.selectionMoveEnd$.pipe((0, rxjs.map)(() => {
+			if (!isFileSystemAccessSupported()) return true;
+			const selections = selectionService.getCurrentSelections();
+			if (!selections || selections.length === 0) return true;
+			for (const selection of selections) if (selectionHasImages(workbook, selection.range)) return false;
+			return true;
+		}));
+	}))]).pipe((0, rxjs.map)(([hidden, noImages]) => hidden || noImages));
+	return {
+		id: SaveCellImagesCommand.id,
+		type: _univerjs_ui.MenuItemType.BUTTON,
+		icon: "DownloadImageIcon",
+		title: "sheets-drawing-ui.save.menuLabel",
+		hidden$
+	};
+}
+
+//#endregion
+//#region src/menu/schema.ts
+const menuSchema = {
+	[_univerjs_ui.RibbonInsertGroup.MEDIA]: { [SHEETS_IMAGE_MENU_ID]: {
+		order: 0,
+		gridLayout: {
+			row: 1,
+			column: 1,
+			rowSpan: 2,
+			showLabel: true
+		},
+		menuItemFactory: ImageMenuFactory,
+		[InsertFloatImageCommand.id]: {
+			order: 0,
+			menuItemFactory: UploadFloatImageMenuFactory
+		},
+		[InsertCellImageCommand.id]: {
+			order: 1,
+			menuItemFactory: UploadCellImageMenuFactory
+		}
+	} },
+	[_univerjs_ui.ContextMenuPosition.MAIN_AREA]: { [_univerjs_ui.ContextMenuGroup.OTHERS]: { [SaveCellImagesCommand.id]: {
+		order: 10,
+		menuItemFactory: SaveCellImagesMenuFactory
+	} } },
+	[_univerjs_ui.ContextMenuPosition.COL_HEADER]: { [_univerjs_ui.ContextMenuGroup.OTHERS]: { [SaveCellImagesCommand.id]: {
+		order: 10,
+		menuItemFactory: SaveCellImagesMenuFactory
+	} } },
+	[_univerjs_ui.ContextMenuPosition.ROW_HEADER]: { [_univerjs_ui.ContextMenuGroup.OTHERS]: { [SaveCellImagesCommand.id]: {
+		order: 10,
+		menuItemFactory: SaveCellImagesMenuFactory
+	} } }
+};
+
+//#endregion
+//#region package.json
+var name = "@univerjs/sheets-drawing-ui";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/config/config.ts
+const SHEETS_DRAWING_UI_PLUGIN_CONFIG_KEY = "sheets-drawing-ui.config";
+const configSymbol = Symbol(SHEETS_DRAWING_UI_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/views/batch-save-images/BatchSaveImagesDialog.tsx
+function BatchSaveImagesDialog() {
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const dialogService = (0, _univerjs_ui.useDependency)(_univerjs_ui.IDialogService);
+	const batchSaveService = (0, _univerjs_ui.useDependency)(IBatchSaveImagesService);
+	const [fileNameParts, setFileNameParts] = (0, react.useState)(["cellAddress"]);
+	const [saving, setSaving] = (0, react.useState)(false);
+	const [error, setError] = (0, react.useState)(null);
+	const images = (0, react.useMemo)(() => batchSaveService.getCellImagesInSelection(), [batchSaveService]);
+	const dataColumns = (0, react.useMemo)(() => batchSaveService.getDataColumns(), [batchSaveService]);
+	const rowRange = (0, react.useMemo)(() => batchSaveService.getSelectionRowRange(), [batchSaveService]);
+	const hasAvailableColumns = dataColumns.length > 0;
+	const columnOptions = (0, react.useMemo)(() => {
+		return dataColumns.map((col) => ({
+			label: col.label,
+			value: String(col.index)
+		}));
+	}, [dataColumns]);
+	const [selectedColumn, setSelectedColumn] = (0, react.useState)(() => columnOptions.length > 0 ? columnOptions[0].value : "0");
+	(0, _univerjs_sheets_ui.useHighlightRange)((0, react.useMemo)(() => {
+		if (!fileNameParts.includes("columnValue") || !rowRange) return [];
+		const colIndex = Number(selectedColumn);
+		return [{
+			startRow: rowRange.startRow,
+			endRow: rowRange.endRow,
+			startColumn: colIndex,
+			endColumn: colIndex
+		}];
+	}, [
+		fileNameParts,
+		selectedColumn,
+		rowRange
+	]));
+	const handleFileNamePartsChange = (0, react.useCallback)((value) => {
+		if (value.length === 0) return;
+		setFileNameParts(value);
+	}, []);
+	const handleColumnChange = (0, react.useCallback)((value) => {
+		setSelectedColumn(String(value));
+	}, []);
+	const handleCancel = (0, react.useCallback)(() => {
+		dialogService.close(BATCH_SAVE_IMAGES_DIALOG_ID);
+	}, [dialogService]);
+	const handleConfirm = (0, react.useCallback)(async () => {
+		if (images.length === 0) return;
+		setSaving(true);
+		setError(null);
+		try {
+			await batchSaveService.saveImages(images, {
+				fileNameParts,
+				columnIndex: fileNameParts.includes("columnValue") ? Number(selectedColumn) : void 0
+			});
+			dialogService.close(BATCH_SAVE_IMAGES_DIALOG_ID);
+		} catch (err) {
+			console.error("Failed to save images:", err);
+			setError(localeService.t("sheets-drawing-ui.save.error"));
+		} finally {
+			setSaving(false);
+		}
+	}, [
+		batchSaveService,
+		images,
+		fileNameParts,
+		selectedColumn,
+		dialogService,
+		localeService
+	]);
+	const showColumnSelect = fileNameParts.includes("columnValue");
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-flex univer-flex-col",
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.FormLayout, {
+				label: localeService.t("sheets-drawing-ui.save.imageCount"),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-text-sm univer-text-gray-600",
+					children: images.length
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.FormLayout, {
+				label: localeService.t("sheets-drawing-ui.save.fileNameConfig"),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.CheckboxGroup, {
+					value: fileNameParts,
+					onChange: handleFileNamePartsChange,
+					direction: "vertical",
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Checkbox, {
+						value: "cellAddress",
+						disabled: !hasAvailableColumns,
+						children: localeService.t("sheets-drawing-ui.save.useRowCol")
+					}), hasAvailableColumns && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Checkbox, {
+						value: "columnValue",
+						children: localeService.t("sheets-drawing-ui.save.useColumnValue")
+					})]
+				})
+			}),
+			showColumnSelect && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.FormLayout, {
+				label: localeService.t("sheets-drawing-ui.save.selectColumn"),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+					value: selectedColumn,
+					options: columnOptions,
+					onChange: handleColumnChange
+				})
+			}),
+			error && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-text-xs univer-text-red-500",
+				children: error
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-justify-end univer-gap-2 univer-border-t univer-border-gray-200 univer-pt-3",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+					onClick: handleCancel,
+					disabled: saving,
+					children: localeService.t("sheets-drawing-ui.save.cancel")
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+					variant: "primary",
+					onClick: handleConfirm,
+					disabled: saving || images.length === 0,
+					children: saving ? localeService.t("sheets-drawing-ui.save.saving") : localeService.t("sheets-drawing-ui.save.confirm")
+				})]
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/views/sheet-image-panel/SheetDrawingAnchor.tsx
+const SheetDrawingAnchor = (props) => {
+	const commandService = (0, _univerjs_ui.useDependency)(_univerjs_core.ICommandService);
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const drawingManagerService = (0, _univerjs_ui.useDependency)(_univerjs_drawing.IDrawingManagerService);
+	const renderManagerService = (0, _univerjs_ui.useDependency)(_univerjs_engine_render.IRenderManagerService);
+	const { drawings } = props;
+	const drawingParam = isSheetDrawing(drawings[0]) ? drawings[0] : void 0;
+	const renderObject = drawingParam ? renderManagerService.getRenderUnitById(drawingParam.unitId) : void 0;
+	const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+	const transformer = scene === null || scene === void 0 ? void 0 : scene.getTransformerByCreate();
+	const [anchorShow, setAnchorShow] = (0, react.useState)(true);
+	const [value, setValue] = (0, react.useState)(drawingParam ? (0, _univerjs_sheets_drawing.getSheetDrawingPlacement)(drawingParam).kind : _univerjs_sheets_drawing.SheetDrawingAnchorType.Position);
+	function getUpdateParams(objects, drawingManagerService) {
+		const params = [];
+		objects.forEach((object) => {
+			const { oKey } = object;
+			const searchParam = drawingManagerService.getDrawingOKey(oKey);
+			if (searchParam == null) {
+				params.push(null);
+				return true;
+			}
+			if (!isSheetDrawing(searchParam)) {
+				params.push(null);
+				return true;
+			}
+			const { unitId, subUnitId, drawingId, drawingType, anchorType, sheetTransform, axisAlignSheetTransform } = searchParam;
+			params.push({
+				unitId,
+				subUnitId,
+				drawingId,
+				anchorType,
+				sheetTransform,
+				drawingType,
+				axisAlignSheetTransform
+			});
+		});
+		return params;
+	}
+	(0, react.useEffect)(() => {
+		if (!transformer) return;
+		const onClearControlObserver = transformer.clearControl$.subscribe((changeSelf) => {
+			if (changeSelf === true) setAnchorShow(false);
+		});
+		const onChangeStartObserver = transformer.changeStart$.subscribe((state) => {
+			const { objects } = state;
+			const params = getUpdateParams(objects, drawingManagerService);
+			if (params.length === 0) setAnchorShow(false);
+			else if (params.length >= 1) {
+				setAnchorShow(true);
+				const drawing = params[0];
+				setValue(drawing ? (0, _univerjs_sheets_drawing.getSheetDrawingPlacement)(drawing).kind : _univerjs_sheets_drawing.SheetDrawingAnchorType.Position);
+			}
+		});
+		return () => {
+			onChangeStartObserver.unsubscribe();
+			onClearControlObserver.unsubscribe();
+		};
+	}, [drawingManagerService, transformer]);
+	if (!drawingParam || !transformer) return null;
+	function handleChange(value) {
+		const kind = getAnchorKind(value);
+		if (!kind) return;
+		const focusDrawings = drawingManagerService.getFocusDrawings();
+		if (!focusDrawings.length || !focusDrawings.every(isSheetDrawing)) return;
+		const { unitId, subUnitId } = focusDrawings[0];
+		const placementUpdates = [];
+		for (const drawing of focusDrawings) {
+			const { transform } = drawing;
+			const { left, top, width, height } = transform ?? {};
+			if (typeof left !== "number" || typeof top !== "number" || typeof width !== "number" || typeof height !== "number" || !Number.isFinite(left) || !Number.isFinite(top) || !Number.isFinite(width) || !Number.isFinite(height)) return;
+			placementUpdates.push({
+				drawingId: drawing.drawingId,
+				placement: {
+					kind,
+					bounds: {
+						left,
+						top,
+						width,
+						height
+					}
+				}
+			});
+		}
+		if (commandService.syncExecuteCommand(_univerjs_sheets_drawing.SetSheetDrawingPlacementCommand.id, {
+			unitId,
+			subUnitId,
+			drawings: placementUpdates
+		})) setValue(kind);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: (0, _univerjs_design.clsx)("univer-grid univer-gap-2 univer-py-2 univer-text-gray-400", { "univer-hidden": !anchorShow }),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("header", {
+			className: "univer-text-gray-600 dark:!univer-text-gray-200",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: localeService.t("sheets-drawing-ui.drawing-anchor.title") })
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.RadioGroup, {
+			value,
+			onChange: handleChange,
+			direction: "vertical",
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Radio, {
+					value: _univerjs_sheets_drawing.SheetDrawingAnchorType.Both,
+					children: localeService.t("sheets-drawing-ui.drawing-anchor.both")
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Radio, {
+					value: _univerjs_sheets_drawing.SheetDrawingAnchorType.Position,
+					children: localeService.t("sheets-drawing-ui.drawing-anchor.position")
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Radio, {
+					value: _univerjs_sheets_drawing.SheetDrawingAnchorType.None,
+					children: localeService.t("sheets-drawing-ui.drawing-anchor.none")
+				})
+			]
+		}) })]
+	});
+};
+function isSheetDrawing(drawing) {
+	return Boolean(drawing && "sheetTransform" in drawing && "axisAlignSheetTransform" in drawing);
+}
+function getAnchorKind(value) {
+	if (value === _univerjs_sheets_drawing.SheetDrawingAnchorType.Position || value === _univerjs_sheets_drawing.SheetDrawingAnchorType.Both || value === _univerjs_sheets_drawing.SheetDrawingAnchorType.None) return value;
+	return null;
+}
+
+//#endregion
+//#region src/views/sheet-image-panel/SheetDrawingPanel.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const SheetDrawingPanel = () => {
+	const drawingManagerService = (0, _univerjs_ui.useDependency)(_univerjs_drawing.IDrawingManagerService);
+	const drawings = (0, _univerjs_ui.useObservable)(() => drawingManagerService.focus$, drawingManagerService.getFocusDrawings(), false, [drawingManagerService]);
+	return !!(drawings === null || drawings === void 0 ? void 0 : drawings.length) && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-text-sm",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_drawing_ui.DrawingCommonPanel, { drawings }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SheetDrawingAnchor, { drawings })]
+	});
+};
+
+//#endregion
+//#region src/controllers/components.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ComponentsController = class ComponentsController extends _univerjs_core.Disposable {
+	constructor(_componentManager) {
+		super();
+		this._componentManager = _componentManager;
+		this._registerComponents();
+	}
+	_registerComponents() {
+		this.disposeWithMe(this._componentManager.register(COMPONENT_SHEET_DRAWING_PANEL, SheetDrawingPanel));
+		this.disposeWithMe(this._componentManager.register(BATCH_SAVE_IMAGES_DIALOG_ID, BatchSaveImagesDialog));
+	}
+};
+ComponentsController = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_ui.ComponentManager))], ComponentsController);
+
+//#endregion
+//#region src/services/drawing-context-menu.service.ts
+const IDrawingContextMenuService = (0, _univerjs_core.createIdentifier)("sheets-drawing-ui.drawing-context-menu.service");
+var DrawingContextMenuService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_providers", /* @__PURE__ */ new Map());
+	}
+	registerProvider(drawingType, provider) {
+		this._providers.set(drawingType, provider);
+		return (0, _univerjs_core.toDisposable)(() => {
+			if (this._providers.get(drawingType) === provider) this._providers.delete(drawingType);
+		});
+	}
+	getContextMenuPosition(context) {
+		var _this$_providers$get;
+		return (_this$_providers$get = this._providers.get(context.drawingType)) === null || _this$_providers$get === void 0 ? void 0 : _this$_providers$get.getContextMenuPosition(context);
+	}
+};
+
+//#endregion
+//#region src/controllers/drawing-context-menu.controller.ts
+let DrawingContextMenuController = class DrawingContextMenuController extends _univerjs_core.RxDisposable {
+	constructor(_drawingManagerService, _contextMenuService, _renderManagerService, _univerInstanceService, _drawingContextMenuService) {
+		super();
+		this._drawingManagerService = _drawingManagerService;
+		this._contextMenuService = _contextMenuService;
+		this._renderManagerService = _renderManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._drawingContextMenuService = _drawingContextMenuService;
+		this._init();
+	}
+	_init() {
+		this._univerInstanceService.getAllUnitsForType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).forEach((workbook) => this._contextMenuListener(workbook));
+	}
+	_contextMenuListener(workbook) {
+		var _this$_renderManagerS;
+		if (!workbook) return;
+		const scene = (_this$_renderManagerS = this._renderManagerService.getRenderUnitById(workbook.getUnitId())) === null || _this$_renderManagerS === void 0 ? void 0 : _this$_renderManagerS.scene;
+		if (!scene) return;
+		const transformer = scene.getTransformerByCreate();
+		if (!transformer) return;
+		this.disposeWithMe(transformer.changeEnd$.subscribe((params) => {
+			const { event } = params;
+			if (event.button !== 2) return;
+			const selectedObjects = transformer.getSelectedObjectMap();
+			if (selectedObjects.size === 0) return;
+			const drawings = [];
+			for (const object of selectedObjects.values()) {
+				const oKey = object.oKey;
+				const drawingParam = this._drawingManagerService.getDrawingOKey(oKey);
+				if (!drawingParam) return;
+				drawings.push(drawingParam);
+			}
+			this._contextMenuService.triggerContextMenu(event, this._getContextMenuPosition(drawings));
+		}));
+	}
+	_getContextMenuPosition(drawings) {
+		if (drawings.length !== 1) return _univerjs_ui.ContextMenuPosition.DRAWING;
+		const [drawing] = drawings;
+		return this._drawingContextMenuService.getContextMenuPosition({
+			unitId: drawing.unitId,
+			subUnitId: drawing.subUnitId,
+			drawingId: drawing.drawingId,
+			drawingType: drawing.drawingType,
+			drawing
+		}) ?? _univerjs_ui.ContextMenuPosition.DRAWING;
+	}
+};
+DrawingContextMenuController = __decorate([
+	__decorateParam(0, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(1, _univerjs_ui.IContextMenuService),
+	__decorateParam(2, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(3, _univerjs_core.IUniverInstanceService),
+	__decorateParam(4, IDrawingContextMenuService)
+], DrawingContextMenuController);
+
+//#endregion
+//#region src/controllers/render-controllers/sheet-celll-image-hover.render-controller.ts
+const CELL_IMAGE_PREVIEW_KEY = "preview-cell-image";
+let SheetCellImageHoverRenderController = class SheetCellImageHoverRenderController extends _univerjs_core.Disposable {
+	constructor(_context, _hoverManagerService, _selectionsService, _drawingRenderService, _sheetSkeletonManagerService) {
+		super();
+		this._context = _context;
+		this._hoverManagerService = _hoverManagerService;
+		this._selectionsService = _selectionsService;
+		this._drawingRenderService = _drawingRenderService;
+		this._sheetSkeletonManagerService = _sheetSkeletonManagerService;
+		_defineProperty(this, "_isSetCursor", false);
+		this._initHover();
+		this._initImageClick();
+	}
+	_initHover() {
+		this.disposeWithMe(this._hoverManagerService.currentRichTextNoDistinct$.pipe((0, rxjs.throttleTime)(33)).subscribe((richText) => {
+			let currentSelections = [];
+			if (richText !== null) currentSelections = this._selectionsService.getWorkbookSelections(this._context.unitId).getCurrentSelections();
+			if ((richText === null || richText === void 0 ? void 0 : richText.unitId) === this._context.unitId && (richText === null || richText === void 0 ? void 0 : richText.drawing) && currentSelections.length === 1 && currentSelections[0].primary) {
+				const { row, col } = richText;
+				const { actualRow, actualColumn, startRow, startColumn, endRow, endColumn, isMerged, isMergedMainCell } = currentSelections[0].primary;
+				if ((isMerged || isMergedMainCell) && row >= startRow && row <= endRow && col >= startColumn && col <= endColumn) {
+					this._isSetCursor = true;
+					this._context.scene.setCursor(_univerjs_engine_render.CURSOR_TYPE.ZOOM_IN);
+				} else if (row === actualRow && col === actualColumn) {
+					this._isSetCursor = true;
+					this._context.scene.setCursor(_univerjs_engine_render.CURSOR_TYPE.ZOOM_IN);
+				} else if (this._isSetCursor) {
+					this._isSetCursor = false;
+					this._context.scene.resetCursor();
+				}
+			} else if (this._isSetCursor) {
+				this._isSetCursor = false;
+				this._context.scene.resetCursor();
+			}
+		}));
+	}
+	_initImageClick() {
+		this.disposeWithMe(this._hoverManagerService.currentClickedCell$.subscribe((click) => {
+			if ((click === null || click === void 0 ? void 0 : click.drawing) && this._isSetCursor) {
+				const imageDrawing = click.drawing.drawing.drawingOrigin;
+				this._previewImage(imageDrawing);
+			}
+		}));
+		const currentDbClickedCell$ = this._hoverManagerService.currentDbClickedCell$;
+		if (!currentDbClickedCell$) return;
+		this.disposeWithMe(currentDbClickedCell$.subscribe(({ location }) => {
+			var _worksheet$getCellRaw, _documentData$drawing, _documentData$drawing2;
+			if (location.unitId !== this._context.unitId) return;
+			const worksheet = this._context.unit.getSheetBySheetId(location.subUnitId);
+			const documentData = worksheet === null || worksheet === void 0 || (_worksheet$getCellRaw = worksheet.getCellRaw(location.row, location.col)) === null || _worksheet$getCellRaw === void 0 ? void 0 : _worksheet$getCellRaw.p;
+			const drawingId = documentData === null || documentData === void 0 || (_documentData$drawing = documentData.drawingsOrder) === null || _documentData$drawing === void 0 ? void 0 : _documentData$drawing[0];
+			const imageDrawing = (0, _univerjs_sheets.isCellImage)(documentData) && drawingId ? (_documentData$drawing2 = documentData.drawings) === null || _documentData$drawing2 === void 0 ? void 0 : _documentData$drawing2[drawingId] : void 0;
+			if (imageDrawing) this._previewImage(imageDrawing);
+		}));
+	}
+	_previewImage(imageDrawing) {
+		var _this$_sheetSkeletonM;
+		if (this._disposed) return;
+		const imageCacheMap = (_this$_sheetSkeletonM = this._sheetSkeletonManagerService.getCurrentSkeleton()) === null || _this$_sheetSkeletonM === void 0 ? void 0 : _this$_sheetSkeletonM.imageCacheMap;
+		const imageEle = imageCacheMap === null || imageCacheMap === void 0 ? void 0 : imageCacheMap.getImage(imageDrawing.imageSourceType, imageDrawing.source, () => this._previewImage(imageDrawing));
+		if (!imageEle) return;
+		this._drawingRenderService.previewImage(CELL_IMAGE_PREVIEW_KEY, imageEle.src, imageEle.width, imageEle.height);
+		this._context.scene.resetCursor();
+		this._isSetCursor = false;
+	}
+};
+SheetCellImageHoverRenderController = __decorate([
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.HoverManagerService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetsSelectionsService)),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_drawing_ui.DrawingRenderService)),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.SheetSkeletonManagerService))
+], SheetCellImageHoverRenderController);
+
+//#endregion
+//#region src/controllers/render-controllers/sheet-drawing.render-controller.ts
+let SheetsDrawingRenderController = class SheetsDrawingRenderController extends _univerjs_core.Disposable {
+	constructor(_context, _sheetDrawingService, _drawingManagerService, _sheetSkeletonService) {
+		super();
+		this._context = _context;
+		this._sheetDrawingService = _sheetDrawingService;
+		this._drawingManagerService = _drawingManagerService;
+		this._sheetSkeletonService = _sheetSkeletonService;
+		this._init();
+	}
+	_init() {
+		this._drawingInitializeListener();
+	}
+	_drawingInitializeListener() {
+		this._sheetDrawingService.initializeNotification(this._context.unitId);
+		const data = this._sheetDrawingService.getDrawingDataForUnit(this._context.unitId);
+		for (const subUnit in data) {
+			const subUnitData = data[subUnit];
+			for (const drawingId in subUnitData.data) {
+				const drawingData = subUnitData.data[drawingId];
+				const { unitId, subUnitId } = drawingData;
+				const skeletonParam = this._sheetSkeletonService.getSkeletonParam(unitId, subUnitId);
+				if (skeletonParam && drawingData.sheetTransform && !drawingData.groupId && drawingData.anchorType !== _univerjs_sheets_drawing.SheetDrawingAnchorType.None) {
+					const transform = (0, _univerjs_sheets_drawing.drawingPositionToTransform)(drawingData.sheetTransform, skeletonParam);
+					drawingData.transform = transform && drawingData.drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_GROUP ? {
+						...transform,
+						left: (transform.left ?? 0) - skeletonParam.skeleton.rowHeaderWidthAndMarginLeft,
+						top: (transform.top ?? 0) - skeletonParam.skeleton.columnHeaderHeightAndMarginTop
+					} : transform;
+				}
+			}
+		}
+		this._drawingManagerService.registerDrawingData(this._context.unitId, this._sheetDrawingService.getDrawingDataForUnit(this._context.unitId));
+		this._drawingManagerService.initializeNotification(this._context.unitId);
+	}
+};
+SheetsDrawingRenderController = __decorate([
+	__decorateParam(1, _univerjs_sheets_drawing.ISheetDrawingService),
+	__decorateParam(2, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetSkeletonService))
+], SheetsDrawingRenderController);
+
+//#endregion
+//#region src/controllers/sheet-cell-image.controller.ts
+function resizeImageByCell(injector, location, cell) {
+	var _documentData$drawing, _documentData$drawing2;
+	const documentData = cell === null || cell === void 0 ? void 0 : cell.p;
+	const drawingId = (0, _univerjs_sheets.isCellImage)(documentData) && (documentData === null || documentData === void 0 || (_documentData$drawing = documentData.drawingsOrder) === null || _documentData$drawing === void 0 ? void 0 : _documentData$drawing.length) === 1 ? documentData.drawingsOrder[0] : void 0;
+	const image = drawingId ? documentData === null || documentData === void 0 || (_documentData$drawing2 = documentData.drawings) === null || _documentData$drawing2 === void 0 ? void 0 : _documentData$drawing2[drawingId] : void 0;
+	if (image && documentData) {
+		const imageSize = getDrawingSizeByCell(injector, {
+			unitId: location.unitId,
+			subUnitId: location.subUnitId,
+			row: location.row,
+			col: location.col
+		}, image.docTransform.size.width, image.docTransform.size.height, image.docTransform.angle);
+		if (imageSize) {
+			image.transform.width = imageSize.width;
+			image.transform.height = imageSize.height;
+			image.docTransform.size.width = imageSize.width;
+			image.docTransform.size.height = imageSize.height;
+			image.transform.left = 0;
+			image.transform.top = 0;
+			image.docTransform.positionH.posOffset = 0;
+			image.docTransform.positionV.posOffset = 0;
+			documentData.documentStyle.pageSize.width = Infinity;
+			documentData.documentStyle.pageSize.height = Infinity;
+			return true;
+		}
+	}
+	return false;
+}
+let SheetCellImageController = class SheetCellImageController extends _univerjs_core.Disposable {
+	constructor(_sheetInterceptorService, _injector, _drawingManagerService, _docDrawingController, _editorBridgeService) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._injector = _injector;
+		this._drawingManagerService = _drawingManagerService;
+		this._docDrawingController = _docDrawingController;
+		this._editorBridgeService = _editorBridgeService;
+		this._handleInitEditor();
+		this._initCellContentInterceptor();
+	}
+	_handleInitEditor() {
+		this.disposeWithMe(this._editorBridgeService.visible$.subscribe((param) => {
+			if (!param.visible) this._drawingManagerService.removeDrawingDataForUnit(_univerjs_core.DOCS_NORMAL_EDITOR_UNIT_ID_KEY);
+			else if (param.visible) {
+				this._drawingManagerService.removeDrawingDataForUnit(_univerjs_core.DOCS_NORMAL_EDITOR_UNIT_ID_KEY);
+				this._docDrawingController.loadDrawingDataForUnit(_univerjs_core.DOCS_NORMAL_EDITOR_UNIT_ID_KEY);
+				this._drawingManagerService.initializeNotification(_univerjs_core.DOCS_NORMAL_EDITOR_UNIT_ID_KEY);
+			}
+		}));
+	}
+	_initCellContentInterceptor() {
+		this.disposeWithMe(this._sheetInterceptorService.intercept(_univerjs_sheets.INTERCEPTOR_POINT.CELL_CONTENT, {
+			effect: _univerjs_core.InterceptorEffectEnum.Style,
+			priority: _univerjs_sheets.InterceptCellContentPriority.CELL_IMAGE,
+			handler: (cell, pos, next) => {
+				if (cell && (0, _univerjs_sheets.isCellImage)(cell.p)) {
+					if (cell === pos.rawData) cell = { ...pos.rawData };
+					if (!cell.interceptorStyle) cell.interceptorStyle = {};
+					cell.interceptorStyle.tr = { a: 0 };
+					resizeImageByCell(this._injector, {
+						unitId: pos.unitId,
+						subUnitId: pos.subUnitId,
+						row: pos.row,
+						col: pos.col
+					}, cell);
+				}
+				return next(cell);
+			}
+		}));
+	}
+};
+SheetCellImageController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetInterceptorService)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(2, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_docs_drawing.DocDrawingController)),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.IEditorBridgeService))
+], SheetCellImageController);
+
+//#endregion
+//#region src/controllers/sheet-cell-image-autofill.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let SheetCellImageAutofillController = class SheetCellImageAutofillController extends _univerjs_core.Disposable {
+	constructor(_autoFillService, _injector) {
+		super();
+		this._autoFillService = _autoFillService;
+		this._injector = _injector;
+		this._initAutoFillHooks();
+	}
+	_initAutoFillHooks() {
+		this.disposeWithMe(this._autoFillService.addHook({
+			id: "sheet-cell-image-autofill",
+			onBeforeSubmit: (location, direction, applyType, cellValue) => {
+				new _univerjs_core.ObjectMatrix(cellValue).forValue((row, col, cell) => {
+					resizeImageByCell(this._injector, {
+						unitId: location.unitId,
+						subUnitId: location.subUnitId,
+						row,
+						col
+					}, cell);
+				});
+			}
+		}));
+	}
+};
+SheetCellImageAutofillController = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets.IAutoFillService)), __decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector))], SheetCellImageAutofillController);
+
+//#endregion
+//#region src/controllers/sheet-cell-image-copy-paste.controller.ts
+const DISABLE_UNITS = [_univerjs_core.DOCS_NORMAL_EDITOR_UNIT_ID_KEY, _univerjs_core.DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY];
+let SheetCellImageCopyPasteController = class SheetCellImageCopyPasteController extends _univerjs_core.Disposable {
+	constructor(_commandService, _univerInstanceService, _dialogService, _renderManagerService, _localeService) {
+		super();
+		this._commandService = _commandService;
+		this._univerInstanceService = _univerInstanceService;
+		this._dialogService = _dialogService;
+		this._renderManagerService = _renderManagerService;
+		this._localeService = _localeService;
+		this._initDocImageCopyPasteHooks();
+	}
+	_setCellImage(drwaing) {
+		var _getCurrentTypeOfRend;
+		const docDataModel = (0, _univerjs_core.createDocumentModelWithStyle)("", {});
+		const editingRenderController = (_getCurrentTypeOfRend = (0, _univerjs_engine_render.getCurrentTypeOfRenderer)(_univerjs_core.UniverInstanceType.UNIVER_SHEET, this._univerInstanceService, this._renderManagerService)) === null || _getCurrentTypeOfRend === void 0 ? void 0 : _getCurrentTypeOfRend.with(_univerjs_sheets_ui.EditingRenderController);
+		const jsonXActions = _univerjs_core.BuildTextUtils.drawing.add({
+			documentDataModel: docDataModel,
+			drawings: [drwaing],
+			selection: {
+				collapsed: true,
+				startOffset: 0,
+				endOffset: 0
+			}
+		});
+		if (jsonXActions) {
+			docDataModel.apply(jsonXActions);
+			if (editingRenderController) editingRenderController.submitCellData(docDataModel);
+		}
+	}
+	_initDocImageCopyPasteHooks() {
+		this.disposeWithMe(this._commandService.beforeCommandExecuted((commandInfo) => {
+			if (commandInfo.id === _univerjs_docs_ui.InnerPasteCommand.id) {
+				const { doc } = commandInfo.params;
+				const currentDoc = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_DOC);
+				if (currentDoc == null || !Object.keys(doc.drawings ?? {}).length) return;
+				const docUnitId = currentDoc.getUnitId();
+				if (DISABLE_UNITS.includes(docUnitId)) {
+					var _currentDoc$getBody;
+					const handleCloseDialog = () => {
+						this._dialogService.close("sheet-cell-image-copy-paste");
+						this._commandService.syncExecuteCommand(_univerjs_sheets_ui.SetCellEditVisibleOperation.id, { visible: false });
+					};
+					if (((_currentDoc$getBody = currentDoc.getBody()) === null || _currentDoc$getBody === void 0 ? void 0 : _currentDoc$getBody.dataStream) === "\r\n") {
+						this._commandService.syncExecuteCommand(_univerjs_sheets_ui.SetCellEditVisibleOperation.id, { visible: false });
+						this._setCellImage(Object.values(doc.drawings)[0]);
+					} else this._dialogService.open({
+						id: "sheet-cell-image-copy-paste",
+						title: { label: this._localeService.t("sheets-drawing-ui.cell-image.pasteTitle") },
+						children: { label: this._localeService.t("sheets-drawing-ui.cell-image.pasteContent") },
+						width: 320,
+						onClose: handleCloseDialog,
+						showOk: true,
+						showCancel: true,
+						onOk: () => {
+							handleCloseDialog();
+							this._setCellImage(Object.values(doc.drawings)[0]);
+						},
+						onCancel: handleCloseDialog
+					});
+				}
+			}
+		}));
+	}
+};
+SheetCellImageCopyPasteController = __decorate([
+	__decorateParam(0, _univerjs_core.ICommandService),
+	__decorateParam(1, _univerjs_core.IUniverInstanceService),
+	__decorateParam(2, _univerjs_ui.IDialogService),
+	__decorateParam(3, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService))
+], SheetCellImageCopyPasteController);
+
+//#endregion
+//#region src/controllers/sheet-drawing-active-render.controller.ts
+let SheetDrawingActiveRenderController = class SheetDrawingActiveRenderController extends _univerjs_core.Disposable {
+	constructor(_context, _commandService, _sheetSkeletonService, _sheetDrawingService, _drawingManagerService) {
+		super();
+		this._context = _context;
+		this._commandService = _commandService;
+		this._sheetSkeletonService = _sheetSkeletonService;
+		this._sheetDrawingService = _sheetDrawingService;
+		this._drawingManagerService = _drawingManagerService;
+		this._commandListener();
+	}
+	_commandListener() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (command.id === _univerjs_sheets.SetWorksheetActiveOperation.id) {
+				const { unitId, subUnitId } = command.params;
+				this._updateDrawings(unitId, subUnitId);
+			}
+		}));
+		this.disposeWithMe(this._context.activated$.subscribe((activated) => {
+			const { unit, unitId } = this._context;
+			if (activated) this._updateDrawings(unitId, unit.getActiveSheet().getSheetId());
+			else this._clearDrawings(unitId);
+		}));
+	}
+	_clearDrawings(selfUnitId) {
+		setTimeout(() => {
+			const drawingMap = this._drawingManagerService.drawingManagerData;
+			const removeDrawings = [];
+			Object.keys(drawingMap ?? {}).forEach((unitId) => {
+				const subUnitMap = drawingMap[unitId] ?? {};
+				Object.keys(subUnitMap).forEach((subUnitId) => {
+					var _subUnitMap$subUnitId;
+					const drawingData = ((_subUnitMap$subUnitId = subUnitMap[subUnitId]) === null || _subUnitMap$subUnitId === void 0 ? void 0 : _subUnitMap$subUnitId.data) ?? {};
+					Object.keys(drawingData).forEach((drawingId) => {
+						if (unitId === selfUnitId) removeDrawings.push(drawingData[drawingId]);
+					});
+				});
+			});
+			this._sheetDrawingService.removeNotification(removeDrawings);
+			this._drawingManagerService.removeNotification(removeDrawings);
+		});
+	}
+	_updateDrawings(showUnitId, showSubunitId) {
+		setTimeout(() => {
+			const sheetSkeletonParam = this._sheetSkeletonService.getSkeletonParam(showUnitId, showSubunitId);
+			const drawingMap = this._drawingManagerService.drawingManagerData;
+			const insertDrawings = [];
+			const removeDrawings = [];
+			Object.keys(drawingMap ?? {}).forEach((unitId) => {
+				if (unitId !== showUnitId) return;
+				const subUnitMap = drawingMap[unitId] ?? {};
+				Object.keys(subUnitMap).forEach((subUnitId) => {
+					var _subUnitMap$subUnitId2;
+					const drawingData = ((_subUnitMap$subUnitId2 = subUnitMap[subUnitId]) === null || _subUnitMap$subUnitId2 === void 0 ? void 0 : _subUnitMap$subUnitId2.data) ?? {};
+					Object.keys(drawingData).forEach((drawingId) => {
+						if (unitId === showUnitId && subUnitId === showSubunitId) {
+							const drawing = drawingData[drawingId];
+							if (drawing.sheetTransform && drawing.anchorType !== _univerjs_sheets_drawing.SheetDrawingAnchorType.None) drawing.transform = (0, _univerjs_sheets_drawing.drawingPositionToTransform)(drawing.sheetTransform, sheetSkeletonParam);
+							insertDrawings.push(drawingData[drawingId]);
+						} else removeDrawings.push(drawingData[drawingId]);
+					});
+				});
+			});
+			this._sheetDrawingService.removeNotification(removeDrawings);
+			this._sheetDrawingService.addNotification(insertDrawings);
+			this._drawingManagerService.removeNotification(removeDrawings);
+			this._drawingManagerService.addNotification(insertDrawings);
+		}, 0);
+	}
+};
+SheetDrawingActiveRenderController = __decorate([
+	__decorateParam(1, _univerjs_core.ICommandService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetSkeletonService)),
+	__decorateParam(3, _univerjs_sheets_drawing.ISheetDrawingService),
+	__decorateParam(4, _univerjs_drawing.IDrawingManagerService)
+], SheetDrawingActiveRenderController);
+
+//#endregion
+//#region src/controllers/sheet-drawing-copy-paste.controller.ts
+const IMAGE_PNG_MIME_TYPE = "image/png";
+function base64ToBlob(base64) {
+	const arr = base64.split(",");
+	const binStr = atob(arr[1]);
+	const len = binStr.length;
+	const bytes = new Uint8Array(len);
+	for (let i = 0; i < len; i++) bytes[i] = binStr.charCodeAt(i);
+	return new Blob([bytes], { type: IMAGE_PNG_MIME_TYPE });
+}
+function copyBase64ToClipboard(base64) {
+	const item = new ClipboardItem({ [IMAGE_PNG_MIME_TYPE]: base64ToBlob(base64) });
+	navigator.clipboard.write([item]).catch((err) => {
+		console.error("Could not copy image using clipboard API: ", err);
+	});
+}
+function focusDocument() {
+	function createInputElement() {
+		const input = document.createElement("input");
+		input.style.position = "absolute";
+		input.style.height = "1px";
+		input.style.width = "1px";
+		input.style.opacity = "0";
+		return input;
+	}
+	const activeElement = document.activeElement;
+	const input = createInputElement();
+	document.body.appendChild(input);
+	input.focus();
+	return () => {
+		input.blur();
+		document.body.removeChild(input);
+		if (activeElement instanceof HTMLElement) activeElement.focus();
+	};
+}
+const specialPastes = [
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_COL_WIDTH,
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_VALUE,
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_FORMAT,
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_FORMULA
+];
+let SheetsDrawingCopyPasteController = class SheetsDrawingCopyPasteController extends _univerjs_core.Disposable {
+	constructor(_sheetClipboardService, _renderManagerService, _sheetSkeletonService, _drawingService, _clipboardInterfaceService, _commandService) {
+		super();
+		this._sheetClipboardService = _sheetClipboardService;
+		this._renderManagerService = _renderManagerService;
+		this._sheetSkeletonService = _sheetSkeletonService;
+		this._drawingService = _drawingService;
+		this._clipboardInterfaceService = _clipboardInterfaceService;
+		this._commandService = _commandService;
+		_defineProperty(this, "_copyInfo", void 0);
+		this._initCopyPaste();
+	}
+	get _focusedDrawings() {
+		return this._drawingService.getFocusDrawings();
+	}
+	_initCopyPaste() {
+		this._sheetClipboardService.addClipboardHook({
+			id: "SHEET_IMAGE_UI_PLUGIN",
+			onBeforeCopyFocusedObject: (unitId, _subUnitId, copyType) => {
+				this._copyInfo = null;
+				const drawings = this._focusedDrawings.filter((drawing) => drawing.drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE);
+				if (drawings.length === 0) return false;
+				const [drawing] = drawings;
+				if (copyType === _univerjs_sheets_ui.COPY_TYPE.CUT) {
+					const params = {
+						unitId,
+						drawings
+					};
+					this._commandService.executeCommand(_univerjs_sheets_drawing.RemoveSheetDrawingCommand.id, params);
+				}
+				setTimeout(() => {
+					const dispose = focusDocument();
+					if (drawing.drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE && drawing.imageSourceType === _univerjs_core.ImageSourceType.BASE64) copyBase64ToClipboard(drawing.source);
+					else this._clipboardInterfaceService.writeText("");
+					dispose();
+				}, 200);
+				this._copyInfo = {
+					unitId: drawing.unitId,
+					subUnitId: drawing.subUnitId,
+					drawings
+				};
+				return true;
+			},
+			onBeforeCopy: (unitId, subUnitId, range) => {
+				this._copyInfo = this._createDrawingsCopyInfoByRange(unitId, subUnitId, range);
+			},
+			onPasteCells: (pasteFrom, pasteTo, _data, payload) => {
+				if (!payload.copyId) {
+					this._copyInfo = null;
+					return {
+						redos: [],
+						undos: []
+					};
+				}
+				if (!pasteFrom || !this._copyInfo) return {
+					redos: [],
+					undos: []
+				};
+				const { copyType = _univerjs_sheets_ui.COPY_TYPE.COPY, pasteType } = payload;
+				const { range: copyRange, unitId: fromUnitId, subUnitId: fromSubUnitId } = pasteFrom;
+				const { range: pasteRange, unitId: toUnitId, subUnitId: toSubUnitId } = pasteTo;
+				return this._copyInfo.copyRange ? this._generateRangeDrawingsPasteMutations({
+					unitId: toUnitId,
+					subUnitId: toSubUnitId,
+					pasteRange,
+					pasteType
+				}, {
+					unitId: fromUnitId,
+					subUnitId: fromSubUnitId,
+					copyType,
+					copyRange
+				}) : this._generateSingleDrawingPasteMutations({
+					pasteTo,
+					pasteType
+				}, _univerjs_sheets_ui.COPY_TYPE.COPY);
+			},
+			onPastePlainText: (_pasteTo, _clipText) => {
+				this._copyInfo = null;
+				return {
+					undos: [],
+					redos: []
+				};
+			},
+			onPasteUnrecognized: (pasteTo) => {
+				if (!this._copyInfo || this._copyInfo.copyRange) return {
+					undos: [],
+					redos: []
+				};
+				const mutations = this._generateSingleDrawingPasteMutations({
+					pasteTo,
+					pasteType: _univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.DEFAULT_PASTE
+				}, _univerjs_sheets_ui.COPY_TYPE.COPY);
+				this._copyInfo = null;
+				return mutations;
+			},
+			onPasteFiles: (pasteTo, files) => {
+				if (this._copyInfo && !this._copyInfo.copyRange) {
+					const mutations = this._generateSingleDrawingPasteMutations({
+						pasteTo,
+						pasteType: _univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.DEFAULT_PASTE
+					}, _univerjs_sheets_ui.COPY_TYPE.COPY);
+					this._copyInfo = null;
+					return mutations;
+				}
+				const images = files.filter((file) => file.type.includes("image"));
+				if (images.length) {
+					this._copyInfo = null;
+					return {
+						undos: [],
+						redos: [{
+							id: InsertFloatImageCommand.id,
+							params: { files: images }
+						}]
+					};
+				}
+				return {
+					undos: [],
+					redos: []
+				};
+			}
+		});
+	}
+	_createDrawingsCopyInfoByRange(unitId, subUnitId, range) {
+		const skeleton = this._sheetSkeletonService.getSkeleton(unitId, subUnitId);
+		if (!skeleton) return;
+		const selectionRect = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, range);
+		if (!selectionRect) return;
+		const { startX, endX, startY, endY } = selectionRect;
+		const drawings = this._drawingService.getDrawingData(unitId, subUnitId);
+		const containedDrawings = [];
+		Object.keys(drawings).forEach((drawingId) => {
+			const drawing = drawings[drawingId];
+			if (drawing.drawingType !== _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE) return;
+			const { transform } = drawing;
+			if (drawing.anchorType !== _univerjs_sheets_drawing.SheetDrawingAnchorType.Both) return;
+			if (!transform) return;
+			const { left = 0, top = 0, width = 0, height = 0 } = transform;
+			const { drawingStartX, drawingEndX, drawingStartY, drawingEndY } = {
+				drawingStartX: left,
+				drawingEndX: left + width,
+				drawingStartY: top,
+				drawingEndY: top + height
+			};
+			if (startX <= drawingStartX && drawingEndX <= endX && startY <= drawingStartY && drawingEndY <= endY) containedDrawings.push(drawing);
+		});
+		if (containedDrawings.length) return {
+			copyRange: range,
+			drawings: containedDrawings,
+			unitId,
+			subUnitId
+		};
+	}
+	_generateSingleDrawingPasteMutations(pasteContext, copyType) {
+		const { pasteType, pasteTo } = pasteContext;
+		if (specialPastes.includes(pasteType)) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId, subUnitId, range } = pasteTo;
+		const pasteToSkeleton = this._sheetSkeletonService.getSkeleton(unitId, subUnitId);
+		if (!pasteToSkeleton) return {
+			redos: [],
+			undos: []
+		};
+		const { drawings } = this._copyInfo;
+		const pasteRange = (0, _univerjs_sheets.discreteRangeToRange)(range);
+		let drawingAnchor;
+		if (drawings.length > 1) {
+			let anchorLeft = Infinity;
+			let anchorTop = Infinity;
+			for (const drawing of drawings) {
+				const { left = 0, top = 0 } = drawing.transform ?? {};
+				anchorLeft = Math.min(anchorLeft, left);
+				anchorTop = Math.min(anchorTop, top);
+			}
+			drawingAnchor = {
+				left: anchorLeft,
+				top: anchorTop
+			};
+		}
+		return this._generateMutations(drawings, {
+			unitId,
+			subUnitId,
+			isCut: copyType === _univerjs_sheets_ui.COPY_TYPE.CUT,
+			getTransform: (transform, sheetTransform) => {
+				const pasteRect = (0, _univerjs_sheets.attachRangeWithCoord)(pasteToSkeleton, {
+					startRow: pasteRange.startRow,
+					endRow: pasteRange.endRow,
+					startColumn: pasteRange.startColumn,
+					endColumn: pasteRange.endColumn
+				});
+				const newTransform = {
+					...transform,
+					left: drawingAnchor && pasteRect ? pasteRect.startX + ((transform === null || transform === void 0 ? void 0 : transform.left) ?? 0) - drawingAnchor.left : pasteRect === null || pasteRect === void 0 ? void 0 : pasteRect.startX,
+					top: drawingAnchor && pasteRect ? pasteRect.startY + ((transform === null || transform === void 0 ? void 0 : transform.top) ?? 0) - drawingAnchor.top : pasteRect === null || pasteRect === void 0 ? void 0 : pasteRect.startY
+				};
+				return {
+					transform: newTransform,
+					sheetTransform: (0, _univerjs_sheets_drawing.transformToDrawingPosition)(newTransform, pasteToSkeleton) ?? sheetTransform,
+					axisAlignSheetTransform: (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)(newTransform, pasteToSkeleton) ?? sheetTransform
+				};
+			}
+		});
+	}
+	_generateMutations(drawings, payload) {
+		const { unitId, subUnitId, getTransform, isCut } = payload;
+		const redos = [];
+		const undos = [];
+		const { _drawingService } = this;
+		drawings.forEach((drawing) => {
+			const { transform, sheetTransform } = drawing;
+			if (!transform) return;
+			const transformContext = getTransform(transform, sheetTransform);
+			const drawingObject = {
+				...drawing,
+				unitId,
+				subUnitId,
+				drawingId: isCut ? drawing.drawingId : (0, _univerjs_core.generateRandomId)(),
+				transform: transformContext.transform,
+				sheetTransform: transformContext.sheetTransform,
+				axisAlignSheetTransform: transformContext.axisAlignSheetTransform
+			};
+			if (isCut) {
+				const { undo, redo, objects } = _drawingService.getBatchUpdateOp([drawingObject]);
+				redos.push({
+					id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+					params: {
+						unitId,
+						subUnitId,
+						type: _univerjs_sheets_drawing.DrawingApplyType.UPDATE,
+						op: redo,
+						objects
+					}
+				});
+				undos.push({
+					id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+					params: {
+						unitId,
+						subUnitId,
+						type: _univerjs_sheets_drawing.DrawingApplyType.UPDATE,
+						op: undo,
+						objects
+					}
+				});
+			} else {
+				const { undo, redo, objects } = _drawingService.getBatchAddOp([drawingObject]);
+				redos.push({
+					id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+					params: {
+						op: redo,
+						unitId,
+						subUnitId,
+						objects,
+						type: _univerjs_sheets_drawing.DrawingApplyType.INSERT
+					}
+				});
+				undos.push({
+					id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+					params: {
+						op: undo,
+						unitId,
+						subUnitId,
+						objects,
+						type: _univerjs_sheets_drawing.DrawingApplyType.REMOVE
+					}
+				});
+			}
+		});
+		return {
+			redos,
+			undos
+		};
+	}
+	_generateRangeDrawingsPasteMutations(pasteContext, copyContext) {
+		if (!this._copyInfo) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId: toUnitId, subUnitId: toSubUnitId, pasteRange, pasteType } = pasteContext;
+		const { unitId: fromUnitId, subUnitId: fromSubUnitId, copyRange, copyType } = copyContext;
+		if (specialPastes.includes(pasteType)) return {
+			redos: [],
+			undos: []
+		};
+		const toSkeleton = this._sheetSkeletonService.getSkeleton(toUnitId, toSubUnitId);
+		if (!toSkeleton) return {
+			redos: [],
+			undos: []
+		};
+		const { drawings } = this._copyInfo;
+		if (!copyRange) return this._generateSingleDrawingPasteMutations({
+			pasteTo: {
+				unitId: toUnitId,
+				subUnitId: toSubUnitId,
+				range: (0, _univerjs_sheets.discreteRangeToRange)(pasteRange)
+			},
+			pasteType
+		}, copyType);
+		const fromSkeleton = this._sheetSkeletonService.getSkeleton(fromUnitId, fromSubUnitId);
+		if (!fromSkeleton) return {
+			redos: [],
+			undos: []
+		};
+		const { ranges: [vCopyRange, vPastedRange], mapFunc } = (0, _univerjs_sheets_ui.virtualizeDiscreteRanges)([copyRange, pasteRange]);
+		const { row: copyRow, col: copyCol } = mapFunc(vCopyRange.startRow, vCopyRange.startColumn);
+		const { row: pasteRow, col: pasteCol } = mapFunc(vPastedRange.startRow, vPastedRange.startColumn);
+		const copyRect = (0, _univerjs_sheets.attachRangeWithCoord)(fromSkeleton, {
+			startRow: copyRow,
+			endRow: copyRow,
+			startColumn: copyCol,
+			endColumn: copyCol
+		});
+		const pasteRect = (0, _univerjs_sheets.attachRangeWithCoord)(toSkeleton, {
+			startRow: pasteRow,
+			endRow: pasteRow,
+			startColumn: pasteCol,
+			endColumn: pasteCol
+		});
+		if (!copyRect || !pasteRect) return {
+			redos: [],
+			undos: []
+		};
+		const leftOffset = pasteRect.startX - copyRect.startX;
+		const topOffset = pasteRect.startY - copyRect.startY;
+		const rowOffset = pasteRow - copyRow;
+		const columnOffset = pasteCol - copyCol;
+		return this._generateMutations(drawings, {
+			unitId: toUnitId,
+			subUnitId: toSubUnitId,
+			getTransform: (transform, sheetTransform) => {
+				const newTransform = {
+					...transform,
+					left: ((transform === null || transform === void 0 ? void 0 : transform.left) ?? 0) + leftOffset,
+					top: ((transform === null || transform === void 0 ? void 0 : transform.top) ?? 0) + topOffset
+				};
+				return {
+					transform: newTransform,
+					sheetTransform: {
+						...sheetTransform,
+						to: {
+							...sheetTransform.to,
+							row: sheetTransform.to.row + rowOffset,
+							column: sheetTransform.to.column + columnOffset
+						},
+						from: {
+							...sheetTransform.from,
+							row: sheetTransform.from.row + rowOffset,
+							column: sheetTransform.from.column + columnOffset
+						}
+					},
+					axisAlignSheetTransform: (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)(newTransform, toSkeleton) ?? sheetTransform
+				};
+			},
+			isCut: copyType === _univerjs_sheets_ui.COPY_TYPE.CUT
+		});
+	}
+};
+SheetsDrawingCopyPasteController = __decorate([
+	__decorateParam(0, _univerjs_sheets_ui.ISheetClipboardService),
+	__decorateParam(1, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetSkeletonService)),
+	__decorateParam(3, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(4, _univerjs_ui.IClipboardInterfaceService),
+	__decorateParam(5, _univerjs_core.ICommandService)
+], SheetsDrawingCopyPasteController);
+
+//#endregion
+//#region src/controllers/sheet-drawing-permission.controller.ts
+const drawingObjectTypes = [
+	_univerjs_engine_render.ObjectType.IMAGE,
+	_univerjs_engine_render.ObjectType.SHAPE,
+	_univerjs_engine_render.ObjectType.CHART,
+	_univerjs_engine_render.ObjectType.DRAWING_DOM
+];
+let SheetDrawingPermissionController = class SheetDrawingPermissionController extends _univerjs_core.Disposable {
+	constructor(_commandService, _localeService, _renderManagerService, _permissionService, _univerInstanceService, _userManagerService, _sheetPermissionCheckController, _sheetDrawingService) {
+		super();
+		this._commandService = _commandService;
+		this._localeService = _localeService;
+		this._renderManagerService = _renderManagerService;
+		this._permissionService = _permissionService;
+		this._univerInstanceService = _univerInstanceService;
+		this._userManagerService = _userManagerService;
+		this._sheetPermissionCheckController = _sheetPermissionCheckController;
+		this._sheetDrawingService = _sheetDrawingService;
+		this._initDrawingVisible();
+		this._initDrawingEditable();
+		this._initViewPermissionChange();
+		this._initEditPermissionChange();
+		this._initCommandPermissionCheck();
+	}
+	_initDrawingVisible() {
+		const workbook$ = this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const currentUser$ = this._userManagerService.currentUser$;
+		const combined$ = (0, rxjs.combineLatest)([workbook$, currentUser$]);
+		this.disposeWithMe(combined$.pipe((0, rxjs.switchMap)(([workbook, _]) => {
+			if (!workbook) {
+				this._sheetDrawingService.setDrawingVisible(false);
+				return rxjs.EMPTY;
+			}
+			return workbook.activeSheet$.pipe((0, rxjs.tap)((sheet) => {
+				if (!sheet) {
+					this._sheetDrawingService.setDrawingVisible(false);
+					return;
+				}
+				const unitId = workbook.getUnitId();
+				const subUnitId = sheet.getSheetId();
+				if (this._permissionService.composePermission([new _univerjs_sheets.WorkbookViewPermission(unitId).id, new _univerjs_sheets.WorksheetViewPermission(unitId, subUnitId).id]).every((permission) => permission.value)) this._sheetDrawingService.setDrawingVisible(true);
+				else this._handleDrawingVisibilityFalse(workbook, sheet);
+			}));
+		})).subscribe());
+	}
+	_handleDrawingVisibilityFalse(workbook, sheet) {
+		this._sheetDrawingService.setDrawingVisible(false);
+		const unitId = workbook.getUnitId();
+		const subUnitId = sheet.getSheetId();
+		const drawingData = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+		const drawingDataValues = Object.values(drawingData);
+		const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+		const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+		if (!scene) return;
+		scene.getAllObjectsByOrder().forEach((object) => {
+			if (drawingObjectTypes.includes(object.objectType) && drawingDataValues.some((item) => object.oKey.includes(item.drawingId))) scene.removeObject(object);
+		});
+	}
+	_initDrawingEditable() {
+		const workbook$ = this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const currentUser$ = this._userManagerService.currentUser$;
+		const combined$ = (0, rxjs.combineLatest)([workbook$, currentUser$]);
+		this.disposeWithMe(combined$.pipe((0, rxjs.switchMap)(([workbook, _]) => {
+			if (!workbook) {
+				this._sheetDrawingService.setDrawingEditable(false);
+				return rxjs.EMPTY;
+			}
+			return workbook.activeSheet$.pipe((0, rxjs.tap)((sheet) => {
+				if (!sheet) {
+					this._sheetDrawingService.setDrawingEditable(false);
+					return;
+				}
+				const unitId = workbook.getUnitId();
+				const subUnitId = sheet.getSheetId();
+				if (this._permissionService.composePermission([new _univerjs_sheets.WorkbookEditablePermission(unitId).id, new _univerjs_sheets.WorksheetEditPermission(unitId, subUnitId).id]).every((permission) => permission.value)) this._sheetDrawingService.setDrawingEditable(true);
+				else this._handleDrawingEditableFalse(workbook, sheet);
+			}));
+		})).subscribe());
+	}
+	_handleDrawingEditableFalse(workbook, sheet) {
+		this._sheetDrawingService.setDrawingEditable(false);
+		const unitId = workbook.getUnitId();
+		const subUnitId = sheet.getSheetId();
+		const drawingData = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+		const drawingDataValues = Object.values(drawingData);
+		const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+		const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+		if (!scene) return;
+		scene.getAllObjectsByOrder().forEach((object) => {
+			if (drawingObjectTypes.includes(object.objectType) && drawingDataValues.some((item) => object.oKey.includes(item.drawingId))) scene.detachTransformerFrom(object);
+		});
+	}
+	_initViewPermissionChange() {
+		const workbook$ = this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const currentUser$ = this._userManagerService.currentUser$;
+		this.disposeWithMe((0, rxjs.combineLatest)([workbook$, currentUser$]).pipe((0, rxjs.switchMap)(([workbook, _]) => {
+			if (!workbook) return rxjs.EMPTY;
+			return workbook.activeSheet$.pipe((0, rxjs.switchMap)((sheet) => {
+				if (!sheet) return rxjs.EMPTY;
+				const unitId = workbook.getUnitId();
+				const subUnitId = sheet.getSheetId();
+				const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+				const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+				if (!scene) return rxjs.EMPTY;
+				const transformer = scene.getTransformerByCreate();
+				return this._permissionService.composePermission$([new _univerjs_sheets.WorkbookViewPermission(unitId).id, new _univerjs_sheets.WorksheetViewPermission(unitId, subUnitId).id]).pipe((0, rxjs.map)((permissions) => permissions.every((item) => item.value)), (0, rxjs.distinctUntilChanged)()).pipe((0, rxjs.map)((permission) => ({
+					permission,
+					scene,
+					transformer,
+					unitId,
+					subUnitId
+				})));
+			}));
+		})).subscribe({
+			next: ({ permission, scene, transformer, unitId, subUnitId }) => {
+				this._sheetDrawingService.setDrawingVisible(permission);
+				const objects = scene.getAllObjectsByOrder();
+				const drawingData = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+				const drawingDataValues = Object.values(drawingData);
+				if (permission) this._sheetDrawingService.addNotification(drawingDataValues);
+				else {
+					objects.forEach((object) => {
+						if (drawingObjectTypes.includes(object.objectType) && drawingDataValues.some((item) => object.oKey.includes(item.drawingId))) scene.removeObject(object);
+					});
+					transformer.clearSelectedObjects();
+				}
+			},
+			complete: () => {
+				this._sheetDrawingService.setDrawingVisible(true);
+				const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+				const sheet = workbook === null || workbook === void 0 ? void 0 : workbook.getActiveSheet();
+				const unitId = workbook === null || workbook === void 0 ? void 0 : workbook.getUnitId();
+				const subUnitId = sheet === null || sheet === void 0 ? void 0 : sheet.getSheetId();
+				if (!unitId || !subUnitId) return;
+				const drawingData = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+				const drawingDataValues = Object.values(drawingData);
+				this._sheetDrawingService.addNotification(drawingDataValues);
+			}
+		}));
+	}
+	_initEditPermissionChange() {
+		const workbook$ = this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const currentUser$ = this._userManagerService.currentUser$;
+		this.disposeWithMe((0, rxjs.combineLatest)([workbook$, currentUser$]).pipe((0, rxjs.switchMap)(([workbook, _]) => {
+			if (!workbook) return rxjs.EMPTY;
+			return workbook.activeSheet$.pipe((0, rxjs.switchMap)((sheet) => {
+				if (!sheet) return rxjs.EMPTY;
+				const unitId = workbook.getUnitId();
+				const subUnitId = sheet.getSheetId();
+				const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+				const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+				if (!scene) return rxjs.EMPTY;
+				const transformer = scene.getTransformerByCreate();
+				return this._permissionService.composePermission$([new _univerjs_sheets.WorkbookEditablePermission(unitId).id, new _univerjs_sheets.WorksheetEditPermission(unitId, subUnitId).id]).pipe((0, rxjs.map)((permissions) => permissions.every((item) => item.value)), (0, rxjs.distinctUntilChanged)()).pipe((0, rxjs.map)((permission) => ({
+					permission,
+					scene,
+					transformer,
+					unitId,
+					subUnitId
+				})));
+			}));
+		})).subscribe({
+			next: ({ permission, scene, transformer, unitId, subUnitId }) => {
+				this._sheetDrawingService.setDrawingEditable(permission);
+				const objects = scene.getAllObjectsByOrder();
+				const drawingData = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+				const drawingDataValues = Object.values(drawingData);
+				if (permission) {
+					objects.forEach((object) => {
+						if (drawingObjectTypes.includes(object.objectType) && drawingDataValues.some((item) => object.oKey.includes(item.drawingId))) scene.attachTransformerTo(object);
+					});
+					this._sheetDrawingService.addNotification(drawingDataValues);
+				} else {
+					objects.forEach((object) => {
+						if (drawingObjectTypes.includes(object.objectType) && drawingDataValues.some((item) => object.oKey.includes(item.drawingId))) scene.detachTransformerFrom(object);
+					});
+					transformer.clearSelectedObjects();
+				}
+			},
+			complete: () => {
+				const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+				if (!workbook) return;
+				const unitId = workbook.getUnitId();
+				const sheet = workbook.getActiveSheet();
+				if (!sheet) return;
+				const subUnitId = sheet.getSheetId();
+				const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+				const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+				if (!scene) return;
+				const drawingData = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+				const drawingDataValues = Object.values(drawingData);
+				this._sheetDrawingService.setDrawingEditable(true);
+				scene.getAllObjectsByOrder().forEach((object) => {
+					if (drawingObjectTypes.includes(object.objectType) && drawingDataValues.some((item) => object.oKey.includes(item.drawingId))) scene.detachTransformerFrom(object);
+				});
+			}
+		}));
+	}
+	_initCommandPermissionCheck() {
+		this.disposeWithMe(this._commandService.beforeCommandExecuted((command) => {
+			let unitId;
+			let subUnitId;
+			if (command.id === _univerjs_sheets_drawing.InsertSheetDrawingCommand.id || command.id === _univerjs_sheets_drawing.RemoveSheetDrawingCommand.id || command.id === _univerjs_sheets_drawing.SetSheetDrawingCommand.id) {
+				var _drawings$, _drawings$2;
+				const { drawings } = command.params;
+				unitId = drawings === null || drawings === void 0 || (_drawings$ = drawings[0]) === null || _drawings$ === void 0 ? void 0 : _drawings$.unitId;
+				subUnitId = drawings === null || drawings === void 0 || (_drawings$2 = drawings[0]) === null || _drawings$2 === void 0 ? void 0 : _drawings$2.subUnitId;
+			} else if (command.id === _univerjs_sheets_drawing.SetSheetDrawingPlacementCommand.id) {
+				const target = getPlacementCommandTarget(command.params);
+				unitId = target.unitId;
+				subUnitId = target.subUnitId;
+			} else if (command.id === _univerjs_sheets_drawing.SetDrawingArrangeCommand.id) {
+				const params = command.params;
+				unitId = params.unitId;
+				subUnitId = params.subUnitId;
+			}
+			if (!unitId || !subUnitId) return;
+			if (!this._sheetPermissionCheckController.permissionCheckWithoutRange({
+				workbookTypes: [_univerjs_sheets.WorkbookEditablePermission],
+				worksheetTypes: [_univerjs_sheets.WorksheetEditPermission]
+			}, unitId, subUnitId)) this._sheetPermissionCheckController.blockExecuteWithoutPermission(this._localeService.t("sheets-drawing-ui.permission.dialog.editErr"));
+		}));
+	}
+};
+SheetDrawingPermissionController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.ICommandService)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService)),
+	__decorateParam(2, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(3, _univerjs_core.IPermissionService),
+	__decorateParam(4, _univerjs_core.IUniverInstanceService),
+	__decorateParam(5, (0, _univerjs_core.Inject)(_univerjs_core.UserManagerService)),
+	__decorateParam(6, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetPermissionCheckController)),
+	__decorateParam(7, (0, _univerjs_core.Inject)(_univerjs_sheets_drawing.ISheetDrawingService))
+], SheetDrawingPermissionController);
+function getPlacementCommandTarget(params) {
+	if (!params) return {};
+	return {
+		unitId: "unitId" in params && typeof params.unitId === "string" ? params.unitId : void 0,
+		subUnitId: "subUnitId" in params && typeof params.subUnitId === "string" ? params.subUnitId : void 0
+	};
+}
+
+//#endregion
+//#region src/views/PrintingFloatDom.tsx
+function createPrintingFloatDom(info, scene, skeleton, worksheet) {
+	const { width, height, angle, left, top } = info.transform;
+	const offsetBound = transformBound2DOMBound({
+		left: left ?? 0,
+		right: (left ?? 0) + (width ?? 0),
+		top: top ?? 0,
+		bottom: (top ?? 0) + (height ?? 0)
+	}, scene, skeleton, worksheet, void 0, true);
+	const { scaleX, scaleY } = scene.getAncestorScale();
+	const domPos = {
+		startX: offsetBound.left,
+		endX: offsetBound.right,
+		startY: offsetBound.top,
+		endY: offsetBound.bottom,
+		rotate: angle,
+		width: width * scaleX,
+		height: height * scaleY,
+		absolute: offsetBound.absolute
+	};
+	const floatDom = {
+		position$: new rxjs.BehaviorSubject(domPos),
+		position: domPos,
+		id: info.drawingId,
+		componentKey: info.componentKey,
+		onPointerMove: () => {},
+		onPointerDown: () => {},
+		onPointerUp: () => {},
+		onWheel: () => {},
+		unitId: info.unitId,
+		data: info.data,
+		props: info.props
+	};
+	return [info.drawingId, floatDom];
+}
+const PrintingFloatDom = (props) => {
+	const { floatDomInfos, scene, skeleton, worksheet } = props;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		style: {
+			position: "absolute",
+			top: 0,
+			left: 0
+		},
+		children: (0, react.useMemo)(() => floatDomInfos.map((info) => createPrintingFloatDom(info, scene, skeleton, worksheet)), [
+			floatDomInfos,
+			scene,
+			skeleton,
+			worksheet
+		]).map(([id, floatDom]) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_ui.PrintFloatDomSingle, {
+			layer: floatDom,
+			id,
+			position: floatDom.position
+		}, id))
+	});
+};
+function mountPrintingFloatDom(props, root, injector) {
+	(0, _univerjs_design.render)(/* @__PURE__ */ (0, react_jsx_runtime.jsx)((0, _univerjs_ui.connectInjector)(PrintingFloatDom, injector), { ...props }), root);
+	return () => (0, _univerjs_design.unmount)(root);
+}
+
+//#endregion
+//#region src/controllers/sheet-drawing-printing.controller.ts
+let SheetDrawingPrintingController = class SheetDrawingPrintingController extends _univerjs_core.Disposable {
+	constructor(_sheetPrintInterceptorService, _drawingRenderService, _drawingManagerService, _renderManagerService, _componetManager, _injector) {
+		super();
+		this._sheetPrintInterceptorService = _sheetPrintInterceptorService;
+		this._drawingRenderService = _drawingRenderService;
+		this._drawingManagerService = _drawingManagerService;
+		this._renderManagerService = _renderManagerService;
+		this._componetManager = _componetManager;
+		this._injector = _injector;
+		this._initPrinting();
+		this._initPrintingDom();
+	}
+	_initPrinting() {
+		this.disposeWithMe(this._sheetPrintInterceptorService.interceptor.intercept(this._sheetPrintInterceptorService.interceptor.getInterceptPoints().PRINTING_COMPONENT_COLLECT, { handler: (_param, pos, next) => {
+			const { unitId, scene, subUnitId, resourceCollector } = pos;
+			const unitData = this._drawingManagerService.getDrawingDataForUnit(unitId);
+			const subUnitData = unitData === null || unitData === void 0 ? void 0 : unitData[subUnitId];
+			if (subUnitData) subUnitData.order.forEach((id) => {
+				const drawing = subUnitData.data[id];
+				if (drawing.hidden) return;
+				if (drawing.drawingType !== _univerjs_core.DrawingTypeEnum.DRAWING_CHART && drawing.drawingType !== _univerjs_core.DrawingTypeEnum.DRAWING_DOM && drawing.drawingType !== _univerjs_core.DrawingTypeEnum.DRAWING_BLOCK) {
+					const resource = this._drawingRenderService.renderDrawing(drawing, scene, { allowInactiveSheet: true });
+					if (resource) resourceCollector.add(Promise.resolve(resource));
+				}
+			});
+			return next();
+		} }));
+		this.disposeWithMe(this._sheetPrintInterceptorService.interceptor.intercept(this._sheetPrintInterceptorService.interceptor.getInterceptPoints().PRINTING_RANGE, { handler: (range, pos, next) => {
+			const { unitId, subUnitId } = pos;
+			const renderer = this._renderManagerService.getRenderUnitById(unitId);
+			if (!renderer) return next(range);
+			const skeleton = renderer.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(subUnitId);
+			if (!skeleton) return next(range);
+			const unitData = this._drawingManagerService.getDrawingDataForUnit(unitId);
+			const subUnitData = unitData === null || unitData === void 0 ? void 0 : unitData[pos.subUnitId];
+			if (!subUnitData) return next(range);
+			const { scaleX, scaleY } = renderer.scene;
+			const newRange = range ? { ...range } : {
+				startColumn: 0,
+				endColumn: 0,
+				endRow: 0,
+				startRow: 0
+			};
+			const data = subUnitData.order.map((key) => subUnitData.data[key]);
+			if (data.length) {
+				data.forEach((param) => {
+					if (!param.hidden && !param.groupId && param.transform && _univerjs_core.Tools.isDefine(param.transform.left) && _univerjs_core.Tools.isDefine(param.transform.top) && _univerjs_core.Tools.isDefine(param.transform.width) && _univerjs_core.Tools.isDefine(param.transform.height)) {
+						const start = skeleton.skeleton.getCellIndexByOffset(param.transform.left, param.transform.top, scaleX, scaleY, {
+							x: 0,
+							y: 0
+						});
+						const end = skeleton.skeleton.getCellIndexByOffset(param.transform.left + param.transform.width, param.transform.top + param.transform.height, scaleX, scaleY, {
+							x: 0,
+							y: 0
+						});
+						if (start.column < newRange.startColumn) newRange.startColumn = start.column;
+						if (start.row < newRange.startRow) newRange.startRow = start.row;
+						if (newRange.endRow < end.row) newRange.endRow = end.row;
+						if (newRange.endColumn < end.column) newRange.endColumn = end.column;
+					}
+				});
+				return next(newRange);
+			}
+			return next(range);
+		} }));
+	}
+	_initPrintingDom() {
+		this.disposeWithMe(this._sheetPrintInterceptorService.interceptor.intercept(this._sheetPrintInterceptorService.interceptor.getInterceptPoints().PRINTING_DOM_COLLECT, { handler: (disposableCollection, pos, next) => {
+			const { unitId, subUnitId } = pos;
+			const unitData = this._drawingManagerService.getDrawingDataForUnit(unitId);
+			const subUnitData = unitData === null || unitData === void 0 ? void 0 : unitData[subUnitId];
+			if (subUnitData) {
+				const floatDomInfos = subUnitData.order.map((id) => {
+					const drawing = subUnitData.data[id];
+					if (drawing.hidden) return null;
+					if (drawing.drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_DOM || drawing.drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_BLOCK) {
+						const printingComponentKey = this._sheetPrintInterceptorService.getPrintComponent(drawing.componentKey);
+						return {
+							...drawing,
+							componentKey: this._componetManager.get(printingComponentKey || drawing.componentKey)
+						};
+					}
+					return null;
+				}).filter(Boolean);
+				const printingRoot = document.createElement("div");
+				printingRoot.style.position = "absolute";
+				printingRoot.style.inset = "0";
+				pos.root.appendChild(printingRoot);
+				const unmountPrintingFloatDom = mountPrintingFloatDom({
+					floatDomInfos,
+					scene: pos.scene,
+					skeleton: pos.skeleton,
+					worksheet: pos.worksheet
+				}, printingRoot, this._injector);
+				disposableCollection === null || disposableCollection === void 0 || disposableCollection.add(() => {
+					printingRoot.remove();
+					queueMicrotask(unmountPrintingFloatDom);
+				});
+				return next(disposableCollection);
+			}
+			return next(disposableCollection);
+		} }));
+	}
+};
+SheetDrawingPrintingController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.SheetPrintInterceptorService)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_drawing_ui.DrawingRenderService)),
+	__decorateParam(2, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(3, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_ui.ComponentManager)),
+	__decorateParam(5, (0, _univerjs_core.Inject)(_univerjs_core.Injector))
+], SheetDrawingPrintingController);
+
+//#endregion
+//#region src/commands/commands/flip-drawings.command.ts
+/**
+* The command to flip sheet drawing elements
+*/
+const FlipSheetDrawingCommand = {
+	id: "sheet.command.toggle-flip-drawings",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		if (!params) return false;
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+		const sheetDrawingService = accessor.get(_univerjs_sheets_drawing.ISheetDrawingService);
+		const sheetSkeletonService = accessor.get(_univerjs_sheets.SheetSkeletonService);
+		const { drawings } = params;
+		const flipH = params.flipH;
+		const flipV = params.flipV;
+		const unitIds = [];
+		const updateParams = [];
+		for (const param of drawings) {
+			const { unitId, subUnitId, drawingId } = param;
+			unitIds.push(unitId);
+			const drawingData = sheetDrawingService.getDrawingData(unitId, subUnitId);
+			const existing = drawingData === null || drawingData === void 0 ? void 0 : drawingData[drawingId];
+			if (!existing) continue;
+			const skeleton = sheetSkeletonService.getSkeleton(unitId, subUnitId);
+			if (!skeleton) continue;
+			const transform = { ...existing.transform };
+			if (flipH) transform.flipX = !transform.flipX;
+			if (flipV) transform.flipY = !transform.flipY;
+			const sheetTransform = (0, _univerjs_sheets_drawing.transformToDrawingPosition)(transform, skeleton);
+			const axisAlignSheetTransform = (0, _univerjs_sheets_drawing.transformToAxisAlignPosition)(transform, skeleton);
+			const updateParamItem = {
+				unitId,
+				subUnitId,
+				drawingType: existing.drawingType,
+				drawingId,
+				transform,
+				sheetTransform,
+				axisAlignSheetTransform
+			};
+			if (existing.drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE) {
+				const scene = getSceneByDrawingSearch(accessor, unitId);
+				if (scene) {
+					const drawingShapeKey = (0, _univerjs_drawing.getDrawingShapeKeyByDrawingSearch)({
+						unitId,
+						subUnitId,
+						drawingId
+					});
+					const imageShape = scene.getObject(drawingShapeKey);
+					if (imageShape) {
+						const srcRect = imageShape.srcRect;
+						if (srcRect) {
+							let newSrcRect;
+							const { left = 0, top = 0, right = 0, bottom = 0 } = srcRect;
+							if (flipH) {
+								const centerX = left + (right - left) / 2;
+								newSrcRect = {
+									left: centerX - (right - left) / 2,
+									top,
+									right: centerX + (right - left) / 2,
+									bottom
+								};
+							}
+							if (flipV) {
+								const centerY = top + (bottom - top) / 2;
+								newSrcRect = {
+									left,
+									top: centerY - (bottom - top) / 2,
+									right,
+									bottom: centerY + (bottom - top) / 2
+								};
+							}
+							if (newSrcRect) updateParamItem.srcRect = newSrcRect;
+						}
+					}
+				}
+			}
+			updateParams.push(updateParamItem);
+		}
+		if (updateParams.length === 0) return false;
+		const { unitId: opUnitId, subUnitId: opSubUnitId, undo, redo, objects } = sheetDrawingService.getBatchUpdateOp(updateParams);
+		const updateMutation = {
+			id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+			params: {
+				unitId: opUnitId,
+				subUnitId: opSubUnitId,
+				op: redo,
+				objects,
+				type: _univerjs_sheets_drawing.DrawingApplyType.UPDATE
+			}
+		};
+		const undoUpdateMutation = {
+			id: _univerjs_sheets_drawing.SetDrawingApplyMutation.id,
+			params: {
+				unitId: opUnitId,
+				subUnitId: opSubUnitId,
+				op: undo,
+				objects,
+				type: _univerjs_sheets_drawing.DrawingApplyType.UPDATE
+			}
+		};
+		if ((0, _univerjs_core.sequenceExecute)([updateMutation], commandService).result) {
+			undoRedoService.pushUndoRedo({
+				unitID: opUnitId,
+				undoMutations: [undoUpdateMutation, {
+					id: _univerjs_sheets_drawing.ClearSheetDrawingTransformerOperation.id,
+					params: unitIds
+				}],
+				redoMutations: [updateMutation, {
+					id: _univerjs_sheets_drawing.ClearSheetDrawingTransformerOperation.id,
+					params: unitIds
+				}]
+			});
+			return true;
+		}
+		return false;
+	}
+};
+function getSceneByDrawingSearch(accessor, unitId) {
+	const render = accessor.get(_univerjs_engine_render.IRenderManagerService).getRenderUnitById(unitId);
+	if (!render) return null;
+	return render.scene;
+}
+
+//#endregion
+//#region src/controllers/shortcuts/drawing.shortcut.ts
+function whenSheetDrawingFocused(contextService) {
+	return contextService.getContextValue(_univerjs_core.FOCUSING_SHEET) && !contextService.getContextValue(_univerjs_core.FOCUSING_FX_BAR_EDITOR) && !contextService.getContextValue(_univerjs_core.FOCUSING_PANEL_EDITOR) && contextService.getContextValue(_univerjs_core.FOCUSING_COMMON_DRAWINGS) && !contextService.getContextValue(_univerjs_core.FOCUSING_SHAPE_TEXT_EDITOR);
+}
+const MoveDrawingDownShortcutItem = {
+	id: MoveDrawingsCommand.id,
+	description: "sheets-drawing-ui.shortcut.drawing-move-down",
+	group: "4_drawing-view",
+	groupTitle: "sheets-drawing-ui.shortcut.drawing-view",
+	binding: _univerjs_ui.KeyCode.ARROW_DOWN,
+	priority: 100,
+	preconditions: whenSheetDrawingFocused,
+	staticParameters: { direction: _univerjs_core.Direction.DOWN }
+};
+const MoveDrawingUpShortcutItem = {
+	id: MoveDrawingsCommand.id,
+	description: "sheets-drawing-ui.shortcut.drawing-move-up",
+	group: "4_drawing-view",
+	groupTitle: "sheets-drawing-ui.shortcut.drawing-view",
+	binding: _univerjs_ui.KeyCode.ARROW_UP,
+	priority: 100,
+	preconditions: whenSheetDrawingFocused,
+	staticParameters: { direction: _univerjs_core.Direction.UP }
+};
+const MoveDrawingLeftShortcutItem = {
+	id: MoveDrawingsCommand.id,
+	description: "sheets-drawing-ui.shortcut.drawing-move-left",
+	group: "4_drawing-view",
+	groupTitle: "sheets-drawing-ui.shortcut.drawing-view",
+	binding: _univerjs_ui.KeyCode.ARROW_LEFT,
+	priority: 100,
+	preconditions: whenSheetDrawingFocused,
+	staticParameters: { direction: _univerjs_core.Direction.LEFT }
+};
+const MoveDrawingRightShortcutItem = {
+	id: MoveDrawingsCommand.id,
+	description: "sheets-drawing-ui.shortcut.drawing-move-right",
+	group: "4_drawing-view",
+	groupTitle: "sheets-drawing-ui.shortcut.drawing-view",
+	binding: _univerjs_ui.KeyCode.ARROW_RIGHT,
+	priority: 100,
+	preconditions: whenSheetDrawingFocused,
+	staticParameters: { direction: _univerjs_core.Direction.RIGHT }
+};
+const DeleteDrawingsShortcutItem = {
+	id: DeleteDrawingsCommand.id,
+	description: "sheets-drawing-ui.shortcut.drawing-delete",
+	group: "4_drawing-view",
+	groupTitle: "sheets-drawing-ui.shortcut.drawing-view",
+	priority: 100,
+	preconditions: whenSheetDrawingFocused,
+	binding: _univerjs_ui.KeyCode.DELETE,
+	mac: _univerjs_ui.KeyCode.BACKSPACE
+};
+
+//#endregion
+//#region src/controllers/ui.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let SheetDrawingUIController = class SheetDrawingUIController extends _univerjs_core.Disposable {
+	constructor(_menuManagerService, _commandService, _shortcutService, _drawingManagerService, _sidebarService) {
+		super();
+		this._menuManagerService = _menuManagerService;
+		this._commandService = _commandService;
+		this._shortcutService = _shortcutService;
+		this._drawingManagerService = _drawingManagerService;
+		this._sidebarService = _sidebarService;
+		this._init();
+	}
+	_initCustomComponents() {}
+	_initMenus() {
+		this._menuManagerService.mergeMenu(menuSchema);
+	}
+	_initCommands() {
+		[
+			InsertFloatImageCommand,
+			InsertCellImageCommand,
+			SidebarSheetDrawingOperation,
+			EditSheetDrawingOperation,
+			GroupSheetDrawingCommand,
+			UngroupSheetDrawingCommand,
+			MoveDrawingsCommand,
+			DeleteDrawingsCommand,
+			SaveCellImagesCommand,
+			FlipSheetDrawingCommand
+		].forEach((command) => this.disposeWithMe(this._commandService.registerCommand(command)));
+	}
+	_initShortcuts() {
+		[
+			MoveDrawingDownShortcutItem,
+			MoveDrawingUpShortcutItem,
+			MoveDrawingLeftShortcutItem,
+			MoveDrawingRightShortcutItem,
+			DeleteDrawingsShortcutItem
+		].forEach((item) => {
+			this.disposeWithMe(this._shortcutService.registerShortcut(item));
+		});
+	}
+	_initImagePanel() {
+		this.disposeWithMe(this._drawingManagerService.focus$.subscribe((drawings) => {
+			if (!this._sidebarService.visible || this._sidebarService.options.id !== "COMPONENT_SHEET_DRAWING_PANEL") return;
+			if (drawings.length === 1 && drawings[0].drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_IMAGE) return;
+			this._sidebarService.close(COMPONENT_SHEET_DRAWING_PANEL);
+		}));
+	}
+	_init() {
+		this._initCommands();
+		this._initCustomComponents();
+		this._initMenus();
+		this._initShortcuts();
+		this._initImagePanel();
+	}
+};
+SheetDrawingUIController = __decorate([
+	__decorateParam(0, _univerjs_ui.IMenuManagerService),
+	__decorateParam(1, _univerjs_core.ICommandService),
+	__decorateParam(2, _univerjs_ui.IShortcutService),
+	__decorateParam(3, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_ui.ISidebarService))
+], SheetDrawingUIController);
+
+//#endregion
+//#region src/menu/drawing-popup-menu.controller.ts
+const MOBILE_IMAGE_ACTIONS_DIALOG_ID = "sheet-mobile-image-actions";
+let DrawingPopupMenuController = class DrawingPopupMenuController extends _univerjs_core.RxDisposable {
+	constructor(_localeService, _drawingManagerService, _canvasPopManagerService, _renderManagerService, _univerInstanceService, _messageService, _menuManagerService, _contextService, _ioService, _commandService, _dialogService) {
+		super();
+		this._localeService = _localeService;
+		this._drawingManagerService = _drawingManagerService;
+		this._canvasPopManagerService = _canvasPopManagerService;
+		this._renderManagerService = _renderManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._messageService = _messageService;
+		this._menuManagerService = _menuManagerService;
+		this._contextService = _contextService;
+		this._ioService = _ioService;
+		this._commandService = _commandService;
+		this._dialogService = _dialogService;
+		_defineProperty(this, "_initImagePopupMenu", /* @__PURE__ */ new Set());
+		this._init();
+	}
+	_init() {
+		this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET).subscribe((workbook) => this._create(workbook));
+		this._univerInstanceService.getTypeOfUnitDisposed$(_univerjs_core.UniverInstanceType.UNIVER_SHEET).subscribe((workbook) => this._dispose(workbook));
+		this._univerInstanceService.getAllUnitsForType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).forEach((workbook) => this._create(workbook));
+		this._setupLoadingStatus();
+	}
+	_setupLoadingStatus() {
+		const MESSAGE_ID = "image-upload-loading";
+		let messageDisposable;
+		this.disposeWithMe(this._ioService.change$.subscribe((status) => {
+			if (status > 0 && !messageDisposable) messageDisposable = this._messageService.show({
+				id: MESSAGE_ID,
+				type: _univerjs_design.MessageType.Loading,
+				content: `${this._localeService.t("sheets-drawing-ui.uploadLoading.loading")}: ${status}`,
+				duration: 0
+			});
+			else if (status === 0) {
+				messageDisposable === null || messageDisposable === void 0 || messageDisposable.dispose();
+				messageDisposable = void 0;
+			}
+		}));
+	}
+	_dispose(workbook) {
+		super.dispose();
+		const unitId = workbook.getUnitId();
+		this._renderManagerService.removeRender(unitId);
+		this._initImagePopupMenu.delete(unitId);
+	}
+	_create(workbook) {
+		if (!workbook) return;
+		const unitId = workbook.getUnitId();
+		if (this._renderManagerService.has(unitId) && !this._initImagePopupMenu.has(unitId)) {
+			this._popupMenuListener(unitId);
+			this._initImagePopupMenu.add(unitId);
+		}
+	}
+	_hasCropObject(scene) {
+		const objects = scene.getAllObjectsByOrder();
+		for (const object of objects) if (object instanceof _univerjs_drawing_ui.ImageCropperObject) return true;
+		return false;
+	}
+	_popupMenuListener(unitId) {
+		var _this$_renderManagerS;
+		const scene = (_this$_renderManagerS = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS === void 0 ? void 0 : _this$_renderManagerS.scene;
+		if (!scene) return;
+		const transformer = scene.getTransformerByCreate();
+		if (!transformer) return;
+		let singletonPopupDisposer;
+		this.disposeWithMe(transformer.createControl$.subscribe(() => {
+			singletonPopupDisposer === null || singletonPopupDisposer === void 0 || singletonPopupDisposer.dispose();
+			singletonPopupDisposer = this._createPopup(scene, transformer);
+		}));
+		this.disposeWithMe(transformer.clearControl$.subscribe(() => {
+			singletonPopupDisposer === null || singletonPopupDisposer === void 0 || singletonPopupDisposer.dispose();
+			this._contextService.setContextValue(_univerjs_core.FOCUSING_COMMON_DRAWINGS, false);
+			this._commandService.syncExecuteCommand(_univerjs_drawing.SetDrawingSelectedOperation.id, []);
+		}));
+		this.disposeWithMe(this._contextService.contextChanged$.subscribe((event) => {
+			if (event[_univerjs_core.FOCUSING_COMMON_DRAWINGS] === false) singletonPopupDisposer === null || singletonPopupDisposer === void 0 || singletonPopupDisposer.dispose();
+		}));
+		this.disposeWithMe(transformer.changing$.subscribe(() => {
+			singletonPopupDisposer === null || singletonPopupDisposer === void 0 || singletonPopupDisposer.dispose();
+		}));
+	}
+	_createPopup(scene, transformer) {
+		this._contextService.setContextValue(_univerjs_core.FOCUSING_COMMON_DRAWINGS, true);
+		if (this._hasCropObject(scene)) return;
+		const selectedObjects = transformer.getSelectedObjectMap();
+		if (selectedObjects.size > 1) return;
+		const object = selectedObjects.values().next().value;
+		if (!object) return;
+		const drawingParam = this._drawingManagerService.getDrawingOKey(object.oKey);
+		if (!drawingParam || drawingParam.drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_SHAPE) return;
+		const { unitId, subUnitId, drawingId, drawingType } = drawingParam;
+		const data = drawingParam.data;
+		if (data && (data.disablePopup || data.version === 1 && typeof data.embedId === "string")) return;
+		const menuItems = [...this._canvasPopManagerService.getFeatureMenu(unitId, subUnitId, drawingId, drawingType) || this._getImageMenuItems(unitId, subUnitId, drawingId, drawingType), ...this._getFloatingObjectMenuItems()];
+		const mobileDialogService = this._getMobileDialogService();
+		if (mobileDialogService) {
+			mobileDialogService.open({
+				id: MOBILE_IMAGE_ACTIONS_DIALOG_ID,
+				title: { title: "sheets-drawing-ui.image-popup.edit" },
+				children: { label: {
+					name: _univerjs_drawing_ui.COMPONENT_IMAGE_POPUP_MENU,
+					props: { popup: { extraProps: {
+						menuItems,
+						dialogId: MOBILE_IMAGE_ACTIONS_DIALOG_ID
+					} } }
+				} }
+			});
+			return (0, _univerjs_core.toDisposable)(() => mobileDialogService.close(MOBILE_IMAGE_ACTIONS_DIALOG_ID));
+		}
+		return this.disposeWithMe(this._canvasPopManagerService.attachPopupToObject(object, {
+			componentKey: _univerjs_drawing_ui.COMPONENT_IMAGE_POPUP_MENU,
+			constrainToCanvas: true,
+			direction: this._localeService.getDirection() === "rtl" ? "left" : "horizontal",
+			offset: [2, 0],
+			extraProps: { menuItems }
+		}));
+	}
+	_getMobileDialogService() {
+		return this._contextService.getContextValue(_univerjs_ui.MOBILE_UI_MODE) ? this._dialogService : null;
+	}
+	_getImageMenuItems(unitId, subUnitId, drawingId, drawingType) {
+		return [
+			{
+				label: "sheets-drawing-ui.image-popup.edit",
+				index: 0,
+				commandId: EditSheetDrawingOperation.id,
+				commandParams: {
+					unitId,
+					subUnitId,
+					drawingId
+				},
+				disable: drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_DOM
+			},
+			{
+				label: "sheets-drawing-ui.image-popup.delete",
+				index: 1,
+				commandId: _univerjs_sheets_drawing.RemoveSheetDrawingCommand.id,
+				commandParams: {
+					unitId,
+					drawings: [{
+						unitId,
+						subUnitId,
+						drawingId
+					}]
+				},
+				disable: false
+			},
+			{
+				label: "sheets-drawing-ui.image-popup.crop",
+				index: 2,
+				commandId: _univerjs_drawing_ui.OpenImageCropOperation.id,
+				commandParams: {
+					unitId,
+					subUnitId,
+					drawingId
+				},
+				disable: drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_DOM
+			},
+			{
+				label: "sheets-drawing-ui.image-popup.flipH",
+				index: 2,
+				commandId: FlipSheetDrawingCommand.id,
+				commandParams: {
+					unitId,
+					flipH: true,
+					drawings: [{
+						unitId,
+						subUnitId,
+						drawingId
+					}]
+				},
+				disable: drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_DOM
+			},
+			{
+				label: "sheets-drawing-ui.image-popup.flipV",
+				index: 2,
+				commandId: FlipSheetDrawingCommand.id,
+				commandParams: {
+					unitId,
+					flipV: true,
+					drawings: [{
+						unitId,
+						subUnitId,
+						drawingId
+					}]
+				},
+				disable: drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_DOM
+			},
+			{
+				label: "sheets-drawing-ui.image-popup.reset",
+				index: 3,
+				commandId: _univerjs_drawing_ui.ImageResetSizeOperation.id,
+				commandParams: [{
+					unitId,
+					subUnitId,
+					drawingId
+				}],
+				disable: drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_DOM
+			}
+		];
+	}
+	_getFloatingObjectMenuItems() {
+		return this._menuManagerService.getFlatMenuByPositionKey(_univerjs_ui.FloatingObjectToolbarPosition.SHEET).flatMap(({ item }, index) => {
+			if (!item || item.type !== _univerjs_ui.MenuItemType.BUTTON || !item.title) return [];
+			return [{
+				label: item.title,
+				index: 100 + index,
+				commandId: item.commandId ?? item.id,
+				commandParams: typeof item.params === "function" ? item.params() : item.params,
+				disable: false
+			}];
+		});
+	}
+};
+DrawingPopupMenuController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService)),
+	__decorateParam(1, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.SheetCanvasPopManagerService)),
+	__decorateParam(3, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(4, _univerjs_core.IUniverInstanceService),
+	__decorateParam(5, _univerjs_ui.IMessageService),
+	__decorateParam(6, _univerjs_ui.IMenuManagerService),
+	__decorateParam(7, _univerjs_core.IContextService),
+	__decorateParam(8, _univerjs_core.IImageIoService),
+	__decorateParam(9, _univerjs_core.ICommandService),
+	__decorateParam(10, _univerjs_ui.IDialogService)
+], DrawingPopupMenuController);
+
+//#endregion
+//#region src/services/sheet-drawing-hit-test.service.ts
+let SheetDrawingHitTestService = class SheetDrawingHitTestService extends _univerjs_core.Disposable {
+	constructor(_drawingManagerService, _univerInstanceService, _renderManagerService) {
+		super();
+		this._drawingManagerService = _drawingManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._renderManagerService = _renderManagerService;
+		_defineProperty(this, "_onDoubleClick$", new rxjs.Subject());
+		_defineProperty(this, "onDoubleClick$", this._onDoubleClick$.asObservable());
+		_defineProperty(this, "_doubleClickDisposable", null);
+		_defineProperty(this, "_boundRender", null);
+		_defineProperty(this, "_boundScene", null);
+		this._init();
+	}
+	dispose() {
+		this._disposeDoubleClickListener();
+		this._onDoubleClick$.complete();
+		super.dispose();
+	}
+	hitTestCurrentSheet(offsetX, offsetY) {
+		const context = this._getActiveSheetContext();
+		if (!context) return null;
+		return this.hitTest(context.unitId, context.subUnitId, offsetX, offsetY);
+	}
+	hitTest(unitId, subUnitId, offsetX, offsetY) {
+		var _this$_renderManagerS;
+		const scene = (_this$_renderManagerS = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS === void 0 ? void 0 : _this$_renderManagerS.scene;
+		if (!scene) return null;
+		return this._hitTestScene(scene, unitId, subUnitId, offsetX, offsetY);
+	}
+	_init() {
+		this.disposeWithMe((0, _univerjs_core.toDisposable)(this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET).subscribe(() => {
+			this._bindDoubleClickListener();
+		})));
+		this.disposeWithMe((0, _univerjs_core.toDisposable)(this._renderManagerService.created$.subscribe((render) => {
+			const context = this._getActiveSheetContext();
+			if (render.unitId === (context === null || context === void 0 ? void 0 : context.unitId)) this._bindDoubleClickListener();
+		})));
+		this.disposeWithMe((0, _univerjs_core.toDisposable)(this._renderManagerService.disposed$.subscribe((unitId) => {
+			var _this$_boundRender;
+			if (unitId === ((_this$_boundRender = this._boundRender) === null || _this$_boundRender === void 0 ? void 0 : _this$_boundRender.unitId)) this._disposeDoubleClickListener();
+		})));
+		this._bindDoubleClickListener();
+	}
+	_bindDoubleClickListener() {
+		const context = this._getActiveSheetContext();
+		if (!context) {
+			this._disposeDoubleClickListener();
+			return;
+		}
+		const render = this._renderManagerService.getRenderUnitById(context.unitId);
+		const scene = render === null || render === void 0 ? void 0 : render.scene;
+		if (!render || !scene) {
+			this._disposeDoubleClickListener();
+			return;
+		}
+		if (this._boundRender === render && this._boundScene === scene && this._doubleClickDisposable) return;
+		this._disposeDoubleClickListener();
+		const subscription = scene.onDblclick$.subscribeEvent((event) => {
+			const activeContext = this._getActiveSheetContext();
+			if (!activeContext || activeContext.unitId !== context.unitId) return;
+			const hit = this._hitTestScene(scene, activeContext.unitId, activeContext.subUnitId, event.offsetX, event.offsetY);
+			if (!hit) return;
+			this._onDoubleClick$.next({
+				...hit,
+				nativeEvent: event
+			});
+		});
+		this._doubleClickDisposable = { dispose: () => subscription.unsubscribe() };
+		this._boundRender = render;
+		this._boundScene = scene;
+	}
+	_disposeDoubleClickListener() {
+		var _this$_doubleClickDis;
+		(_this$_doubleClickDis = this._doubleClickDisposable) === null || _this$_doubleClickDis === void 0 || _this$_doubleClickDis.dispose();
+		this._doubleClickDisposable = null;
+		this._boundRender = null;
+		this._boundScene = null;
+	}
+	_hitTestScene(scene, unitId, subUnitId, offsetX, offsetY) {
+		const pickedObject = scene.pick(_univerjs_engine_render.Vector2.FromArray([offsetX, offsetY]));
+		const oKey = typeof (pickedObject === null || pickedObject === void 0 ? void 0 : pickedObject.oKey) === "string" ? pickedObject.oKey : null;
+		if (!oKey) return null;
+		const drawing = this._drawingManagerService.getDrawingOKey(oKey);
+		if (!drawing || drawing.unitId !== unitId || drawing.subUnitId !== subUnitId) return null;
+		return {
+			drawing,
+			oKey,
+			offsetX,
+			offsetY
+		};
+	}
+	_getActiveSheetContext() {
+		var _workbook$getActiveSh;
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const unitId = workbook === null || workbook === void 0 ? void 0 : workbook.getUnitId();
+		const subUnitId = workbook === null || workbook === void 0 || (_workbook$getActiveSh = workbook.getActiveSheet()) === null || _workbook$getActiveSh === void 0 ? void 0 : _workbook$getActiveSh.getSheetId();
+		if (!unitId || !subUnitId) return null;
+		return {
+			unitId,
+			subUnitId
+		};
+	}
+};
+SheetDrawingHitTestService = __decorate([
+	__decorateParam(0, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(1, _univerjs_core.IUniverInstanceService),
+	__decorateParam(2, _univerjs_engine_render.IRenderManagerService)
+], SheetDrawingHitTestService);
+
+//#endregion
+//#region src/plugin.ts
+let UniverSheetsDrawingUIPlugin = class UniverSheetsDrawingUIPlugin extends _univerjs_core.Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _renderManagerService, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._renderManagerService = _renderManagerService;
+		this._configService = _configService;
+		const { menu, ...rest } = (0, _univerjs_core.merge)({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_DRAWING_UI_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		(0, _univerjs_core.registerDependencies)(this._injector, [
+			[ComponentsController],
+			[SheetCanvasFloatDomManagerService],
+			[SheetDrawingHitTestService],
+			[SheetDrawingUIController],
+			[DrawingPopupMenuController],
+			[SheetDrawingPrintingController],
+			[SheetDrawingPermissionController],
+			[SheetsDrawingCopyPasteController],
+			[SheetsDrawingGroupCopyPasteController],
+			[SheetCellImageController],
+			[SheetCellImageAutofillController],
+			[SheetCellImageCopyPasteController],
+			[IBatchSaveImagesService, { useClass: BatchSaveImagesService }],
+			[IDrawingContextMenuService, { useClass: DrawingContextMenuService }],
+			[DrawingContextMenuController]
+		]);
+		touchSheetsDrawingFloatingHostCapabilityWhenReady(this._injector);
+		this._injector.get(ComponentsController);
+	}
+	onReady() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [
+			[SheetsDrawingCopyPasteController],
+			[SheetCellImageCopyPasteController],
+			[SheetsDrawingGroupCopyPasteController]
+		]);
+	}
+	onRendered() {
+		this._registerRenderModules();
+		(0, _univerjs_core.touchDependencies)(this._injector, [
+			[SheetDrawingPermissionController],
+			[SheetDrawingPrintingController],
+			[SheetDrawingUIController],
+			[SheetCellImageController],
+			[SheetCellImageAutofillController]
+		]);
+	}
+	onSteady() {
+		this._injector.get(DrawingPopupMenuController);
+		this._injector.get(DrawingContextMenuController);
+	}
+	_registerRenderModules() {
+		[
+			[SheetDrawingUpdateController],
+			[SheetDrawingActiveRenderController],
+			[SheetsDrawingRenderController],
+			[SheetCellImageHoverRenderController]
+		].forEach((m) => {
+			this.disposeWithMe(this._renderManagerService.registerRenderModule(_univerjs_core.UniverInstanceType.UNIVER_SHEET, m));
+		});
+	}
+};
+_defineProperty(UniverSheetsDrawingUIPlugin, "type", _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+_defineProperty(UniverSheetsDrawingUIPlugin, "pluginName", "SHEET_IMAGE_UI_PLUGIN");
+_defineProperty(UniverSheetsDrawingUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsDrawingUIPlugin, "version", version);
+UniverSheetsDrawingUIPlugin = __decorate([
+	(0, _univerjs_core.DependentOn)(_univerjs_drawing.UniverDrawingPlugin, _univerjs_engine_render.UniverRenderEnginePlugin, _univerjs_docs_drawing.UniverDocsDrawingPlugin, _univerjs_sheets.UniverSheetsPlugin, _univerjs_sheets_drawing.UniverSheetsDrawingPlugin, _univerjs_drawing_ui.UniverDrawingUIPlugin, _univerjs_sheets_ui.UniverSheetsUIPlugin),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(2, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(3, _univerjs_core.IConfigService)
+], UniverSheetsDrawingUIPlugin);
+
+//#endregion
+Object.defineProperty(exports, 'BatchSaveImagesService', {
+  enumerable: true,
+  get: function () {
+    return BatchSaveImagesService;
+  }
+});
+exports.DeleteDrawingsCommand = DeleteDrawingsCommand;
+exports.DrawingContextMenuService = DrawingContextMenuService;
+exports.EditSheetDrawingOperation = EditSheetDrawingOperation;
+exports.FileNamePart = FileNamePart;
+exports.GroupSheetDrawingCommand = GroupSheetDrawingCommand;
+exports.IBatchSaveImagesService = IBatchSaveImagesService;
+exports.IDrawingContextMenuService = IDrawingContextMenuService;
+exports.InsertFloatImageCommand = InsertFloatImageCommand;
+exports.MoveDrawingsCommand = MoveDrawingsCommand;
+exports.SHEETS_DRAWING_FLOATING_HOST_DEPENDENCIES = SHEETS_DRAWING_FLOATING_HOST_DEPENDENCIES;
+exports.SHEETS_IMAGE_MENU_ID = SHEETS_IMAGE_MENU_ID;
+exports.SHEET_CHART_RENDER_OBJECT_CONFIG = SHEET_CHART_RENDER_OBJECT_CONFIG;
+exports.SHEET_FLOAT_DOM_PREFIX = SHEET_FLOAT_DOM_PREFIX;
+exports.SaveCellImagesCommand = SaveCellImagesCommand;
+Object.defineProperty(exports, 'SheetCanvasFloatDomManagerService', {
+  enumerable: true,
+  get: function () {
+    return SheetCanvasFloatDomManagerService;
+  }
+});
+exports.SheetDrawingAnchor = SheetDrawingAnchor;
+Object.defineProperty(exports, 'SheetDrawingHitTestService', {
+  enumerable: true,
+  get: function () {
+    return SheetDrawingHitTestService;
+  }
+});
+Object.defineProperty(exports, 'SheetDrawingUpdateController', {
+  enumerable: true,
+  get: function () {
+    return SheetDrawingUpdateController;
+  }
+});
+Object.defineProperty(exports, 'SheetsDrawingGroupCopyPasteController', {
+  enumerable: true,
+  get: function () {
+    return SheetsDrawingGroupCopyPasteController;
+  }
+});
+exports.SheetsDrawingUIMenuSchema = menuSchema;
+exports.SidebarSheetDrawingOperation = SidebarSheetDrawingOperation;
+exports.UngroupSheetDrawingCommand = UngroupSheetDrawingCommand;
+Object.defineProperty(exports, 'UniverSheetsDrawingUIPlugin', {
+  enumerable: true,
+  get: function () {
+    return UniverSheetsDrawingUIPlugin;
+  }
+});
+exports.calcSheetFloatDomPosition = calcSheetFloatDomPosition;
+exports.registerSheetsDrawingFloatingHostCapability = registerSheetsDrawingFloatingHostCapability;

@@ -1,0 +1,99 @@
+import { CommandType, DOC_DRAWING_PRINTING_COMPONENT_KEY, DataStreamTreeTokenType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, LocaleService, Optional, Plugin, Tools, UniverInstanceType, createIdentifier, generateRandomId, merge, toDisposable, touchDependencies } from "@univerjs/core";
+import { CHART_TYPE_CATALOG, ChartAxisBoundsFields, ChartAxisFormatTextField, ChartAxisLabelStyleFields, ChartAxisLabelVisibilityField, ChartAxisLineVisibilityField, ChartAxisReverseField, ChartAxisTickVisibilityField, ChartAxisTitleFields, ChartCommonDataMappingSection, ChartEditBlockTitle, ChartEditPanel, ChartEditPanelSection, ChartEditPanelTab, ChartEditPanelTabs, ChartEditorCapability, ChartEditorProvider, ChartFunnelStyleSection, ChartGradientFillField, ChartGridlineVisibilityField, ChartGridlineWidthField, ChartHeatmapStyleSection, ChartHostAdapter, ChartImageExportService, ChartIndicatorLineColorField, ChartIndicatorLineTypeField, ChartInlineTableEditor, ChartLegendFontSizeField, ChartLegendPositionField, ChartLegendRoot, ChartLegendSelectModeField, ChartLegendWrapField, ChartLineAndAreaSection, ChartMainTitleFields, ChartNumberFormatTextField, ChartParetoSeriesSection, ChartPieStyleSection, ChartRadarStyleSection, ChartReferencedDataSourceEditor, ChartRelationStyleSection, ChartSectionAccordion, ChartSectionAccordionContent, ChartSectionAccordionItem, ChartSectionAccordionTrigger, ChartSeriesBorderFields, ChartSeriesFillFields, ChartSeriesLabelFontSizeField, ChartSeriesLabelPositionField, ChartSeriesLabelVisibilityField, ChartSeriesPointFields, ChartSeriesRoot, ChartSnapshotQueue, ChartStackField, ChartStyleSection, ChartSubtitleFields, ChartThemeField, ChartTitleFontSizeFields, ChartTypeField, ChartTypeSpecificDataSection, ChartTypeSpecificSetupSection, ChartTypeSpecificStyleSection, ChartUIService, ChartViewStateRegistry, ChartWaterfallSetupFields, ChartWaterfallStyleSection, ChartWordCloudRepeatField, ChartWordCloudRoot, ChartWordCloudShapeField, DEFAULT_CHART_AXIS_VALUES, DEFAULT_CHART_FUNNEL_VALUES, DEFAULT_CHART_HEATMAP_VALUES, DEFAULT_CHART_INDICATOR_LINE_VALUES, DEFAULT_CHART_LEGEND_VALUES, DEFAULT_CHART_LINE_AND_AREA_VALUES, DEFAULT_CHART_PARETO_VALUES, DEFAULT_CHART_PIE_VALUES, DEFAULT_CHART_RADAR_VALUES, DEFAULT_CHART_RELATION_VALUES, DEFAULT_CHART_SERIES_VALUES, DEFAULT_CHART_STYLE_VALUES, DEFAULT_CHART_TITLE_VALUES, DEFAULT_CHART_WATERFALL_SETUP_VALUES, DEFAULT_CHART_WATERFALL_STYLE_VALUES, DEFAULT_CHART_WORD_CLOUD_VALUES, InlineChartCreationIssueCode, UniverChartUIPlugin, buildChartTypeSelectOptions, chartTypeSupportsCapability, chartTypeSupportsLineAndAreaStyle, compactInlineTableValues, createChartInlineStarterData, getChartInlineTableMinColumns, resolveChartEditPanelRoute, resolveChartElementSelection, resolveChartTypeFieldValue, tryBuildInlineChartCreationPlan, tryPrepareInlineChartData, useChartEditorChartType, useChartEditorHasRightAxis } from "@univerjs-pro/chart-ui";
+import { CHART_RESOURCE_VERSION, ChartDataSourceRuntimeStatus, ChartImageExportFormat, ChartRenderMode, ChartResourceRepository, ChartThemeService, ChartTypeBits, DEFAULT_CHART_DEVICE_PIXEL_RATIO, DataUrlImageChartHost, IChartRenderModelManagerService, buildChartDataSetFromValues, chartBitsUtils, createChartRuntime, getChartHostFrameContentRect, isInlineChartDataSource, isReferencedChartDataSource, parseInlineChartTable, resolveChartRuntimeStyle, resolveDefaultChartHostFrameStyle, shouldComposeChartHostFrame } from "@univerjs-pro/engine-chart";
+import { Button, Select } from "@univerjs/design";
+import { CanvasFloatDomService, ComponentManager, ContextMenuGroup, ContextMenuPosition, IDialogService, IMenuManagerService, MenuItemType, RibbonInsertGroup, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { ChangeDocChartDataSourceCommand, DocChartModelService, DocumentChartConfigAdapter, InsertDocChartCommand, RemoveDocChartDataSourceMutation, RemoveDocChartSnapshotMutation, SetDocChartDataSourceMutation, SetDocChartSnapshotMutation, UniverDocsChartPlugin, UpdateDocChartConfigCommand } from "@univerjs-pro/docs-chart";
+import { DocContentInsertService, DocSelectionManagerService, UniverDocsPlugin, docDrawingPositionToTransform } from "@univerjs/docs";
+import { BreakLineCommand, DOC_CONTENT_INSERT_MENU_ID, DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID, DOC_PARAGRAPH_T_INSERT_MENU_ID, DocPrintInterceptorService, EMPTY_PARAGRAPH_MENU_ID, IDocClipboardPasteAdapterService, IDocClipboardService, INSERT_BELLOW_MENU_ID, UniverDocsUIPlugin, VIEWPORT_KEY, disableMenuWhenHeaderFooterEditing } from "@univerjs/docs-ui";
+import { IDocDrawingAdapterService, RemoveDocDrawingCommand, UniverDocsDrawingPlugin } from "@univerjs/docs-drawing";
+import { DocDrawingFloatingToolbarAdapterService, UniverDocsDrawingUIPlugin } from "@univerjs/docs-drawing-ui";
+import { BehaviorSubject, Observable, Subject, auditTime, combineLatest, filter, map, skip } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { IDrawingManagerService, UniverDrawingPlugin, getDrawingShapeKeyByDrawingSearch } from "@univerjs/drawing";
+import { DEFAULT_TRANSFORMER_CONFIG, DRAWING_OBJECT_LAYER_INDEX, IRenderManagerService, Image, TRANSFORM_CHANGE_OBSERVABLE_TYPE, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+function kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461109) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461110;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461111 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461110 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461109.match(/^#([\da-f]{3}|[\da-f]{6})$/i)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461110[1];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461111) {
+    let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461111.length === 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461111.split("").map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 => "" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641).join("") : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461111;
+    return "rgb(" + Number.parseInt(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB.slice(0, 2), 16) + ",\x20" + Number.parseInt(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB.slice(2, 4), 16) + ",\x20" + Number.parseInt(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB.slice(4, 6), 16) + ")";
+  }
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112 = document.createElement("span");
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112.style["color"] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461109, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112.style["color"] || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461109;
+}
+let W = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46370, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371) {
+    super(), this._localeService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369, this._chartThemeService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46370, this._renderModelManager = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371;
+  }
+  createChartInstance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375 ? this._renderModelManager["createChartInstance"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375, this._createChartRenderInstanceContext()) : this._renderModelManager["createChartInstance"]();
+  }
+  createRenderInput(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377.model["config"];
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378) throw Error("Document chart " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377.chartId + " has no render config.");
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46379 = this._localeService["getDirection"]();
+    return {
+      chartConfig: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378,
+      chartStyle: resolveChartRuntimeStyle({
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377.model["style"],
+        runtime: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377.model["getRuntimeContext"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46379),
+        direction: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46379
+      }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378.type)
+    };
+  }
+  createRenderSpec(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46383, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46384, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46385) {
+    let {
+        chartConfig: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46386,
+        chartStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387
+      } = this.createRenderInput(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46383),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388 = this._renderModelManager["getCurrentRenderModel"]();
+    return {
+      spec: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388.stylizeSpec(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388.toSpec(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46386, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387), {
+        chartConfig: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46386,
+        chartStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387,
+        chartInstance: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46385
+      }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46384),
+      chartConfig: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46386,
+      chartStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387,
+      hostStyle: this.getHostStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387)
+    };
+  }
+  getHostStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395) {
+    return resolveDefaultChartHostFrameStyle({
+      style: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395,
+      getRenderColor: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642 => this._chartThemeService["getRenderColor"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642)
+    });
+  }
+  applyHostStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399;
+    let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB1 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.border) != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399.color && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.border["width"] ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.border["width"] + "px solid " + kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.border["color"]) : "";
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.style["border"] = var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB1, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.style["backgroundColor"] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.fill ? kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.fill) : "transparent", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.style["borderRadius"] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.radius ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.radius + "px" : "", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.style["overflow"] = "hidden", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.style["boxSizing"] = "border-box";
+  }
+  _createChartRenderInstanceContext() {
+    return {
+      resolveHostStyle: ({
+        style: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643
+      }) => this.getHostStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643),
+      resolveRenderBackgroundColor: ({
+        hostStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644
+      }) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644.fill,
+      prepareSpec: ({
+        mode: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645,
+        spec: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646
+      }) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645 === "image" ? {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646,
+        animation: false,
+        tooltip: {
+          show: false
+        }
+      } : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646
+    };
+  }
+  dispose() {
+    super.dispose();
+  }
+};
+export { W as DocChartRenderService };

@@ -1,0 +1,69 @@
+.univer-flex {
+  display: flex;
+}
+
+.univer-h-8 {
+  height: 2rem;
+}
+
+.univer-w-8 {
+  width: 2rem;
+}
+
+.univer-max-w-80 {
+  max-width: 20rem;
+}
+
+.univer-flex-col {
+  flex-direction: column;
+}
+
+.univer-gap-1 {
+  gap: .25rem;
+}
+
+.univer-truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.\!univer-border-red-800 {
+  border-color: var(--univer-red-800) !important;
+}
+
+.\!univer-bg-red-50 {
+  background-color: var(--univer-red-50) !important;
+}
+
+.univer-p-0 {
+  padding: 0;
+}
+
+.\!univer-px-1\.5 {
+  padding-left: .375rem !important;
+  padding-right: .375rem !important;
+}
+
+.\!univer-py-0\.5 {
+  padding-top: .125rem !important;
+  padding-bottom: .125rem !important;
+}
+
+.\!univer-text-red-800 {
+  color: var(--univer-red-800) !important;
+}
+
+.dark\:\!univer-border-red-400:where(.univer-dark, .univer-dark *) {
+  border-color: var(--univer-red-400) !important;
+}
+
+.dark\:\!univer-bg-red-950:where(.univer-dark, .univer-dark *) {
+  --univer-tw-bg-opacity: 1 !important;
+  background-color: #450a0a !important;
+  background-color: rgba(69, 10, 10, var(--univer-tw-bg-opacity, 1)) !important;
+}
+
+.dark\:\!univer-text-red-300:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-red-300) !important;
+}

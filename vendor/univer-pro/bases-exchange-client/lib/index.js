@@ -1,0 +1,315 @@
+import { BASE_TOOLBAR_EXTRA_ACTIONS as var_core_value_sig24B9, IBaseUIStateService as var_core_value_sigE627, UniverBasesUIPlugin as var_core_value_sigEF3E } from "@univerjs-pro/bases-ui";
+import { ClientSnapshotServerService as var_core_value_sig273D, EXPORT_FORMAT_DIALOG as var_core_value_sig9A0D, ExchangeBaseExportMode as var_core_value_sigA319, ExchangeBaseFormulaPolicy as var_core_value_sig2D58, ExchangeBaseImportMode as var_core_value_sig223F, ExchangeFormat as var_core_value_sigD749, IExchangeOperateService as var_core_value_sigCFFA, IExchangeService as var_core_value_sig58C1, UniverExchangeClientPlugin as var_core_value_sig5090, isCurrentUnitLoadedFromServer as var_core_value_sigC368, transformSheetBlockMetaToString as var_core_value_sigAD56, transformWorkbookSnapshotMetaToString as var_core_value_sigDB4A } from "@univerjs-pro/exchange-client";
+import { UniverLicensePlugin as var_core_value_sig6418 } from "@univerjs-pro/license";
+import { CommandType as var_core_value_sig1896, DependentOn as var_core_value_sig0285, Disposable as var_core_value_sig777D, ICommandService as var_core_value_sig3F4C, IConfigService as var_core_value_sigD65A, IResourceLoaderService as var_core_value_sig5A13, IUniverInstanceService as var_core_value_sigF593, Inject as var_core_value_sig3607, Injector as var_core_value_sigB512, LocaleService as var_core_value_sigF2E6, Plugin as var_core_value_sig34C8, UniverInstanceType as var_core_value_sigB744, createIdentifier as var_core_value_sigEAE2, merge as var_core_value_sigE68A } from "@univerjs/core";
+import { IDialogService as var_core_value_sig3E68, IUIPartsService as var_core_value_sigF4C5, connectInjector as var_core_value_sig5410, useDependency as var_core_value_sig492F } from "@univerjs/ui";
+import { b64DecodeUnicode as var_core_value_sig8EA0, getSheetBlocksFromSnapshot as var_core_value_sigA6F6, transformBaseDataToSnapshot as var_core_value_sigCDDA, transformSnapshotToBaseData as var_core_value_sigE243 } from "@univerjs-pro/collaboration";
+import { Button as var_core_value_sig74A8, DropdownMenu as var_core_value_sig21B2, Tooltip as var_core_value_sigDE08 } from "@univerjs/design";
+import { DirectExportIcon as var_core_value_sigACCB, ExportIcon as var_core_value_sig7F33, FolderIcon as var_core_value_sig0C53, MoreDownIcon as var_core_value_sigEA04 } from "@univerjs/icons";
+import { jsx as var_core_value_sig7A62, jsxs as var_core_value_sig8109 } from "react/jsx-runtime";
+var L = "@univerjs-pro/bases-exchange-client",
+  R = "1.0.0-insiders.20260907-70fc579";
+const z = {
+  importSourceMode: var_core_value_sig223F.AUTO,
+  importFormulaPolicy: var_core_value_sig2D58.CONVERT_THEN_VALUES,
+  exportStructureMode: var_core_value_sigA319.TABLES,
+  exportFormulaPolicy: var_core_value_sig2D58.FAIL
+};
+function B(var_core_value_sigC259, var_core_value_sig9C9F) {
+  return function (var_core_value_sig27E5, var_core_value_sig8061) {
+    var_core_value_sig9C9F(var_core_value_sig27E5, var_core_value_sig8061, var_core_value_sigC259);
+  };
+}
+function V(var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sig48CA) {
+  var var_core_value_sig50AF = arguments.length,
+    var_core_value_sigA942 = var_core_value_sig50AF < 3 ? var_core_value_sig86D0 : var_core_value_sig48CA === null ? var_core_value_sig48CA = Object.getOwnPropertyDescriptor(var_core_value_sig86D0, var_core_value_sig4CD2) : var_core_value_sig48CA,
+    var_core_value_sigA621;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigA942 = Reflect.decorate(var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sig48CA);else {
+    for (var var_core_value_sigBBFF = var_core_value_sigFDEA.length - 1; var_core_value_sigBBFF >= 0; var_core_value_sigBBFF--) (var_core_value_sigA621 = var_core_value_sigFDEA[var_core_value_sigBBFF]) && (var_core_value_sigA942 = (var_core_value_sig50AF < 3 ? var_core_value_sigA621(var_core_value_sigA942) : var_core_value_sig50AF > 3 ? var_core_value_sigA621(var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sigA942) : var_core_value_sigA621(var_core_value_sig86D0, var_core_value_sig4CD2)) || var_core_value_sigA942);
+  }
+  return var_core_value_sig50AF > 3 && var_core_value_sigA942 && Object.defineProperty(var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sigA942), var_core_value_sigA942;
+}
+const H = var_core_value_sigEAE2("bases-exchange-client.base-exchange.service");
+let U = class {
+  constructor(var_core_value_sig4D4C, var_core_value_sigC9E0) {
+    this._exchangeService = var_core_value_sig4D4C, this._configService = var_core_value_sigC9E0;
+  }
+  importBaseToUnitId(var_core_value_sig76BA) {
+    let var_core_value_sigFBFA = this._createImportOptions();
+    return this._exchangeService["importFileToUnitId"](var_core_value_sig76BA, var_core_value_sigB744.UNIVER_BASE, {
+      base: var_core_value_sigFBFA
+    });
+  }
+  async importBaseToSnapshot(var_core_value_sigF602) {
+    let var_core_value_sig1BBD = this._createImportOptions(),
+      var_core_value_sigF704 = await this._exchangeService["importFileToJson"](var_core_value_sigF602, var_core_value_sigB744.UNIVER_BASE, {
+        base: var_core_value_sig1BBD
+      });
+    return var_core_value_sigF704 ? this.transformSnapshotJsonToBaseData(var_core_value_sigF704) : undefined;
+  }
+  exportBaseByUnitId(var_core_value_sig2BCF, var_core_value_sig0D69 = var_core_value_sigD749.XLSX, var_core_value_sig480E) {
+    let var_core_value_sig26DB = this._createExportOptions(var_core_value_sig0D69, var_core_value_sig480E);
+    return this._exchangeService["exportFileByUnitId"](var_core_value_sig2BCF, var_core_value_sigB744.UNIVER_BASE, var_core_value_sig0D69, var_core_value_sig26DB ? {
+      base: var_core_value_sig26DB
+    } : undefined);
+  }
+  async exportBaseBySnapshot(var_core_value_sigF0F9, var_core_value_sig1A0F = var_core_value_sigD749.XLSX, var_core_value_sigFBA4) {
+    let var_core_value_sig4383 = await this.transformBaseDataToSnapshotJson(var_core_value_sigF0F9),
+      var_core_value_sig186C = this._createExportOptions(var_core_value_sig1A0F, var_core_value_sigFBA4);
+    return this._exchangeService["exportFileBySnapshot"](var_core_value_sig4383, var_core_value_sigB744.UNIVER_BASE, var_core_value_sig1A0F, var_core_value_sig186C ? {
+      base: var_core_value_sig186C
+    } : undefined);
+  }
+  transformSnapshotJsonToBaseData(var_core_value_sigD955) {
+    let var_core_value_sig48BD = Object.values(var_core_value_sigD955.sheetBlocks || {}).map(var_core_value_sig7524 => ({
+      ...var_core_value_sig7524,
+      data: var_core_value_sig7524.data ? JSON.parse(var_core_value_sig8EA0(var_core_value_sig7524.data)) : undefined
+    }));
+    return var_core_value_sigE243(var_core_value_sigD955.snapshot, var_core_value_sig48BD);
+  }
+  async transformBaseDataToSnapshotJson(var_core_value_sig429F) {
+    let var_core_value_sigF62A = {
+        metadata: undefined
+      },
+      var_core_value_sig8178 = new var_core_value_sig273D(),
+      {
+        snapshot: var_core_value_sigE9ED
+      } = await var_core_value_sigCDDA(var_core_value_sigF62A, var_core_value_sig429F, var_core_value_sig429F.id, var_core_value_sig429F.rev ?? 0, var_core_value_sig8178),
+      var_core_value_sigB577 = var_core_value_sigDB4A(var_core_value_sigE9ED);
+    if (!var_core_value_sigB577) throw Error("Failed to transform Base snapshot to string");
+    return {
+      snapshot: var_core_value_sigB577,
+      sheetBlocks: var_core_value_sigAD56(await var_core_value_sigA6F6(var_core_value_sigE9ED, var_core_value_sig8178))
+    };
+  }
+  _getConfig() {
+    return this._configService["getConfig"]("bases-exchange-client.config") ?? z;
+  }
+  _createImportOptions() {
+    let var_core_value_sig9572 = this._getConfig();
+    return {
+      xlsx: {
+        baseMode: var_core_value_sig9572.importSourceMode,
+        baseFormulaPolicy: var_core_value_sig9572.importFormulaPolicy
+      }
+    };
+  }
+  _createExportOptions(var_core_value_sigD873, var_core_value_sigA12B) {
+    if (var_core_value_sigD873 === var_core_value_sigD749.XLSX) {
+      let var_core_value_sig2AD8 = this._getConfig();
+      return {
+        xlsx: {
+          baseExportMode: var_core_value_sig2AD8.exportStructureMode,
+          baseFormulaPolicy: var_core_value_sig2AD8.exportFormulaPolicy
+        }
+      };
+    }
+    return var_core_value_sigA12B ? {
+      csv: {
+        tableId: var_core_value_sigA12B
+      }
+    } : undefined;
+  }
+};
+U = V([B(0, var_core_value_sig3607(var_core_value_sig58C1)), B(1, var_core_value_sigD65A)], U);
+const W = var_core_value_sigEAE2("bases-exchange-client.base-exchange-operate.service");
+let G = class {
+  constructor(var_core_value_sigF230, var_core_value_sig09B8, var_core_value_sig6F91, var_core_value_sigF9C7) {
+    this._baseExchangeService = var_core_value_sigF230, this._exchangeOperateService = var_core_value_sig09B8, this._univerInstanceService = var_core_value_sig6F91, this._resourceLoaderService = var_core_value_sigF9C7;
+  }
+  importBaseToUnitId() {
+    return this._exchangeOperateService["importFileToUnitId"](var_core_value_sigB744.UNIVER_BASE, var_core_value_sig2AD0 => this._baseExchangeService["importBaseToUnitId"](var_core_value_sig2AD0));
+  }
+  importBaseToSnapshot() {
+    return this._exchangeOperateService["importFileToSnapshot"](var_core_value_sigB744.UNIVER_BASE, var_core_value_sig3EEE => this._baseExchangeService["importBaseToSnapshot"](var_core_value_sig3EEE));
+  }
+  exportBaseByUnitId(var_core_value_sig8895, var_core_value_sigC80B) {
+    let var_core_value_sig284F = this._getCurrentBase();
+    return this._exchangeOperateService["exportFile"](() => this._baseExchangeService["exportBaseByUnitId"](var_core_value_sig284F.getUnitId(), var_core_value_sig8895, var_core_value_sigC80B), var_core_value_sig284F.getSnapshot().name, var_core_value_sig8895);
+  }
+  exportBaseBySnapshot(var_core_value_sigE154, var_core_value_sig4632) {
+    let var_core_value_sig12F2 = this._getCurrentBase(),
+      var_core_value_sig2259 = this._resourceLoaderService["saveUnit"](var_core_value_sig12F2.getUnitId()) ?? var_core_value_sig12F2.getSnapshot();
+    return this._exchangeOperateService["exportFile"](() => this._baseExchangeService["exportBaseBySnapshot"](var_core_value_sig2259, var_core_value_sigE154, var_core_value_sig4632), var_core_value_sig2259.name, var_core_value_sigE154);
+  }
+  _getCurrentBase() {
+    let var_core_value_sig9E2F = this._univerInstanceService["getCurrentUnitOfType"](var_core_value_sigB744.UNIVER_BASE);
+    if (!var_core_value_sig9E2F) throw Error("No\x20unit\x20of\x20type\x20" + var_core_value_sigB744.UNIVER_BASE + " is currently active.");
+    return var_core_value_sig9E2F;
+  }
+};
+G = V([B(0, var_core_value_sig3607(H)), B(1, var_core_value_sig3607(var_core_value_sigCFFA)), B(2, var_core_value_sigF593), B(3, var_core_value_sig5A13)], G);
+function ue(var_core_value_sig8889, var_core_value_sig32F8) {
+  var var_core_value_sig5B67;
+  let var_core_value_sig1758 = var_core_value_sig8889.getSnapshot(),
+    var_core_value_sig4805 = var_core_value_sig1758.tableOrder["map"](var_core_value_sigD082 => var_core_value_sig1758.tables[var_core_value_sigD082]).filter(Boolean).map(var_core_value_sigDBB7 => ({
+      label: var_core_value_sigDBB7.name,
+      value: var_core_value_sigDBB7.id
+    }));
+  return {
+    selectedId: var_core_value_sig4805.some(var_core_value_sigD0A8 => var_core_value_sigD0A8.value === var_core_value_sig32F8) ? var_core_value_sig32F8 : ((var_core_value_sig5B67 = var_core_value_sig4805[0]) == null ? undefined : var_core_value_sig5B67.value) ?? "",
+    items: var_core_value_sig4805
+  };
+}
+const K = {
+    id: "bases-exchange-client.operation.import-base",
+    type: var_core_value_sig1896.OPERATION,
+    handler: async var_core_value_sigE67E => {
+      let var_core_value_sig2902 = var_core_value_sigE67E.get(W);
+      return var_core_value_sigC368(var_core_value_sigE67E, var_core_value_sigB744.UNIVER_BASE) ? await var_core_value_sig2902.importBaseToUnitId() : await var_core_value_sig2902.importBaseToSnapshot(), true;
+    }
+  },
+  q = {
+    id: "bases-exchange-client.operation.export-base-by-format",
+    type: var_core_value_sig1896.OPERATION,
+    handler: async (var_core_value_sig9989, var_core_value_sig698E) => {
+      if (!var_core_value_sig698E) return false;
+      let var_core_value_sig2809 = var_core_value_sig9989.get(W);
+      return var_core_value_sigC368(var_core_value_sig9989, var_core_value_sigB744.UNIVER_BASE) ? await var_core_value_sig2809.exportBaseByUnitId(var_core_value_sig698E.format, var_core_value_sig698E.tableId) : await var_core_value_sig2809.exportBaseBySnapshot(var_core_value_sig698E.format, var_core_value_sig698E.tableId), true;
+    }
+  },
+  J = {
+    id: "bases-exchange-client.operation.export-base",
+    type: var_core_value_sig1896.OPERATION,
+    handler: var_core_value_sig2DAB => {
+      let var_core_value_sig877E = var_core_value_sig2DAB.get(var_core_value_sigF593).getCurrentUnitOfType(var_core_value_sigB744.UNIVER_BASE);
+      if (!var_core_value_sig877E) return false;
+      let var_core_value_sig20C8 = ue(var_core_value_sig877E, var_core_value_sig2DAB.get(var_core_value_sigE627).getState().activeTableId),
+        var_core_value_sigE9A7 = var_core_value_sig2DAB.get(var_core_value_sig3E68),
+        var_core_value_sigBECE = var_core_value_sig2DAB.get(var_core_value_sig3F4C),
+        var_core_value_sig1B22 = var_core_value_sig2DAB.get(var_core_value_sigF2E6),
+        var_core_value_sig7F72 = null,
+        var_core_value_sig7B2A = () => {
+          var_core_value_sig7F72 == null || var_core_value_sig7F72.dispose(), var_core_value_sig7F72 = null;
+        };
+      return var_core_value_sig7F72 = var_core_value_sigE9A7.open({
+        id: "bases-exchange-client.dialog.export-format",
+        title: {
+          title: var_core_value_sig1B22.t("bases-exchange-client.download")
+        },
+        width: 420,
+        draggable: false,
+        mask: true,
+        maskClosable: false,
+        children: {
+          label: {
+            name: var_core_value_sig9A0D,
+            props: {
+              formats: [var_core_value_sigD749.XLSX, var_core_value_sigD749.CSV, var_core_value_sigD749.TSV],
+              ...var_core_value_sig20C8,
+              onCancel: var_core_value_sig7B2A,
+              onConfirm: async (var_core_value_sigF4B9, var_core_value_sig5CEE) => {
+                await var_core_value_sigBECE.executeCommand(q.id, {
+                  format: var_core_value_sigF4B9,
+                  tableId: var_core_value_sig5CEE
+                }), var_core_value_sig7B2A();
+              }
+            }
+          }
+        },
+        onClose: var_core_value_sig7B2A
+      }), true;
+    }
+  };
+function Y() {
+  var var_core_value_sig06CD;
+  let var_core_value_sigA5F1 = var_core_value_sig492F(var_core_value_sig3F4C),
+    var_core_value_sig97A2 = var_core_value_sig492F(var_core_value_sigD65A),
+    var_core_value_sig07E9 = var_core_value_sig492F(var_core_value_sigF2E6),
+    var_core_value_sig4F59 = var_core_value_sig07E9.t("bases-exchange-client.file");
+  return var_core_value_sig7A62(var_core_value_sigDE08, {
+    title: var_core_value_sig4F59,
+    placement: "top",
+    children: var_core_value_sig7A62(var_core_value_sig21B2, {
+      align: "end",
+      sideOffset: 8,
+      items: [...((var_core_value_sig06CD = var_core_value_sig97A2.getConfig("menu")) != null && (var_core_value_sig06CD = var_core_value_sig06CD[K.id]) != null && var_core_value_sig06CD.hidden ? [] : [{
+        type: "item",
+        children: var_core_value_sig8109("span", {
+          className: "univer-flex univer-items-center univer-gap-2",
+          children: [var_core_value_sig7A62(var_core_value_sig0C53, {}), var_core_value_sig07E9.t("bases-exchange-client.upload")]
+        }),
+        onSelect: () => var_core_value_sigA5F1.executeCommand(K.id)
+      }]), {
+        type: "item",
+        children: var_core_value_sig8109("span", {
+          className: "univer-flex univer-items-center univer-gap-2",
+          children: [var_core_value_sig7A62(var_core_value_sig7F33, {}), var_core_value_sig07E9.t("bases-exchange-client.download")]
+        }),
+        onSelect: () => var_core_value_sigA5F1.executeCommand(J.id)
+      }],
+      children: var_core_value_sig8109(var_core_value_sig74A8, {
+        type: "button",
+        variant: "text",
+        className: "univer-h-8 univer-gap-1 univer-px-2",
+        "aria-label": var_core_value_sig4F59,
+        children: [var_core_value_sig7A62(var_core_value_sigACCB, {}), var_core_value_sig7A62(var_core_value_sigEA04, {
+          className: "univer-size-3"
+        })]
+      })
+    })
+  });
+}
+let X = class extends var_core_value_sig777D {
+  constructor(var_core_value_sigE92A, var_core_value_sig362B, var_core_value_sig5CA5) {
+    super(), this._commandService = var_core_value_sigE92A, [K, J, q].forEach(var_core_value_sigBC46 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sigBC46));
+    }), this.disposeWithMe(var_core_value_sig5CA5.registerComponent(var_core_value_sig24B9, () => var_core_value_sig5410(Y, var_core_value_sig362B)));
+  }
+};
+X = V([B(0, var_core_value_sig3F4C), B(1, var_core_value_sig3607(var_core_value_sigB512)), B(2, var_core_value_sigF4C5)], X);
+function Z(var_core_value_sigF564) {
+  "@babel/helpers - typeof";
+
+  return Z = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigE90F) {
+    return typeof var_core_value_sigE90F;
+  } : function (var_core_value_sigEFD4) {
+    return var_core_value_sigEFD4 && typeof Symbol == "function" && var_core_value_sigEFD4.constructor === Symbol && var_core_value_sigEFD4 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigEFD4;
+  }, Z(var_core_value_sigF564);
+}
+function de(var_core_value_sig8CFA, var_core_value_sig2E11) {
+  if (Z(var_core_value_sig8CFA) != "object" || !var_core_value_sig8CFA) return var_core_value_sig8CFA;
+  var var_core_value_sig5B69 = var_core_value_sig8CFA[Symbol.toPrimitive];
+  if (var_core_value_sig5B69 !== undefined) {
+    var var_core_value_sigB098 = var_core_value_sig5B69.call(var_core_value_sig8CFA, var_core_value_sig2E11 || "default");
+    if (Z(var_core_value_sigB098) != "object") return var_core_value_sigB098;
+    throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");
+  }
+  return (var_core_value_sig2E11 === "string" ? String : Number)(var_core_value_sig8CFA);
+}
+function fe(var_core_value_sigCE71) {
+  var var_core_value_sig21D8 = de(var_core_value_sigCE71, "string");
+  return Z(var_core_value_sig21D8) == "symbol" ? var_core_value_sig21D8 : var_core_value_sig21D8 + "";
+}
+function Q(var_core_value_sig2B65, var_core_value_sigD7EA, var_core_value_sigB33B) {
+  return (var_core_value_sigD7EA = fe(var_core_value_sigD7EA)) in var_core_value_sig2B65 ? Object.defineProperty(var_core_value_sig2B65, var_core_value_sigD7EA, {
+    value: var_core_value_sigB33B,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig2B65[var_core_value_sigD7EA] = var_core_value_sigB33B, var_core_value_sig2B65;
+}
+let $ = class extends var_core_value_sig34C8 {
+  constructor(var_core_value_sig861B = z, var_core_value_sig5237, var_core_value_sigBB00) {
+    super(), this._config = var_core_value_sig861B, this._injector = var_core_value_sig5237, this._configService = var_core_value_sigBB00;
+    let {
+      menu: var_core_value_sig7E54,
+      ...var_core_value_sig9A8D
+    } = var_core_value_sigE68A({}, z, this._config);
+    var_core_value_sig7E54 && this._configService["setConfig"]("menu", var_core_value_sig7E54, {
+      merge: true
+    }), this._configService["setConfig"]("bases-exchange-client.config", var_core_value_sig9A8D);
+  }
+  onStarting() {
+    [[H, {
+      useClass: U
+    }], [W, {
+      useClass: G
+    }], [X]].forEach(var_core_value_sig3D7D => this._injector["add"](var_core_value_sig3D7D));
+  }
+  onReady() {
+    this._injector["get"](X);
+  }
+};
+Q($, "pluginName", "BASES_EXCHANGE_CLIENT_PLUGIN"), Q($, "packageName", L), Q($, "version", R), Q($, "type", var_core_value_sigB744.UNIVER_BASE), $ = V([var_core_value_sig0285(var_core_value_sig6418, var_core_value_sigEF3E, var_core_value_sig5090), B(1, var_core_value_sig3607(var_core_value_sigB512)), B(2, var_core_value_sigD65A)], $);
+export { H as IBaseExchangeService, $ as UniverBasesExchangeClientPlugin };

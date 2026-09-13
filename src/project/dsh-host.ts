@@ -6,19 +6,46 @@
 import { HostBase } from "./host/host-base.ts";
 import type { UniverCollabService } from "../plugins/univer-collab.ts";
 import type { ActionService } from "../kernel/action.ts";
-import { generateDefaultSnapshot } from "../plugins/univer-default-snapshots.ts";
 import {
+  CLI_WROTE_CELLS,
   WORKTREE_CHANGE_FEED_PATH,
   WORKTREE_CHANGE_FEED_READY,
+  WORKTREE_CHANGE_FEED_TAG,
   WORKTREE_CHANGE_NOTIFY_PATH,
-  WORKTREES_CHANGED
+  isUfExecuteCommit,
+  worktreeChangeFeedTags,
+  worktreeFeedNotifyPayload
 } from "../integrations/worktree-change-feed.ts";
+import { ControlPlaneDb } from "../control-plane/db.ts";
+import { resolveGatewayContext } from "../control-plane/gateway.ts";
+import { handleUniverserHttp } from "../integrations/univer-collab-http.ts";
+import { handleUniverFileHttp } from "../integrations/univer-file-http.ts";
+import { R2BlobStore } from "../integrations/r2-blob-store.ts";
 import {
-  buildHistoryChangesetsBody,
-  buildHistoryCreatorsBody,
-  buildHistoryListBody,
-  parsePositiveInt
-} from "../integrations/univer-history.ts";
+  consumeIssuedTicket,
+  isWorktreeCombConnect,
+  isWorktreeProtocolEvents,
+  loadIssuedTicket,
+  persistIssuedTicket,
+  readCollaboratorIdentity,
+  type CollaboratorIdentity,
+  type IssuedSessionTicket
+} from "../integrations/univer-protocol.ts";
+import { actorFromRequest, type WorkspaceActor } from "../control-plane/actor.ts";
+import { registerFacadeActions, AGENT_MEMBER_ID, AGENT_USER_ID, AGENT_USER_NAME } from "../plugins/univer-facade-actions.ts";
+import {
+  handleAgentHttp,
+  handleAgentMuxPrompt,
+  muxFrame
+} from "../plugins/univer-agent.ts";
+import {
+  CombCmd,
+  CmdRspCode,
+  decodeCombFrame,
+  encodeCombFrame,
+  encodeCombJson,
+  type CombFrame
+} from "../integrations/univer-comb-codec.ts";
 
 export interface CollabMemberAttachment {
   kind?: "comb";
@@ -26,6 +53,7 @@ export interface CollabMemberAttachment {
   userID: string;
   name: string;
   rooms: string[];
+  wire?: "protobuf" | "json";
 }
 
 export interface WorktreeFeedAttachment {
@@ -33,8 +61,59 @@ export interface WorktreeFeedAttachment {
   userID: string;
 }
 
+function agentPeerMember(): { memberID: string; userID: string; name: string; avatar: string } {
+  return {
+    memberID: AGENT_MEMBER_ID,
+    userID: AGENT_USER_ID,
+    name: AGENT_USER_NAME,
+    avatar: ""
+  };
+}
+
+function isAgentPeer(member: { memberID?: string; userID?: string } | null | undefined): boolean {
+  return member?.memberID === AGENT_MEMBER_ID || member?.userID === AGENT_USER_ID;
+}
+
+function agentUsersEnter(roomID: string): CombFrame {
+  return {
+    cmd: CombCmd.RECV,
+    code: CmdRspCode.OK,
+    reason: "success",
+    routeKey: roomID,
+    collaMsg: {
+      eventID: "users_enter",
+      joinEvent: agentPeerMember()
+    }
+  };
+}
+
+function cursorSelectionFromChangeset(
+  changeset: Record<string, unknown>
+): { startRow: number; startColumn: number; endRow: number; endColumn: number } | null {
+  const mutations = changeset.mutations;
+  if (!Array.isArray(mutations)) return null;
+  for (const mutation of mutations) {
+    if (!mutation || typeof mutation !== "object") continue;
+    const id = (mutation as { id?: unknown }).id;
+    if (id !== "sheet.mutation.set-range-values") continue;
+    const params = (mutation as { params?: { cellValue?: Record<string, Record<string, unknown>> } }).params;
+    const cellValue = params?.cellValue;
+    if (!cellValue || typeof cellValue !== "object") continue;
+    for (const [rowKey, cols] of Object.entries(cellValue)) {
+      const row = Number(rowKey);
+      if (!Number.isFinite(row) || !cols || typeof cols !== "object") continue;
+      const colKey = Object.keys(cols)[0];
+      if (colKey == null) continue;
+      const col = Number(colKey);
+      if (!Number.isFinite(col)) continue;
+      return { startRow: row, startColumn: col, endRow: row, endColumn: col };
+    }
+  }
+  return null;
+}
+
 export class DshHost extends HostBase<any> {
-  private sessionTickets = new Map<string, { userID: string; name: string; expiresAt: number }>();
+  private sessionTickets = new Map<string, IssuedSessionTicket>();
 
   async fetch(request: Request): Promise<Response> {
     const url = new URL(request.url);
@@ -44,20 +123,31 @@ export class DshHost extends HostBase<any> {
       const pair = new WebSocketPair();
       const [client, server] = Object.values(pair);
 
-      if (url.pathname === "/universer-api/comb/connect") {
-        const ticket = this.consumeSessionTicket(url.searchParams.get("sessionTicket") || "");
+      if (isWorktreeCombConnect(url.pathname)) {
+        const identity = this.consumeSessionTicket(url.searchParams.get("sessionTicket") || "");
+        if (!identity) {
+          return new Response(JSON.stringify({ error: { code: 16, message: "unauthenticated" } }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
         const memberID = crypto.randomUUID();
 
         const attachment: CollabMemberAttachment = {
           kind: "comb",
           memberID,
-          userID: ticket.userID,
-          name: ticket.name,
+          userID: identity.userID,
+          name: identity.name,
           rooms: []
         };
         server.serializeAttachment(attachment);
 
-        this.acceptWebSocket(server, ["comb", `member:${memberID}`]);
+        const worktreeMatch = url.pathname.match(/^\/universer-api\/worktrees\/([^/]+)\/comb\/connect$/);
+        const tags = ["comb", `member:${memberID}`];
+        if (worktreeMatch) {
+          tags.push(`worktree:${decodeURIComponent(worktreeMatch[1])}`);
+        }
+        this.acceptWebSocket(server, tags);
 
         return new Response(null, {
           status: 101,
@@ -67,12 +157,18 @@ export class DshHost extends HostBase<any> {
 
       if (url.pathname === WORKTREE_CHANGE_FEED_PATH) {
         const ticket = this.consumeSessionTicket(url.searchParams.get("sessionTicket") || "");
+        if (!ticket) {
+          return new Response(JSON.stringify({ error: { code: 16, message: "unauthenticated" } }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
         const attachment: WorktreeFeedAttachment = {
           kind: "worktree-feed",
           userID: ticket.userID
         };
         server.serializeAttachment(attachment);
-        this.acceptWebSocket(server, ["worktree-feed", `user:${ticket.userID}`]);
+        this.acceptWebSocket(server, [WORKTREE_CHANGE_FEED_TAG, `user:${ticket.userID}`]);
         try {
           server.send(JSON.stringify(WORKTREE_CHANGE_FEED_READY));
         } catch {}
@@ -83,6 +179,24 @@ export class DshHost extends HostBase<any> {
         });
       }
 
+      if (isWorktreeProtocolEvents(url.pathname)) {
+        const ticket = this.consumeSessionTicket(url.searchParams.get("sessionTicket") || "");
+        if (!ticket) {
+          return new Response(JSON.stringify({ error: { code: 16, message: "unauthenticated" } }), {
+            status: 401,
+            headers: { "Content-Type": "application/json" }
+          });
+        }
+        const worktreeId = decodeURIComponent(url.pathname.split("/")[3] ?? "");
+        server.serializeAttachment({ kind: "worktree-feed", userID: ticket.userID } satisfies WorktreeFeedAttachment);
+        this.acceptWebSocket(server, ["worktree-protocol", `worktree:${worktreeId}`]);
+        const protocolBoot = this.sendWorktreeProtocolSnapshot(server, worktreeId);
+        if (typeof (this.ctx as { waitUntil?: (task: Promise<unknown>) => void }).waitUntil === "function") {
+          (this.ctx as { waitUntil: (task: Promise<unknown>) => void }).waitUntil(protocolBoot);
+        }
+        return new Response(null, { status: 101, webSocket: client });
+      }
+
       // Default Mux WebSocket upgrade
       const tags = ["mux"];
       const unitId = url.searchParams.get("unitId") || url.searchParams.get("docId");
@@ -90,11 +204,9 @@ export class DshHost extends HostBase<any> {
 
       this.acceptWebSocket(server, tags);
 
-      try {
-        const kernel = await this.ensureKernel();
-        await kernel.emit("client/connect", { ws: server, tags });
-      } catch (err) {
-        console.error("Failed to notify kernel of connect:", err);
+      const muxBoot = this.notifyMuxConnected(server, tags);
+      if (typeof (this.ctx as { waitUntil?: (task: Promise<unknown>) => void }).waitUntil === "function") {
+        (this.ctx as { waitUntil: (task: Promise<unknown>) => void }).waitUntil(muxBoot);
       }
 
       return new Response(null, {
@@ -136,293 +248,135 @@ export class DshHost extends HostBase<any> {
     if (url.pathname.startsWith("/universer-api/")) {
       const kernel = await this.ensureKernel();
       const collab = kernel.get("collab") as UniverCollabService | undefined;
-
-      // GET /universer-api/user
-      if (url.pathname === "/universer-api/user" && request.method === "GET") {
-        return new Response(
-          JSON.stringify({
-            error: { code: 0, message: "" },
-            user: {
-              id: "user_admin",
-              name: "Administrator",
-              avatar: ""
-            }
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // GET /universer-api/user/session-ticket
-      if (url.pathname === "/universer-api/user/session-ticket" && request.method === "GET") {
-        const ticket = `ticket_${crypto.randomUUID()}`;
-        this.sessionTickets.set(ticket, {
-          userID: "user_admin",
-          name: "Administrator",
-          expiresAt: Date.now() + 300_000
-        });
-
-        // Purge expired tickets
-        const now = Date.now();
-        for (const [k, v] of this.sessionTickets.entries()) {
-          if (v.expiresAt <= now) this.sessionTickets.delete(k);
-        }
-
-        return new Response(
-          JSON.stringify({
-            error: { code: 0, message: "" },
-            ticket
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // POST /universer-api/authz/-/object/-/batch_allowed
-      if (url.pathname === "/universer-api/authz/-/object/-/batch_allowed" && request.method === "POST") {
-        const body = (await request.json().catch(() => ({}))) as any;
-        const requests = Array.isArray(body.requests) ? body.requests : [];
-        return new Response(
-          JSON.stringify({
-            error: { code: 0, message: "" },
-            objectActions: requests.map(() => [1, 2, 3, 4])
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // POST /universer-api/authz/:objectType/object/:objectId/allowed
-      if (url.pathname.includes("/allowed") && request.method === "POST") {
-        return new Response(
-          JSON.stringify({
-            error: { code: 0, message: "" },
-            actions: [1, 2, 3, 4]
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // GET /universer-api/snapshot/:type/unit/:unitID[/rev/:revision]
-      const snapshotRevMatch = url.pathname.match(
-        /^\/universer-api\/snapshot\/([^/]+)\/unit\/([^/]+)(?:\/rev\/([^/]+))?$/
-      );
-      if (snapshotRevMatch && request.method === "GET") {
-        const typeNum = parseInt(snapshotRevMatch[1], 10) || 2;
-        const unitID = snapshotRevMatch[2];
-        const rev = parseInt(snapshotRevMatch[3] || "0", 10);
-
-        let snapshot = collab?.getLatestSnapshot(unitID);
-        if (!snapshot) {
-          const defaultSnap = generateDefaultSnapshot(unitID, typeNum);
-          collab?.createUnit(unitID, typeNum, (defaultSnap as any).workbook?.name || (defaultSnap as any).doc?.name || "Document", defaultSnap);
-          snapshot = { rev: 1, data: defaultSnap };
-        }
-
-        const changesets = collab?.getChangesetsSince(unitID, rev || snapshot.rev) ?? [];
-
-        return new Response(
-          JSON.stringify({
-            error: { code: 0, message: "" },
-            snapshot: snapshot.data,
-            changesets
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // GET /universer-api/snapshot/:type/unit/:unitID/fetchmissing
-      const fetchMissingMatch = url.pathname.match(/^\/universer-api\/snapshot\/([^/]+)\/unit\/([^/]+)\/fetchmissing$/);
-      if (fetchMissingMatch && request.method === "GET") {
-        const unitID = fetchMissingMatch[2];
-        const from = parseInt(url.searchParams.get("from") || "0", 10);
-        const to = url.searchParams.get("to") ? parseInt(url.searchParams.get("to")!, 10) : undefined;
-        const changesets = collab?.getChangesetsSince(unitID, from, to) ?? [];
-        const unit = collab?.getUnit(unitID);
-
-        return new Response(
-          JSON.stringify({
-            error: { code: 0, message: "" },
-            changesets,
-            latestRevision: unit?.rev ?? 1
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // Block endpoints: GET /universer-api/snapshot/:type/unit/:unitID/block/:blockID
-      // and /universer-api/snapshot/block/:type/unit/:unitID/block/:blockID
-      if (url.pathname.includes("/block/") && request.method === "GET") {
-        return new Response(
-          JSON.stringify({
-            error: { code: 4, message: "Sheet block was not found" }
-          }),
-          { status: 404, headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // POST /universer-api/comb/:type/unit/:unitID/new_changes
-      const newChangesMatch = url.pathname.match(/^\/universer-api\/comb\/([^/]+)\/unit\/([^/]+)\/new_changes$/);
-      if (newChangesMatch && request.method === "POST") {
-        const body = (await request.json().catch(() => ({}))) as any;
-        const unitID = newChangesMatch[2];
-        const changeset = body.changeset || body;
-
-        if (collab) {
-          collab.applyChangeset(changeset, body.memberID);
-        }
-
-        // 1. Send ACK back to the author
-        if (body.memberID) {
-          this.sendToMember(body.memberID, {
-            cmd: 6,
-            code: 1,
-            reason: "success",
-            routeKey: unitID,
-            collaMsg: {
-              eventID: "changeset_ack",
-              csAckEvent: {
-                cs: changeset
+      const identity = readCollaboratorIdentity(request);
+      const universerRes = await handleUniverserHttp(request, {
+        kernel,
+        collab,
+        identity,
+        sql: this.getSqlExec(),
+        mintSessionTicket: (issued) => this.mintSessionTicket(issued),
+        onNewChanges: (unitID, changeset, memberID) => {
+          if (memberID) {
+            this.sendToMember(memberID, {
+              cmd: CombCmd.RECV,
+              code: CmdRspCode.OK,
+              reason: "success",
+              routeKey: unitID,
+              collaMsg: {
+                eventID: "changeset_ack",
+                csAckEvent: { cs: changeset }
               }
-            }
-          });
-        }
-
-        // 2. Broadcast new changesets to other peers in room
-        this.broadcastToRoom(
-          unitID,
-          {
-            cmd: 6,
-            code: 1,
-            reason: "success",
-            routeKey: unitID,
-            collaMsg: {
-              eventID: "new_changesets",
-              newCsEvent: {
-                cs: changeset
-              }
-            }
-          },
-          body.memberID
-        );
-
-        return new Response(
-          JSON.stringify({
-            error: { code: 0, message: "" }
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // DELETE /universer-api/snapshot/-/units
-      if (url.pathname === "/universer-api/snapshot/-/units" && request.method === "DELETE") {
-        return new Response(JSON.stringify({ error: { code: 0, message: "" } }), {
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
-      // POST /universer-api/snapshot/-/units/recover
-      if (url.pathname === "/universer-api/snapshot/-/units/recover" && request.method === "POST") {
-        return new Response(JSON.stringify({ error: { code: 0, message: "" } }), {
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
-      // File endpoints
-      if (url.pathname.includes("/sign-url") || url.pathname.includes("/upload")) {
-        return new Response(
-          JSON.stringify({
-            error: { code: 0, message: "" },
-            url: "",
-            fileID: "file_default"
-          }),
-          { headers: { "Content-Type": "application/json" } }
-        );
-      }
-
-      // GET /universer-api/history/:unitID/list|creators|cs
-      const historyMatch = url.pathname.match(/^\/universer-api\/history\/([^/]+)\/(list|creators|cs)$/);
-      if (historyMatch && request.method === "GET") {
-        const unitID = historyMatch[1];
-        const action = historyMatch[2];
-        const unit = collab?.getUnit(unitID);
-        const entries = collab?.listChangesetEntries(unitID) ?? [];
-        const unitInfo = unit
-          ? { unitId: unit.unit_id, rev: unit.rev, createdAt: unit.created_at }
-          : null;
-
-        if (action === "list") {
-          const length = parsePositiveInt(url.searchParams.get("length"), 20);
-          if (length === null) {
-            return jsonHistoryError(400, 7, "length must be a positive integer");
+            });
           }
-          const lastLabel = url.searchParams.get("lastLabel") ?? undefined;
-          return jsonHistory(
-            buildHistoryListBody(unitID, unitInfo, entries, {
-              length,
-              lastLabel: lastLabel || undefined
-            })
+          this.broadcastToRoom(
+            unitID,
+            {
+              cmd: CombCmd.RECV,
+              code: CmdRspCode.OK,
+              reason: "success",
+              routeKey: unitID,
+              collaMsg: {
+                eventID: "new_changesets",
+                newCsEvent: { cs: changeset }
+              }
+            },
+            memberID
           );
         }
-
-        if (action === "creators") {
-          return jsonHistory(buildHistoryCreatorsBody(unitInfo, entries));
-        }
-
-        const startRevision = parsePositiveInt(url.searchParams.get("startRevision"));
-        const endRevision = parsePositiveInt(url.searchParams.get("endRevision"));
-        if (startRevision === null || endRevision === null) {
-          return jsonHistoryError(400, 7, "startRevision and endRevision must be positive integers");
-        }
-        return jsonHistory(buildHistoryChangesetsBody(unitID, entries, startRevision, endRevision));
-      }
-
-      // Legacy / fallback Collab Endpoints
-      if (request.method === "GET" && url.pathname === "/universer-api/collab/snapshot") {
-        if (!collab) return new Response(JSON.stringify({ error: "Collab service unavailable" }), { status: 503 });
-        const unitId = url.searchParams.get("unitId") || "default";
-        const snapshot = collab.getLatestSnapshot(unitId);
-        return new Response(JSON.stringify(snapshot ?? {}), {
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
-      if (request.method === "POST" && url.pathname === "/universer-api/collab/snapshot") {
-        if (!collab) return new Response(JSON.stringify({ error: "Collab service unavailable" }), { status: 503 });
-        const body = (await request.json()) as any;
-        const unitId = body.unitId || url.searchParams.get("unitId") || "default";
-        collab.saveSnapshot(unitId, body.rev || 0, body.data || body);
-        return new Response(JSON.stringify({ success: true, rev: body.rev || 0 }), {
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
-      if (request.method === "POST" && url.pathname === "/universer-api/collab/changeset") {
-        if (!collab) return new Response(JSON.stringify({ error: "Collab service unavailable" }), { status: 503 });
-        const body = (await request.json()) as any;
-        const unitId = body.unitId || url.searchParams.get("unitId") || "default";
-        const result = collab.applyChangeset(body);
-        this.broadcast(
-          { channel: 1, type: "collab.changeset", payload: body },
-          `unit:${unitId}`
-        );
-        return new Response(JSON.stringify(result), {
-          headers: { "Content-Type": "application/json" }
-        });
-      }
-
-      if (request.method === "GET" && url.pathname === "/universer-api/collab/changesets") {
-        if (!collab) return new Response(JSON.stringify({ error: "Collab service unavailable" }), { status: 503 });
-        const unitId = url.searchParams.get("unitId") || "default";
-        const since = parseInt(url.searchParams.get("since") || "0", 10);
-        const changesets = collab.getChangesetsSince(unitId, since);
-        return new Response(JSON.stringify({ changesets }), {
-          headers: { "Content-Type": "application/json" }
-        });
-      }
+      });
+      if (universerRes) return universerRes;
     }
 
     if (url.pathname === WORKTREE_CHANGE_NOTIFY_PATH && request.method === "POST") {
-      await request.json().catch(() => ({}));
-      this.broadcast(JSON.stringify(WORKTREES_CHANGED), "worktree-feed");
+      const body = (await request.json().catch(() => ({}))) as { audienceUserIds?: unknown; event?: unknown };
+      const payload = worktreeFeedNotifyPayload(body);
+      if (payload.event === CLI_WROTE_CELLS.event) {
+        this.broadcast(JSON.stringify(payload), WORKTREE_CHANGE_FEED_TAG);
+      } else {
+        const audience = Array.isArray(body.audienceUserIds)
+          ? body.audienceUserIds.filter((id): id is string => typeof id === "string")
+          : [];
+        for (const tag of worktreeChangeFeedTags(audience)) {
+          this.broadcast(JSON.stringify(payload), tag);
+        }
+      }
       return new Response(JSON.stringify({ ok: true }), {
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    if (url.pathname === "/internal/collab/clone" && request.method === "POST") {
+      const kernel = await this.ensureKernel();
+      const collab = kernel.get("collab") as UniverCollabService | undefined;
+      if (!collab) {
+        return new Response(JSON.stringify({ error: "collab unavailable" }), { status: 503 });
+      }
+      const body = (await request.json().catch(() => ({}))) as {
+        fromUnitId?: string;
+        toUnitId?: string;
+        name?: string;
+        worktreeId?: string;
+      };
+      if (!body.fromUnitId || !body.toUnitId) {
+        return new Response(JSON.stringify({ error: "fromUnitId and toUnitId required" }), { status: 400 });
+      }
+      return new Response(
+        JSON.stringify(collab.cloneUnit(body.fromUnitId, body.toUnitId, body.name, body.worktreeId)),
+        { headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    if (url.pathname === "/internal/collab/ensure" && request.method === "POST") {
+      const kernel = await this.ensureKernel();
+      const collab = kernel.get("collab") as UniverCollabService | undefined;
+      if (!collab) {
+        return new Response(JSON.stringify({ error: "collab unavailable" }), { status: 503 });
+      }
+      const body = (await request.json().catch(() => ({}))) as {
+        unitId?: string;
+        type?: number;
+        name?: string;
+        worktreeId?: string;
+      };
+      if (!body.unitId) {
+        return new Response(JSON.stringify({ error: "unitId required" }), { status: 400 });
+      }
+      const unit = collab.ensureUnit(body.unitId, body.type ?? 2, body.name || "Document", body.worktreeId);
+      return new Response(JSON.stringify({ unitId: body.unitId, rev: unit?.rev ?? 1, type: unit?.type ?? 2 }), {
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    if (url.pathname === "/internal/collab/unit" && request.method === "GET") {
+      const kernel = await this.ensureKernel();
+      const collab = kernel.get("collab") as UniverCollabService | undefined;
+      if (!collab) {
+        return new Response(JSON.stringify({ error: "collab unavailable" }), { status: 503 });
+      }
+      const unitId = url.searchParams.get("unitId") || "";
+      const unit = collab.getUnit(unitId);
+      return new Response(
+        JSON.stringify({
+          unitId,
+          rev: unit?.rev ?? 0,
+          type: unit?.type ?? 2,
+          name: unit?.name ?? ""
+        }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    if (url.pathname === "/internal/collab/copy-snapshot" && request.method === "POST") {
+      const kernel = await this.ensureKernel();
+      const collab = kernel.get("collab") as UniverCollabService | undefined;
+      if (!collab) {
+        return new Response(JSON.stringify({ error: "collab unavailable" }), { status: 503 });
+      }
+      const body = (await request.json().catch(() => ({}))) as { fromUnitId?: string; toUnitId?: string };
+      if (!body.fromUnitId || !body.toUnitId) {
+        return new Response(JSON.stringify({ error: "fromUnitId and toUnitId required" }), { status: 400 });
+      }
+      return new Response(JSON.stringify(await collab.copySnapshotTo(body.fromUnitId, body.toUnitId)), {
         headers: { "Content-Type": "application/json" }
       });
     }
@@ -430,6 +384,7 @@ export class DshHost extends HostBase<any> {
     // 4. Universal Action Execution Endpoints
     if (url.pathname === "/api/actions/list" && request.method === "GET") {
       const kernel = await this.ensureKernel();
+      registerFacadeActions(kernel);
       const actionService = kernel.get("action") as ActionService | undefined;
       return new Response(JSON.stringify({ actions: actionService?.listActions() ?? [] }), {
         headers: { "Content-Type": "application/json" }
@@ -453,19 +408,136 @@ export class DshHost extends HostBase<any> {
       }
     }
 
+    if (url.pathname === "/agents" || url.pathname.startsWith("/agents/")) {
+      const kernel = await this.ensureKernel();
+      const agentRes = await handleAgentHttp(request, {
+        kernel,
+        env: this.env,
+        actor: actorFromRequest(request),
+        broadcastCollab: (unitId, changeset) => this.broadcastAgentCollab(unitId, changeset)
+      });
+      if (agentRes) return agentRes;
+    }
+
+    if (url.pathname === "/uf" || url.pathname.startsWith("/uf/")) {
+      const dbBinding = (this.env as { DB?: D1Database }).DB;
+      if (!dbBinding) {
+        return new Response(JSON.stringify({ error: { message: "Control plane unavailable" } }), {
+          status: 503,
+          headers: { "Content-Type": "application/json; charset=utf-8" }
+        });
+      }
+      const db = new ControlPlaneDb(dbBinding);
+      const session = await resolveGatewayContext(request, db);
+      const kernel = await this.ensureKernel();
+      const collab = kernel.get("collab") as UniverCollabService | undefined;
+      const fileRes = await handleUniverFileHttp(request, {
+        db,
+        currentUser: session.currentUser,
+        collab,
+        browser: (this.env as { BROWSER?: { fetch?: typeof fetch } }).BROWSER,
+        loader: (this.env as { LOADER?: import("../integrations/univer-file-execute.ts").LoaderBinding }).LOADER,
+        blobStore: new R2BlobStore((this.env as { BLOB_BUCKET?: R2Bucket }).BLOB_BUCKET),
+        notifyCliWroteCells: () => {
+          if (!isUfExecuteCommit(url.pathname, request.method)) return;
+          this.broadcast(JSON.stringify(CLI_WROTE_CELLS), WORKTREE_CHANGE_FEED_TAG);
+        }
+      });
+      if (fileRes) return fileRes;
+    }
+
+    if (url.pathname === "/api/remote.mux") {
+      return new Response(
+        JSON.stringify({
+          error: { message: "WebSocket upgrade required for Channel 2 agent.prompt" },
+          protocol: { mux: "channel 2 agent.prompt on /api/remote.mux" }
+        }),
+        {
+          status: 426,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            Upgrade: "websocket"
+          }
+        }
+      );
+    }
+
     return new Response("Not found", { status: 404 });
   }
 
-  private consumeSessionTicket(ticketParam: string): { userID: string; name: string } {
-    if (!ticketParam) {
-      return { userID: "user_admin", name: "Administrator" };
+  private broadcastAgentCollab(unitId: string, changeset: Record<string, unknown>): void {
+    const selection = cursorSelectionFromChangeset(changeset);
+    if (selection) {
+      this.broadcastToRoom(unitId, {
+        cmd: CombCmd.RECV,
+        code: CmdRspCode.OK,
+        reason: "success",
+        routeKey: unitId,
+        collaMsg: {
+          eventID: "update_cursor",
+          updateCursorEvent: {
+            unitID: unitId,
+            memberID: AGENT_MEMBER_ID,
+            selection
+          }
+        }
+      });
     }
-    const ticketData = this.sessionTickets.get(ticketParam);
-    this.sessionTickets.delete(ticketParam);
-    if (ticketData && ticketData.expiresAt > Date.now()) {
-      return { userID: ticketData.userID, name: ticketData.name };
+    this.broadcastToRoom(unitId, {
+      cmd: CombCmd.RECV,
+      code: CmdRspCode.OK,
+      reason: "success",
+      routeKey: unitId,
+      collaMsg: {
+        eventID: "new_changesets",
+        newCsEvent: { cs: changeset }
+      }
+    });
+  }
+
+  private muxActor(attachment: CollabMemberAttachment | WorktreeFeedAttachment | null): WorkspaceActor | null {
+    if (!attachment || !("userID" in attachment) || !attachment.userID) return null;
+    if ("kind" in attachment && attachment.kind === "worktree-feed") {
+      return { userId: attachment.userID, name: attachment.userID, username: "" };
     }
-    return { userID: "user_admin", name: "Administrator" };
+    const member = attachment as CollabMemberAttachment;
+    return { userId: member.userID, name: member.name || member.userID, username: "" };
+  }
+
+  private mintSessionTicket(identity: CollaboratorIdentity): string {
+    const ticket = `ticket_${crypto.randomUUID()}`;
+    const now = Date.now();
+    const issued: IssuedSessionTicket = {
+      userID: identity.userID,
+      name: identity.name,
+      avatar: identity.avatar,
+      expiresAt: now + 300_000
+    };
+    this.sessionTickets.set(ticket, issued);
+    for (const [key, value] of this.sessionTickets.entries()) {
+      if (value.expiresAt <= now) this.sessionTickets.delete(key);
+    }
+    try {
+      persistIssuedTicket(this.getSqlExec(), ticket, identity, issued.expiresAt);
+    } catch (err) {
+      console.warn("Comb session ticket persist failed:", err);
+    }
+    return ticket;
+  }
+
+  private consumeSessionTicket(ticketParam: string): CollaboratorIdentity | null {
+    const fromMemory = consumeIssuedTicket(this.sessionTickets, ticketParam);
+    if (fromMemory) {
+      try {
+        loadIssuedTicket(this.getSqlExec(), ticketParam);
+      } catch {}
+      return fromMemory;
+    }
+    try {
+      return loadIssuedTicket(this.getSqlExec(), ticketParam);
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -476,7 +548,7 @@ export class DshHost extends HostBase<any> {
     for (const s of this.ctx.getWebSockets()) {
       try {
         const att = s.deserializeAttachment() as CollabMemberAttachment | null;
-        if (att && Array.isArray(att.rooms) && att.rooms.includes(roomID)) {
+        if (att && Array.isArray(att.rooms) && att.rooms.includes(roomID) && !isAgentPeer(att)) {
           list.push({
             memberID: att.memberID,
             userID: att.userID,
@@ -486,40 +558,81 @@ export class DshHost extends HostBase<any> {
         }
       } catch {}
     }
+    if (list.length >= 1) {
+      list.push(agentPeerMember());
+    }
     return list;
   }
 
   /**
-   * Broadcasts a message to all members in a given room.
+   * Broadcasts a Comb message to all members in a given room, encoded per socket wire.
    */
   broadcastToRoom(roomID: string, msg: any, excludeMemberID?: string): void {
-    const str = typeof msg === "string" ? msg : JSON.stringify(msg);
     for (const s of this.ctx.getWebSockets()) {
       try {
         const att = s.deserializeAttachment() as CollabMemberAttachment | null;
         if (att && Array.isArray(att.rooms) && att.rooms.includes(roomID)) {
           if (excludeMemberID && att.memberID === excludeMemberID) continue;
-          s.send(str);
+          this.sendComb(s, att, msg);
         }
       } catch {}
     }
   }
 
   /**
-   * Sends a message to a specific member by memberID.
+   * Sends a Comb message to a specific member by memberID, encoded per socket wire.
    */
   sendToMember(memberID: string, msg: any): boolean {
-    const str = typeof msg === "string" ? msg : JSON.stringify(msg);
     for (const s of this.ctx.getWebSockets()) {
       try {
         const att = s.deserializeAttachment() as CollabMemberAttachment | null;
         if (att && att.memberID === memberID) {
-          s.send(str);
+          this.sendComb(s, att, msg);
           return true;
         }
       } catch {}
     }
     return false;
+  }
+
+  private async notifyMuxConnected(server: WebSocket, tags: string[]): Promise<void> {
+    try {
+      const kernel = await this.ensureKernel();
+      await kernel.emit("client/connect", { ws: server, tags });
+    } catch (err) {
+      console.error("Failed to notify kernel of connect:", err);
+    }
+  }
+
+  private async sendWorktreeProtocolSnapshot(server: WebSocket, worktreeId: string): Promise<void> {
+    try {
+      const kernel = await this.ensureKernel();
+      const collab = kernel.get("collab") as UniverCollabService | undefined;
+      server.send(
+        JSON.stringify({
+          error: { code: 1, message: "" },
+          worktree: collab?.getWorktreeProtocolData(worktreeId) ?? {
+            worktreeID: worktreeId,
+            status: "editing",
+            units: []
+          }
+        })
+      );
+    } catch (err) {
+      console.error("Failed to send worktree protocol snapshot:", err);
+    }
+  }
+
+  private sendComb(ws: WebSocket, att: CollabMemberAttachment | null | undefined, msg: unknown): void {
+    if (typeof msg === "string") {
+      ws.send(msg);
+      return;
+    }
+    if (att?.wire === "protobuf") {
+      ws.send(encodeCombFrame(msg as CombFrame));
+      return;
+    }
+    ws.send(encodeCombJson(msg as CombFrame));
   }
 
   /**
@@ -543,37 +656,46 @@ export class DshHost extends HostBase<any> {
 
       const kernel = await this.ensureKernel();
       let parsed: any;
+      const binaryFrame = typeof message !== "string";
       if (typeof message === "string") {
         try {
           parsed = JSON.parse(message);
         } catch {
           parsed = { raw: message };
         }
+      } else {
+        try {
+          parsed = decodeCombFrame(message);
+        } catch {
+          parsed = undefined;
+        }
       }
 
       // 1. Fast-path Univer Collaboration Protocol (CombCmd)
       if (typeof parsed?.cmd === "number") {
         const att = attachment as CollabMemberAttachment | null;
+        if (binaryFrame && att) {
+          att.wire = "protobuf";
+          ws.serializeAttachment(att);
+        }
         const memberID = att?.memberID || "unknown";
         const userID = att?.userID || "user_admin";
         const userName = att?.name || "Administrator";
         const routeKey = typeof parsed.routeKey === "string" ? parsed.routeKey : "";
 
         switch (parsed.cmd) {
-          case 1: // HELLO
-          case 5: // HEARTBEAT
-            ws.send(
-              JSON.stringify({
-                cmd: parsed.cmd,
-                code: 1,
-                reason: "success",
-                routeKey,
-                infoRsp: { memberID }
-              })
-            );
+          case CombCmd.HELLO:
+          case CombCmd.HEARTBEAT:
+            this.sendComb(ws, att, {
+              cmd: parsed.cmd,
+              code: CmdRspCode.OK,
+              reason: "success",
+              routeKey,
+              infoRsp: { memberID }
+            });
             return;
 
-          case 2: { // JOIN
+          case CombCmd.JOIN: {
             const rooms: string[] = parsed.joinReq?.rooms
               ? parsed.joinReq.rooms.map((r: any) => r.roomID)
               : routeKey
@@ -597,11 +719,18 @@ export class DshHost extends HostBase<any> {
                 members: membersInRoom
               };
 
+              const humans = membersInRoom.filter((member) => !isAgentPeer(member));
+              if (humans.length === 1) {
+                this.broadcastToRoom(roomID, agentUsersEnter(roomID));
+              } else if (humans.length > 1) {
+                this.sendComb(ws, att, agentUsersEnter(roomID));
+              }
+
               this.broadcastToRoom(
                 roomID,
                 {
-                  cmd: 6,
-                  code: 1,
+                  cmd: CombCmd.RECV,
+                  code: CmdRspCode.OK,
                   reason: "success",
                   routeKey: roomID,
                   collaMsg: {
@@ -618,28 +747,26 @@ export class DshHost extends HostBase<any> {
               );
             }
 
-            ws.send(
-              JSON.stringify({
-                cmd: 2,
-                code: 1,
-                reason: "success",
-                routeKey: routeKey || rooms[0] || "",
-                joinRsp: { roomInfos }
-              })
-            );
+            this.sendComb(ws, att, {
+              cmd: CombCmd.JOIN,
+              code: CmdRspCode.OK,
+              reason: "success",
+              routeKey: routeKey || rooms[0] || "",
+              joinRsp: { roomInfos }
+            });
             return;
           }
 
-          case 3: { // LEAVE
+          case CombCmd.LEAVE: {
             const roomID = parsed.leaveReq?.roomID || routeKey;
-            if (roomID && att && Array.isArray(att.rooms)) {
+            if (roomID && att && Array.isArray(att.rooms) && !isAgentPeer(att)) {
               att.rooms = att.rooms.filter((r) => r !== roomID);
               ws.serializeAttachment(att);
               this.broadcastToRoom(
                 roomID,
                 {
-                  cmd: 6,
-                  code: 1,
+                  cmd: CombCmd.RECV,
+                  code: CmdRspCode.OK,
                   reason: "success",
                   routeKey: roomID,
                   collaMsg: {
@@ -656,13 +783,16 @@ export class DshHost extends HostBase<any> {
             return;
           }
 
-          case 4: { // INGEST (Cursor / Presence update)
-            if (parsed.collaMsg?.eventID === "update_cursor" && routeKey) {
+          case CombCmd.INGEST: { // cursor / presence / opaque collab events
+            if (!routeKey || !parsed.collaMsg?.eventID) {
+              return;
+            }
+            if (parsed.collaMsg.eventID === "update_cursor") {
               this.broadcastToRoom(
                 routeKey,
                 {
-                  cmd: 6,
-                  code: 1,
+                  cmd: CombCmd.RECV,
+                  code: CmdRspCode.OK,
                   reason: "success",
                   routeKey,
                   collaMsg: {
@@ -673,6 +803,18 @@ export class DshHost extends HostBase<any> {
                       selection: parsed.collaMsg.updateCursorEvent?.selection
                     }
                   }
+                },
+                memberID
+              );
+            } else {
+              this.broadcastToRoom(
+                routeKey,
+                {
+                  cmd: CombCmd.RECV,
+                  code: CmdRspCode.OK,
+                  reason: "success",
+                  routeKey,
+                  collaMsg: parsed.collaMsg
                 },
                 memberID
               );
@@ -691,8 +833,10 @@ export class DshHost extends HostBase<any> {
         return;
       }
 
+      const channel = typeof parsed?.ch === "number" ? parsed.ch : parsed?.channel;
+
       // Channel 0: Control & Host RPC
-      if (parsed?.channel === 0 || !parsed?.channel) {
+      if (channel === 0 || channel == null) {
         if (parsed?.type === "session.init") {
           ws.send(
             JSON.stringify({
@@ -730,10 +874,10 @@ export class DshHost extends HostBase<any> {
       }
 
       // Channel 1: Univer OT Collab Changeset dispatch
-      if (parsed?.channel === 1) {
+      if (channel === 1) {
         const collab = kernel.get("collab") as UniverCollabService | undefined;
         if (collab && parsed.type === "collab.submitChangeset" && parsed.payload) {
-          const res = collab.applyChangeset(parsed.payload);
+          const res = await collab.applyChangeset(parsed.payload);
           const unitTag = `unit:${parsed.payload.unitId}`;
           const sockets = this.ctx.getWebSockets(unitTag);
           const broadcastMsg = JSON.stringify({
@@ -768,19 +912,40 @@ export class DshHost extends HostBase<any> {
       }
 
       // Channel 2: Agent Streaming
-      if (parsed?.channel === 2) {
+      if (channel === 2 || parsed?.type === "agent.prompt") {
         if (parsed.type === "agent.prompt") {
-          ws.send(JSON.stringify({
-            channel: 2,
-            type: "agent.thought",
-            content: "Analyzing workspace state and executing requested action..."
-          }));
+          let fallbackUnitId = "";
+          try {
+            const tags =
+              typeof (this.ctx as { getTags?: (socket: WebSocket) => string[] }).getTags === "function"
+                ? (this.ctx as { getTags: (socket: WebSocket) => string[] }).getTags(ws)
+                : [];
+            const unitTag = tags.find((tag) => tag.startsWith("unit:"));
+            if (unitTag) fallbackUnitId = unitTag.slice("unit:".length);
+          } catch {}
+          try {
+            await handleAgentMuxPrompt(
+              {
+                kernel,
+                env: this.env,
+                actor: this.muxActor(attachment),
+                broadcastCollab: (unitId, changeset) => this.broadcastAgentCollab(unitId, changeset)
+              },
+              ws,
+              parsed,
+              fallbackUnitId
+            );
+          } catch (err: any) {
+            try {
+              ws.send(JSON.stringify(muxFrame("agent.error", { message: err?.message || String(err) })));
+            } catch {}
+          }
           return;
         }
       }
 
       // Channel 3: AST CRDT Co-Editing
-      if (parsed?.channel === 3 && parsed.payload) {
+      if (channel === 3 && parsed.payload) {
         if (this.sql) {
           try {
             this.sql.exec(
@@ -825,13 +990,13 @@ export class DshHost extends HostBase<any> {
   ): Promise<void> {
     try {
       const att = ws.deserializeAttachment() as CollabMemberAttachment | null;
-      if (att && Array.isArray(att.rooms)) {
+      if (att && Array.isArray(att.rooms) && !isAgentPeer(att)) {
         for (const roomID of att.rooms) {
           this.broadcastToRoom(
             roomID,
             {
-              cmd: 6,
-              code: 1,
+              cmd: CombCmd.RECV,
+              code: CmdRspCode.OK,
               reason: "success",
               routeKey: roomID,
               collaMsg: {
@@ -854,17 +1019,6 @@ export class DshHost extends HostBase<any> {
       console.error("Error handling webSocketClose:", err);
     }
   }
-}
-
-function jsonHistory(body: Record<string, unknown>, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" }
-  });
-}
-
-function jsonHistoryError(status: number, code: number, message: string): Response {
-  return jsonHistory({ error: { code, message } }, status);
 }
 
 export { DshHost as ChatAgent };

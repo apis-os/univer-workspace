@@ -1,0 +1,147 @@
+import { FormulaShapeResultStatus as var_core_value_sigC80B, ShapeFormulaService as var_core_value_sig284F, createFormulaShapeDataFromShape as var_core_value_sigE154 } from "@univerjs-pro/shape-editor";
+import { FEnum as var_core_value_sig4632, FEventName as var_core_value_sig12F2, FUniver as var_core_value_sig2259 } from "@univerjs/core/facade";
+import { UpsertHostExternalReferencesCommand as var_core_value_sig9E2F } from "@univerjs-pro/engine-formula";
+import { FShape as var_core_value_sigD082 } from "@univerjs-pro/engine-shape/facade";
+import { DEFAULT_NUMBER_FORMAT as var_core_value_sigDBB7 } from "@univerjs/core";
+import { isShapeHostType as var_core_value_sigD0A8 } from "@univerjs-pro/engine-shape";
+var u = class extends var_core_value_sig4632 {
+  get FormulaShapeResultStatus() {
+    return var_core_value_sigC80B;
+  }
+};
+var_core_value_sig4632.extend(u);
+var d = class extends var_core_value_sig12F2 {
+  get FormulaShapeResultChanged() {
+    return "FormulaShapeResultChanged";
+  }
+};
+var_core_value_sig12F2.extend(d);
+var f = class extends var_core_value_sigD082 {
+  isFormulaShape() {
+    var var_core_value_sig4D4C = ox404012,
+      var_core_value_sigC9E0;
+    return ((var_core_value_sigC9E0 = this[var_core_value_sig4D4C(519)]()) == null ? undefined : var_core_value_sigC9E0[var_core_value_sig4D4C(533)]) != null;
+  }
+  getFormula() {
+    var var_core_value_sig76BA = ox404012,
+      var_core_value_sigFBFA;
+    return ((var_core_value_sigFBFA = this[var_core_value_sig76BA(519)]()) == null || (var_core_value_sigFBFA = var_core_value_sigFBFA[var_core_value_sig76BA(533)]) == null ? undefined : var_core_value_sigFBFA[var_core_value_sig76BA(502)]) ?? null;
+  }
+  setFormula(var_core_value_sigF602) {
+    if (!p(var_core_value_sigF602)) return console.warn("[Formula\x20Shape\x20Facade]:\x20setFormula\x20requires\x20{\x20formula,\x20externalReferences\x20}."), this;
+    let {
+      formula: var_core_value_sig1BBD,
+      externalReferences: var_core_value_sigF704
+    } = var_core_value_sigF602;
+    if (var_core_value_sig1BBD && !var_core_value_sig1BBD.startsWith("=")) return console.warn("[Formula\x20Shape\x20Facade]:\x20Formula\x20text\x20must\x20begin\x20with\x20\x22=\x22."), this;
+    let var_core_value_sig2BCF = this._getFormulaIdentity();
+    return this._getFormulaShapeData() ? var_core_value_sigF704.length > 0 && !this._commandService["syncExecuteCommand"](var_core_value_sig9E2F.id, {
+      unitId: var_core_value_sig2BCF.unitId,
+      references: var_core_value_sigF704
+    }) ? (console.warn("[Formula Shape Facade]: Failed to bind External References."), this) : this._updateFormulaBinding(var_core_value_sig3EEE => ({
+      ...var_core_value_sig3EEE,
+      formula: var_core_value_sig1BBD
+    }), true) : this;
+  }
+  removeFormula() {
+    let var_core_value_sig0D69 = this._getFormulaShapeData();
+    return var_core_value_sig0D69 != null && var_core_value_sig0D69.formulaBinding && this._mutate("remove\x20formula\x20from", var_core_value_sigBC46 => var_core_value_sigBC46.updateShape(this._shapeRef, {
+      shapeData: {
+        ...var_core_value_sig0D69,
+        formulaBinding: undefined
+      }
+    })), this;
+  }
+  getFormulaResult() {
+    var var_core_value_sig480E = ox404012,
+      var_core_value_sig26DB;
+    let var_core_value_sigF0F9 = (var_core_value_sig26DB = this._getFormulaShapeData()) == null ? undefined : var_core_value_sig26DB[var_core_value_sig480E(533)],
+      var_core_value_sig1A0F = this[var_core_value_sig480E(486)]();
+    return var_core_value_sigF0F9 ? this[var_core_value_sig480E(494)][var_core_value_sig480E(518)](var_core_value_sig284F)[var_core_value_sig480E(488)](var_core_value_sig1A0F) ?? null : null;
+  }
+  getFormulaNumberFormat() {
+    var var_core_value_sigFBA4 = ox404012,
+      var_core_value_sig4383,
+      var_core_value_sig186C;
+    let var_core_value_sigD955 = (var_core_value_sig4383 = this[var_core_value_sigFBA4(519)]()) == null ? undefined : var_core_value_sig4383[var_core_value_sigFBA4(533)];
+    return var_core_value_sigD955 ? ((var_core_value_sig186C = var_core_value_sigD955[var_core_value_sigFBA4(483)]) == null ? undefined : var_core_value_sig186C[var_core_value_sigFBA4(530)]) || var_core_value_sigDBB7 : null;
+  }
+  setFormulaNumberFormat(var_core_value_sig48BD) {
+    return this._updateFormulaBinding(var_core_value_sig3D7D => ({
+      ...var_core_value_sig3D7D,
+      numberFormat: {
+        pattern: var_core_value_sig48BD || var_core_value_sigDBB7
+      }
+    }));
+  }
+  isFormulaAnimationEnabled() {
+    var var_core_value_sig429F = ox404012,
+      var_core_value_sigF62A;
+    let var_core_value_sig8178 = (var_core_value_sigF62A = this._getFormulaShapeData()) == null ? undefined : var_core_value_sigF62A[var_core_value_sig429F(533)];
+    return var_core_value_sig8178 ? var_core_value_sig8178.animationEnabled !== false : false;
+  }
+  setFormulaAnimationEnabled(var_core_value_sigE9ED) {
+    return this._updateFormulaBinding(var_core_value_sig27E5 => ({
+      ...var_core_value_sig27E5,
+      animationEnabled: var_core_value_sigE9ED
+    }));
+  }
+  _updateFormulaBinding(var_core_value_sigB577, var_core_value_sig9572 = false) {
+    let var_core_value_sigD873 = this._getFormulaShapeData();
+    if (!var_core_value_sigD873 || !var_core_value_sigD873.formulaBinding && !var_core_value_sig9572) return console.warn("[Formula Shape Facade]: The Shape is not a Formula Shape."), this;
+    let var_core_value_sigA12B = var_core_value_sigB577(var_core_value_sigD873.formulaBinding ?? {
+        formula: ""
+      }),
+      var_core_value_sigF230 = var_core_value_sigD873.formulaBinding ? {
+        ...var_core_value_sigD873,
+        formulaBinding: var_core_value_sigA12B
+      } : var_core_value_sigE154(var_core_value_sigD873, var_core_value_sigA12B);
+    return this._mutate("update formula for", var_core_value_sig8061 => var_core_value_sig8061.updateShape(this._shapeRef, {
+      shapeData: var_core_value_sigF230
+    })), this;
+  }
+  _getFormulaIdentity() {
+    return {
+      hostType: this._shapeRef["hostType"],
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      shapeId: this._shapeRef["shapeId"]
+    };
+  }
+  _getFormulaShapeData() {
+    var var_core_value_sig09B8 = ox404012,
+      var_core_value_sig6F91;
+    return ((var_core_value_sig6F91 = this[var_core_value_sig09B8(527)]()) == null || (var_core_value_sig6F91 = var_core_value_sig6F91.getShape(this._shapeRef)) == null ? undefined : var_core_value_sig6F91[var_core_value_sig09B8(499)]) ?? null;
+  }
+};
+function p(var_core_value_sig8895) {
+  return !!var_core_value_sig8895 && typeof var_core_value_sig8895 == "object" && "formula" in var_core_value_sig8895 && typeof var_core_value_sig8895.formula == "string" && "externalReferences" in var_core_value_sig8895 && Array.isArray(var_core_value_sig8895.externalReferences);
+}
+var_core_value_sigD082.extend(f);
+var m = class extends var_core_value_sig2259 {
+  _initialize(var_core_value_sigF9C7) {
+    this.disposeWithMe(this.registerEventHandler(this.Event["FormulaShapeResultChanged"], () => var_core_value_sigF9C7.get(var_core_value_sig284F).presentationChanged$["subscribe"](var_core_value_sig7524 => {
+      let var_core_value_sig2AD8 = this._univerInstanceService["getUnitType"](var_core_value_sig7524.unitId);
+      if (!var_core_value_sigD0A8(var_core_value_sig2AD8)) return;
+      let var_core_value_sig2AD0 = {
+        shape: var_core_value_sigF9C7.createInstance(var_core_value_sigD082, {
+          hostType: var_core_value_sig2AD8,
+          unitId: var_core_value_sig7524.unitId,
+          subUnitId: var_core_value_sig7524.subUnitId,
+          shapeId: var_core_value_sig7524.shapeId
+        }, var_core_value_sigF9C7),
+        shapeRef: {
+          hostType: var_core_value_sig2AD8,
+          unitId: var_core_value_sig7524.unitId,
+          subUnitId: var_core_value_sig7524.subUnitId,
+          shapeId: var_core_value_sig7524.shapeId
+        },
+        result: var_core_value_sig7524.result,
+        previousResult: var_core_value_sig7524.previousResult
+      };
+      this.fireEvent(this.Event["FormulaShapeResultChanged"], var_core_value_sig2AD0);
+    })));
+  }
+};
+var_core_value_sig2259.extend(m);
+export {};

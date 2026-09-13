@@ -1,0 +1,74 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { ICustomRange, Nullable } from '@univerjs/core';
+import type { IDocumentSkeletonGlyph, IDocumentSkeletonPage, IDocumentSkeletonSection } from '../../basics/i-document-skeleton-cached';
+import type { Transform } from '../../basics/transform';
+import type { IViewportInfo } from '../../basics/vector2';
+import type { UniverRenderingContext } from '../../context';
+import type { IDocumentsConfig, IPageMarginLayout } from './doc-component';
+import type { DocumentSkeleton } from './layout/doc-skeleton';
+import { Vector2 } from '../../basics/vector2';
+import { DocComponent } from './doc-component';
+import './extensions';
+export declare function resolveHeaderFooterFieldGlyph(glyph: IDocumentSkeletonGlyph, startIndex: number, endIndex: number, customRanges: ICustomRange[], pageNumber: number, pageCount: number): IDocumentSkeletonGlyph;
+export interface IPageRenderConfig {
+    page: IDocumentSkeletonPage;
+    pageLeft: number;
+    pageTop: number;
+    ctx: UniverRenderingContext;
+}
+export interface IDocumentOffsetConfig extends IPageMarginLayout {
+    docsLeft: number;
+    docsTop: number;
+    documentTransform: Transform;
+}
+export declare function drawSectionColumnSeparators(ctx: UniverRenderingContext, section: IDocumentSkeletonSection, height: number, offsetX?: number, offsetY?: number): void;
+export declare class Documents extends DocComponent {
+    private readonly _pageRender$;
+    readonly pageRender$: import("rxjs").Observable<IPageRenderConfig>;
+    private _drawLiquid;
+    constructor(oKey: string, documentSkeleton?: DocumentSkeleton, config?: IDocumentsConfig);
+    static create(oKey: string, documentSkeleton?: DocumentSkeleton, config?: IDocumentsConfig): Documents;
+    dispose(): void;
+    getOffsetConfig(): IDocumentOffsetConfig;
+    getEngine(): Nullable<import("../..").Engine>;
+    isHit(coord: Vector2): boolean;
+    changeSkeleton(newSkeleton: DocumentSkeleton): this;
+    protected _draw(ctx: UniverRenderingContext, bounds?: IViewportInfo): void;
+    draw(ctx: UniverRenderingContext, bounds?: IViewportInfo): void;
+    private _drawTable;
+    private _drawColumnGroups;
+    private _drawTableCellBackgrounds;
+    private _getTableViewport;
+    private _getRenderUnitId;
+    private _getDocumentCompatibilityPolicy;
+    private _drawLineBackground;
+    private _drawParagraphBorders;
+    private _drawGlyphGroupBackgrounds;
+    private _drawTableCell;
+    private _drawNestedPageContent;
+    private _drawTableCellBordersAndBg;
+    private _getTableCellSource;
+    private _resolveTableCellBorder;
+    private _isDrawableTableCellBorder;
+    private _drawTableCellBorder;
+    private _drawHeaderFooter;
+    private _horizontalHandler;
+    private _verticalHandler;
+    private _startRotation;
+    private _resetRotation;
+    private _initialDefaultExtension;
+}

@@ -1,0 +1,11 @@
+import type { LocaleService } from '@univerjs/core';
+import type { IBaseCellEditorCommonProps, IBaseCellEditorOption, IBaseLinkCellValue } from './editor-types';
+import { BaseFieldType } from '@univerjs/core';
+export declare function initialEditorText({ initialQuery, value }: Pick<IBaseCellEditorCommonProps<unknown>, 'initialQuery' | 'value'>): string;
+export declare function readLinkEditorValue(value: string | IBaseLinkCellValue | null): IBaseLinkCellValue;
+export declare function createLinkEditorValue(text: string, url: string): IBaseLinkCellValue | null;
+export declare function normalizeLinkEditorUrl(value: string): string;
+export declare function validateContactValue(type: BaseFieldType, value: string, localeService: LocaleService): string | null;
+export declare function parseNumberEditorValue(value: string, min: number, max: number): number | null;
+export declare function filterOptions(options: IBaseCellEditorOption[], query: string): IBaseCellEditorOption[];
+export declare function clampIndex(index: number, length: number): number;

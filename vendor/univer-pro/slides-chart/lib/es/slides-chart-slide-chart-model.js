@@ -1,0 +1,19 @@
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartResourceRuntimeService, DEFAULT_CHART_RESOURCE_HEADER_ROW, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, UniverChartPlugin, buildChartDataSetFromValues, buildChartPreviewData, buildOrientedChartDataSet, chartConfigInterpreter, describeChartModel, isInlineChartDataSource, isReferencedChartDataSource, toChartCreateConfigSnapshot, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, ReorderSlideElementsCommand, UpdateSlideDrawingCommand, UpdateSlideElementMutation, getSlideCommandTarget } from "@univerjs-pro/slides";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { Subject, filter, firstValueFrom } from "rxjs";
+import { ShapeLineTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { q } from "./internal-core-endo.js";
+let X = class extends ChartResourceRuntimeService {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630) {
+    super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629, buildChartDataSetFromValues, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630), q(this, "_chartDataUpdated$", new Subject()), q(this, "chartDataUpdated$", this._chartDataUpdated$["asObservable"]());
+  }
+  dispose() {
+    this._chartDataUpdated$["complete"](), super.dispose();
+  }
+  _beforeRuntimeRefresh(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634) {
+    this._chartDataUpdated$["next"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634.chartId);
+  }
+};
+export { X as SlideChartModelService };

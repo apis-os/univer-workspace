@@ -1,0 +1,30 @@
+import { BoardChartModelService } from '@univerjs-pro/boards-chart';
+import { ChartElementFloatMenuAdapterRegistry } from '@univerjs-pro/chart-ui';
+import { Disposable, Injector, IUniverInstanceService } from '@univerjs/core';
+import { IRenderManagerService } from '@univerjs/engine-render';
+import { ICanvasPopupService } from '@univerjs/ui';
+import { BoardChartEditSessionService } from '../services/board-chart-edit-session.service';
+import { BoardChartRenderService } from '../services/board-chart-render.service';
+import { IBoardChartUIService } from '../services/board-chart-ui.service';
+export declare class BoardChartElementFloatMenuController extends Disposable {
+    private readonly _modelService;
+    private readonly _chartRenderService;
+    private readonly _chartUIService;
+    private readonly _editSessionService;
+    private readonly _adapterRegistry;
+    private readonly _canvasPopupService;
+    private readonly _renderManagerService;
+    private readonly _univerInstanceService;
+    private readonly _injector;
+    private readonly _chartEventDisposables;
+    private _popupDisposable;
+    private _popupRuntimeKey;
+    private _popupSessionKey;
+    constructor(_modelService: BoardChartModelService, _chartRenderService: BoardChartRenderService, _chartUIService: IBoardChartUIService, _editSessionService: BoardChartEditSessionService, _adapterRegistry: ChartElementFloatMenuAdapterRegistry, _canvasPopupService: ICanvasPopupService, _renderManagerService: IRenderManagerService, _univerInstanceService: IUniverInstanceService, _injector: Injector);
+    dispose(): void;
+    private _registerAdapter;
+    private _subscribeChartEvents;
+    private _openFloatMenu;
+    private _closePopup;
+    private _clearHiddenSelectedTarget;
+}

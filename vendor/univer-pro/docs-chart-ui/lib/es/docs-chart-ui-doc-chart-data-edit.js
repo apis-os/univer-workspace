@@ -1,0 +1,55 @@
+import { CommandType, DOC_DRAWING_PRINTING_COMPONENT_KEY, DataStreamTreeTokenType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, LocaleService, Optional, Plugin, Tools, UniverInstanceType, createIdentifier, generateRandomId, merge, toDisposable, touchDependencies } from "@univerjs/core";
+import { CHART_TYPE_CATALOG, ChartAxisBoundsFields, ChartAxisFormatTextField, ChartAxisLabelStyleFields, ChartAxisLabelVisibilityField, ChartAxisLineVisibilityField, ChartAxisReverseField, ChartAxisTickVisibilityField, ChartAxisTitleFields, ChartCommonDataMappingSection, ChartEditBlockTitle, ChartEditPanel, ChartEditPanelSection, ChartEditPanelTab, ChartEditPanelTabs, ChartEditorCapability, ChartEditorProvider, ChartFunnelStyleSection, ChartGradientFillField, ChartGridlineVisibilityField, ChartGridlineWidthField, ChartHeatmapStyleSection, ChartHostAdapter, ChartImageExportService, ChartIndicatorLineColorField, ChartIndicatorLineTypeField, ChartInlineTableEditor, ChartLegendFontSizeField, ChartLegendPositionField, ChartLegendRoot, ChartLegendSelectModeField, ChartLegendWrapField, ChartLineAndAreaSection, ChartMainTitleFields, ChartNumberFormatTextField, ChartParetoSeriesSection, ChartPieStyleSection, ChartRadarStyleSection, ChartReferencedDataSourceEditor, ChartRelationStyleSection, ChartSectionAccordion, ChartSectionAccordionContent, ChartSectionAccordionItem, ChartSectionAccordionTrigger, ChartSeriesBorderFields, ChartSeriesFillFields, ChartSeriesLabelFontSizeField, ChartSeriesLabelPositionField, ChartSeriesLabelVisibilityField, ChartSeriesPointFields, ChartSeriesRoot, ChartSnapshotQueue, ChartStackField, ChartStyleSection, ChartSubtitleFields, ChartThemeField, ChartTitleFontSizeFields, ChartTypeField, ChartTypeSpecificDataSection, ChartTypeSpecificSetupSection, ChartTypeSpecificStyleSection, ChartUIService, ChartViewStateRegistry, ChartWaterfallSetupFields, ChartWaterfallStyleSection, ChartWordCloudRepeatField, ChartWordCloudRoot, ChartWordCloudShapeField, DEFAULT_CHART_AXIS_VALUES, DEFAULT_CHART_FUNNEL_VALUES, DEFAULT_CHART_HEATMAP_VALUES, DEFAULT_CHART_INDICATOR_LINE_VALUES, DEFAULT_CHART_LEGEND_VALUES, DEFAULT_CHART_LINE_AND_AREA_VALUES, DEFAULT_CHART_PARETO_VALUES, DEFAULT_CHART_PIE_VALUES, DEFAULT_CHART_RADAR_VALUES, DEFAULT_CHART_RELATION_VALUES, DEFAULT_CHART_SERIES_VALUES, DEFAULT_CHART_STYLE_VALUES, DEFAULT_CHART_TITLE_VALUES, DEFAULT_CHART_WATERFALL_SETUP_VALUES, DEFAULT_CHART_WATERFALL_STYLE_VALUES, DEFAULT_CHART_WORD_CLOUD_VALUES, InlineChartCreationIssueCode, UniverChartUIPlugin, buildChartTypeSelectOptions, chartTypeSupportsCapability, chartTypeSupportsLineAndAreaStyle, compactInlineTableValues, createChartInlineStarterData, getChartInlineTableMinColumns, resolveChartEditPanelRoute, resolveChartElementSelection, resolveChartTypeFieldValue, tryBuildInlineChartCreationPlan, tryPrepareInlineChartData, useChartEditorChartType, useChartEditorHasRightAxis } from "@univerjs-pro/chart-ui";
+import { CHART_RESOURCE_VERSION, ChartDataSourceRuntimeStatus, ChartImageExportFormat, ChartRenderMode, ChartResourceRepository, ChartThemeService, ChartTypeBits, DEFAULT_CHART_DEVICE_PIXEL_RATIO, DataUrlImageChartHost, IChartRenderModelManagerService, buildChartDataSetFromValues, chartBitsUtils, createChartRuntime, getChartHostFrameContentRect, isInlineChartDataSource, isReferencedChartDataSource, parseInlineChartTable, resolveChartRuntimeStyle, resolveDefaultChartHostFrameStyle, shouldComposeChartHostFrame } from "@univerjs-pro/engine-chart";
+import { Button, Select } from "@univerjs/design";
+import { CanvasFloatDomService, ComponentManager, ContextMenuGroup, ContextMenuPosition, IDialogService, IMenuManagerService, MenuItemType, RibbonInsertGroup, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { ChangeDocChartDataSourceCommand, DocChartModelService, DocumentChartConfigAdapter, InsertDocChartCommand, RemoveDocChartDataSourceMutation, RemoveDocChartSnapshotMutation, SetDocChartDataSourceMutation, SetDocChartSnapshotMutation, UniverDocsChartPlugin, UpdateDocChartConfigCommand } from "@univerjs-pro/docs-chart";
+import { DocContentInsertService, DocSelectionManagerService, UniverDocsPlugin, docDrawingPositionToTransform } from "@univerjs/docs";
+import { BreakLineCommand, DOC_CONTENT_INSERT_MENU_ID, DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID, DOC_PARAGRAPH_T_INSERT_MENU_ID, DocPrintInterceptorService, EMPTY_PARAGRAPH_MENU_ID, IDocClipboardPasteAdapterService, IDocClipboardService, INSERT_BELLOW_MENU_ID, UniverDocsUIPlugin, VIEWPORT_KEY, disableMenuWhenHeaderFooterEditing } from "@univerjs/docs-ui";
+import { IDocDrawingAdapterService, RemoveDocDrawingCommand, UniverDocsDrawingPlugin } from "@univerjs/docs-drawing";
+import { DocDrawingFloatingToolbarAdapterService, UniverDocsDrawingUIPlugin } from "@univerjs/docs-drawing-ui";
+import { BehaviorSubject, Observable, Subject, auditTime, combineLatest, filter, map, skip } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { IDrawingManagerService, UniverDrawingPlugin, getDrawingShapeKeyByDrawingSearch } from "@univerjs/drawing";
+import { DEFAULT_TRANSFORMER_CONFIG, DRAWING_OBJECT_LAYER_INDEX, IRenderManagerService, Image, TRANSFORM_CHANGE_OBSERVABLE_TYPE, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+let V = class {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268) {
+    this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267, this._resourceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268;
+  }
+  getEditorState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46272) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46273 = this._resourceService["getChart"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46272),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46273 ? this._resourceService["getDataSource"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46273.dataSourceId) : undefined;
+    return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46273 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274 ? null : {
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271,
+      chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46272,
+      dataSourceId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274.id,
+      dataSource: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274,
+      values: isInlineChartDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274.values["map"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637 => [...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637]) : [],
+      sharingCount: this._resourceService["getDataSourceSharingCount"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274.id)
+    };
+  }
+  updateDataFromText(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46283 = parseInlineChartTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46283.length !== 0 && this.updateData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46283, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282);
+  }
+  updateData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46289, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46292) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293;
+    if (!this.getEditorState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46289, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291.length === 0) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46294 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293 = this._resourceService["getChart"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46289, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293.chartType;
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46294 === undefined) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46295 = tryPrepareInlineChartData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46294, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46295.ok ? this.changeDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46289, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290, {
+      values: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46295.values
+    }) : false;
+  }
+  changeDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46303, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46304, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46305) {
+    return this._commandService["syncExecuteCommand"](ChangeDocChartDataSourceCommand.id, {
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46303,
+      chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46304,
+      dataSource: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46305
+    });
+  }
+};
+export { V as DocChartDataEditService };

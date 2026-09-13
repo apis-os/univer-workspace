@@ -1,0 +1,25 @@
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, merge, registerDependencies, toDisposable } from "@univerjs/core";
+import { RevertRevisionMutation, UniverCollaborationPlugin, parseProtocolChangeset } from "@univerjs-pro/collaboration";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { HTTPService } from "@univerjs/network";
+import { ErrorCode } from "@univerjs/protocol";
+import { BehaviorSubject } from "rxjs";
+import { T } from "./edit-history-as-record.js";
+import { P } from "./internal-glue.js";
+function x(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB = T(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460) ?? {},
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20 = Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689 => typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689 == "string" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689 in var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB) : [],
+    var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig92992 = new Set(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20);
+  return [...var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20, ...Object.keys(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690 => !var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig92992.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690)).sort()].map((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692) => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693 = P(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691]);
+    return {
+      stableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691,
+      position: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692,
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693 === undefined ? {} : {
+        displayName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693
+      }),
+      value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691])
+    };
+  });
+}
+export { x as recordComparisonEntries };

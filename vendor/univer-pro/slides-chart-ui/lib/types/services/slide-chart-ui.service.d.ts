@@ -1,0 +1,41 @@
+import type { IChartEditPanelRoute, IChartPanelRouteState, IChartSelectedElementState } from '@univerjs-pro/chart-ui';
+import type { IChartContext, IChartDataAggregation, IChartModelBinding } from '@univerjs-pro/engine-chart';
+import type { IUpdateSlideChartConfigCommandParams } from '@univerjs-pro/slides-chart';
+import { ChartUIService, ChartViewStateRegistry } from '@univerjs-pro/chart-ui';
+import { ISlideDrawingService } from '@univerjs-pro/slides';
+import { SlideChartModelService, SlideChartResourceService } from '@univerjs-pro/slides-chart';
+import { ICommandService } from '@univerjs/core';
+type SlideChartUpdateConfigParams = Omit<IUpdateSlideChartConfigCommandParams, 'unitId' | 'chartId'> & {
+    unitId?: string;
+    chartId?: string;
+    context?: Partial<IChartContext>;
+    dataAggregation?: Partial<IChartDataAggregation>;
+};
+export type ISlideChartUIService = SlideChartUIService;
+export declare const ISlideChartUIService: import("@wendellhu/redi").IdentifierDecorator<SlideChartUIService>;
+export declare class SlideChartUIService extends ChartUIService<IChartModelBinding, SlideChartUpdateConfigParams> {
+    private readonly _chartModelService;
+    private readonly _commandService;
+    readonly resourceService: SlideChartResourceService;
+    private readonly _slideDrawingService;
+    private readonly _activeEditChart$;
+    private readonly _selectedElement$;
+    private readonly _panelRoute$;
+    readonly activeEditChart$: import("rxjs").Observable<string | null>;
+    readonly selectedElement$: import("rxjs").Observable<IChartSelectedElementState | null>;
+    readonly panelRoute$: import("rxjs").Observable<IChartPanelRouteState | null>;
+    constructor(_chartModelService: SlideChartModelService, _commandService: ICommandService, resourceService: SlideChartResourceService, _slideDrawingService: ISlideDrawingService, viewStates: ChartViewStateRegistry);
+    get activeRuntimeModel(): IChartModelBinding | null;
+    get activeRuntimeModel$(): import("rxjs").Observable<IChartModelBinding | null>;
+    get activeEditChart(): string | null;
+    setActiveEditChart(chartId: string | null): void;
+    isElementEditModeActive(chartId: string): boolean;
+    setSelectedElement(state: IChartSelectedElementState | null): void;
+    setPanelRoute(chartId: string, route: IChartEditPanelRoute | null): void;
+    clearPanelRoute(): void;
+    executeChartUpdateConfig(params: SlideChartUpdateConfigParams): void;
+    getDrawingBorderColor(unitId: string, subUnitId: string, drawingId: string): string | undefined;
+    updateDrawingBorderColor(unitId: string, subUnitId: string, drawingId: string, color: string): boolean;
+    dispose(): void;
+}
+export {};

@@ -1,0 +1,10 @@
+import type { IBoardElementData, IBoardPageElement, IBoardTextElement } from '@univerjs-pro/boards';
+import type { IShapeData } from '@univerjs-pro/engine-shape';
+import type { IDocumentData } from '@univerjs/core';
+export declare function isBoardShapeEditableElement(element: IBoardPageElement): boolean;
+export declare function isBoardShapeTextEditableElement(element: IBoardPageElement): boolean;
+export declare function isManagedBoardMindMapNode(elementData: IBoardElementData | undefined): boolean;
+export declare function getBoardElementShapeData(element: IBoardPageElement): IShapeData | null;
+export declare function createBoardTextShapeData(element: IBoardTextElement): IShapeData;
+export declare function applyBoardShapeDataPatchToElement(element: IBoardPageElement, patch: IShapeData): IBoardPageElement;
+export declare function documentDataToPlainText(documentData: IDocumentData): string;

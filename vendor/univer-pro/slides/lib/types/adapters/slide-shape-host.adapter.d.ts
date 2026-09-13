@@ -1,0 +1,30 @@
+import type { IShapeCreateInput, IShapeFormulaLastValueGuard, IShapeHostAdapter, IShapeHostChange, IShapeRef, IShapeScope, IShapeSnapshot, IShapeUpdateInput } from '@univerjs-pro/engine-shape';
+import type { IMutationInfo } from '@univerjs/core';
+import type { Observable } from 'rxjs';
+import { ICommandService, IUniverInstanceService, UniverInstanceType } from '@univerjs/core';
+import { ISlideDrawingService } from '../services/slide-drawing.service';
+export declare class SlideShapeHostAdapter implements IShapeHostAdapter {
+    private readonly _commandService;
+    private readonly _drawingService;
+    private readonly _instanceService;
+    readonly hostType = UniverInstanceType.UNIVER_SLIDE;
+    constructor(_commandService: ICommandService, _drawingService: ISlideDrawingService, _instanceService: IUniverInstanceService);
+    get shapeChanged$(): Observable<IShapeHostChange>;
+    getShape(ref: IShapeRef): IShapeSnapshot | null;
+    listShapes(scope: IShapeScope): IShapeSnapshot[];
+    listShapesInUnit(unitId: string): IShapeSnapshot[];
+    createShape(scope: IShapeScope, input: IShapeCreateInput): IShapeSnapshot | null;
+    updateShape(ref: IShapeRef, input: IShapeUpdateInput): boolean;
+    convertSmartArtToShapes(ref: IShapeRef): IShapeSnapshot[] | null;
+    createFormulaLastValueMutation(ref: IShapeRef, guard: IShapeFormulaLastValueGuard, lastValue: Parameters<NonNullable<IShapeHostAdapter['createFormulaLastValueMutation']>>[2]): IMutationInfo | null;
+    removeShape(ref: IShapeRef): boolean;
+    bringToFront(ref: IShapeRef): boolean;
+    bringForward(ref: IShapeRef): boolean;
+    sendBackward(ref: IShapeRef): boolean;
+    sendToBack(ref: IShapeRef): boolean;
+    setZOrder(ref: IShapeRef, index: number): boolean;
+    private _getDrawing;
+    private _getDrawingOrder;
+    private _arrange;
+    private _reorder;
+}

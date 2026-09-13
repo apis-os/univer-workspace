@@ -1,0 +1,24 @@
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
+import { P } from "./bases-hierarchy-field.js";
+import { M } from "./bases-record-link-field-config.js";
+import { Ve } from "./bases-hierarchy-max-levels.js";
+function We(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463082) {
+  return [...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463082.fieldOrder, ...Object.keys(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463082.fields).filter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46790 => !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463082.fieldOrder["includes"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46790)).sort()].find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46791 => {
+    var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46792;
+    return P(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463082, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46791) ? ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46792 = M(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463082.fields[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46791])) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46792.relationRole) === BaseRecordLinkRole.Parent : false;
+  }) ?? null;
+}
+function Ge(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463084) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463085 = We(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463084);
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463085) return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463085;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463086 = Ve,
+    var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D44 = 2;
+  for (; var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463084.fields[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463086];) var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463086 = Ve + '_' + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D44++;
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463086;
+}
+export { We as getBaseHierarchyFieldId, Ge as resolveBaseHierarchyFieldId };

@@ -1,0 +1,70 @@
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { M } from "./boards-board-element-type.js";
+import { B } from "./boards-board-sequence-shape-type.js";
+import { Mn } from "./internal-core-endo.js";
+import { Ln } from "./boards-board-shape-sequence-activation-data.js";
+const Nn = {
+  pathLst: [{
+    w: 16,
+    h: 96,
+    stroke: true,
+    dataArray: [{
+      command: "M",
+      points: [4, 0]
+    }, {
+      command: "L",
+      points: [12, 0]
+    }, {
+      command: "Q",
+      points: [16, 0, 16, 4]
+    }, {
+      command: "L",
+      points: [16, 92]
+    }, {
+      command: "Q",
+      points: [16, 96, 12, 96]
+    }, {
+      command: "L",
+      points: [4, 96]
+    }, {
+      command: "Q",
+      points: [0, 96, 0, 92]
+    }, {
+      command: "L",
+      points: [0, 4]
+    }, {
+      command: "Q",
+      points: [0, 0, 4, 0]
+    }, {
+      command: "z",
+      points: []
+    }]
+  }],
+  rect: {
+    l: "l",
+    t: "t",
+    r: "r",
+    b: "b"
+  }
+};
+function Pn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462744) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462745;
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462744.type !== M.Shape || ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462745 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462744.shapeData) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462745.shapeType) !== B.ActivationBar || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462744.shapeData["isCustom"] !== true || !Tools.diffValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462744.shapeData["customGeometry"], Nn) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462744 : {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462744,
+    shapeData: {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462744.shapeData,
+      customGeometry: Tools.deepClone(Mn[B.ActivationBar].geometry)
+    }
+  };
+}
+function zn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462758) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462759;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462760 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462758 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462758.shapeData;
+  return !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462760 && ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462759 = Ln(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462760)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462759.attachableToLifeline) === true;
+}
+export { Pn as normalizeBoardSequenceActivationElement, zn as isBoardSequenceActivationElement };

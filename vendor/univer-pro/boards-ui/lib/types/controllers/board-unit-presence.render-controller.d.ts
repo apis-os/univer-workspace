@@ -1,0 +1,37 @@
+import type { BoardModel } from '@univerjs-pro/boards';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { IBoardElementService } from '@univerjs-pro/boards';
+import { ICommandService, RxDisposable, ThemeService } from '@univerjs/core';
+import { IBoardUIStateService } from '../services/board-ui-state.service';
+import { BoardUnitPresenceUIAdapter } from '../services/board-unit-presence-ui-adapter.service';
+export declare class BoardUnitPresenceRenderController extends RxDisposable implements IRenderModule {
+    private readonly _context;
+    private readonly _presenceAdapter;
+    private readonly _commandService;
+    private readonly _boardElementService;
+    private readonly _boardUIStateService;
+    private readonly _themeService;
+    private readonly _selectionShapes;
+    private readonly _pointerAnimations;
+    private _animationFrameId;
+    private _renderScheduled;
+    private _isApplyingOverlays;
+    private _pointersVisible;
+    private _latestPresences;
+    constructor(_context: IRenderContext<BoardModel>, _presenceAdapter: BoardUnitPresenceUIAdapter, _commandService: ICommandService, _boardElementService: IBoardElementService, _boardUIStateService: IBoardUIStateService, _themeService: ThemeService);
+    dispose(): void;
+    private _init;
+    private _scheduleRender;
+    private _render;
+    private _publishLocalPointer;
+    private _clearLocalPointer;
+    private _clearLocalPointerIfActive;
+    private _syncPointers;
+    private _startAnimation;
+    private _animate;
+    private _cancelAnimation;
+    private _removePointer;
+    private _removeAllPointers;
+    private _removeSelectionShapes;
+    private _getSceneObjectByKey;
+}

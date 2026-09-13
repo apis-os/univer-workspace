@@ -1,0 +1,88 @@
+import { ApplyPdfHistoryCommand, ApplyPdfMutationBatchMutation, DEFAULT_PDF_TABLE_THEME_PRESETS, PDF_A4_PAGE_HEIGHT_PT, PDF_A4_PAGE_WIDTH_PT, PDF_EDITOR_NATIVE_TEXT_VISUAL_EDIT_METADATA, PdfAnnotationType, PdfAssetType, PdfDisplayOpType, PdfEditorMutationSource, PdfExportDisposition, PdfListKind, PdfListPresetId, PdfObjectType, PdfSemanticRole, PdfTableCellVerticalAlign, PdfTextAnchor, createPdfDefaultDividerInsertionBbox, createPdfDefaultListInsertionBbox, createPdfDefaultParagraphInsertionBbox, createPdfDefaultTableInsertionLayout, createPdfDefaultTextBoxInsertionBbox, createPdfEditorSession, createPdfNativeTextHitTargets, createPdfPage, createPdfTableGrid, emuToPt, isPdfEditorDividerObject, normalizePdfEditorManagedImageResource, pdfAddAnnotationAction, pdfAddDividerAction, pdfAddImageAction, pdfAddListAction, pdfAddParagraphAction, pdfAddTableAction, pdfAddTextBoxAction, pdfChangeListLevelAction, pdfChangeListStyleAction, pdfCropImageAction, pdfDeleteObjectsAction, pdfEditTextAction, pdfInsertListItemAction, pdfInsertPageAction, pdfInsertParagraphBlockAction, pdfMoveObjectAction, pdfPromoteNativeTextAction, pdfRemoveListItemAction, pdfRemoveManagedImageAction, pdfRemoveParagraphBlockAction, pdfReorderObjectAction, pdfResizeTableAction, pdfSetListStartNumberAction, pdfUpdateManagedImageAction, pdfUpdateObjectAppearanceAction, pdfUpdateObjectStateAction, pdfUpdateObjectStrokeAction, pdfUpdateParagraphStyleAction, pdfUpdateTableCellStyleAction, pdfUpdateTableThemeAction, pdfUpdateTextRangeStyleAction, pdfUpdateTextStyleAction, ptToEmu } from "@univerjs-pro/pdfs";
+import { FBaseInitialable, FEnum, FUniver } from "@univerjs/core/facade";
+import { HorizontalAlign, ICommandService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, Tools, UniverInstanceType, generateRandomId } from "@univerjs/core";
+import { O } from "./facade-pdfs-fpdf-page-element.js";
+import { D } from "./facade-internal-glue.js";
+let H = class extends O {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46361, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46362, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46363, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364) {
+    super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46361, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46362, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46363, PdfObjectType.TEXT_BOX, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364);
+  }
+  getBlocks() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369 = this._getTextStory();
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369.blocks["map"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 => ({
+      ...JSON.parse(JSON.stringify(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626)),
+      text: this._getBlockText(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.id)
+    }));
+  }
+  insertBlock(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46372) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46373 = this._getTextStory();
+    return D(this._model, this._injector, pdfInsertParagraphBlockAction, {
+      storyId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46373.id,
+      index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371,
+      text: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46372.text,
+      blockId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46372.id,
+      blockStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46372.style,
+      runStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46372.textStyle
+    }), this;
+  }
+  appendBlock(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377) {
+    return this.insertBlock(this.getBlocks().length, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377);
+  }
+  setBlockText(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46379, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46380) {
+    let {
+      storyId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46381,
+      runId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46382,
+      previousText: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46383
+    } = this._resolveBlockRun(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46379);
+    return D(this._model, this._injector, pdfEditTextAction, {
+      pageId: this._pageId,
+      objectId: this._objectId,
+      storyId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46381,
+      runId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46382,
+      previousText: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46383,
+      text: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46380
+    }), this;
+  }
+  setBlockStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391 = this._getTextStory();
+    return this._resolveBlockRun(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389), D(this._model, this._injector, pdfUpdateParagraphStyleAction, {
+      storyId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391.id,
+      blockId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389,
+      patch: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390
+    }), this;
+  }
+  removeBlock(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396 = this._getTextStory();
+    return this._resolveBlockRun(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395), D(this._model, this._injector, pdfRemoveParagraphBlockAction, {
+      storyId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396.id,
+      blockId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395
+    }), this;
+  }
+  _resolveBlockRun(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46400 = this._getTextStory(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46400.blocks["find"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.id === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401.runIds[0];
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401.runIds["length"] !== 1 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46400.runs[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402]) throw Error("PDF\x20paragraph\x20block\x20" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399 + " is missing or is not a single-run editable block.");
+    return {
+      storyId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46400.id,
+      runId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402,
+      previousText: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46400.runs[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402].text
+    };
+  }
+  _getTextStory() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407 = this._model["getMaterializedDocument"](),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407.objects[this._objectId],
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408.type) === PdfObjectType.TEXT_BOX ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408.textStoryId : undefined,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407.textStories[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409] : undefined;
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410) throw Error("PDF text story for element " + this._objectId + " no longer exists on page " + this._pageId + ".");
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410;
+  }
+  _getBlockText(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415.blocks["find"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628.id === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416);
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417.runIds["map"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630;
+      return ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415.runs[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630.text) ?? "";
+    }).join("")) ?? "";
+  }
+};
+export { H as FPdfParagraph };

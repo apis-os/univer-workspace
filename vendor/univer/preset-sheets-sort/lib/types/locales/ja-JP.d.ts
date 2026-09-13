@@ -1,0 +1,34 @@
+declare const _default: {
+    'sheets-sort-ui': {
+        general: {
+            sort: string;
+            'sort-asc': string;
+            'sort-desc': string;
+            'sort-custom': string;
+            'sort-asc-ext': string;
+            'sort-desc-ext': string;
+            'sort-asc-cur': string;
+            'sort-desc-cur': string;
+        };
+        error: {
+            'merge-size': string;
+            empty: string;
+            single: string;
+            'formula-array': string;
+        };
+        dialog: {
+            'sort-reminder': string;
+            'sort-reminder-desc': string;
+            'sort-reminder-ext': string;
+            'sort-reminder-no': string;
+            'first-row-check': string;
+            'add-condition': string;
+            cancel: string;
+            confirm: string;
+        };
+        info: {
+            tooltip: string;
+        };
+    };
+};
+export default _default;

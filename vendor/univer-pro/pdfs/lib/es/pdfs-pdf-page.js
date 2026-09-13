@@ -1,0 +1,43 @@
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { Me } from "./pdfs-emu-to-pt.js";
+function Fe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462186, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462187, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462188, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462189, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462190;
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A65 = ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462186 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.pdfBoxes) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462186.mediaBox) ?? [0, 0, Me(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.size["width"]), Me(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.size["height"])],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462191 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.layers ?? ze(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.objectIds ?? []);
+  return {
+    'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.id,
+    'index': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.index,
+    'label': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.label,
+    'size': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.size,
+    'rotation': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.rotation ?? 0,
+    'pdfBoxes': {
+      'mediaBox': var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A65,
+      'cropBox': ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462187 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.pdfBoxes) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462187.cropBox) ?? var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A65,
+      'bleedBox': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462188 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.pdfBoxes) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462188.bleedBox,
+      'trimBox': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462189 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.pdfBoxes) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462189.trimBox,
+      'artBox': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462190 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.pdfBoxes) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462190.artBox
+    },
+    'layers': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462191,
+    'source': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462185.source
+  };
+}
+function ze(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462211, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462212) {
+  return [{
+    'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462211 + ":native",
+    'type': "nativePdf",
+    'name': "Native PDF",
+    'visible': true,
+    'locked': true,
+    'objectIds': []
+  }, {
+    'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462211 + ":editable",
+    'type': 'editable',
+    'name': 'Editable',
+    'visible': true,
+    'locked': false,
+    'objectIds': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462212
+  }];
+}
+export { Fe as createPdfPage };

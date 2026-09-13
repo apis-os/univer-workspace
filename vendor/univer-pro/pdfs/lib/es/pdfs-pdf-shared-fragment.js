@@ -1,0 +1,19 @@
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { Py, Uy } from "./internal-core-endo.js";
+import { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469491 } from "./pdfs-pdf-page-block-error.js";
+async function Iy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469216) {
+  await Py(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215.fragmentId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215.byteLength, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215.checksum, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469216);
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217;
+  try {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217 = JSON.parse(new TextDecoder("utf-8", {
+      'fatal': true
+    }).decode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469216));
+  } catch {
+    throw new var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469491("PDF_BLOCK_REFERENCE_INVALID", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215.fragmentId, "PDF shared fragment " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215.fragmentId + '\x20is\x20not\x20valid\x20JSON.');
+  }
+  if (!Uy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217.schema !== "univer-pdf-shared-fragment" || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217.schemaVersion !== 1 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217.schemaVersion !== 2 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217.id !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215.fragmentId || !Uy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217.assets) || !Uy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217.displayLists) || !Uy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217.objects)) throw new var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469491('PDF_BLOCK_REFERENCE_INVALID', var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215.fragmentId, "PDF shared fragment " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469215.fragmentId + " does not match its index metadata.");
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469217;
+}
+export { Iy as parsePdfSharedFragment };

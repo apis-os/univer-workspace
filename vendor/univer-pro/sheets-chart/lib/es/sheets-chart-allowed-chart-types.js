@@ -1,0 +1,23 @@
+import { CHART_HEADER_ROW_NONE, ChartDataSource, ChartModel, ChartRenderMode, ChartSourceDataTypeEnum, ChartThemeService, ChartTypeBits, DataOrientation, UniverChartPlugin, buildChartPreviewData, canonicalizeChartContext, chartBitsUtils, createChartDataSetProjector, defaultChartHeight, defaultChartWidth, describeChartModel, excelDateToUnixMilliseconds, generateChartContext, mergeChartConfig, reconcileChartContext, resolveChartStyleBackgroundColor, toChartCreateConfigSnapshot, toChartDataItem, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { CellValueType, CommandType, DEFAULT_NUMBER_FORMAT, DateSystem, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, ObjectMatrix, Plugin, Range, Rectangle, Tools, UniverInstanceType, generateRandomId, getCellValueType, getDrawingOrderIndex, getNumfmtLocaleTag, merge, normalizeDrawingOrderIndex, numfmt, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { ClearSheetDrawingTransformerOperation, DrawingApplyType, ISheetDrawingService, InsertSheetDrawingCommand, RemoveSheetDrawingCommand, SetDrawingApplyMutation, SetDrawingArrangeCommand, SetSheetDrawingCommand, transformToAxisAlignPosition, transformToDrawingPosition } from "@univerjs/sheets-drawing";
+import { AddWorksheetMergeMutation, InterceptCellContentPriority, MarkDirtyFilterChangeMutation, RefRangeService, RemoveColMutation, RemoveNumfmtMutation, RemoveRowMutation, RemoveWorksheetMergeMutation, ReorderRangeMutation, SetColHiddenMutation, SetColVisibleMutation, SetNumfmtMutation, SetRangeValuesMutation, SetRowHiddenMutation, SetRowVisibleMutation, SheetInterceptorService, SheetSkeletonService, UniverSheetsPlugin, convertPositionCellToSheetOverGrid, getSheetCommandTarget } from "@univerjs/sheets";
+import { BehaviorSubject, Subject, map, skip } from "rxjs";
+import { deserializeRangeWithSheet } from "@univerjs/engine-formula";
+import { IRenderManagerService } from "@univerjs/engine-render";
+import { LS_CONFIG_KEY, UniverLicensePlugin, getLicenseInfo, getSheetFeatureLimit, isFeatureAuthorizedWithinTime } from "@univerjs-pro/license";
+const wn = Number.parseInt(1788764280),
+  Tn = ["2", "4", "268435460"],
+  En = ["all"],
+  Dn = [];
+function On(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461500) {
+  let {
+    ls: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB44,
+    pbk: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB45
+  } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461500.get(IConfigService).getConfig(LS_CONFIG_KEY) ?? {};
+  if (!var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB44 || !var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB45) return Tn;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461501 = getLicenseInfo(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB44, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB45),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461502 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461501.message;
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461501.valid && isFeatureAuthorizedWithinTime(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461502, "sf", wn) ? getSheetFeatureLimit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461502, true, "c", En, Tn, Dn) : Tn;
+}
+export { On as getAllowedChartTypes };

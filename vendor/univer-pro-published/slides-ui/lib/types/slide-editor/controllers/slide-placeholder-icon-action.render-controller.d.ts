@@ -1,0 +1,30 @@
+import type { UnitModel } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { ISlideDrawingService } from '@univerjs-pro/slides';
+import { ICommandService, IUniverInstanceService, RxDisposable } from '@univerjs/core';
+import { SlideHitTestService } from '../../services/slide-hit-test.service';
+import { SlideInsertService } from '../../services/slide-insert.service';
+export declare class SlidePlaceholderIconActionRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _commandService;
+    private readonly _instanceService;
+    private readonly _slideDrawingService;
+    private readonly _hitTestService;
+    private readonly _slideInsertService;
+    private _pendingAction;
+    private _lastActionKey;
+    private _lastActionAt;
+    constructor(_renderContext: IRenderContext<UnitModel>, _commandService: ICommandService, _instanceService: IUniverInstanceService, _slideDrawingService: ISlideDrawingService, _hitTestService: SlideHitTestService, _slideInsertService: SlideInsertService);
+    private _init;
+    private _initPlaceholderAction;
+    private _resolveScenePointOptions;
+    private _resolvePlaceholderActionHit;
+    private _resolveEmptySmartArtImageAction;
+    private _triggerIconAction;
+    private _triggerPlaceholderAction;
+    private _handleImageIconAction;
+    private _replacePlaceholderWithImage;
+    private _pickImageFile;
+    private _getDrawingByObjectKey;
+    private _findSlidePlaceholderOverride;
+}

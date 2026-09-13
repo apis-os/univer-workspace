@@ -1,0 +1,47 @@
+import { combineDrawingEffectFilter, createDrawingEffectFilter, expandDrawingEffectBounds } from '@univerjs/engine-render';
+import { BooleanNumber, DependentOn, HorizontalAlign, IConfigService, ImageSourceType, Inject, Injector, JSONX, Plugin, RichTextBuilder, RichTextValue, TextX, Tools, UniverInstanceType, VerticalAlign, createIdentifier, generateRandomId, getSingleDataStreamChange, merge, toDisposable } from '@univerjs/core';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { HostExternalReferenceModel } from '@univerjs-pro/engine-formula';
+import { fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, ge, ye } from "./internal-core-endo.js";
+function ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466368) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466368 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466368.textDirection) ?? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466368 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466368.isHorizontal) === false ? "vert" : "horz");
+}
+function Se(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466382) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466383 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466382.shapeText;
+  return {
+    'textDirection': ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466383),
+    'autoFitType': ge(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466383),
+    'textWrap': fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466383),
+    'padding': ye(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466382)
+  };
+}
+function Ce(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466386, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466388 = Se(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466386),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466389 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387.textDirection ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466388.textDirection,
+    var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB121 = {
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466386.shapeText ?? {
+        'isHorizontal': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466389 === "horz"
+      }),
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387.textDirection === undefined ? null : {
+        'textDirection': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466389,
+        'isHorizontal': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466389 === 'horz'
+      }),
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387.autoFitType === undefined ? null : {
+        'autoFitType': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387.autoFitType
+      }),
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387.textWrap === undefined ? null : {
+        'textWrap': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387.textWrap
+      })
+    };
+  return {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466386,
+    'shapeText': var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB121,
+    ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387.padding === undefined ? null : {
+      'textRectPadding': {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466388.padding,
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466387.padding
+      }
+    })
+  };
+}
+export { Se as resolveShapeTextBoxOptions, Ce as applyShapeTextBoxOptions };

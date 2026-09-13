@@ -1,0 +1,48 @@
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartResourceRuntimeService, DEFAULT_CHART_RESOURCE_HEADER_ROW, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, UniverChartPlugin, buildChartDataSetFromValues, buildChartPreviewData, buildOrientedChartDataSet, chartConfigInterpreter, describeChartModel, isInlineChartDataSource, isReferencedChartDataSource, toChartCreateConfigSnapshot, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, PositionedObjectLayoutType, Tools, UniverInstanceType, WrapTextType, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { IDocDrawingAdapterService, IDocDrawingService, InsertDocDrawingCommand, SetDocDrawingArrangeCommand, UniverDocsDrawingPlugin } from "@univerjs/docs-drawing";
+import { filter, firstValueFrom } from "rxjs";
+import { RichTextEditingMutation, buildDocTransform, normalizeTextRange } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { P } from "./docs-chart-remove-doc-chart-data-source.js";
+const Ue = {
+  id: "doc.command.update-doc-chart-snapshot",
+  type: CommandType.COMMAND,
+  handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46531) => {
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46531) return false;
+    let {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532,
+        chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533,
+        patch: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46531,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46535 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530.get(ChartResourceRepository).getChart(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46535) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530.get(ICommandService),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530.get(IUndoRedoService),
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB44 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532,
+        chart: {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46535,
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534
+        }
+      },
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB45 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532,
+        chart: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46535
+      },
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28 = [{
+        id: P.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB44
+      }],
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A29 = [{
+        id: P.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB45
+      }];
+    return sequenceExecute(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536).result ? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537.pushUndoRedo({
+      unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532,
+      undoMutations: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A29,
+      redoMutations: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28
+    }), true) : false;
+  }
+};
+export { Ue as UpdateDocChartSnapshotCommand };

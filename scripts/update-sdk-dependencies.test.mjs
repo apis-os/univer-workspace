@@ -88,6 +88,26 @@ test("aligns SDK dependencies and preserves independent and workspace versions",
   assert.equal(manifest.dependencies.react, "^19.0.0");
 });
 
+test("preserves file: vendor specifiers when aligning SDK versions", () => {
+  const manifest = {
+    name: "consumer",
+    dependencies: {
+      "@univerjs/core": "file:../../vendor/univer/core",
+      "@univerjs-pro/license": "file:../../vendor/univer-pro/license",
+      "@univer-cli/config": "file:../../vendor/univer-cli/config",
+    },
+  };
+  const changed = alignManifestSdkDependencies(
+    manifest,
+    "1.0.0-insiders.new",
+    new Set()
+  );
+  assert.equal(changed, 0);
+  assert.equal(manifest.dependencies["@univerjs/core"], "file:../../vendor/univer/core");
+  assert.equal(manifest.dependencies["@univerjs-pro/license"], "file:../../vendor/univer-pro/license");
+  assert.equal(manifest.dependencies["@univer-cli/config"], "file:../../vendor/univer-cli/config");
+});
+
 test("rejects non-exact CLI SDK dependency versions", () => {
   const manifest = {
     name: "consumer",

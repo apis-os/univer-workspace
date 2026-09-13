@@ -1,0 +1,211 @@
+//#region src/locale/sk-SK.ts
+const locale = { "docs-ui": {
+	objectPermission: {
+		paragraphPermission: "Oprávnenia",
+		title: "Oprávnenia",
+		paragraph: "Odsek",
+		section: "Sekcia"
+	},
+	layout: {
+		progress: "Rozkladá sa dokument…",
+		recovering: "Obnovuje sa rozloženie dokumentu…"
+	},
+	toolbar: {
+		font: "Písmo",
+		fontSize: "Veľkosť písma",
+		bold: "Tučné",
+		italic: "Kurzíva",
+		strikethrough: "Prečiarknuté",
+		subscript: "Dolný index",
+		superscript: "Horný index",
+		underline: "Podčiarknutie",
+		textColor: { main: "Farba textu" },
+		fillColor: { main: "Farba pozadia textu" },
+		table: {
+			main: "Tabuľka",
+			insert: "Vložiť tabuľku",
+			colCount: "Počet stĺpcov",
+			rowCount: "Počet riadkov"
+		},
+		resetColor: "Obnoviť",
+		order: "Číslovaný zoznam",
+		unorder: "Odrážkový zoznam",
+		checklist: "Zoznam úloh",
+		alignLeft: "Zarovnať doľava",
+		alignCenter: "Zarovnať na stred",
+		alignRight: "Zarovnať doprava",
+		alignJustify: "Zarovnať do bloku",
+		horizontalLine: "Vodorovná čiara",
+		headerFooter: "Hlavička a päta",
+		pageSetup: "Nastavenie stránky",
+		breaks: "Zlomy",
+		columnBreak: "Zlom stĺpca",
+		sectionBreakNextPage: "Zlom sekcie (Nasledujúca strana)",
+		sectionBreakContinuous: "Zlom sekcie (Priebežný)",
+		sectionBreakNextColumn: "Zlom sekcie (Nasledujúci stĺpec)",
+		sectionBreakEvenPage: "Zlom sekcie (Párna strana)",
+		sectionBreakOddPage: "Zlom sekcie (Nepárna strana)",
+		heading: {
+			tooltip: "Nadpis",
+			normal: "Normálny text",
+			leading1: "Nadpis 1",
+			leading2: "Nadpis 2",
+			leading3: "Nadpis 3",
+			leading4: "Nadpis 4",
+			leading5: "Nadpis 5",
+			title: "Názov",
+			subTitle: "Podnadpis"
+		}
+	},
+	table: {
+		insert: "Vložiť",
+		insertRowAbove: "Vložiť riadok nad",
+		insertRowBelow: "Vložiť riadok pod",
+		insertColumnLeft: "Vložiť stĺpec vľavo",
+		insertColumnRight: "Vložiť stĺpec vpravo",
+		delete: "Odstrániť tabuľku",
+		deleteRows: "Odstrániť riadok",
+		deleteColumns: "Odstrániť stĺpec",
+		deleteTable: "Odstrániť tabuľku"
+	},
+	headerFooter: {
+		linkToPrevious: "Prepojiť s predchádzajúcim",
+		header: "Hlavička",
+		footer: "Päta",
+		panel: "Nastavenia hlavičky a päty",
+		firstPageCheckBox: "Iná prvá strana",
+		oddEvenCheckBox: "Iné párne a nepárne strany",
+		headerTopMargin: "Horný okraj hlavičky (px)",
+		footerBottomMargin: "Dolný okraj päty (px)",
+		closeHeaderFooter: "Zavrieť hlavičku a pätu",
+		disableText: "Nastavenia hlavičky a päty sú vypnuté"
+	},
+	statistics: {
+		title: "Štatistika dokumentu",
+		open: "Zobraziť štatistiku dokumentu",
+		document: "Celý dokument",
+		selection: "Aktuálny výber",
+		wordCount: "Počet slov: {0}",
+		selectedWords: "Počet slov: {0} z {1}",
+		pages: "Strany",
+		words: "Slová",
+		charactersWithoutSpaces: "Znaky (bez medzier)",
+		charactersWithSpaces: "Znaky (s medzerami)",
+		paragraphs: "Odseky",
+		lines: "Riadky",
+		nonAsianWords: "Neázijské slová",
+		asianCharactersAndKoreanWords: "Ázijské znaky a kórejské slová"
+	},
+	placeholder: {
+		heading1: "Nadpis 1",
+		heading2: "Nadpis 2",
+		heading3: "Nadpis 3",
+		heading4: "Nadpis 4",
+		heading5: "Nadpis 5",
+		normalText: "Zadajte text alebo stlačte „/“ pre príkazy",
+		listItem: "Položka"
+	},
+	doc: {
+		blockMenu: { dragBlock: "Potiahnuť blok" },
+		menu: {
+			paragraphSetting: "Nastavenia odseku",
+			sectionSetting: "Nastavenia sekcie"
+		},
+		slider: {
+			paragraphSetting: "Nastavenia odseku",
+			sectionSetting: "Nastavenia sekcie"
+		},
+		paragraphSetting: {
+			alignment: "Zarovnanie",
+			indentation: "Odsadenie",
+			left: "Vľavo",
+			right: "Vpravo",
+			firstLine: "Prvý riadok",
+			hanging: "Predsadenie",
+			spacing: "Medzery",
+			before: "Pred",
+			after: "Za",
+			lineSpace: "Riadkovanie",
+			multiSpace: "Viacnásobné",
+			atLeast: "Najmenej (px)",
+			exactly: "Presne (px)"
+		},
+		sectionSetting: {
+			selectedSections: "Vybraté sekcie: {0}",
+			multipleValues: "Viaceré hodnoty",
+			columnCount: "Počet stĺpcov",
+			columnGap: "Medzera medzi stĺpcami",
+			columnSeparator: "Oddeľovač",
+			none: "Žiadny",
+			betweenColumns: "Medzi stĺpcami",
+			sectionStart: "Začiatok sekcie",
+			unspecified: "Neurčené",
+			continuous: "Priebežne",
+			nextColumn: "Nasledujúci stĺpec",
+			nextPage: "Nasledujúca strana",
+			evenPage: "Párna strana",
+			oddPage: "Nepárna strana",
+			pageSetup: "Nastavenie strany",
+			pageWidth: "Šírka strany",
+			pageHeight: "Výška strany",
+			pageNumberStart: "Počiatočné číslo strany"
+		}
+	},
+	rightClick: {
+		copy: "Kopírovať",
+		cut: "Vystrihnúť",
+		paste: "Prilepiť",
+		delete: "Odstrániť",
+		bulletList: "Odrážkový zoznam",
+		orderList: "Číslovaný zoznam",
+		checkList: "Zoznam úloh",
+		insertBellow: "Vložiť pod"
+	},
+	paragraphMenu: {
+		alignAndIndent: "Zarovnanie a odsadenie",
+		align: "Zarovnanie",
+		indent: "Odsadenie",
+		color: "Farby",
+		increase: "Zväčšiť",
+		decrease: "Zmenšiť",
+		increaseIndent: "Zväčšiť odsadenie",
+		decreaseIndent: "Zmenšiť odsadenie",
+		defaultTextColor: "Predvolená farba textu",
+		noBackground: "Bez pozadia"
+	},
+	"page-settings": {
+		"document-setting": "Nastavenia dokumentu",
+		"modern-width": "Šírka obsahu",
+		"modern-width-narrow": "Úzka",
+		"modern-width-medium": "Stredná",
+		"modern-width-wide": "Široká",
+		"paper-size": "Veľkosť papiera",
+		"page-size": {
+			main: "Veľkosť papiera",
+			a4: "A4",
+			a3: "A3",
+			a5: "A5",
+			b4: "B4",
+			b5: "B5",
+			letter: "Letter",
+			legal: "Legal",
+			tabloid: "Tabloid",
+			statement: "Statement",
+			executive: "Executive",
+			folio: "Folio"
+		},
+		orientation: "Orientácia",
+		portrait: "Na výšku",
+		landscape: "Na šírku",
+		"custom-paper-size": "Vlastná veľkosť papiera",
+		top: "Hore",
+		bottom: "Dole",
+		left: "Vľavo",
+		right: "Vpravo",
+		cancel: "Zrušiť",
+		confirm: "Potvrdiť"
+	}
+} };
+
+//#endregion
+export { locale as default };

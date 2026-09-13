@@ -1,0 +1,131 @@
+import { FConnectorShape, FShape } from '@univerjs-pro/engine-shape/facade';
+import { AddSlideElementCommand, AddSlidePageCommand, CancelSlideGroupMutation, MoveSlidePageCommand, PageElementTypeEnum, PageTypeEnum, PlaceholderTypeEnum, RemoveSlideElementCommand, RemoveSlidePageCommand, SLIDE_INSERT_DEFAULT_SIZE, SLIDE_MASTER_VIEW_PERMISSION_OBJECT_ID, SetActiveSlideCommand, SetPresentationBackgroundGraphicsCommand, SetSlideGroupMutation, SetSlideNameCommand, SetSlidePageSizeCommand, SetSlidePermissionCommand, SetSlideSpeakerNotesCommand, SetSlideTransitionCommand, SlideBackgroundTypeEnum, SlidePageSizePresetEnum, SlidePresentationBackgroundGraphicFitEnum, SlidePresentationBackgroundGraphicsTargetEnum, SlideTransitionDirectionEnum, SlideTransitionSpeedEnum, SlideTransitionTypeEnum, UpdateSlideDrawingCommand, UpdateSlidePageBackgroundCommand, applySlideElementTextDocument, canEditSlideTargets, getPresentationBackgroundGraphics, getSlideElementPermissionObjectId, getSlidePagePermissionObjectId, getSlidePermissionValue, resolvePresentationBackgroundTargetMasterIds, resolveSlideElementTextDocument, resolveSlideTransition } from '@univerjs-pro/slides';
+import { FBase, FBaseInitialable, FEnum, FUniver } from '@univerjs/core/facade';
+import { ICommandService, IPermissionService, IResourceLoaderService, IUniverInstanceService, Inject, Injector, RichTextValue, Tools, UniverInstanceType, generateRandomId } from '@univerjs/core';
+import { IShapeHostAdapterRegistry, ShapeTypeEnum, createSmartArtDataFromLayout, isConnectorShape } from '@univerjs-pro/engine-shape';
+import { UnitAction } from '@univerjs/protocol';
+import { K } from "./facade-slides-fpage-element.js";
+import { q } from "./facade-slides-fgroup.js";
+import { X } from "./facade-slides-fimage.js";
+import { Q } from "./facade-slides-fslide.js";
+import { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46447 } from "./facade-slides-fpresentation.js";
+var ge = class extends FEnum {
+  get SlidePageTypeEnum() {
+    return PageTypeEnum;
+  }
+  get SlidePageElementTypeEnum() {
+    return PageElementTypeEnum;
+  }
+  get SlidePageSizePresetEnum() {
+    return SlidePageSizePresetEnum;
+  }
+  get SlidePresentationBackgroundGraphicFitEnum() {
+    return SlidePresentationBackgroundGraphicFitEnum;
+  }
+  get SlidePresentationBackgroundGraphicsTargetEnum() {
+    return SlidePresentationBackgroundGraphicsTargetEnum;
+  }
+  get SlideTransitionTypeEnum() {
+    return SlideTransitionTypeEnum;
+  }
+  get SlideTransitionDirectionEnum() {
+    return SlideTransitionDirectionEnum;
+  }
+  get SlideTransitionSpeedEnum() {
+    return SlideTransitionSpeedEnum;
+  }
+  get SlideBackgroundTypeEnum() {
+    return SlideBackgroundTypeEnum;
+  }
+  get SlidePlaceholderTypeEnum() {
+    return PlaceholderTypeEnum;
+  }
+};
+FEnum.extend(ge);
+function W(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408) {
+  return function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407);
+  };
+}
+;
+function G(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46411, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46413, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415 = arguments.length,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414 === null ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414 = Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46413) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416 = Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46411, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46413, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414);else {
+    for (var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46411.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 >= 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4--) (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46411[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4]) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415 > 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46413, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46413)) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416);
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415 > 3 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416 && Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46413, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416;
+}
+K = G([W(5, ICommandService), W(6, IPermissionService)], K);
+q = G([W(5, ICommandService), W(6, IPermissionService)], q);
+function J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425) {
+  '@babel/helpers - typeof';
+
+  return J = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123 && typeof Symbol == 'function' && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123 !== Symbol.prototype ? 'symbol' : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123;
+  }, J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425);
+}
+;
+function fn_L0_core_endo_routine_pure_O1_zalloc_throws_TypeError_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46428) {
+  if (J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427) != 'object' || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46429 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46429 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46430 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46429.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46428 || "default");
+    if (J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46430) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46430;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46428 === 'string' ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427);
+}
+;
+function ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46435) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46436 = fn_L0_core_endo_routine_pure_O1_zalloc_throws_TypeError_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46435, "string");
+  return J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46436) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46436 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46436 + '';
+}
+;
+function Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46439, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46440, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46441) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46440 = ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46440)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46439 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46439, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46440, {
+    'value': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46441,
+    'enumerable': true,
+    'configurable': true,
+    'writable': true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46439[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46440] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46441, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46439;
+}
+X = G([W(5, ICommandService), W(6, IPermissionService)], X);
+Q = G([W(3, Inject(Injector)), W(4, ICommandService), W(5, IPermissionService)], Q);
+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46447 = G([W(1, Inject(Injector)), W(2, IResourceLoaderService), W(3, ICommandService), W(4, IPermissionService)], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46447);
+var be = class extends FUniver {
+  createPresentation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46381 = {}, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46382) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46383 = this._injector["get"](IUniverInstanceService).createUnit(UniverInstanceType.UNIVER_SLIDE, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46381, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46382);
+    return this._injector['createInstance'](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46447, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46383);
+  }
+  getActivePresentation() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387 = this._injector['get'](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SLIDE);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387 ? this._injector["createInstance"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46447, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387) : null;
+  }
+  getPresentation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390 = this._injector["get"](IUniverInstanceService).getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389, UniverInstanceType.UNIVER_SLIDE);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390 ? this._injector["createInstance"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46447, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390) : null;
+  }
+  getSlideCommandTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393 = {}) {
+    let {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395,
+        slideId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394 ? this.getPresentation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394) : this.getActivePresentation();
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397) return null;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.getSlideById(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.getActiveSlide();
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399 ? {
+      'presentation': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397,
+      'slide': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399,
+      'unitId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.getId(),
+      'subUnitId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399.getId()
+    } : null;
+  }
+};
+FUniver.extend(be);
+export { Y };

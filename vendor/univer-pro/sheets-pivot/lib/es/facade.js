@@ -1,0 +1,1342 @@
+import { DataFieldManager, PivotCallbackEnum, PivotCellStyleTypeEnum, PivotDataFieldDataTypeEnum, PivotDataFieldSortOperatorEnum, PivotDataFieldSortTypeEnum, PivotDataFieldTypeEnum, PivotDateGroupFieldDateSystemEnum, PivotDateGroupFieldDateTypeEnum, PivotFilterTypeEnum, PivotLayoutTypeEnum, PivotShowAsBaseItemTypeEnum, PivotShowAsTypeEnum, PivotSubtotalPositionEnum, PivotSubtotalTypeEnum, PivotTable, PivotTableChangeTypeEnum, PivotTableFiledAreaEnum, PivotTableValuePositionEnum, PivotViewCellValueTypeEnum, ST_PivotFilterOperatorEnum, generateHexNumber, isValueFilterOperator } from "@univerjs-pro/engine-pivot";
+import { AddPivotFieldCommand, AddPivotTableCommand, AddPivotTableWithConfigCommand, MovePivotFieldCommand, MovePivotTableCommand, PivotDrillDownCommand, PositionType, RemovePivotFieldCommand, RemovePivotTableCommand, RemovePivotTableMutation, ResetPivotFieldsConfigCommand, SetPivotCollapseCommand, SetPivotDateGroupCommand, SetPivotFieldsConfigCommand, SetPivotFilterCommand, SetPivotLayoutCommand, SetPivotOptionCommand, SetPivotSortCommand, SetPivotValueFilterCommand, SheetsPivotTableAdaptorModel, SheetsPivotTableConfigModel, UpdatePivotFieldSettingCommand, UpdatePivotTableSourceRangeCommand, UpdatePivotValuePositionCommand, unionPivotViewRange } from "@univerjs-pro/sheets-pivot";
+import { DateSystem, DisposableCollection, ICommandService, IUniverInstanceService, LifecycleService, LifecycleStages, LocaleService, LocaleType, excelDateTimeSerial, numfmt } from "@univerjs/core";
+import { FWorkbook, FWorksheet } from "@univerjs/sheets/facade";
+import { FEnum, FEventName, FUniver } from "@univerjs/core/facade";
+import { auditTime } from "rxjs";
+function q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661) {
+  "@babel/helpers - typeof";
+
+  return q = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187;
+  }, q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661);
+}
+function fn_L0_core_endo_routine_pure_O1_zalloc_throws_TypeError_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664) {
+  if (q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46665 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46665 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46666 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46665.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664 || "default");
+    if (q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46666) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46666;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663);
+}
+function ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46671) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46672 = fn_L0_core_endo_routine_pure_O1_zalloc_throws_TypeError_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46671, "string");
+  return q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46672) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46672 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46672 + "";
+}
+function J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46675, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46677) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676 = ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46675 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46675, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46677,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46675[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46677, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46675;
+}
+const Y = {
+  type: PivotShowAsTypeEnum.normal,
+  baseFieldId: "",
+  baseItem: ""
+};
+function X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46681) {
+  return {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46681,
+    expected: Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46681.expected) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46681.expected["concat"]() : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46681.expected
+  };
+}
+var Z = class {
+    constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192) {
+      J(this, "unitId", undefined), J(this, "subUnitId", undefined), J(this, "pivotTableId", undefined), J(this, "_injector", undefined), this.unitId = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189, this.subUnitId = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190, this.pivotTableId = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192;
+    }
+    getConfig() {
+      return this._injector["get"](SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId);
+    }
+    getId() {
+      return this.pivotTableId;
+    }
+    getSourceRangeInfo() {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197 = this.getConfig()) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197.sourceRangeInfo;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198) return {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198,
+        range: {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46198.range
+        }
+      };
+    }
+    getTargetCellInfo() {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201 = this.getConfig()) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.targetCellInfo;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202) return {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202
+      };
+    }
+    getOptions() {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205 = this.getConfig()) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.fieldsConfig["options"];
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206) return {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206
+      };
+    }
+    getLayout() {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209 = this.getConfig()) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209.fieldsConfig;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210.layout ?? PivotLayoutTypeEnum.tabular;
+    }
+    getPivotTableMatrixInfo() {
+      return this._injector["get"](SheetsPivotTableConfigModel).getPivotTableMatrixInfo(this.unitId, this.subUnitId, this.pivotTableId);
+    }
+    setFieldsConfig(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214 = this._injector["get"](ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB9 = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          pivotTableId: this.pivotTableId,
+          pivotTableConfig: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.executeCommand(SetPivotFieldsConfigCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB9);
+    }
+    setOptions(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46217) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46218 = this._injector["get"](ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB11 = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          pivotTableId: this.pivotTableId,
+          options: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46217
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46218.executeCommand(SetPivotOptionCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB11);
+    }
+    setLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222 = this._injector["get"](ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB13 = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          pivotTableId: this.pivotTableId,
+          layout: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222.executeCommand(SetPivotLayoutCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB13);
+    }
+    setSourceRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46225) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46226 = this._injector["get"](ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB15 = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          token: this.pivotTableId,
+          dataRangeInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46225
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46226.executeCommand(UpdatePivotTableSourceRangeCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB15);
+    }
+    updateSourceRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229) {
+      return this.setSourceRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229);
+    }
+    reset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232 = this._injector["get"](ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB17 = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          pivotTableId: this.pivotTableId,
+          resetArea: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232.executeCommand(ResetPivotFieldsConfigCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB17);
+    }
+    getPivotTableId() {
+      return this.pivotTableId;
+    }
+    getFieldSetting(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46236 = this._injector["get"](SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46236 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46236.fieldsConfig;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237.dimension[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235] || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237.measure[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235];
+    }
+    getSourceFieldsInfo() {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46242 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46243 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46244 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241.get(SheetsPivotTableConfigModel).getCollection(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46242, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46243);
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46244) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4666 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46244.fieldIds,
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4667 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46244.fields,
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4668 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46244.displayNameRecord,
+          var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A2 = [];
+        for (let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 of var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4666) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4667[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629];
+          if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613) {
+            let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB1 = {
+              id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629,
+              name: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.name,
+              fieldDataType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.fieldDataType
+            };
+            var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4668 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4668[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629] !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB1.displayName = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4668[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629]), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A2.push(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB1);
+          }
+        }
+        return var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A2;
+      }
+      return [];
+    }
+    getValueFilter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46249) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46250;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251 = this._injector["get"](SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251.fieldsConfig["valueFilter"],
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46250 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669.fieldId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46249)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46250.filterInfo;
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253 ? X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253) : undefined;
+    }
+    getValueFilters() {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259 = this._injector["get"](SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259.fieldsConfig["valueFilter"];
+      return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260.map(({
+        fieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670,
+        filterInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671
+      }) => ({
+        fieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670,
+        filterInfo: X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671)
+      }))) || [];
+    }
+    getFieldIdsByArea(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46264 = this._injector["get"](SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46264 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46264.fieldsConfig;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265) switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263) {
+        case PivotTableFiledAreaEnum.Column:
+          return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265.columnFields["concat"]();
+        case PivotTableFiledAreaEnum.Row:
+          return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265.rowFields["concat"]();
+        case PivotTableFiledAreaEnum.Value:
+          return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265.valueFields["concat"]();
+        case PivotTableFiledAreaEnum.Filter:
+          return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265.filterFields["concat"]();
+        case PivotTableFiledAreaEnum.Hidden:
+          return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265.hiddenFields["concat"]();
+      }
+      return [];
+    }
+    getPivotTableRangeInfo() {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269 = this._injector["get"](SheetsPivotTableConfigModel).getPivotTableRangeInfo(this.unitId, this.subUnitId, this.pivotTableId)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269.rangeInfo;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270) return unionPivotViewRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270);
+    }
+    async remove() {
+      return this._injector["get"](ICommandService).executeCommand(RemovePivotTableCommand.id, {
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        pivotTableId: this.pivotTableId
+      });
+    }
+    async addField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46273, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46276 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46278 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46276.get(ICommandService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46276.get(SheetsPivotTableConfigModel),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281.getPivotTableConfig(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46278, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46283 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281.getCollection(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46283) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46284 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46273;
+      typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46284 == "number" && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46284 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281.getCollection(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279).fieldIds[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46273]);
+      let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB19 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46278,
+        pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279,
+        dataFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46284,
+        fieldArea: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274,
+        index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275
+      };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280.executeCommand(AddPivotFieldCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB19);
+    }
+    async removeField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46297) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46298 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46300 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46301 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46302 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46298.get(ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB21 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46300,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46301,
+          fieldIds: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46297
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46302.executeCommand(RemovePivotFieldCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB21);
+    }
+    async updateFieldPosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46310, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46311) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46313 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.get(ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB23 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46313,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315,
+          fieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309,
+          area: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46310,
+          index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46311
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316.executeCommand(MovePivotFieldCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB23);
+    }
+    async updateValuePosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46326) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46328 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46329 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46330 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46331 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327.get(ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46328,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46329,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46330,
+          position: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325,
+          index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46326
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46331.executeCommand(UpdatePivotValuePositionCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25);
+    }
+    async setSubtotalType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46339, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46340) {
+      return this.setFieldSetting(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46339, {
+        subtotalType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46340
+      });
+    }
+    async setFieldSetting(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46343, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46347 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46348 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346.get(ICommandService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351 = this._getPivotPanelTableFieldInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46343),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46352 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351 ? this._getPivotPanelSourceFieldInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351.dataFieldId) : undefined;
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46352 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344.showDataAs !== undefined && !((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345 = this.getConfig()) != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.fieldsConfig["measure"][var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46343])) return console.warn("[Pivot Table]: The pivot table field info is invalid"), false;
+      let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB27 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46347,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46348,
+        pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349,
+        tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46343,
+        displayName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344.displayName,
+        format: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344.format,
+        subtotalType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344.subtotalType,
+        showDataAs: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344.showDataAs === undefined ? undefined : {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344.showDataAs
+        },
+        tableFieldInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351,
+        dataFieldInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46352
+      };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350.executeCommand(UpdatePivotFieldSettingCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB27);
+    }
+    getShowDataAs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46363) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365 = this.getFieldSetting(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46363);
+      if (!(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365 || !("subtotal" in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365))) return ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365.showDataAs) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364.type) === undefined ? {
+        ...Y
+      } : {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365.showDataAs
+      };
+    }
+    setShowDataAs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46370) {
+      return this.setFieldSetting(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369, {
+        showDataAs: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46370
+      });
+    }
+    resetShowDataAs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46373) {
+      return this.setShowDataAs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46373, {
+        ...Y
+      });
+    }
+    async setLabelSort(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46376) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46379 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46380 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46381 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377.get(ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB29 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46378,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46379,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46380,
+          info: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46376
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46381.executeCommand(SetPivotSortCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB29);
+    }
+    async clearLabelSort(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389) {
+      return this._injector["get"](ICommandService).executeCommand(SetPivotSortCommand.id, {
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        pivotTableId: this.pivotTableId,
+        tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389,
+        info: undefined
+      });
+    }
+    async setLabelManualFilter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394.get(ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB31 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391,
+          items: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392,
+          isAll: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.executeCommand(SetPivotFilterCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB31);
+    }
+    async setValueFilter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46411 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46413 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409 = this.getConfig()) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409.fieldsConfig,
+        var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2 = !!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414.rowFields["includes"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414.columnFields["includes"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407)));
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414 || !var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408 !== undefined && (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414.measure[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408.valueFieldId] || !isValueFilterOperator(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408.operator))) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410.get(ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB33 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46411,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46412,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46413,
+          fieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46407,
+          valueFilterInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408 ? X({
+            ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408,
+            type: PivotFilterTypeEnum.ValueFilter
+          }) : undefined
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415.executeCommand(SetPivotValueFilterCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB33);
+    }
+    clearValueFilter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425) {
+      return this.setValueFilter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425, undefined);
+    }
+    async renameField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46428) {
+      return this.setFieldSetting(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46427, {
+        displayName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46428
+      });
+    }
+    async move(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46431, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46432, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46433) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46434 = this._injector["get"](ICommandService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46435 = this._injector["get"](IUniverInstanceService).getUnit(this.unitId),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46436 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46435 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46435.getSheetBySheetName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46431);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46435 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46436) throw Error("[Pivot Table]: Target sheet is not valid");
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46434.executeCommand(MovePivotTableCommand.id, {
+        pivotTableId: this.pivotTableId,
+        targetCellInfo: {
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46436.getSheetId(),
+          unitId: this.unitId,
+          row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46432,
+          col: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46433
+        },
+        originTargetInfo: {
+          subUnitId: this.subUnitId,
+          unitId: this.unitId
+        }
+      });
+    }
+    async setDateGroupType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46443, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46444) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46445 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46446 = this.unitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46447 = this.subUnitId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46448 = this.pivotTableId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46449 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46445.get(ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB35 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46446,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46447,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46448,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46443,
+          dateType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46444
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46449.executeCommand(SetPivotDateGroupCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB35);
+    }
+    async setCellCollapse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459) {
+      return this._isCellInCurrentPivotTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458) ? this._injector["get"](ICommandService).executeCommand(SetPivotCollapseCommand.id, {
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457,
+        col: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,
+        collapse: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459
+      }) : false;
+    }
+    async drillDown(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464) {
+      return this._isCellInCurrentPivotTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464) ? this._injector["get"](ICommandService).executeCommand(PivotDrillDownCommand.id, {
+        row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463,
+        col: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464
+      }) : false;
+    }
+    _getPivotPanelTableFieldInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468 = this.getConfig(),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468.fieldsConfig["dimension"][var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467]) || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468.fieldsConfig["measure"][var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467]);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469) return;
+      let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB37 = {
+        tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467,
+        displayName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469.displayName,
+        dataFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469.dataFieldId,
+        format: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469.format
+      };
+      return "subtotal" in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469 && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB37.subTotalType = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469.subtotal, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB37.showDataAs = {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469.showDataAs
+      }), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB37;
+    }
+    _getPivotPanelSourceFieldInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46473) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46474;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475 = this._injector["get"](SheetsPivotTableConfigModel).getCollection(this.unitId, this.pivotTableId),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46476 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475.fields[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46473]) || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475.customFields["find"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4672 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4672.id === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46473));
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46476) return {
+        id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46476.id,
+        dataFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46476.id,
+        name: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46474 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475.displayNameRecord) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46474[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46476.id]) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46476.name,
+        type: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46476.fieldDataType,
+        checked: this._isDataFieldUsed(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46476.id),
+        pivotTableId: this.pivotTableId
+      };
+    }
+    _isDataFieldUsed(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46481) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46482 = this.getConfig();
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46482 ? Object.values(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46482.fieldsConfig["dimension"]).some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673.dataFieldId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46481) || Object.values(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46482.fieldsConfig["measure"]).some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674.dataFieldId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46481) : false;
+    }
+    _isCellInCurrentPivotTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46485, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46486) {
+      return this._injector["get"](SheetsPivotTableAdaptorModel).getPivotTableIdByCell(this.unitId, this.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46485, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46486) === this.pivotTableId;
+    }
+  },
+  ye = class extends FWorkbook {
+    async addPivotTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46489, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46490, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46491) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46492 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46493 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46492.get(ICommandService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46494 = generateHexNumber(8),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB39 = {
+          positionType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46490,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46494,
+          pivotTableConfig: {
+            targetCellInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46491,
+            sourceRangeInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46489,
+            isEmpty: true
+          }
+        };
+      if (await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46493.executeCommand(AddPivotTableCommand.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB39)) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46492.get(SheetsPivotTableConfigModel);
+        if (await this._waitForPivotTableReady(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46491.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46491.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46494)) return new Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46491.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46491.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46494, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46492);
+      }
+    }
+    _waitForPivotTableReady(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46501, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46502, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46503, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46504) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46505 = () => !!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46501.getPivotTableConfig(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46502, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46503, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46504) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46501.getCollection(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46502, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46504));
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46505() ? Promise.resolve(true) : new Promise(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676 => {
+        let var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = false,
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677,
+          var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3 = [],
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4678 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 => {
+            var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A || (var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = true, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677 && clearTimeout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614.unsubscribe()), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630));
+          },
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679 = () => {
+            var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46505() && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4678(true);
+          };
+        var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3 = [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46501.pivotConfigChange$["subscribe"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46501.configVersion$["subscribe"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679)], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677 = setTimeout(() => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4678(false), 10000), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679();
+      });
+    }
+    getPivotTableByCell(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46513, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515.get(SheetsPivotTableAdaptorModel).getPivotTableIdByCell(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46513, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514);
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516) return new Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515);
+    }
+    getPivotTableById(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524 = this._injector,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46525 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524.get(SheetsPivotTableConfigModel).getTargetByPivotTableId(this.getId(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523);
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46525) return new Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46525.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46525.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524);
+    }
+  };
+FWorkbook.extend(ye);
+var be = class extends FWorksheet {
+  getPivotTableByCell(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46529, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46531 = this._injector,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46531.get(SheetsPivotTableAdaptorModel),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533 = this._workbook["getUnitId"](),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534 = this.getSheetId(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46535 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.getPivotTableIdByCell(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46529, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530);
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46535) return new Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46535, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46531);
+  }
+};
+FWorksheet.extend(be);
+var Q = class extends FEnum {
+  get PivotSubtotalTypeEnum() {
+    return PivotSubtotalTypeEnum;
+  }
+  get PivotFilterTypeEnum() {
+    return PivotFilterTypeEnum;
+  }
+  get PivotTableFiledAreaEnum() {
+    return PivotTableFiledAreaEnum;
+  }
+  get PivotTableValuePositionEnum() {
+    return PivotTableValuePositionEnum;
+  }
+  get PivotDataFieldDataTypeEnum() {
+    return PivotDataFieldDataTypeEnum;
+  }
+  get PivotDataFieldSortTypeEnum() {
+    return PivotDataFieldSortTypeEnum;
+  }
+  get PivotDataFieldSortOperatorEnum() {
+    return PivotDataFieldSortOperatorEnum;
+  }
+  get PivotFilterOperatorEnum() {
+    return ST_PivotFilterOperatorEnum;
+  }
+  get PositionTypeEnum() {
+    return PositionType;
+  }
+  get PivotTableChangeTypeEnum() {
+    return PivotTableChangeTypeEnum;
+  }
+  get PivotDateGroupFieldDateTypeEnum() {
+    return PivotDateGroupFieldDateTypeEnum;
+  }
+  get PivotShowAsTypeEnum() {
+    return PivotShowAsTypeEnum;
+  }
+  get PivotShowAsBaseItemTypeEnum() {
+    return PivotShowAsBaseItemTypeEnum;
+  }
+  get PivotLayoutTypeEnum() {
+    return PivotLayoutTypeEnum;
+  }
+  get PivotSubtotalPositionEnum() {
+    return PivotSubtotalPositionEnum;
+  }
+  get PivotCallbackEnum() {
+    return PivotCallbackEnum;
+  }
+  get PivotDataFieldTypeEnum() {
+    return PivotDataFieldTypeEnum;
+  }
+  get PivotDateGroupFieldDateSystemEnum() {
+    return PivotDateGroupFieldDateSystemEnum;
+  }
+  get PivotCellStyleTypeEnum() {
+    return PivotCellStyleTypeEnum;
+  }
+  get PivotViewCellValueTypeEnum() {
+    return PivotViewCellValueTypeEnum;
+  }
+};
+FEnum.extend(Q);
+var xe = class extends FEventName {
+  get PivotTableAdded() {
+    return "PivotTableAdded";
+  }
+  get BeforePivotTableAdd() {
+    return "BeforePivotTableAdd";
+  }
+  get PivotTableRemoved() {
+    return "PivotTableRemoved";
+  }
+  get PivotTableMoved() {
+    return "PivotTableMoved";
+  }
+  get PivotTableRendered() {
+    return "PivotTableRendered";
+  }
+  get PivotTableFieldAdded() {
+    return "PivotTableFieldAdded";
+  }
+  get PivotTableFieldRemoved() {
+    return "PivotTableFieldRemoved";
+  }
+  get PivotTableFieldMoved() {
+    return "PivotTableFieldMoved";
+  }
+  get PivotTableFieldCollapseChanged() {
+    return "PivotTableFieldCollapseChanged";
+  }
+  get PivotTableFieldFilterChanged() {
+    return "PivotTableFieldFilterChanged";
+  }
+  get PivotTableFieldSortChanged() {
+    return "PivotTableFieldSortChanged";
+  }
+  get PivotTableFieldSettingChanged() {
+    return "PivotTableFieldSettingChanged";
+  }
+  get PivotTableValuePositionChanged() {
+    return "PivotTableValuePositionChanged";
+  }
+};
+FEventName.extend(xe);
+const var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4 = "YYYY-MM-DD";
+function Se(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46683, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46684 = DateSystem.Date1900) {
+  return excelDateTimeSerial(new Date(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46683), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46684);
+}
+function Ce(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46687, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46688, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46690) {
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6 = [],
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7 = [],
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8 = [],
+    {
+      showRowGrandTotal: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46691,
+      showRowSubTotal: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46692
+    } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46690,
+    {
+      cornerView: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46693,
+      colView: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694,
+      rowView: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695,
+      dataView: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46696,
+      formatMap: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46697
+    } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46688,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46693.getRowCount(),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46693.getColCount();
+  for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8++) for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D7 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D7 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D7++) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700;
+    let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB5 = {
+      ...((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46693.data) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46700[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D7])
+    };
+    var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB5.v && (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8] || (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8] = []), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8] || (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8] = []), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8][var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D7] = var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB5.v, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8][var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D7] = var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB5.v);
+  }
+  for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694.getRowCount(); var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9++) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46701;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46701 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694.headerMap) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46701 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46701[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46701.tableFieldId,
+      var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB3 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46697[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684] : "";
+    for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694.getColCount(); var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4++) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702;
+      let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 = {
+        ...((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694.data) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4])
+      };
+      if ((var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4.v) !== undefined) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 = var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB3 ? numfmt.format(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB3, Number(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4.v)) : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4.v;
+        (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4.s) === PivotCellStyleTypeEnum.Subtotal ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689 ? "小计 " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 : "Total " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 : (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4.s) === PivotCellStyleTypeEnum.GrandTotal && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689 ? "总计\x20" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 : "Grand Total " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467), (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4.t) === PivotViewCellValueTypeEnum.blank && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689 ? "（空白）" : "(blank)"), (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4.t) === PivotViewCellValueTypeEnum.other && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689 ? "（其他）" : "(other)"), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9] || (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9] = []), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9] || (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9] = []), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9][var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D9][var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467;
+      }
+    }
+  }
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 = 0,
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 = 0,
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14 = 0;
+  for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.getRowCount(); var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10++) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.info[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10];
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46692 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685.isBottomTotal && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685.level !== 0) {
+      var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14++, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 = 0;
+      continue;
+    }
+    if (!(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46691 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685.isBottomTotal && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685.level === 0)) {
+      for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.getColCount(); var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2++) {
+        var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46703, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46704;
+        let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 = {
+            ...((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46703 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.data) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46703 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46703[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46703[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2])
+          },
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46704 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.headerMap) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46704 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46704[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46704.tableFieldId,
+          var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB2 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46697[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468] : "";
+        if ((var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.v) !== undefined) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 = var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB2 ? numfmt.format(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB2, Number(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.v)) : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.v;
+          (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.s) === PivotCellStyleTypeEnum.Subtotal ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689 ? "小计 " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 : "Total " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 : (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.s) === PivotCellStyleTypeEnum.GrandTotal && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689 ? "总计 " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 : "Grand Total " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46), (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.t) === PivotViewCellValueTypeEnum.blank && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689 ? "（空白）" : "(blank)"), (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 == null ? undefined : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.t) === PivotViewCellValueTypeEnum.other && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46689 ? "（其他）" : "(other)"), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698] || (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698] = []);
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 = var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14];
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 = [...var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8], var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698] || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698] = []), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698][var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698][var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46;
+        }
+      }
+      var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12++, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.info[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10].isBottomTotal ? (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14++, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 = 0) : var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13++;
+    }
+  }
+  var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 = 0, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14 = 0, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 = 0;
+  for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46696.getRowCount(); var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11++) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.info[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11];
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46692 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686.isBottomTotal && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686.level !== 0) {
+      var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14++, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 = 0;
+      continue;
+    }
+    if (!(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46691 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686.isBottomTotal && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686.level === 0)) {
+      for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46696.getColCount(); var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3++) {
+        var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46705;
+        let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB3 = {
+          ...((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46705 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46696.data) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46705 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46705[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46705[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3])
+        };
+        if (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB3.v) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.info[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11].valueIndex,
+            var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694.info[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3].valueIndex,
+            var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D = Math.max(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463),
+            var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46687.getValueFields().concat(),
+            var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB = "";
+          var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D < 0 ? var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A[0] ?? "" : var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D] ?? "";
+          let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB1 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46697[var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB] ?? "";
+          var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698] || (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698] = []);
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464 = var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14];
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464 || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464 = [...var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A8], var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698] || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698] = []);
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465 = var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB1 ? numfmt.format(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB1, Number(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB3.v)) : var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB3.v;
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698][var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698][var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465;
+        }
+      }
+      var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12++, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.info[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D11].isBottomTotal ? (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14++, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 = 0) : var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13++;
+    }
+  }
+  return {
+    dataArr: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6,
+    dataArrWithSplit: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7
+  };
+}
+var we = class {
+    constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46543, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46544, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46545, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546) {
+      J(this, "_pivot", undefined), J(this, "_sourceData", undefined), J(this, "_injector", undefined), J(this, "_isZhCN", undefined), J(this, "_id", undefined), this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46543, this._pivot = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46544, this._sourceData = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46545, this._id = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46547 = this._injector["get"](LocaleService);
+      this._isZhCN = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46547.getCurrentLocale() === LocaleType.ZH_CN;
+    }
+    _getSourceIdByName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46553) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46554 = this._pivot["getDataFieldIdByDisplayName"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46553);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46554) throw Error("[PivotTable]: The field name " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46553 + " is not found in the pivot table.");
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46554;
+    }
+    addFieldWithName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46558) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46559 = this._getSourceIdByName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560 = this._pivot["addFieldWithSourceId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46559, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46558);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560) throw Error("[PivotTable]: add field " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557 + " failed.");
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46558 === PivotTableFiledAreaEnum.Value) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560.getId(),
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688 = this._pivot["getDataFieldByTableId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687);
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688.getFieldDataType();
+          this._pivot["setSubtotalType"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 === PivotDataFieldDataTypeEnum.number ? PivotSubtotalTypeEnum.sum : PivotSubtotalTypeEnum.count);
+        }
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689 = this._pivot["getValueIndex"](),
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690 = this._pivot["getValuePosition"](),
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691 = this._pivot["getFieldCountByArea"](PivotTableFiledAreaEnum.Value);
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689 === -1 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691 > 1) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690 === PivotTableValuePositionEnum.None ? PivotTableValuePositionEnum.Column : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690,
+            var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 === PivotTableValuePositionEnum.Row ? PivotTableFiledAreaEnum.Row : PivotTableFiledAreaEnum.Column;
+          this._pivot["updateValuePosition"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633, this._pivot["getFieldCountByArea"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634));
+        }
+      } else {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46558 === PivotTableFiledAreaEnum.Row || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46558 === PivotTableFiledAreaEnum.Column) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560.getId(),
+            var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636 = this._pivot["getDataFieldByTableId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635);
+          if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636.getFieldDataType()) === PivotDataFieldDataTypeEnum.date) {
+            let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636.getformat();
+            var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615 && this._pivot["setFieldFormat"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615);
+          }
+        }
+      }
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560;
+    }
+    addFilterFieldWithName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46565, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46566) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46567 = this._getSourceIdByName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46565),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46568 = this._pivot["addFieldWithSourceId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46567, PivotTableFiledAreaEnum.Filter);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46568.setFilterInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46566), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46568;
+    }
+    addValueFieldWithName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46573, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46575 = this.addFieldWithName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46573, PivotTableFiledAreaEnum.Value);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574.subtotal && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46575.setSubtotal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574.subtotal), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46575;
+    }
+    removeFieldWithName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46580 = this._getSourceIdByName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579);
+      this._pivot["getTableFieldsByDataFieldId"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46580).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692 => {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692.getId();
+        this._pivot["removeField"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693);
+      });
+    }
+    getResultByCalculate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46583 = {}) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584 = this._pivot["query"](),
+        {
+          dataArr: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585,
+          dataArrWithSplit: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586
+        } = Ce(this._pivot, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584, this._isZhCN, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46583);
+      return {
+        dataArr: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585,
+        dataArrWithSplit: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586
+      };
+    }
+    getNameWithColumnIndex(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46591) {
+      return this._pivot["getFieldDisplayNames"]()[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46591];
+    }
+    reset() {
+      this._pivot["reset"]();
+    }
+    resetDimension(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593) {
+      this._pivot["reset"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593);
+    }
+    getFieldDataTypeByColumnIndex(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46595) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46596 = this._pivot["dataFieldsCollection"],
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46596.getFieldIds()[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46595];
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46596.getFieldById(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597).getFieldDataType();
+    }
+    getFieldDataTypeByFieldName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46601) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46602 = this._getSourceIdByName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46601),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46603 = this._pivot["dataFieldsCollection"].getFieldById(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46602);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46603 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46603.getFieldDataType();
+    }
+    getDimensionInfo() {
+      let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB41 = {};
+      return [[PivotTableFiledAreaEnum.Row, "row"], [PivotTableFiledAreaEnum.Column, "column"], [PivotTableFiledAreaEnum.Filter, "filter"], [PivotTableFiledAreaEnum.Value, "value"]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4696 => {
+        let [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4697, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4698] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4696;
+        this._pivot["iterateFieldByArea"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4697, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637 => {
+          var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB41[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4698] || (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB41[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4698] = []), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB41[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4698].push(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637.getSourceName());
+        });
+      }), Object.keys(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB41).length > 0 ? var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB41 : undefined;
+    }
+    getPivotSourceData() {
+      return this._sourceData;
+    }
+    getLayout() {
+      return this._pivot["getLayout"]();
+    }
+    setLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46607) {
+      this._pivot["setLayout"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46607);
+    }
+    setOptions(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609) {
+      this._pivot["setOptions"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609);
+    }
+    remove() {
+      this._pivot["dispose"]();
+    }
+  },
+  Te = class extends DataFieldManager {
+    getRangeData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46611) {
+      if (Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46611) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46611.length > 0) {
+        let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A5 = [],
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46102 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46611[0],
+          var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6 = {},
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46611[1];
+        for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D5 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D5 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103.length; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D5++) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D5];
+          if (typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 == "object" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 instanceof Date) var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D5] = var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4;else {
+            if (typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 == "string") {
+              let var_L0_core_endo_timestampMs_pure_O1_zalloc_nothrow_sig2242 = new Date(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616);
+              Number.isNaN(var_L0_core_endo_timestampMs_pure_O1_zalloc_nothrow_sig2242.getTime()) || (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D5] = var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4);
+            }
+          }
+        }
+        for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 = 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46611.length; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6++) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46611[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6],
+            var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1 = [];
+          for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D1 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D1 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617.length; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D1++) if (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D1]) {
+            let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D1],
+              var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB = {
+                v: Se((typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466 == "object" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466 instanceof Date ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466 : new Date(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466)).getTime()),
+                f: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D1]
+              };
+            var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1.push(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB);
+          } else var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1.push(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D1]);
+          var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A5.push(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1);
+        }
+        return {
+          header: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46102,
+          data: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A5
+        };
+      } else throw Error("[DataFieldManager]:\x20Data\x20is\x20not\x20a\x20valid\x20array");
+    }
+  },
+  Ee = class extends FUniver {
+    _initialize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46613) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46613.get(ICommandService);
+      this.disposeWithMe(this.registerEventHandler(this.Event["BeforePivotTableAdd"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.beforeCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639 => {
+        switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639.id) {
+          case MovePivotTableCommand.id:
+            {
+              let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639.params;
+              this._fireBeforeMovePivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469);
+              break;
+            }
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["BeforePivotTableMove"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.beforeCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 => {
+        switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641.id) {
+          case AddPivotTableWithConfigCommand.id:
+          case AddPivotTableCommand.id:
+            {
+              let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641.params;
+              this._fireBeforeAddPivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610);
+              break;
+            }
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableAdded"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643.id === AddPivotTableWithConfigCommand.id || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643.id === AddPivotTableCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643.params;
+          this._fireAddPivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableMoved"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645.id === MovePivotTableCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645.params;
+          this._fireMovedPivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableRemoved"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647.id === RemovePivotTableMutation.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647.params;
+          this._firePivotTableRemovedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldAdded"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649.id === AddPivotFieldCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649.params;
+          this._firePivotTableFieldAddedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldRemoved"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651.id === RemovePivotFieldCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651.params;
+          this._firePivotTableFieldRemovedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldMoved"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653.id === MovePivotFieldCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653.params;
+          this._firePivotTableFieldMovedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldCollapseChanged"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655.id === SetPivotCollapseCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655.params;
+          this._firePivotTableFieldCollapsedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldFilterChanged"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657.id === SetPivotFilterCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657.params;
+          this._firePivotTableFieldFilterChangedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldSortChanged"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659.id === SetPivotSortCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659.params;
+          this._firePivotTableFieldSortChangedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldSettingChanged"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661.id === UpdatePivotFieldSettingCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661.params;
+          this._firePivotTableFieldSettingChangedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableValuePositionChanged"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614.onCommandExecuted(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4663 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4663.id === UpdatePivotValuePositionCommand.id) {
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4663.params;
+          this._firePivotTableValuePositionChangedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628);
+        }
+      })));
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46613.get(LifecycleService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616 = new DisposableCollection();
+      this.disposeWithMe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615.lifecycle$["subscribe"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46104 => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46104 === LifecycleStages.Ready) {
+          if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46613.has(SheetsPivotTableAdaptorModel)) return;
+          let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4665 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46613.get(SheetsPivotTableAdaptorModel);
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616.dispose(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616.add(this.registerEventHandler(this.Event["PivotTableRendered"], () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4665.viewUpdate$["pipe"](auditTime(50)).subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611 => {
+            this._fireRenderPivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611);
+          }))), this.disposeWithMe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616);
+        }
+      }));
+    }
+    _firePivotTableFieldAddedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46621) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46621) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46108,
+          dataFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109,
+          fieldArea: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110,
+          index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46111
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46621;
+        this.fireEvent(this.Event["PivotTableFieldAdded"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46108,
+          dataFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109,
+          fieldArea: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110,
+          index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46111
+        });
+      }
+    }
+    _firePivotTableFieldRemovedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46112,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114,
+          fieldIds: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623;
+        this.fireEvent(this.Event["PivotTableFieldRemoved"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46112,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114,
+          fieldIds: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115.concat()
+        });
+      }
+    }
+    _firePivotTableFieldMovedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46625) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46625) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118,
+          fieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119,
+          area: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120,
+          index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46625;
+        this.fireEvent(this.Event["PivotTableFieldMoved"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118,
+          fieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119,
+          area: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120,
+          index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121
+        });
+      }
+    }
+    _firePivotTableFieldCollapsedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46627) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46627) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123,
+          row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46124,
+          col: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46125,
+          collapse: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46627;
+        this.fireEvent(this.Event["PivotTableFieldCollapseChanged"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123,
+          row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46124,
+          col: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46125,
+          collapse: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126
+        });
+      }
+    }
+    _firePivotTableFieldFilterChangedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46629) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46629) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130,
+          items: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131,
+          isAll: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46629;
+        this.fireEvent(this.Event["PivotTableFieldFilterChanged"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130,
+          items: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131.concat(),
+          isAll: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132
+        });
+      }
+    }
+    _firePivotTableFieldSortChangedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46134,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46136,
+          info: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631;
+        this.fireEvent(this.Event["PivotTableFieldSortChanged"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46134,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46136,
+          info: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137 ? {
+            ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137
+          } : undefined
+        });
+      }
+    }
+    _firePivotTableFieldSettingChangedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46633) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46633) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46138,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46139,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46140,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141,
+          displayName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142,
+          format: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143,
+          subtotalType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144,
+          showDataAs: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46145,
+          tableFieldInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46146,
+          dataFieldInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46633;
+        this.fireEvent(this.Event["PivotTableFieldSettingChanged"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46138,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46139,
+          tableFieldId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46140,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141,
+          displayName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142,
+          format: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143,
+          subtotalType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144,
+          showDataAs: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46145 === undefined ? undefined : {
+            ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46145
+          },
+          tableFieldInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46146,
+          dataFieldInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147
+        });
+      }
+    }
+    _firePivotTableValuePositionChangedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46635) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46635) {
+        let {
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148,
+          position: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149,
+          index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46635;
+        this.fireEvent(this.Event["PivotTableValuePositionChanged"], {
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148,
+          position: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149,
+          index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150
+        });
+      }
+    }
+    _fireAddPivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46637) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46637) {
+        let {
+            positionType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151,
+            pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152,
+            pivotTableConfig: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46637,
+          {
+            targetCellInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154,
+            sourceRangeInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153,
+          {
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46156
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154;
+        this.fireEvent(this.Event["PivotTableAdded"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46156,
+          positionType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152,
+          sourceRangeInfo: {
+            startRow: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155.range["startRow"],
+            endRow: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155.range["endRow"],
+            startColumn: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155.range["startColumn"],
+            endColumn: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155.range["endColumn"],
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155.unitId,
+            subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155.subUnitId,
+            sheetName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155.sheetName
+          },
+          targetCellInfo: {
+            row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154.row,
+            column: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154.col,
+            sheetName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154.sheetName,
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154.unitId,
+            subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154.subUnitId
+          }
+        });
+      }
+    }
+    _fireBeforeAddPivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639) {
+        let {
+            positionType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157,
+            pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46158,
+            pivotTableConfig: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639,
+          {
+            targetCellInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160,
+            sourceRangeInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159,
+          {
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46162
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160,
+          var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB7 = {
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46162,
+            positionType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157,
+            pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46158,
+            sourceRangeInfo: {
+              startRow: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161.range["startRow"],
+              endRow: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161.range["endRow"],
+              startColumn: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161.range["startColumn"],
+              endColumn: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161.range["endColumn"],
+              unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161.unitId,
+              subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161.subUnitId,
+              sheetName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161.sheetName
+            },
+            targetCellInfo: {
+              row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160.row,
+              column: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160.col,
+              sheetName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160.sheetName,
+              unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160.unitId,
+              subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160.subUnitId
+            },
+            cancel: false
+          };
+        if (this.fireEvent(this.Event["BeforePivotTableAdd"], var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB7), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB7.cancel) throw Error("Before add pivot table event canceled");
+      }
+    }
+    _firePivotTableRemovedEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46163,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46164
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641;
+        this.fireEvent(this.Event["PivotTableRemoved"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46163,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46164
+        });
+      }
+    }
+    _fireBeforeMovePivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46643) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46643) {
+        let {
+            originTargetInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165,
+            pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166,
+            targetCellInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46643,
+          {
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165,
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169 = this._injector["get"](SheetsPivotTableConfigModel).getPivotTableConfig(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166);
+        if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169) return;
+        let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166,
+          originTargetInfo: {
+            row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169.targetCellInfo["row"],
+            column: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169.targetCellInfo["col"],
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169.targetCellInfo["unitId"],
+            subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169.targetCellInfo["subUnitId"]
+          },
+          targetCellInfo: {
+            row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167.row,
+            column: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167.col,
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167.unitId,
+            subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167.subUnitId
+          },
+          cancel: false
+        };
+        if (this.fireEvent(this.Event["BeforePivotTableMove"], var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8.cancel) throw Error("Before move pivot table event canceled");
+      }
+    }
+    _fireMovedPivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46645) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46645) {
+        let {
+            originTargetInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170,
+            pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171,
+            targetCellInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46645,
+          {
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170,
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174 = this._injector["get"](SheetsPivotTableConfigModel).getPivotTableConfig(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171);
+        if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174) return;
+        this.fireEvent(this.Event["PivotTableMoved"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171,
+          originTargetInfo: {
+            row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174.targetCellInfo["row"],
+            column: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174.targetCellInfo["col"],
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174.targetCellInfo["unitId"],
+            subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174.targetCellInfo["subUnitId"]
+          },
+          targetCellInfo: {
+            row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172.row,
+            column: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172.col,
+            unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172.unitId,
+            subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172.subUnitId
+          }
+        });
+      }
+    }
+    _fireRenderPivotTableEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46647) {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46647) {
+        let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177,
+          type: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46178,
+          rangesCache: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179,
+          isEmpty: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46647;
+        this.fireEvent(this.Event["PivotTableRendered"], {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176,
+          pivotTableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177,
+          changeType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46178,
+          isEmpty: !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180,
+          rangeInfo: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179
+        });
+      }
+    }
+    generatePivotTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46649, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46650) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46651 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46650 ? new var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46650() : new Te()).createCollection("data", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46649),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46652 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46649[0];
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46651.getFieldIds().forEach((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182) => {
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46651.setDisplayName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46652[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182]);
+      });
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653 = generateHexNumber(8),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46654 = new PivotTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46651, undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653);
+      return new we(this._injector, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46654, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46649, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653);
+    }
+  };
+FUniver.extend(Ee);
+export {};

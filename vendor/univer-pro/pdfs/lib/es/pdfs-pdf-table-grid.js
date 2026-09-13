@@ -1,0 +1,39 @@
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+function ou(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537) {
+  if (lu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.width, "width"), lu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.height, 'height'), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.rowIds["length"] === 0 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.columnIds["length"] === 0) throw RangeError("PDF tables require at least one row and one column.");
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D311 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.rowIds["length"] * var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.columnIds["length"];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.cells["length"] !== var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D311) throw RangeError('PDF\x20table\x20grid\x20requires\x20exactly\x20' + var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D311 + " cells.");
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A281 = [...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.rowIds, ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.columnIds, ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.cells['flatMap'](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461111 => [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461111.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461111.contentStoryId])];
+  if (new Set(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A281).size !== var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A281.length) throw Error("PDF table grid ids must be unique.");
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465538 = uu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.height, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.rowIds["length"]),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465539 = uu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.width, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.columnIds["length"]);
+  return {
+    'rows': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.rowIds["map"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461113) => ({
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112,
+      'height': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465538[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461113]
+    })),
+    'columns': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.columnIds["map"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461114, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461115) => ({
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461114,
+      'width': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465539[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461115]
+    })),
+    'cells': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.cells["map"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461116, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461117) => ({
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461116,
+      'rowId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.rowIds[Math.floor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461117 / var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.columnIds["length"])],
+      'columnId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.columnIds[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461117 % var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465537.columnIds["length"]],
+      'rowSpan': 1,
+      'columnSpan': 1
+    }))
+  };
+}
+function lu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465563, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465564) {
+  if (!Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465563) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465563 <= 0) throw RangeError("PDF table " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465564 + " must be a positive finite EMU value.");
+}
+function uu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465567, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465568) {
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D317 = Math.floor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465567 / var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465568);
+  return Array.from({
+    'length': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465568
+  }, (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461128, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461129) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461129 === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465568 - 1 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465567 - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D317 * (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465568 - 1) : var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D317);
+}
+export { ou as createPdfTableGrid };

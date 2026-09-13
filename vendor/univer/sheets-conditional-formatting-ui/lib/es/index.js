@@ -1,0 +1,5118 @@
+import { BooleanNumber, ColorKit, CommandType, DependentOn, Disposable, DisposableCollection, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, InterceptorEffectEnum, InterceptorManager, LocaleService, Plugin, Rectangle, Tools, UniverInstanceType, createInterceptorKey, generateRandomId, get, getIntersectRange, merge, registerDependencies, set, toDisposable, touchDependencies } from "@univerjs/core";
+import { AFTER_CELL_EDIT, AUTO_FILL_APPLY_TYPE, AutoFillTools, ClearSelectionAllCommand, ClearSelectionFormatCommand, IAutoFillService, INTERCEPTOR_POINT, RangeProtectionPermissionEditPoint, RemoveSheetMutation, SetSelectionsOperation, SetWorksheetActiveOperation, SheetInterceptorService, SheetPermissionCheckController, SheetsSelectionsService, UniverSheetsPlugin, WorkbookEditablePermission, WorksheetEditPermission, WorksheetSetCellStylePermission, checkRangesEditablePermission, getSheetCommandTarget, rangeToDiscreteRange, setEndForRange } from "@univerjs/sheets";
+import { AddCfCommand, AddConditionalRuleMutation, AddConditionalRuleMutationUndoFactory, CFNumberOperator, CFRuleType, CFSubRuleType, CFTextOperator, CFTimePeriodOperator, CFValueType, CONDITIONAL_FORMATTING_VIEWPORT_CACHE_LENGTH, ClearRangeCfCommand, ClearWorksheetCfCommand, ConditionalFormattingIcon, ConditionalFormattingRangeIndexModel, ConditionalFormattingRangeTransformService, ConditionalFormattingRuleModel, ConditionalFormattingService, ConditionalFormattingViewModel, DEFAULT_BG_COLOR, DEFAULT_FONT_COLOR, DEFAULT_PADDING, DEFAULT_WIDTH, DataBar, DeleteCfCommand, DeleteConditionalRuleMutation, DeleteConditionalRuleMutationUndoFactory, IIconSetType, IconUKey, MoveCfCommand, MoveConditionalRuleMutation, SHEET_CONDITIONAL_FORMATTING_PLUGIN, SetCfCommand, SetConditionalRuleMutation, UniverSheetsConditionalFormattingPlugin, compareWithNumber, createCfId, createDefaultRule, createDefaultValue, createDefaultValueByValueType, dataBarUKey, defaultDataBarNativeColor, defaultDataBarPositiveColor, getColorScaleFromValue, getOppositeOperator, iconGroup, iconMap, removeUndefinedAttr, setConditionalRuleMutationUndoFactory } from "@univerjs/sheets-conditional-formatting";
+import { ComponentManager, IMenuManagerService, ISidebarService, IconManager, MenuItemType, RibbonDataGroup, RibbonInsertGroup, getMenuHiddenObservable, useDependency, useObservable, useSidebarClick } from "@univerjs/ui";
+import { COPY_TYPE, FormatPainterStatus, IFormatPainterService, ISheetClipboardService, PREDEFINED_HOOK_NAME_PASTE, SheetSkeletonManagerService, UniverSheetsMobileUIPlugin, UniverSheetsUIPlugin, getCurrentRangeDisable$, getRepeatRange, useHighlightRange, virtualizeDiscreteRanges } from "@univerjs/sheets-ui";
+import { Observable, debounceTime, filter, map, merge as merge$1, share, startWith } from "rxjs";
+import { bufferTime, debounceTime as debounceTime$1, filter as filter$1 } from "rxjs/operators";
+import { IRenderManagerService, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { FormulaRefRangeService, UniverSheetsFormulaPlugin } from "@univerjs/sheets-formula";
+import { BoldIcon, ConditionsDoubleIcon, DataBarIcon, DeleteIcon, FontColorDoubleIcon, GripVerticalIcon, IncreaseIcon, ItalicIcon, MoreDownIcon, PaintBucketDoubleIcon, RatingIcon, SlashDoubleIcon, StrikethroughIcon, UnderlineIcon } from "@univerjs/icons";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Button, Checkbox, ColorPicker, DraggableList, Dropdown, Input, InputNumber, Radio, RadioGroup, Select, Tooltip, borderClassName, clsx } from "@univerjs/design";
+import { LexerTreeBuilder, deserializeRangeWithSheet, operatorToken, serializeRange } from "@univerjs/engine-formula";
+import { FormulaEditor, RangeSelector } from "@univerjs/sheets-formula-ui";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+
+//#region src/commands/commands/add-average-cf.command.ts
+const AddAverageCfCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-average-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, operator } = params;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const commandService = accessor.get(ICommandService);
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.average,
+				operator,
+				style
+			}
+		};
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-color-scale-cf.command.ts
+const AddColorScaleConditionalRuleCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-color-scale-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, config, stopIfTrue } = params;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const commandService = accessor.get(ICommandService);
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: CFRuleType.colorScale,
+				config
+			}
+		};
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-data-bar-cf.command.ts
+const AddDataBarConditionalRuleCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-data-bar-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { min, max, nativeColor, positiveColor, isGradient, stopIfTrue, isShowValue } = params;
+		const ranges = params.ranges ?? accessor.get(SheetsSelectionsService).getCurrentSelections().map((selection) => selection.range);
+		if (!ranges.length) return false;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const commandService = accessor.get(ICommandService);
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: CFRuleType.dataBar,
+				isShowValue,
+				config: {
+					min,
+					max,
+					nativeColor,
+					positiveColor,
+					isGradient
+				}
+			}
+		};
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-duplicate-values-cf.command.ts
+const AddDuplicateValuesCfCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-duplicate-values-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue } = params;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const commandService = accessor.get(ICommandService);
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.duplicateValues,
+				style
+			}
+		};
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-icon-set-cf.command.ts
+const AddIconSetConditionalRuleCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-icon-set-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const ranges = params.ranges ?? accessor.get(SheetsSelectionsService).getCurrentSelections().map((selection) => selection.range);
+		if (!ranges.length) return false;
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: accessor.get(ConditionalFormattingRuleModel).createCfId(unitId, subUnitId),
+			stopIfTrue: !!params.stopIfTrue,
+			rule: {
+				type: CFRuleType.iconSet,
+				config: params.config,
+				isShowValue: params.isShowValue
+			}
+		};
+		return accessor.get(ICommandService).executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-number-cf.command.ts
+const AddNumberCfCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-number-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, operator, value } = params;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const commandService = accessor.get(ICommandService);
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const cfId = conditionalFormattingRuleModel.createCfId(unitId, subUnitId);
+		let rule;
+		if ([CFNumberOperator.between, CFNumberOperator.notBetween].includes(operator)) {
+			const _value = value;
+			if (_value.length !== 2 || !Array.isArray(_value)) return false;
+			rule = {
+				ranges,
+				cfId,
+				stopIfTrue: !!stopIfTrue,
+				rule: {
+					type: CFRuleType.highlightCell,
+					subType: CFSubRuleType.number,
+					operator,
+					style,
+					value: _value
+				}
+			};
+		} else {
+			const _value = value;
+			if (typeof _value !== "number") return false;
+			rule = {
+				ranges,
+				cfId,
+				stopIfTrue: !!stopIfTrue,
+				rule: {
+					type: CFRuleType.highlightCell,
+					subType: CFSubRuleType.number,
+					operator,
+					style,
+					value: _value
+				}
+			};
+		}
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-rank-cf.command.ts
+const AddRankCfCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-rank-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, isPercent, isBottom, value } = params;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const univerInstanceService = accessor.get(IUniverInstanceService);
+		const commandService = accessor.get(ICommandService);
+		const target = getSheetCommandTarget(univerInstanceService);
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.rank,
+				isPercent,
+				isBottom,
+				style,
+				value
+			}
+		};
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-text-cf.command.ts
+const AddTextCfCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-text-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, operator, value } = params;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const commandService = accessor.get(ICommandService);
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.text,
+				operator,
+				style,
+				value
+			}
+		};
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-time-period-cf.command.ts
+const AddTimePeriodCfCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-time-period-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, operator } = params;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const univerInstanceService = accessor.get(IUniverInstanceService);
+		const commandService = accessor.get(ICommandService);
+		const target = getSheetCommandTarget(univerInstanceService);
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.timePeriod,
+				operator,
+				style
+			}
+		};
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-unique-values-cf.command.ts
+const AddUniqueValuesCfCommand = {
+	type: CommandType.COMMAND,
+	id: "sheet.command.add-uniqueValues-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue } = params;
+		const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+		const univerInstanceService = accessor.get(IUniverInstanceService);
+		const commandService = accessor.get(ICommandService);
+		const target = getSheetCommandTarget(univerInstanceService);
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.uniqueValues,
+				style
+			}
+		};
+		return commandService.executeCommand(AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/cf.panel.controller.ts
+const CF_PANEL_KEY$1 = "sheet.conditional.formatting.panel";
+let ConditionalFormattingPanelController = class ConditionalFormattingPanelController extends Disposable {
+	constructor(_univerInstanceService, _sidebarService, _localeService) {
+		super();
+		this._univerInstanceService = _univerInstanceService;
+		this._sidebarService = _sidebarService;
+		this._localeService = _localeService;
+		_defineProperty(this, "_sidebarDisposable", null);
+		this.disposeWithMe(this._univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).subscribe((sheet) => {
+			var _this$_sidebarDisposa;
+			if (!sheet) (_this$_sidebarDisposa = this._sidebarDisposable) === null || _this$_sidebarDisposa === void 0 || _this$_sidebarDisposa.dispose();
+		}));
+		this.disposeWithMe(this._sidebarService.sidebarOptions$.subscribe((info) => {
+			if (info.id === CF_PANEL_KEY$1) {
+				if (!info.visible) setTimeout(() => {
+					this._sidebarService.sidebarOptions$.next({ visible: false });
+				});
+			}
+		}));
+	}
+	openPanel(rule) {
+		const props = {
+			id: CF_PANEL_KEY$1,
+			header: { title: this._localeService.t("sheets-conditional-formatting-ui.title") },
+			children: {
+				label: CF_PANEL_KEY$1,
+				rule,
+				key: generateRandomId(4)
+			},
+			onClose: () => this._sidebarDisposable = null
+		};
+		this._sidebarDisposable = this._sidebarService.open(props);
+	}
+};
+ConditionalFormattingPanelController = __decorate([
+	__decorateParam(0, IUniverInstanceService),
+	__decorateParam(1, Inject(ISidebarService)),
+	__decorateParam(2, Inject(LocaleService))
+], ConditionalFormattingPanelController);
+
+//#endregion
+//#region src/commands/operations/open-conditional-formatting-panel.ts
+const OpenConditionalFormattingOperator = {
+	id: "sheet.operation.open.conditional.formatting.panel",
+	type: CommandType.OPERATION,
+	handler: (accessor, params) => {
+		var _selectionManagerServ;
+		const conditionalFormattingMenuController = accessor.get(ConditionalFormattingPanelController);
+		const selectionManagerService = accessor.get(SheetsSelectionsService);
+		const commandService = accessor.get(ICommandService);
+		const ranges = ((_selectionManagerServ = selectionManagerService.getCurrentSelections()) === null || _selectionManagerServ === void 0 ? void 0 : _selectionManagerServ.map((s) => s.range)) || [];
+		switch (params.value) {
+			case 3:
+				conditionalFormattingMenuController.openPanel({
+					...createDefaultRule(),
+					ranges
+				});
+				break;
+			case 4: {
+				const rule = {
+					...createDefaultRule,
+					ranges,
+					rule: {
+						type: CFRuleType.highlightCell,
+						subType: CFSubRuleType.rank
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 5: {
+				const rule = {
+					...createDefaultRule,
+					ranges,
+					rule: {
+						type: CFRuleType.highlightCell,
+						subType: CFSubRuleType.formula,
+						value: "="
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 6: {
+				const rule = {
+					...createDefaultRule,
+					ranges,
+					rule: {
+						type: CFRuleType.colorScale,
+						config: []
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 7: {
+				const rule = {
+					...createDefaultRule,
+					ranges,
+					rule: {
+						type: CFRuleType.dataBar,
+						isShowValue: true
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 8: {
+				const rule = {
+					...createDefaultRule,
+					ranges,
+					rule: {
+						type: CFRuleType.iconSet,
+						config: [],
+						isShowValue: true
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 2:
+				conditionalFormattingMenuController.openPanel();
+				break;
+			case 1:
+				conditionalFormattingMenuController.openPanel({
+					...createDefaultRule(),
+					ranges
+				});
+				break;
+			case 9:
+				commandService.executeCommand(ClearRangeCfCommand.id, { ranges });
+				break;
+			case 10:
+				commandService.executeCommand(ClearWorksheetCfCommand.id);
+				break;
+		}
+		return true;
+	}
+};
+
+//#endregion
+//#region src/controllers/cf.clear.controller.ts
+let ConditionalFormattingClearController = class ConditionalFormattingClearController extends Disposable {
+	constructor(_injector, _univerInstanceService, _sheetInterceptorService, _selectionManagerService, _conditionalFormattingRangeIndexModel) {
+		super();
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._selectionManagerService = _selectionManagerService;
+		this._conditionalFormattingRangeIndexModel = _conditionalFormattingRangeIndexModel;
+		this._init();
+	}
+	_init() {
+		this.disposeWithMe(this._sheetInterceptorService.interceptCommand({ getMutations: (commandInfo) => {
+			const redos = [];
+			const undos = [];
+			const defaultV = {
+				redos,
+				undos
+			};
+			if ([ClearSelectionFormatCommand.id, ClearSelectionAllCommand.id].includes(commandInfo.id)) {
+				var _this$_selectionManag;
+				const ranges = (_this$_selectionManag = this._selectionManagerService.getCurrentSelections()) === null || _this$_selectionManag === void 0 ? void 0 : _this$_selectionManag.map((s) => s.range);
+				if (!ranges) return defaultV;
+				const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+				const worksheet = workbook.getActiveSheet();
+				if (!worksheet) return defaultV;
+				const unitId = workbook.getUnitId();
+				const subUnitId = worksheet.getSheetId();
+				const allRules = this._conditionalFormattingRangeIndexModel.getRulesByRanges(unitId, subUnitId, ranges);
+				if (!allRules || !allRules.length) return defaultV;
+				const { redos: interceptRedos, undos: interceptUndos } = generateClearCfMutations(this._injector, allRules, ranges, unitId, subUnitId);
+				redos.push(...interceptRedos);
+				undos.push(...interceptUndos);
+			}
+			return defaultV;
+		} }));
+		this.disposeWithMe(this._sheetInterceptorService.interceptRanges({ getMutations: ({ unitId, subUnitId, ranges }) => {
+			const redos = [];
+			const undos = [];
+			const emptyInterceptorArr = {
+				redos,
+				undos
+			};
+			if (!ranges || !ranges.length) return emptyInterceptorArr;
+			const allRules = this._conditionalFormattingRangeIndexModel.getRulesByRanges(unitId, subUnitId, ranges);
+			if (!allRules || !allRules.length) return emptyInterceptorArr;
+			const { redos: interceptRedos, undos: interceptUndos } = generateClearCfMutations(this._injector, allRules, ranges, unitId, subUnitId);
+			redos.push(...interceptRedos);
+			undos.push(...interceptUndos);
+			return emptyInterceptorArr;
+		} }));
+	}
+};
+ConditionalFormattingClearController = __decorate([
+	__decorateParam(0, Inject(Injector)),
+	__decorateParam(1, Inject(IUniverInstanceService)),
+	__decorateParam(2, Inject(SheetInterceptorService)),
+	__decorateParam(3, Inject(SheetsSelectionsService)),
+	__decorateParam(4, Inject(ConditionalFormattingRangeIndexModel))
+], ConditionalFormattingClearController);
+function generateClearCfMutations(injector, allRules, ranges, unitId, subUnitId) {
+	const redos = [];
+	const undos = [];
+	const rangeTransformService = injector.get(ConditionalFormattingRangeTransformService);
+	allRules.forEach((rule) => {
+		const mergeRanges = rangeTransformService.subtractRanges(rule.ranges, ranges);
+		if (mergeRanges.length) {
+			const redo = {
+				id: SetConditionalRuleMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					rule: {
+						...rule,
+						ranges: mergeRanges
+					}
+				}
+			};
+			const undo = setConditionalRuleMutationUndoFactory(injector, redo.params);
+			redos.push(redo);
+			undos.push(...undo);
+		} else {
+			const redo = {
+				id: DeleteConditionalRuleMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					cfId: rule.cfId
+				}
+			};
+			const undo = DeleteConditionalRuleMutationUndoFactory(injector, redo.params);
+			redos.push(redo);
+			undos.push(...undo);
+		}
+	});
+	return {
+		redos,
+		undos
+	};
+}
+
+//#endregion
+//#region src/menu/manage-rule.ts
+const commandList = [
+	SetWorksheetActiveOperation.id,
+	AddConditionalRuleMutation.id,
+	SetConditionalRuleMutation.id,
+	DeleteConditionalRuleMutation.id,
+	MoveConditionalRuleMutation.id
+];
+const commonSelections = [
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.highlightCell",
+			selectable: false
+		},
+		value: 3
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.panel.rankAndAverage",
+			selectable: false
+		},
+		value: 4
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.formula",
+			selectable: false
+		},
+		value: 5
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.colorScale",
+			selectable: false
+		},
+		value: 6
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.dataBar",
+			selectable: false
+		},
+		value: 7
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.iconSet",
+			selectable: false
+		},
+		value: 8
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.menu.manageConditionalFormatting",
+			selectable: false
+		},
+		value: 2
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.menu.createConditionalFormatting",
+			selectable: false
+		},
+		value: 1
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.menu.clearRangeRules",
+			selectable: false
+		},
+		value: 9,
+		disabled: false
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.menu.clearWorkSheetRules",
+			selectable: false
+		},
+		value: 10
+	}
+];
+function FactoryManageConditionalFormattingRule(accessor) {
+	const selectionManagerService = accessor.get(SheetsSelectionsService);
+	const commandService = accessor.get(ICommandService);
+	const univerInstanceService = accessor.get(IUniverInstanceService);
+	const conditionalFormattingRuleModel = accessor.get(ConditionalFormattingRuleModel);
+	const clearRangeEnable$ = new Observable((subscriber) => merge$1(selectionManagerService.selectionMoveEnd$, selectionManagerService.selectionSet$, new Observable((commandSubscribe) => {
+		const disposable = commandService.onCommandExecuted((commandInfo) => {
+			var _univerInstanceServic;
+			const { id, params } = commandInfo;
+			const unitId = (_univerInstanceServic = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _univerInstanceServic === void 0 ? void 0 : _univerInstanceServic.getUnitId();
+			if (commandList.includes(id) && params.unitId === unitId) commandSubscribe.next(null);
+		});
+		return () => disposable.dispose();
+	})).pipe(debounceTime$1(16)).subscribe(() => {
+		var _selectionManagerServ;
+		const ranges = ((_selectionManagerServ = selectionManagerService.getCurrentSelections()) === null || _selectionManagerServ === void 0 ? void 0 : _selectionManagerServ.map((selection) => selection.range)) || [];
+		const workbook = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return;
+		const worksheet = workbook.getActiveSheet();
+		if (!worksheet) return;
+		const hasPermission = (conditionalFormattingRuleModel.getSubunitRules(workbook.getUnitId(), worksheet.getSheetId()) || []).filter((rule) => rule.ranges.some((ruleRange) => ranges.some((range) => Rectangle.intersects(range, ruleRange)))).map((rule) => rule.ranges).every((ranges) => {
+			return checkRangesEditablePermission(accessor, workbook.getUnitId(), worksheet.getSheetId(), ranges);
+		});
+		subscriber.next(hasPermission);
+	}));
+	const clearSheetEnable$ = new Observable((subscriber) => new Observable((commandSubscribe) => {
+		const disposable = commandService.onCommandExecuted((commandInfo) => {
+			var _univerInstanceServic2;
+			const { id, params } = commandInfo;
+			const unitId = (_univerInstanceServic2 = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _univerInstanceServic2 === void 0 ? void 0 : _univerInstanceServic2.getUnitId();
+			if (commandList.includes(id) && params.unitId === unitId) commandSubscribe.next(null);
+		});
+		return () => disposable.dispose();
+	}).pipe(debounceTime$1(16)).subscribe(() => {
+		const workbook = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return;
+		const worksheet = workbook.getActiveSheet();
+		if (!worksheet) return;
+		const allRule = conditionalFormattingRuleModel.getSubunitRules(workbook.getUnitId(), worksheet.getSheetId()) || [];
+		if (!allRule.length) {
+			subscriber.next(false);
+			return false;
+		}
+		const hasPermission = allRule.map((rule) => rule.ranges).every((ranges) => {
+			return checkRangesEditablePermission(accessor, workbook.getUnitId(), worksheet.getSheetId(), ranges);
+		});
+		subscriber.next(hasPermission);
+	}));
+	const selections$ = new Observable((subscriber) => {
+		const clearRangeSubscription = clearRangeEnable$.subscribe((v) => {
+			const item = commonSelections.find((item) => item.value === 9);
+			if (item) {
+				item.disabled = !v;
+				subscriber.next(commonSelections);
+			}
+		});
+		const clearSheetSubscription = clearSheetEnable$.subscribe((v) => {
+			const item = commonSelections.find((item) => item.value === 10);
+			if (item) {
+				item.disabled = !v;
+				subscriber.next(commonSelections);
+			}
+		});
+		subscriber.next(commonSelections);
+		return () => {
+			clearRangeSubscription.unsubscribe();
+			clearSheetSubscription.unsubscribe();
+		};
+	});
+	return {
+		id: OpenConditionalFormattingOperator.id,
+		type: MenuItemType.SELECTOR,
+		icon: "ConditionsDoubleIcon",
+		tooltip: "sheets-conditional-formatting-ui.title",
+		selections: selections$,
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetSetCellStylePermission, WorksheetEditPermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+
+//#endregion
+//#region src/menu/quick-insert.menu.ts
+const DATA_BAR_PARAMS = {
+	min: { type: CFValueType.min },
+	max: { type: CFValueType.max },
+	nativeColor: defaultDataBarNativeColor,
+	positiveColor: defaultDataBarPositiveColor,
+	isGradient: false,
+	isShowValue: true
+};
+function createIconSetParams(iconType) {
+	return {
+		config: [
+			{
+				iconType,
+				iconId: "0",
+				operator: CFNumberOperator.greaterThanOrEqual,
+				value: {
+					type: CFValueType.percent,
+					value: 67
+				}
+			},
+			{
+				iconType,
+				iconId: "1",
+				operator: CFNumberOperator.greaterThanOrEqual,
+				value: {
+					type: CFValueType.percent,
+					value: 33
+				}
+			},
+			{
+				iconType,
+				iconId: "2",
+				operator: CFNumberOperator.lessThanOrEqual,
+				value: {
+					type: CFValueType.percent,
+					value: Number.MAX_SAFE_INTEGER
+				}
+			}
+		],
+		isShowValue: true
+	};
+}
+function getQuickConditionalFormattingMenuState(accessor) {
+	return {
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetSetCellStylePermission, WorksheetEditPermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function quickDataBarMenuFactory(accessor) {
+	return {
+		id: AddDataBarConditionalRuleCommand.id,
+		type: MenuItemType.BUTTON_SELECTOR,
+		icon: "DataBarIcon",
+		tooltip: "sheets-conditional-formatting-ui.ruleType.dataBar",
+		params: DATA_BAR_PARAMS,
+		selectionsCommandId: AddDataBarConditionalRuleCommand.id,
+		selections: [
+			{
+				label: "sheets-conditional-formatting-ui.ruleType.dataBar",
+				value: CFRuleType.dataBar,
+				params: DATA_BAR_PARAMS
+			},
+			{
+				id: OpenConditionalFormattingOperator.id,
+				label: "sheets-conditional-formatting-ui.menu.createConditionalFormatting",
+				value: 7,
+				params: { value: 7 }
+			},
+			{
+				id: ClearRangeCfCommand.id,
+				label: "sheets-conditional-formatting-ui.menu.clearRangeRules",
+				value: CFRuleType.dataBar,
+				params: { types: [CFRuleType.dataBar] }
+			}
+		],
+		...getQuickConditionalFormattingMenuState(accessor)
+	};
+}
+function quickIconSetMenuFactory(accessor) {
+	const ratingParams = createIconSetParams(IIconSetType.threeStars);
+	return {
+		id: AddIconSetConditionalRuleCommand.id,
+		type: MenuItemType.BUTTON_SELECTOR,
+		icon: "RatingIcon",
+		tooltip: "sheets-conditional-formatting-ui.ruleType.iconSet",
+		params: ratingParams,
+		selectionsCommandId: AddIconSetConditionalRuleCommand.id,
+		selections: [
+			{
+				label: "sheets-conditional-formatting-ui.iconSet.rank",
+				value: IIconSetType.threeStars,
+				params: ratingParams
+			},
+			{
+				label: "sheets-conditional-formatting-ui.iconSet.shape",
+				value: IIconSetType.threeTrafficLights1,
+				params: createIconSetParams(IIconSetType.threeTrafficLights1)
+			},
+			{
+				label: "sheets-conditional-formatting-ui.iconSet.direction",
+				value: IIconSetType.threeArrows,
+				params: createIconSetParams(IIconSetType.threeArrows)
+			},
+			{
+				id: OpenConditionalFormattingOperator.id,
+				label: "sheets-conditional-formatting-ui.menu.createConditionalFormatting",
+				value: 8,
+				params: { value: 8 }
+			},
+			{
+				id: ClearRangeCfCommand.id,
+				label: "sheets-conditional-formatting-ui.menu.clearRangeRules",
+				value: CFRuleType.iconSet,
+				params: { types: [CFRuleType.iconSet] }
+			}
+		],
+		...getQuickConditionalFormattingMenuState(accessor)
+	};
+}
+
+//#endregion
+//#region src/menu/schema.ts
+const menuSchema = {
+	[RibbonInsertGroup.CELL]: {
+		[AddDataBarConditionalRuleCommand.id]: {
+			order: 3,
+			menuItemFactory: quickDataBarMenuFactory
+		},
+		[AddIconSetConditionalRuleCommand.id]: {
+			order: 4,
+			menuItemFactory: quickIconSetMenuFactory
+		}
+	},
+	[RibbonDataGroup.RULES]: { [OpenConditionalFormattingOperator.id]: {
+		order: 1,
+		gridLayout: {
+			row: 2,
+			column: 1,
+			showLabel: true
+		},
+		menuItemFactory: FactoryManageConditionalFormattingRule
+	} }
+};
+
+//#endregion
+//#region package.json
+var name = "@univerjs/sheets-conditional-formatting-ui";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/config/config.ts
+const SHEETS_CONDITIONAL_FORMATTING_UI_PLUGIN_CONFIG_KEY = "sheets-conditional-formatting-ui.config";
+const configSymbol = Symbol(SHEETS_CONDITIONAL_FORMATTING_UI_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/controllers/cf-formula-ref-range.controller.ts
+let ConditionalFormattingFormulaRefRangeController = class ConditionalFormattingFormulaRefRangeController extends Disposable {
+	constructor(_conditionalFormattingRuleModel, _formulaRefRangeService, _injector) {
+		super();
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._formulaRefRangeService = _formulaRefRangeService;
+		this._injector = _injector;
+		_defineProperty(this, "_disposableMap", /* @__PURE__ */ new Map());
+		this._initRefRange();
+	}
+	_getIdWithUnitId(unitID, subUnitId, cfId) {
+		return `${unitID}_${subUnitId}_${cfId}`;
+	}
+	_getRuleFormulas(rule) {
+		const formulas = [];
+		const ruleConfig = rule.rule;
+		switch (ruleConfig.type) {
+			case CFRuleType.highlightCell:
+				if (ruleConfig.subType === CFSubRuleType.formula) formulas.push(ruleConfig.value);
+				break;
+			case CFRuleType.dataBar: {
+				const dataBar = ruleConfig;
+				if (dataBar.config.min.type === CFValueType.formula) formulas.push(dataBar.config.min.value);
+				if (dataBar.config.max.type === CFValueType.formula) formulas.push(dataBar.config.max.value);
+				break;
+			}
+			case CFRuleType.colorScale:
+				ruleConfig.config.forEach((item) => {
+					if (item.value.type === CFValueType.formula) formulas.push(item.value.value);
+				});
+				break;
+			case CFRuleType.iconSet:
+				ruleConfig.config.forEach((item) => {
+					if (item.value.type === CFValueType.formula) formulas.push(item.value.value);
+				});
+				break;
+		}
+		return formulas;
+	}
+	_updateRuleFormulas(rule, formulas) {
+		const newRule = Tools.deepClone(rule);
+		const ruleConfig = newRule.rule;
+		let formulaIndex = 0;
+		switch (ruleConfig.type) {
+			case CFRuleType.highlightCell:
+				if (ruleConfig.subType === CFSubRuleType.formula) ruleConfig.value = formulas[formulaIndex++];
+				break;
+			case CFRuleType.dataBar: {
+				const dataBar = ruleConfig;
+				if (dataBar.config.min.type === CFValueType.formula) dataBar.config.min.value = formulas[formulaIndex++];
+				if (dataBar.config.max.type === CFValueType.formula) dataBar.config.max.value = formulas[formulaIndex++];
+				break;
+			}
+			case CFRuleType.colorScale:
+				ruleConfig.config.forEach((item) => {
+					if (item.value.type === CFValueType.formula) item.value.value = formulas[formulaIndex++];
+				});
+				break;
+			case CFRuleType.iconSet:
+				ruleConfig.config.forEach((item) => {
+					if (item.value.type === CFValueType.formula) item.value.value = formulas[formulaIndex++];
+				});
+				break;
+		}
+		return newRule;
+	}
+	register(unitId, subUnitId, rule) {
+		const oldRanges = rule.ranges;
+		const oldFormulas = this._getRuleFormulas(rule);
+		const disposable = this._formulaRefRangeService.registerRangeFormula(unitId, subUnitId, oldRanges, oldFormulas, (res) => {
+			if (res.length === 0) return {
+				undos: [{
+					id: AddConditionalRuleMutation.id,
+					params: {
+						unitId,
+						subUnitId,
+						rule
+					}
+				}],
+				redos: [{
+					id: DeleteConditionalRuleMutation.id,
+					params: {
+						unitId,
+						subUnitId,
+						cfId: rule.cfId
+					}
+				}]
+			};
+			const redos = [];
+			const undos = [];
+			const first = res[0];
+			const firstRule = this._updateRuleFormulas(rule, first.formulas);
+			firstRule.ranges = first.ranges;
+			redos.push({
+				id: SetConditionalRuleMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					cfId: rule.cfId,
+					rule: firstRule
+				}
+			});
+			undos.push(...setConditionalRuleMutationUndoFactory(this._injector, {
+				unitId,
+				subUnitId,
+				cfId: rule.cfId,
+				rule: firstRule
+			}));
+			for (let i = 1; i < res.length; i++) {
+				const item = res[i];
+				const newCfId = createCfId();
+				const newRule = this._updateRuleFormulas(rule, item.formulas);
+				newRule.cfId = newCfId;
+				newRule.ranges = item.ranges;
+				redos.push({
+					id: AddConditionalRuleMutation.id,
+					params: {
+						unitId,
+						subUnitId,
+						rule: newRule
+					}
+				});
+				undos.push(AddConditionalRuleMutationUndoFactory(this._injector, {
+					unitId,
+					subUnitId,
+					rule: newRule
+				}));
+			}
+			return {
+				undos,
+				redos
+			};
+		});
+		const id = this._getIdWithUnitId(unitId, subUnitId, rule.cfId);
+		this._disposableMap.set(id, disposable);
+	}
+	_initRefRange() {
+		const allRules = this._conditionalFormattingRuleModel.getAll();
+		for (const [unitId, subUnitMap] of allRules) for (const [subUnitId, rules] of subUnitMap) for (const rule of rules) this.register(unitId, subUnitId, rule);
+		this.disposeWithMe(this._conditionalFormattingRuleModel.$ruleChange.subscribe((option) => {
+			const { unitId, subUnitId, rule } = option;
+			switch (option.type) {
+				case "add":
+					this.register(unitId, subUnitId, rule);
+					break;
+				case "delete": {
+					const id = this._getIdWithUnitId(unitId, subUnitId, rule.cfId);
+					const disposable = this._disposableMap.get(id);
+					if (disposable) {
+						disposable.dispose();
+						this._disposableMap.delete(id);
+					}
+					break;
+				}
+				case "set": {
+					const id = this._getIdWithUnitId(unitId, subUnitId, rule.cfId);
+					const disposable = this._disposableMap.get(id);
+					if (disposable) {
+						disposable.dispose();
+						this._disposableMap.delete(id);
+					}
+					this.register(unitId, subUnitId, rule);
+					break;
+				}
+			}
+		}));
+		this.disposeWithMe(toDisposable(() => {
+			this._disposableMap.forEach((item) => {
+				item.dispose();
+			});
+			this._disposableMap.clear();
+		}));
+	}
+};
+ConditionalFormattingFormulaRefRangeController = __decorate([
+	__decorateParam(0, Inject(ConditionalFormattingRuleModel)),
+	__decorateParam(1, Inject(FormulaRefRangeService)),
+	__decorateParam(2, Inject(Injector))
+], ConditionalFormattingFormulaRefRangeController);
+
+//#endregion
+//#region src/controllers/cf.copy-paste.controller.ts
+const specialPastes = [
+	PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_FORMAT,
+	PREDEFINED_HOOK_NAME_PASTE.DEFAULT_PASTE,
+	PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_BESIDES_BORDER
+];
+let ConditionalFormattingCopyPasteController = class ConditionalFormattingCopyPasteController extends Disposable {
+	constructor(_sheetClipboardService, _conditionalFormattingRuleModel, _injector, _univerInstanceService, _conditionalFormattingRangeTransformService) {
+		super();
+		this._sheetClipboardService = _sheetClipboardService;
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		this._conditionalFormattingRangeTransformService = _conditionalFormattingRangeTransformService;
+		_defineProperty(this, "_copyInfo", void 0);
+		this._initClipboardHook();
+	}
+	_initClipboardHook() {
+		this.disposeWithMe(this._sheetClipboardService.addClipboardHook({
+			id: SHEET_CONDITIONAL_FORMATTING_PLUGIN,
+			onBeforeCopy: (unitId, subUnitId, range) => this._collectConditionalRule(unitId, subUnitId, range),
+			onPasteCells: (pasteFrom, pasteTo, _data, payload) => {
+				if (!pasteFrom || !this._copyInfo || !specialPastes.includes(payload.pasteType)) return {
+					redos: [],
+					undos: []
+				};
+				return this._generateConditionalFormattingMutations(pasteFrom, pasteTo, payload);
+			}
+		}));
+	}
+	_collectConditionalRule(unitId, subUnitId, range) {
+		var _this$_conditionalFor;
+		const rules = /* @__PURE__ */ new Map();
+		const cfMap = {};
+		this._copyInfo = {
+			rules,
+			info: {
+				unitId,
+				subUnitId,
+				cfMap
+			}
+		};
+		const discreteRange = this._injector.invoke((accessor) => {
+			return rangeToDiscreteRange(range, accessor, unitId, subUnitId);
+		});
+		if (!discreteRange) return;
+		const { projectRange } = virtualizeDiscreteRanges([discreteRange]);
+		(_this$_conditionalFor = this._conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId)) === null || _this$_conditionalFor === void 0 || _this$_conditionalFor.forEach((rule) => {
+			const projectedRanges = rule.ranges.flatMap((ruleRange) => {
+				const projected = projectRange(ruleRange);
+				return projected ? [projected] : [];
+			});
+			if (projectedRanges.length) {
+				rules.set(rule.cfId, projectedRanges.length > 1 ? Rectangle.mergeRanges(projectedRanges) : projectedRanges);
+				cfMap[rule.cfId] = {
+					rule: rule.rule,
+					stopIfTrue: rule.stopIfTrue
+				};
+			}
+		});
+	}
+	_generateConditionalFormattingMutations(pasteFrom, pasteTo, payload) {
+		var _this$_conditionalFor2;
+		const copyInfo = this._copyInfo;
+		if (!copyInfo) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId: copyUnitId, subUnitId: copySubUnitId, range: copyRange } = pasteFrom;
+		const { unitId: pastedUnitId, subUnitId: pastedSubUnitId, range: pastedRange } = pasteTo;
+		const { copyType = COPY_TYPE.COPY } = payload;
+		if (!getSheetCommandTarget(this._univerInstanceService, {
+			unitId: pastedUnitId,
+			subUnitId: pastedSubUnitId
+		})) return {
+			redos: [],
+			undos: []
+		};
+		if (copyType === COPY_TYPE.CUT && pastedUnitId === copyUnitId && pastedSubUnitId === copySubUnitId) {
+			this._copyInfo = null;
+			return {
+				redos: [],
+				undos: []
+			};
+		}
+		const sourceVirtualization = virtualizeDiscreteRanges([copyRange]);
+		const sourceVirtualRange = sourceVirtualization.ranges[0];
+		const targetVirtualization = virtualizeDiscreteRanges([pastedRange]);
+		const targetVirtualRange = targetVirtualization.ranges[0];
+		const repeatRange = getRepeatRange(sourceVirtualRange, targetVirtualRange, true);
+		const targetRanges = targetVirtualization.mapRange(targetVirtualRange);
+		const isSameSheet = pastedUnitId === copyUnitId && pastedSubUnitId === copySubUnitId;
+		const effectedConditionalFormattingRuleRanges = /* @__PURE__ */ new Map();
+		const getEffectKey = (unitId, subUnitId, cfId) => JSON.stringify([
+			unitId,
+			subUnitId,
+			cfId
+		]);
+		(_this$_conditionalFor2 = this._conditionalFormattingRuleModel.getSubunitRules(pastedUnitId, pastedSubUnitId)) === null || _this$_conditionalFor2 === void 0 || _this$_conditionalFor2.forEach((rule) => {
+			if (!Rectangle.doAnyRangesIntersect(rule.ranges, targetRanges)) return;
+			effectedConditionalFormattingRuleRanges.set(getEffectKey(pastedUnitId, pastedSubUnitId, rule.cfId), {
+				cfId: rule.cfId,
+				unitId: pastedUnitId,
+				subUnitId: pastedSubUnitId,
+				ranges: rule.ranges,
+				add: [],
+				remove: targetRanges
+			});
+		});
+		if (copyType === COPY_TYPE.CUT && (pastedUnitId !== copyUnitId || pastedSubUnitId !== copySubUnitId)) {
+			const sourceRanges = sourceVirtualization.mapRange(sourceVirtualRange);
+			copyInfo.rules.forEach((_ranges, cfId) => {
+				const rule = this._conditionalFormattingRuleModel.getRule(copyUnitId, copySubUnitId, cfId);
+				if (!rule) return;
+				effectedConditionalFormattingRuleRanges.set(getEffectKey(copyUnitId, copySubUnitId, cfId), {
+					cfId,
+					unitId: copyUnitId,
+					subUnitId: copySubUnitId,
+					ranges: rule.ranges,
+					add: [],
+					remove: sourceRanges
+				});
+			});
+		}
+		const { rules, info } = copyInfo;
+		const waitAddRule = /* @__PURE__ */ new Map();
+		const cacheCfIdMap = {};
+		const getCurrentSheetCfRule = (copyRangeCfId) => {
+			const oldRule = info === null || info === void 0 ? void 0 : info.cfMap[copyRangeCfId];
+			if (isSameSheet) {
+				const rule = this._conditionalFormattingRuleModel.getRule(pastedUnitId, pastedSubUnitId, copyRangeCfId);
+				if (rule) {
+					cacheCfIdMap[copyRangeCfId] = rule;
+					return rule;
+				}
+			}
+			const rule = {
+				rule: oldRule.rule,
+				cfId: this._conditionalFormattingRuleModel.createCfId(pastedUnitId, pastedSubUnitId),
+				ranges: [],
+				stopIfTrue: oldRule.stopIfTrue
+			};
+			cacheCfIdMap[copyRangeCfId] = rule;
+			waitAddRule.set(rule.cfId, rule);
+			return rule;
+		};
+		const sourceRuleEntries = Array.from(rules.entries());
+		if (!isSameSheet) sourceRuleEntries.reverse();
+		sourceRuleEntries.forEach(([cfId, sourceRanges]) => {
+			const rule = cacheCfIdMap[cfId] || getCurrentSheetCfRule(cfId);
+			const effectKey = getEffectKey(pastedUnitId, pastedSubUnitId, rule.cfId);
+			if (!effectedConditionalFormattingRuleRanges.has(effectKey)) effectedConditionalFormattingRuleRanges.set(effectKey, {
+				cfId: rule.cfId,
+				unitId: pastedUnitId,
+				subUnitId: pastedSubUnitId,
+				ranges: rule.ranges,
+				add: [],
+				remove: []
+			});
+			effectedConditionalFormattingRuleRanges.get(effectKey).add.push(...repeatRange.flatMap((item) => sourceRanges.flatMap((sourceRange) => targetVirtualization.mapRange(Rectangle.getPositionRange(sourceRange, item.startRange)))));
+		});
+		const redos = [];
+		const undos = [];
+		for (const effect of effectedConditionalFormattingRuleRanges.values()) {
+			const { cfId, unitId, subUnitId, ranges: sourceRanges, add, remove } = effect;
+			const ranges = this._conditionalFormattingRangeTransformService.applyRangeDelta(sourceRanges, remove, add);
+			if (!ranges.length) {
+				const deleteParams = {
+					unitId,
+					subUnitId,
+					cfId
+				};
+				redos.push({
+					id: DeleteConditionalRuleMutation.id,
+					params: deleteParams
+				});
+				undos.push(...DeleteConditionalRuleMutationUndoFactory(this._injector, deleteParams));
+				continue;
+			}
+			const waitAdd = waitAddRule.get(cfId);
+			if (waitAdd) {
+				const addParams = {
+					unitId: pastedUnitId,
+					subUnitId: pastedSubUnitId,
+					rule: {
+						...waitAdd,
+						ranges
+					}
+				};
+				redos.push({
+					id: AddConditionalRuleMutation.id,
+					params: addParams
+				});
+				undos.push(AddConditionalRuleMutationUndoFactory(this._injector, addParams));
+			} else {
+				const rule = this._conditionalFormattingRuleModel.getRule(unitId, subUnitId, cfId);
+				if (!rule) continue;
+				const setParams = {
+					unitId,
+					subUnitId,
+					rule: {
+						...rule,
+						ranges
+					}
+				};
+				redos.push({
+					id: SetConditionalRuleMutation.id,
+					params: setParams
+				});
+				undos.push(...setConditionalRuleMutationUndoFactory(this._injector, setParams));
+			}
+		}
+		return {
+			redos,
+			undos
+		};
+	}
+};
+ConditionalFormattingCopyPasteController = __decorate([
+	__decorateParam(0, Inject(ISheetClipboardService)),
+	__decorateParam(1, Inject(ConditionalFormattingRuleModel)),
+	__decorateParam(2, Inject(Injector)),
+	__decorateParam(3, Inject(IUniverInstanceService)),
+	__decorateParam(4, Inject(ConditionalFormattingRangeTransformService))
+], ConditionalFormattingCopyPasteController);
+
+//#endregion
+//#region src/controllers/cf.i18n.controller.ts
+let ConditionalFormattingI18nController = class ConditionalFormattingI18nController extends Disposable {
+	constructor(_localeService) {
+		super();
+		this._localeService = _localeService;
+		_defineProperty(this, "_initLocal", () => {});
+		_defineProperty(this, "_findReplaceIndex", (text) => {
+			const reg = /\{([^}]+)?\}/g;
+			const result = [];
+			let currentValue = reg.exec(text);
+			while (currentValue) {
+				result.push({
+					startIndex: currentValue.index,
+					key: Number(currentValue[1]),
+					endIndex: currentValue.index + currentValue[0].length - 1
+				});
+				currentValue = reg.exec(text);
+			}
+			return result;
+		});
+		this._initLocal();
+	}
+	tWithReactNode(key, ...args) {
+		const locale = this._localeService.getLocales();
+		const keys = key.split(".");
+		const resolvedValue = locale && this._localeService.resolveKeyPath(locale, keys);
+		if (typeof resolvedValue === "string") {
+			const result = [];
+			this._findReplaceIndex(resolvedValue).forEach((item, index, list) => {
+				const preItem = list[index - 1] || {
+					startIndex: 0,
+					endIndex: -1
+				};
+				if (preItem.endIndex + 1 < item.startIndex) {
+					const text = resolvedValue.slice(preItem.endIndex + 1, item.startIndex);
+					text && result.push(text);
+				}
+				args[item.key] && result.push(args[item.key]);
+				if (index === list.length - 1) {
+					const text = resolvedValue.slice(item.endIndex + 1);
+					text && result.push(text);
+				}
+			});
+			return result;
+		}
+		return [];
+	}
+};
+ConditionalFormattingI18nController = __decorate([__decorateParam(0, Inject(LocaleService))], ConditionalFormattingI18nController);
+
+//#endregion
+//#region src/controllers/cf.permission.controller.ts
+let ConditionalFormattingPermissionController = class ConditionalFormattingPermissionController extends Disposable {
+	constructor(_localeService, _commandService, _sheetPermissionCheckController) {
+		super();
+		this._localeService = _localeService;
+		this._commandService = _commandService;
+		this._sheetPermissionCheckController = _sheetPermissionCheckController;
+		this._commandExecutedListener();
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._commandService.beforeCommandExecuted((command) => {
+			if (command.id === AddCfCommand.id) {
+				const { unitId, subUnitId, rule: { ranges } } = command.params;
+				if (!this._sheetPermissionCheckController.permissionCheckWithRanges({
+					workbookTypes: [WorkbookEditablePermission],
+					rangeTypes: [RangeProtectionPermissionEditPoint],
+					worksheetTypes: [WorksheetEditPermission, WorksheetSetCellStylePermission]
+				}, ranges, unitId, subUnitId)) this._sheetPermissionCheckController.blockExecuteWithoutPermission(this._localeService.t("sheets-conditional-formatting-ui.permission.dialog.setStyleErr"));
+			}
+		}));
+	}
+};
+ConditionalFormattingPermissionController = __decorate([
+	__decorateParam(0, Inject(LocaleService)),
+	__decorateParam(1, ICommandService),
+	__decorateParam(2, Inject(SheetPermissionCheckController))
+], ConditionalFormattingPermissionController);
+
+//#endregion
+//#region src/controllers/cf.render.controller.ts
+let SheetsCfRenderController = class SheetsCfRenderController extends Disposable {
+	constructor(_sheetInterceptorService, _conditionalFormattingService, _univerInstanceService, _renderManagerService, _conditionalFormattingViewModel, _conditionalFormattingRuleModel, _conditionalFormattingRangeIndexModel) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._conditionalFormattingService = _conditionalFormattingService;
+		this._univerInstanceService = _univerInstanceService;
+		this._renderManagerService = _renderManagerService;
+		this._conditionalFormattingViewModel = _conditionalFormattingViewModel;
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._conditionalFormattingRangeIndexModel = _conditionalFormattingRangeIndexModel;
+		_defineProperty(this, "_ruleChangeCacheMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_boundRenderExtensions", /* @__PURE__ */ new Map());
+		this._initViewModelInterceptor();
+		this._initRenderRangeResolvers();
+		this._initSkeleton();
+		queueMicrotask(() => this._markActiveSheetRulesDirty());
+		this.disposeWithMe(() => {
+			this._ruleChangeCacheMap.clear();
+			this._boundRenderExtensions.forEach((extensions) => {
+				extensions.forEach((extension) => extension.setRenderRangeResolver(null));
+			});
+			this._boundRenderExtensions.clear();
+		});
+	}
+	_initRenderRangeResolvers() {
+		const dataBarResolver = this._createRenderRangeResolver(CFRuleType.dataBar);
+		const iconResolver = this._createRenderRangeResolver(CFRuleType.iconSet);
+		const bind = (unitId) => {
+			var _this$_renderManagerS;
+			this._unbindRenderRangeResolvers(unitId);
+			const mainComponent = (_this$_renderManagerS = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS === void 0 ? void 0 : _this$_renderManagerS.mainComponent;
+			if (!mainComponent || !("getExtensionByKey" in mainComponent)) return;
+			const extensions = /* @__PURE__ */ new Set();
+			const dataBar = mainComponent.getExtensionByKey(dataBarUKey);
+			if (dataBar instanceof DataBar) {
+				dataBar.setRenderRangeResolver(dataBarResolver);
+				extensions.add(dataBar);
+			}
+			const icon = mainComponent.getExtensionByKey(IconUKey);
+			if (icon instanceof ConditionalFormattingIcon) {
+				icon.setRenderRangeResolver(iconResolver);
+				extensions.add(icon);
+			}
+			if (extensions.size) this._boundRenderExtensions.set(unitId, extensions);
+		};
+		this._renderManagerService.getAllRenderersOfType(UniverInstanceType.UNIVER_SHEET).forEach((render) => bind(render.unitId));
+		this.disposeWithMe(this._renderManagerService.created$.subscribe((render) => {
+			if (render.type === UniverInstanceType.UNIVER_SHEET) bind(render.unitId);
+		}));
+		this.disposeWithMe(this._renderManagerService.disposed$.subscribe((unitId) => this._unbindRenderRangeResolvers(unitId)));
+	}
+	_createRenderRangeResolver(ruleType) {
+		return (unitId, subUnitId, ranges) => {
+			const intersections = [];
+			const indexedRules = this._conditionalFormattingRangeIndexModel.getRulesByRanges(unitId, subUnitId, ranges).filter((rule) => rule.rule.type === ruleType);
+			const matchingRules = indexedRules.length ? indexedRules : (this._conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId) ?? []).filter((rule) => rule.rule.type === ruleType);
+			ranges.forEach((range) => {
+				matchingRules.forEach((rule) => {
+					rule.ranges.forEach((ruleRange) => {
+						const intersection = getIntersectRange(range, ruleRange);
+						if (intersection) intersections.push(intersection);
+					});
+				});
+			});
+			return intersections.length > 1 ? Rectangle.mergeRanges(intersections) : intersections;
+		};
+	}
+	_unbindRenderRangeResolvers(unitId) {
+		const extensions = this._boundRenderExtensions.get(unitId);
+		extensions === null || extensions === void 0 || extensions.forEach((extension) => extension.setRenderRangeResolver(null));
+		this._boundRenderExtensions.delete(unitId);
+	}
+	_collectDirtyRanges(items, unitId, subUnitId) {
+		const ranges = [];
+		items.forEach((item) => {
+			var _rule$ranges;
+			if (item.unitId !== unitId || item.subUnitId !== subUnitId) return;
+			const rule = item.rule ?? (item.cfId ? this._conditionalFormattingRuleModel.getRule(unitId, subUnitId, item.cfId) : null);
+			if (rule === null || rule === void 0 || (_rule$ranges = rule.ranges) === null || _rule$ranges === void 0 ? void 0 : _rule$ranges.length) ranges.push(...rule.ranges);
+		});
+		return ranges;
+	}
+	_intersectDirtyRangesWithRenderedRange(ranges, renderedRange) {
+		if (!renderedRange || renderedRange.startRow < 0 || renderedRange.startColumn < 0) return [];
+		return ranges.map((range) => ({
+			startRow: Math.max(range.startRow, renderedRange.startRow),
+			endRow: Math.min(range.endRow, renderedRange.endRow),
+			startColumn: Math.max(range.startColumn, renderedRange.startColumn),
+			endColumn: Math.min(range.endColumn, renderedRange.endColumn)
+		})).filter((range) => range.startRow <= range.endRow && range.startColumn <= range.endColumn);
+	}
+	_markDirtySkeleton(items) {
+		var _render$mainComponent;
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook === null || workbook === void 0 ? void 0 : workbook.getActiveSheet();
+		if (!workbook || !worksheet) return;
+		const unitId = workbook.getUnitId();
+		const subUnitId = worksheet.getSheetId();
+		const render = this._renderManagerService.getRenderUnitById(unitId);
+		const skeletonManagerService = render === null || render === void 0 ? void 0 : render.with(SheetSkeletonManagerService);
+		const currentSkeleton = skeletonManagerService === null || skeletonManagerService === void 0 ? void 0 : skeletonManagerService.getCurrentSkeleton();
+		const dirtyRanges = this._intersectDirtyRangesWithRenderedRange(this._collectDirtyRanges(items, unitId, subUnitId), currentSkeleton === null || currentSkeleton === void 0 ? void 0 : currentSkeleton.rowColumnSegment);
+		if (dirtyRanges.length) currentSkeleton === null || currentSkeleton === void 0 || currentSkeleton.resetRangeCache(dirtyRanges);
+		skeletonManagerService === null || skeletonManagerService === void 0 || skeletonManagerService.reCalculate();
+		render === null || render === void 0 || (_render$mainComponent = render.mainComponent) === null || _render$mainComponent === void 0 || _render$mainComponent.makeDirty();
+	}
+	_markActiveSheetRulesDirty() {
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook === null || workbook === void 0 ? void 0 : workbook.getActiveSheet();
+		if (!workbook || !worksheet) return;
+		const unitId = workbook.getUnitId();
+		const subUnitId = worksheet.getSheetId();
+		const rules = this._conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId) ?? [];
+		if (!rules.length) return;
+		this._markDirtySkeleton(rules.map((rule) => ({
+			rule,
+			subUnitId,
+			unitId
+		})));
+	}
+	_initSkeleton() {
+		this.disposeWithMe(merge$1(this._conditionalFormattingRuleModel.$ruleChange, this._conditionalFormattingViewModel.markDirty$).pipe(bufferTime(16), filter$1((v) => !!v.length), filter$1((v) => {
+			const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+			if (!workbook) return false;
+			const worksheet = workbook.getActiveSheet();
+			if (!worksheet) return false;
+			return v.some((item) => item.unitId === workbook.getUnitId() && item.subUnitId === worksheet.getSheetId());
+		})).subscribe((items) => this._markDirtySkeleton(items)));
+	}
+	_initViewModelInterceptor() {
+		this.disposeWithMe(this._sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT, {
+			effect: InterceptorEffectEnum.Style,
+			handler: (cell, context, next) => {
+				const result = this._conditionalFormattingService.composeStyle(context.unitId, context.subUnitId, context.row, context.col);
+				if (!result) return next(cell);
+				const styleMap = context.workbook.getStyles();
+				const defaultStyle = (typeof (cell === null || cell === void 0 ? void 0 : cell.s) === "string" ? styleMap.get(cell === null || cell === void 0 ? void 0 : cell.s) : cell === null || cell === void 0 ? void 0 : cell.s) || {};
+				const cloneCell = cell === context.rawData ? { ...context.rawData } : cell;
+				if (result.style) {
+					const activeStyle = {
+						...defaultStyle,
+						...result.style
+					};
+					Object.assign(cloneCell, { s: activeStyle });
+				}
+				if (!cloneCell.fontRenderExtension) {
+					cloneCell.fontRenderExtension = {};
+					if (result.isShowValue !== void 0) cloneCell.fontRenderExtension.isSkip = !result.isShowValue;
+				}
+				if (result.dataBar) cloneCell.dataBar = result.dataBar;
+				if (result.iconSet) {
+					cloneCell.iconSet = result.iconSet;
+					cloneCell.fontRenderExtension.leftOffset = DEFAULT_PADDING + DEFAULT_WIDTH;
+				}
+				return next(cloneCell);
+			},
+			priority: 10
+		}));
+	}
+};
+SheetsCfRenderController = __decorate([
+	__decorateParam(0, Inject(SheetInterceptorService)),
+	__decorateParam(1, Inject(ConditionalFormattingService)),
+	__decorateParam(2, Inject(IUniverInstanceService)),
+	__decorateParam(3, Inject(IRenderManagerService)),
+	__decorateParam(4, Inject(ConditionalFormattingViewModel)),
+	__decorateParam(5, Inject(ConditionalFormattingRuleModel)),
+	__decorateParam(6, Inject(ConditionalFormattingRangeIndexModel))
+], SheetsCfRenderController);
+
+//#endregion
+//#region src/views/ColorPicker.tsx
+const ColorPicker$1 = (props) => {
+	const { color, onChange, disable = false, Icon = PaintBucketDoubleIcon, className } = props;
+	const colorKit = useMemo(() => new ColorKit(color), [color]);
+	const renderIcon = () => {
+		const iconProps = {
+			className: clsx("univer-fill-primary-600", disable && className),
+			extend: { colorChannel1: colorKit.isValid ? color : "" }
+		};
+		return /* @__PURE__ */ jsx(Icon, { ...iconProps });
+	};
+	return !disable ? /* @__PURE__ */ jsx(Dropdown, {
+		overlay: /* @__PURE__ */ jsx("div", {
+			className: "univer-rounded-lg univer-p-4",
+			children: /* @__PURE__ */ jsx(ColorPicker, {
+				value: color,
+				onChange
+			})
+		}),
+		children: /* @__PURE__ */ jsx("span", {
+			className: clsx("univer-flex univer-cursor-pointer univer-items-center univer-rounded univer-p-1 hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700", className),
+			children: renderIcon()
+		})
+	}) : renderIcon();
+};
+
+//#endregion
+//#region src/views/Preview.tsx
+function Preview(props) {
+	const { rule } = props;
+	const colorList = useMemo(() => {
+		if ((rule === null || rule === void 0 ? void 0 : rule.type) === CFRuleType.colorScale) {
+			const config = rule.config.map((c, index) => ({
+				color: new ColorKit(c.color),
+				value: index
+			}));
+			const maxValue = config.length - 1;
+			return new Array(5).fill("").map((_v, index, arr) => index * maxValue / (arr.length - 1)).map((value) => getColorScaleFromValue(config, value));
+		}
+		return null;
+	}, [rule]);
+	const iconSet = useMemo(() => {
+		if ((rule === null || rule === void 0 ? void 0 : rule.type) === CFRuleType.iconSet) return rule.config.map((item) => {
+			const iconList = iconMap[item.iconType];
+			return iconList && iconList[Number(item.iconId)];
+		});
+	}, [rule]);
+	if (!rule) return null;
+	const previewClassName = "univer-pointer-events-none univer-flex univer-h-5 univer-min-w-[72px] univer-items-center univer-justify-center univer-text-xs";
+	switch (rule.type) {
+		case CFRuleType.dataBar: {
+			const { isGradient } = rule.config;
+			const positiveColor = isGradient ? `linear-gradient(to right, ${rule.config.positiveColor || defaultDataBarPositiveColor}, rgb(255 255 255))` : rule.config.positiveColor;
+			return /* @__PURE__ */ jsxs("div", {
+				className: previewClassName,
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "univer-h-full univer-w-1/2 univer-border univer-border-solid",
+					style: {
+						background: isGradient ? `linear-gradient(to right,  rgb(255 255 255),${rule.config.nativeColor || defaultDataBarNativeColor})` : rule.config.nativeColor,
+						borderColor: rule.config.nativeColor ?? defaultDataBarNativeColor
+					}
+				}), /* @__PURE__ */ jsx("div", {
+					className: "univer-h-full univer-w-1/2 univer-border univer-border-solid",
+					style: {
+						background: positiveColor,
+						borderColor: rule.config.positiveColor ?? defaultDataBarPositiveColor
+					}
+				})]
+			});
+		}
+		case CFRuleType.colorScale: return colorList && /* @__PURE__ */ jsx("div", {
+			className: previewClassName,
+			children: colorList.map((item, index) => /* @__PURE__ */ jsx("div", {
+				className: "univer-h-full",
+				style: {
+					width: `${100 / colorList.length}%`,
+					background: item
+				}
+			}, index))
+		});
+		case CFRuleType.iconSet: return iconSet && /* @__PURE__ */ jsx("div", {
+			className: previewClassName,
+			children: iconSet.map((base64, index) => base64 ? /* @__PURE__ */ jsx("img", {
+				className: "univer-h-full",
+				src: base64,
+				draggable: false
+			}, index) : /* @__PURE__ */ jsx(SlashDoubleIcon, {}, index))
+		});
+		case CFRuleType.highlightCell: {
+			const { ul, st, it, bl, bg, cl } = rule.style;
+			const isUnderline = (ul === null || ul === void 0 ? void 0 : ul.s) === BooleanNumber.TRUE;
+			const isStrikethrough = (st === null || st === void 0 ? void 0 : st.s) === BooleanNumber.TRUE;
+			const isItalic = it === BooleanNumber.TRUE;
+			const isBold = bl === BooleanNumber.TRUE;
+			const bgColor = (bg === null || bg === void 0 ? void 0 : bg.rgb) ?? DEFAULT_BG_COLOR;
+			const fontColor = (cl === null || cl === void 0 ? void 0 : cl.rgb) ?? DEFAULT_FONT_COLOR;
+			const style = {
+				textDecoration: `${isUnderline ? "underline" : ""} ${isStrikethrough ? "line-through" : ""}`.replace(/^ /, "") ?? void 0,
+				backgroundColor: bgColor,
+				color: fontColor
+			};
+			return /* @__PURE__ */ jsx("div", {
+				className: clsx(previewClassName, {
+					"univer-font-bold": isBold,
+					"univer-italic": isItalic
+				}),
+				style,
+				children: "123"
+			});
+		}
+	}
+}
+
+//#endregion
+//#region src/views/panel/rule-edit/styles.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const previewClassName = clsx("univer-mt-5 univer-px-1 univer-py-2 univer-rounded", borderClassName);
+
+//#endregion
+//#region src/views/panel/rule-edit/ColorScale.tsx
+const createOptionItem$2 = (text) => ({
+	label: `sheets-conditional-formatting-ui.valueType.${text}`,
+	value: text
+});
+const TextInput$1 = (props) => {
+	var _getActiveSheet;
+	const { type, className, onChange, value } = props;
+	const univerInstanceService = useDependency(IUniverInstanceService);
+	const unitId = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getUnitId();
+	const subUnitId = (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+	const formulaInitValue = useMemo(() => {
+		return String(value).startsWith("=") ? String(value) : "=";
+	}, [value]);
+	const config = useMemo(() => {
+		if ([
+			CFValueType.max,
+			CFValueType.min,
+			"none"
+		].includes(type)) return { disabled: true };
+		if ([CFValueType.percent, CFValueType.percentile].includes(type)) return {
+			min: 0,
+			max: 100
+		};
+		return {
+			min: Number.MIN_SAFE_INTEGER,
+			max: Number.MAX_SAFE_INTEGER
+		};
+	}, [type]);
+	const formulaEditorRef = useRef(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = useState(false);
+	useSidebarClick((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	if (type === CFValueType.formula) return /* @__PURE__ */ jsx("div", {
+		className: "univer-w-full",
+		children: /* @__PURE__ */ jsx(FormulaEditor, {
+			ref: formulaEditorRef,
+			className: clsx("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", borderClassName),
+			initValue: formulaInitValue,
+			unitId,
+			subUnitId,
+			isFocus: isFocusFormulaEditor,
+			onChange: (v = "") => {
+				onChange(v || "");
+			},
+			onFocus: () => setIsFocusFormulaEditor(true)
+		})
+	});
+	else return /* @__PURE__ */ jsx(InputNumber, {
+		className,
+		value: Number(props.value) || 0,
+		onChange: (v) => props.onChange(v || 0),
+		...config
+	});
+};
+const ColorScaleStyleEditor = (props) => {
+	var _props$rule;
+	const { interceptorManager } = props;
+	const localeService = useDependency(LocaleService);
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === CFRuleType.colorScale ? props.rule : void 0;
+	const commonOptionDefinitions = [
+		createOptionItem$2(CFValueType.num),
+		createOptionItem$2(CFValueType.percent),
+		createOptionItem$2(CFValueType.percentile),
+		createOptionItem$2(CFValueType.formula)
+	];
+	const minOptions = [createOptionItem$2(CFValueType.min), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const medianOptions = [createOptionItem$2("none"), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const maxOptions = [createOptionItem$2(CFValueType.max), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const [minType, setMinType] = useState(() => {
+		var _rule$config$;
+		const defaultV = CFValueType.min;
+		if (!rule) return defaultV;
+		return ((_rule$config$ = rule.config[0]) === null || _rule$config$ === void 0 ? void 0 : _rule$config$.value.type) || defaultV;
+	});
+	const [medianType, setMedianType] = useState(() => {
+		var _rule$config$2;
+		const defaultV = "none";
+		if (!rule) return defaultV;
+		if (rule.config.length !== 3) return defaultV;
+		return ((_rule$config$2 = rule.config[1]) === null || _rule$config$2 === void 0 ? void 0 : _rule$config$2.value.type) || defaultV;
+	});
+	const [maxType, setMaxType] = useState(() => {
+		var _rule$config;
+		const defaultV = CFValueType.max;
+		if (!rule) return defaultV;
+		return ((_rule$config = rule.config[rule.config.length - 1]) === null || _rule$config === void 0 ? void 0 : _rule$config.value.type) || defaultV;
+	});
+	const [minValue, setMinValue] = useState(() => {
+		const defaultV = 10;
+		if (!rule) return defaultV;
+		const valueConfig = rule.config[0];
+		return (valueConfig === null || valueConfig === void 0 ? void 0 : valueConfig.value.value) === void 0 ? defaultV : valueConfig === null || valueConfig === void 0 ? void 0 : valueConfig.value.value;
+	});
+	const [medianValue, setMedianValue] = useState(() => {
+		var _rule$config$3;
+		const defaultV = 50;
+		if (!rule) return defaultV;
+		if (rule.config.length !== 3) return defaultV;
+		const v = (_rule$config$3 = rule.config[1]) === null || _rule$config$3 === void 0 ? void 0 : _rule$config$3.value.value;
+		return v === void 0 ? defaultV : v;
+	});
+	const [maxValue, setMaxValue] = useState(() => {
+		var _rule$config2;
+		const defaultV = 90;
+		if (!rule) return defaultV;
+		const v = (_rule$config2 = rule.config[rule.config.length - 1]) === null || _rule$config2 === void 0 ? void 0 : _rule$config2.value.value;
+		return v === void 0 ? defaultV : v;
+	});
+	const [minColor, setMinColor] = useState(() => {
+		var _rule$config$4;
+		const defaultV = "#d0d9fb";
+		if (!rule) return defaultV;
+		return ((_rule$config$4 = rule.config[0]) === null || _rule$config$4 === void 0 ? void 0 : _rule$config$4.color) || defaultV;
+	});
+	const [medianColor, setMedianColor] = useState(() => {
+		var _rule$config$5;
+		const defaultV = "#7790f3";
+		if (!rule) return defaultV;
+		if (rule.config.length !== 3) return defaultV;
+		return ((_rule$config$5 = rule.config[1]) === null || _rule$config$5 === void 0 ? void 0 : _rule$config$5.color) || defaultV;
+	});
+	const [maxColor, setMaxColor] = useState(() => {
+		var _rule$config3;
+		const defaultV = "#2e55ef";
+		if (!rule) return defaultV;
+		return ((_rule$config3 = rule.config[rule.config.length - 1]) === null || _rule$config3 === void 0 ? void 0 : _rule$config3.color) || defaultV;
+	});
+	const getResult = useMemo(() => (option) => {
+		const { minType, medianType, maxType, minValue, medianValue, maxValue, minColor, medianColor, maxColor } = option;
+		const list = [];
+		list.push({
+			color: minColor,
+			value: {
+				type: minType,
+				value: minValue
+			}
+		});
+		medianType !== "none" && list.push({
+			color: medianColor,
+			value: {
+				type: medianType,
+				value: medianValue
+			}
+		});
+		list.push({
+			color: maxColor,
+			value: {
+				type: maxType,
+				value: maxValue
+			}
+		});
+		return {
+			config: list.map((item, index) => ({
+				...item,
+				index
+			})),
+			type: CFRuleType.colorScale
+		};
+	}, []);
+	useEffect(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({
+				minType,
+				medianType,
+				maxType,
+				minValue,
+				medianValue,
+				maxValue,
+				minColor,
+				medianColor,
+				maxColor
+			});
+		} });
+	}, [
+		getResult,
+		minType,
+		medianType,
+		maxType,
+		minValue,
+		medianValue,
+		maxValue,
+		minColor,
+		medianColor,
+		maxColor,
+		interceptorManager
+	]);
+	const handleChange = (option) => {
+		props.onChange(getResult(option));
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: previewClassName,
+			children: /* @__PURE__ */ jsx(Preview, { rule: getResult({
+				minType,
+				medianType,
+				maxType,
+				minValue,
+				medianValue,
+				maxValue,
+				minColor,
+				medianColor,
+				maxColor
+			}) })
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3 univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.valueType.min")
+		}),
+		/* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-3 univer-flex univer-h-8 univer-items-center univer-gap-2",
+			children: [
+				/* @__PURE__ */ jsx(Select, {
+					className: "univer-flex-shrink-0",
+					options: minOptions,
+					value: minType,
+					onChange: (v) => {
+						setMinType(v);
+						const value = createDefaultValueByValueType(v, 10);
+						setMinValue(value);
+						handleChange({
+							minType: v,
+							medianType,
+							maxType,
+							minValue: value,
+							medianValue,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ jsx(TextInput$1, {
+					id: "min",
+					value: minValue,
+					type: minType,
+					onChange: (v) => {
+						setMinValue(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue: v,
+							medianValue,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ jsx(ColorPicker$1, {
+					color: minColor,
+					onChange: (v) => {
+						setMinColor(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue,
+							maxValue,
+							minColor: v,
+							medianColor,
+							maxColor
+						});
+					}
+				})
+			]
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3 univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.medianValue")
+		}),
+		/* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-3 univer-flex univer-h-8 univer-items-center univer-gap-2",
+			children: [
+				/* @__PURE__ */ jsx(Select, {
+					className: "univer-flex-shrink-0",
+					options: medianOptions,
+					value: medianType,
+					onChange: (v) => {
+						setMedianType(v);
+						const value = createDefaultValueByValueType(v, 50);
+						setMedianValue(value);
+						handleChange({
+							minType,
+							medianType: v,
+							maxType,
+							minValue,
+							medianValue: value,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ jsx(TextInput$1, {
+					id: "median",
+					value: medianValue,
+					type: medianType,
+					onChange: (v) => {
+						setMedianValue(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue: v,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				medianType !== "none" ? /* @__PURE__ */ jsx(ColorPicker$1, {
+					color: medianColor,
+					onChange: (v) => {
+						setMedianColor(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue,
+							maxValue,
+							minColor,
+							medianColor: v,
+							maxColor
+						});
+					}
+				}) : /* @__PURE__ */ jsx("div", {
+					"aria-hidden": true,
+					className: "univer-size-6 univer-flex-shrink-0"
+				})
+			]
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3 univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.valueType.max")
+		}),
+		/* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-3 univer-flex univer-h-8 univer-items-center univer-gap-2",
+			children: [
+				/* @__PURE__ */ jsx(Select, {
+					className: "univer-flex-shrink-0",
+					options: maxOptions,
+					value: maxType,
+					onChange: (v) => {
+						setMaxType(v);
+						const value = createDefaultValueByValueType(v, 90);
+						setMaxValue(value);
+						handleChange({
+							minType,
+							medianType,
+							maxType: v,
+							minValue,
+							medianValue,
+							maxValue: value,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ jsx(TextInput$1, {
+					id: "max",
+					value: maxValue,
+					type: maxType,
+					onChange: (v) => {
+						setMaxValue(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue,
+							maxValue: v,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ jsx(ColorPicker$1, {
+					color: maxColor,
+					onChange: (v) => {
+						setMaxColor(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor: v
+						});
+					}
+				})
+			]
+		})
+	] });
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/DataBar.tsx
+const createOptionItem$1 = (text) => ({
+	label: `sheets-conditional-formatting-ui.valueType.${text}`,
+	value: text
+});
+const InputText = (props) => {
+	var _getActiveSheet;
+	const { onChange, className, value, type, id, disabled = false } = props;
+	const univerInstanceService = useDependency(IUniverInstanceService);
+	const unitId = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getUnitId();
+	const subUnitId = (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+	const formulaEditorRef = useRef(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = useState(false);
+	useSidebarClick((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	const _value = useRef(value);
+	const config = useMemo(() => {
+		if ([CFValueType.percentile, CFValueType.percent].includes(type)) return {
+			max: 100,
+			min: 0
+		};
+		return {
+			min: Number.MIN_SAFE_INTEGER,
+			max: Number.MAX_SAFE_INTEGER
+		};
+	}, [type]);
+	if (type === CFValueType.formula) {
+		const v = String(_value.current).startsWith("=") ? String(_value.current) || "" : "=";
+		return /* @__PURE__ */ jsx("div", {
+			className: "univer-w-full",
+			children: /* @__PURE__ */ jsx(FormulaEditor, {
+				ref: formulaEditorRef,
+				className: clsx("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", borderClassName),
+				initValue: v,
+				unitId,
+				subUnitId,
+				isFocus: isFocusFormulaEditor,
+				onChange: (v = "") => {
+					onChange(v || "");
+				},
+				onFocus: () => setIsFocusFormulaEditor(true)
+			})
+		});
+	}
+	return /* @__PURE__ */ jsx(InputNumber, {
+		className,
+		value: Number(value) || 0,
+		disabled,
+		onChange: (v) => {
+			onChange(v || 0);
+		},
+		...config
+	});
+};
+const DataBarStyleEditor = (props) => {
+	var _props$rule;
+	const { interceptorManager } = props;
+	const localeService = useDependency(LocaleService);
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === CFRuleType.dataBar ? props.rule : void 0;
+	const [isGradient, setIsGradient] = useState(() => {
+		var _rule$config;
+		const defaultV = "0";
+		if (!rule) return defaultV;
+		return ((_rule$config = rule.config) === null || _rule$config === void 0 ? void 0 : _rule$config.isGradient) ? "1" : "0";
+	});
+	const [positiveColor, setPositiveColor] = useState(() => {
+		var _rule$config2;
+		if (!rule) return defaultDataBarPositiveColor;
+		return ((_rule$config2 = rule.config) === null || _rule$config2 === void 0 ? void 0 : _rule$config2.positiveColor) || defaultDataBarPositiveColor;
+	});
+	const [nativeColor, setNativeColor] = useState(() => {
+		var _rule$config3;
+		if (!rule) return defaultDataBarNativeColor;
+		return ((_rule$config3 = rule.config) === null || _rule$config3 === void 0 ? void 0 : _rule$config3.nativeColor) || defaultDataBarNativeColor;
+	});
+	const commonOptionDefinitions = [
+		createOptionItem$1(CFValueType.num),
+		createOptionItem$1(CFValueType.percent),
+		createOptionItem$1(CFValueType.percentile),
+		createOptionItem$1(CFValueType.formula)
+	];
+	const minOptions = [createOptionItem$1(CFValueType.min), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const maxOptions = [createOptionItem$1(CFValueType.max), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const [minValueType, setMinValueType] = useState(() => {
+		var _rule$config4;
+		const defaultV = minOptions[0].value;
+		if (!rule) return defaultV;
+		return ((_rule$config4 = rule.config) === null || _rule$config4 === void 0 ? void 0 : _rule$config4.min.type) || defaultV;
+	});
+	const [maxValueType, setMaxValueType] = useState(() => {
+		var _rule$config5;
+		const defaultV = maxOptions[0].value;
+		if (!rule) return defaultV;
+		return ((_rule$config5 = rule.config) === null || _rule$config5 === void 0 ? void 0 : _rule$config5.max.type) || defaultV;
+	});
+	const [minValue, setMinValue] = useState(() => {
+		var _rule$config6;
+		const defaultV = 0;
+		if (!rule) return defaultV;
+		const value = ((_rule$config6 = rule.config) === null || _rule$config6 === void 0 ? void 0 : _rule$config6.min) || {};
+		if (value.type === CFValueType.formula) return value.value || "=";
+		return value.value || defaultV;
+	});
+	const [maxValue, setMaxValue] = useState(() => {
+		var _rule$config7;
+		const defaultV = 100;
+		if (!rule) return defaultV;
+		const value = ((_rule$config7 = rule.config) === null || _rule$config7 === void 0 ? void 0 : _rule$config7.max) || {};
+		if (value.type === CFValueType.formula) return value.value || "=";
+		return value.value === void 0 ? defaultV : value.value;
+	});
+	const [isShowValue, setIsShowValue] = useState(() => {
+		const defaultV = true;
+		if (!rule) return defaultV;
+		return rule.isShowValue === void 0 ? defaultV : !!rule.isShowValue;
+	});
+	const getResult = (option) => {
+		return {
+			config: {
+				min: {
+					type: option.minValueType,
+					value: option.minValue
+				},
+				max: {
+					type: option.maxValueType,
+					value: option.maxValue
+				},
+				isGradient: option.isGradient === "1",
+				positiveColor: option.positiveColor || defaultDataBarPositiveColor,
+				nativeColor: option.nativeColor || defaultDataBarNativeColor
+			},
+			type: CFRuleType.dataBar,
+			isShowValue: option.isShowValue
+		};
+	};
+	useEffect(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({
+				isGradient,
+				minValue,
+				minValueType,
+				maxValue,
+				maxValueType,
+				positiveColor,
+				nativeColor,
+				isShowValue
+			});
+		} });
+	}, [
+		isGradient,
+		minValue,
+		minValueType,
+		maxValue,
+		maxValueType,
+		positiveColor,
+		nativeColor,
+		interceptorManager,
+		isShowValue
+	]);
+	const handleChange = (option) => {
+		props.onChange(getResult(option));
+	};
+	const handlePositiveColorChange = (color) => {
+		setPositiveColor(color);
+		handleChange({
+			isGradient,
+			minValue,
+			minValueType,
+			maxValue,
+			maxValueType,
+			positiveColor: color,
+			nativeColor,
+			isShowValue
+		});
+	};
+	const handleNativeColorChange = (color) => {
+		setNativeColor(color);
+		handleChange({
+			isGradient,
+			minValue,
+			minValueType,
+			maxValue,
+			maxValueType,
+			positiveColor,
+			nativeColor: color,
+			isShowValue
+		});
+	};
+	const isShowInput = (type) => {
+		return commonOptionDefinitions.map((item) => item.value).includes(type);
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: previewClassName,
+			children: /* @__PURE__ */ jsx(Preview, { rule: getResult({
+				isGradient,
+				minValue,
+				minValueType,
+				maxValue,
+				maxValueType,
+				positiveColor,
+				nativeColor,
+				isShowValue
+			}) })
+		}),
+		/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.fillType")
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-3 univer-flex univer-items-center univer-gap-3",
+			children: [/* @__PURE__ */ jsxs(RadioGroup, {
+				value: isGradient,
+				onChange: (v) => {
+					setIsGradient(v);
+					handleChange({
+						isGradient: v,
+						minValue,
+						minValueType,
+						maxValue,
+						maxValueType,
+						positiveColor,
+						nativeColor,
+						isShowValue
+					});
+				},
+				children: [/* @__PURE__ */ jsx(Radio, {
+					value: "0",
+					children: /* @__PURE__ */ jsx("span", {
+						className: "univer-text-xs",
+						children: localeService.t("sheets-conditional-formatting-ui.panel.pureColor")
+					})
+				}), /* @__PURE__ */ jsx(Radio, {
+					value: "1",
+					children: /* @__PURE__ */ jsx("span", {
+						className: "univer-text-xs",
+						children: localeService.t("sheets-conditional-formatting-ui.panel.gradient")
+					})
+				})]
+			}), /* @__PURE__ */ jsxs("div", {
+				className: "univer-flex univer-items-center univer-text-xs",
+				children: [/* @__PURE__ */ jsx(Checkbox, {
+					checked: !isShowValue,
+					onChange: (v) => {
+						setIsShowValue(!v);
+						handleChange({
+							isGradient: v,
+							minValue,
+							minValueType,
+							maxValue,
+							maxValueType,
+							positiveColor,
+							nativeColor,
+							isShowValue: !v
+						});
+					}
+				}), localeService.t("sheets-conditional-formatting-ui.panel.onlyShowDataBar")]
+			})]
+		})] }),
+		/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.colorSet")
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-3 univer-flex univer-items-center univer-gap-2",
+			children: [/* @__PURE__ */ jsxs("div", {
+				className: "univer-flex univer-items-center",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "univer-text-xs",
+					children: localeService.t("sheets-conditional-formatting-ui.panel.native")
+				}), /* @__PURE__ */ jsx(ColorPicker$1, {
+					color: nativeColor,
+					onChange: handleNativeColorChange
+				})]
+			}), /* @__PURE__ */ jsxs("div", {
+				className: "univer-flex univer-items-center univer-gap-3",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "univer-text-xs",
+					children: localeService.t("sheets-conditional-formatting-ui.panel.positive")
+				}), /* @__PURE__ */ jsx(ColorPicker$1, {
+					color: positiveColor,
+					onChange: handlePositiveColorChange
+				})]
+			})]
+		})] }),
+		/* @__PURE__ */ jsxs("div", { children: [
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+				children: localeService.t("sheets-conditional-formatting-ui.valueType.min")
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "univer-mt-3 univer-flex univer-items-center univer-gap-2",
+				children: [/* @__PURE__ */ jsx(Select, {
+					className: "univer-w-1/2 univer-flex-shrink-0",
+					options: minOptions,
+					value: minValueType,
+					onChange: (v) => {
+						setMinValueType(v);
+						const value = createDefaultValueByValueType(v, 10);
+						setMinValue(value);
+						handleChange({
+							isGradient,
+							minValue: value,
+							minValueType: v,
+							maxValue,
+							maxValueType,
+							positiveColor,
+							nativeColor,
+							isShowValue
+						});
+					}
+				}), /* @__PURE__ */ jsx(InputText, {
+					id: "min",
+					disabled: !isShowInput(minValueType),
+					type: minValueType,
+					value: minValue,
+					onChange: (v) => {
+						setMinValue(v || 0);
+						handleChange({
+							isGradient,
+							minValue: v || 0,
+							minValueType,
+							maxValue,
+							maxValueType,
+							positiveColor,
+							nativeColor,
+							isShowValue
+						});
+					}
+				})]
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+				children: localeService.t("sheets-conditional-formatting-ui.valueType.max")
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "univer-mt-3 univer-flex univer-items-center univer-gap-2",
+				children: [/* @__PURE__ */ jsx(Select, {
+					className: "univer-w-1/2 univer-flex-shrink-0",
+					options: maxOptions,
+					value: maxValueType,
+					onChange: (v) => {
+						setMaxValueType(v);
+						const value = createDefaultValueByValueType(v, 90);
+						setMaxValue(value);
+						handleChange({
+							isGradient,
+							minValue,
+							minValueType,
+							maxValue: value,
+							maxValueType: v,
+							positiveColor,
+							nativeColor,
+							isShowValue
+						});
+					}
+				}), /* @__PURE__ */ jsx(InputText, {
+					disabled: !isShowInput(maxValueType),
+					id: "max",
+					type: maxValueType,
+					value: maxValue,
+					onChange: (v) => {
+						setMaxValue(v || 0);
+						handleChange({
+							isGradient,
+							minValue,
+							minValueType,
+							maxValue: v || 0,
+							maxValueType,
+							positiveColor,
+							nativeColor,
+							isShowValue
+						});
+					}
+				})]
+			})
+		] })
+	] });
+};
+
+//#endregion
+//#region src/views/ConditionalStyleEditor.tsx
+const getAnotherBooleanNumber = (v) => {
+	return [BooleanNumber.FALSE, void 0].includes(v) ? BooleanNumber.TRUE : BooleanNumber.FALSE;
+};
+const getBooleanFromNumber = (v) => v !== BooleanNumber.FALSE;
+const ConditionalStyleEditor = (props) => {
+	const { style, onChange, className } = props;
+	const [isBold, setIsBold] = useState(() => {
+		if (!(style === null || style === void 0 ? void 0 : style.bl)) return;
+		return style.bl;
+	});
+	const [isItalic, setIsItalic] = useState(() => {
+		if (!(style === null || style === void 0 ? void 0 : style.it)) return;
+		return style.it;
+	});
+	const [isUnderline, setIsUnderline] = useState(() => {
+		if (!(style === null || style === void 0 ? void 0 : style.ul)) return;
+		return style.ul.s;
+	});
+	const [isStrikethrough, setIsStrikethrough] = useState(() => {
+		if (!(style === null || style === void 0 ? void 0 : style.st)) return;
+		return style.st.s;
+	});
+	const [fontColor, setFontColor] = useState(() => {
+		var _style$cl;
+		const defaultV = "#2f56ef";
+		if (!(style === null || style === void 0 || (_style$cl = style.cl) === null || _style$cl === void 0 ? void 0 : _style$cl.rgb)) return defaultV;
+		return style.cl.rgb;
+	});
+	const [bgColor, setBgColor] = useState(() => {
+		var _style$bg;
+		const defaultV = "#e8ecfc";
+		if (!(style === null || style === void 0 || (_style$bg = style.bg) === null || _style$bg === void 0 ? void 0 : _style$bg.rgb)) return defaultV;
+		return style.bg.rgb;
+	});
+	useEffect(() => {
+		const resultStyle = {
+			bl: isBold,
+			it: isItalic
+		};
+		if (fontColor !== void 0) resultStyle.cl = { rgb: fontColor };
+		if (bgColor !== void 0) resultStyle.bg = { rgb: bgColor };
+		if (isStrikethrough !== void 0) resultStyle.st = { s: isStrikethrough };
+		if (isUnderline !== void 0) resultStyle.ul = { s: isUnderline };
+		onChange(removeUndefinedAttr(resultStyle));
+	}, [
+		isBold,
+		isItalic,
+		isUnderline,
+		isStrikethrough,
+		fontColor,
+		bgColor
+	]);
+	const buttonItemClassName = "univer-flex univer-cursor-pointer univer-items-center univer-rounded univer-px-1";
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-my-2.5 univer-flex univer-justify-between", className),
+		children: [
+			/* @__PURE__ */ jsx("div", {
+				className: clsx(buttonItemClassName, { "univer-bg-gray-100 dark:!univer-bg-gray-700": getBooleanFromNumber(isBold || BooleanNumber.FALSE) }),
+				onClick: () => setIsBold(getAnotherBooleanNumber(isBold)),
+				children: /* @__PURE__ */ jsx(BoldIcon, {})
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: clsx(buttonItemClassName, { "univer-bg-gray-100 dark:!univer-bg-gray-700": getBooleanFromNumber(isItalic || BooleanNumber.FALSE) }),
+				onClick: () => setIsItalic(getAnotherBooleanNumber(isItalic)),
+				children: /* @__PURE__ */ jsx(ItalicIcon, {})
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: clsx(buttonItemClassName, { "univer-bg-gray-100 dark:!univer-bg-gray-700": getBooleanFromNumber(isUnderline || BooleanNumber.FALSE) }),
+				onClick: () => setIsUnderline(getAnotherBooleanNumber(isUnderline)),
+				children: /* @__PURE__ */ jsx(UnderlineIcon, {})
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: clsx(buttonItemClassName, { "univer-bg-gray-100 dark:!univer-bg-gray-700": getBooleanFromNumber(isStrikethrough || BooleanNumber.FALSE) }),
+				onClick: () => setIsStrikethrough(getAnotherBooleanNumber(isStrikethrough)),
+				children: /* @__PURE__ */ jsx(StrikethroughIcon, {})
+			}),
+			/* @__PURE__ */ jsx(ColorPicker$1, {
+				color: fontColor,
+				onChange: setFontColor,
+				Icon: FontColorDoubleIcon
+			}),
+			/* @__PURE__ */ jsx(ColorPicker$1, {
+				color: bgColor,
+				onChange: setBgColor
+			})
+		]
+	});
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/Formula.tsx
+const FormulaStyleEditor = (props) => {
+	var _props$rule;
+	const { onChange, interceptorManager } = props;
+	const localeService = useDependency(LocaleService);
+	const lexerTreeBuilder = useDependency(LexerTreeBuilder);
+	const workbook = useDependency(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+	const worksheet = workbook.getActiveSheet();
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === CFRuleType.highlightCell ? props.rule : void 0;
+	const divEleRef = useRef(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = useState(false);
+	const formulaEditorRef = useRef(null);
+	const [style, setStyle] = useState({});
+	const [formula, setFormula] = useState(() => {
+		if ((rule === null || rule === void 0 ? void 0 : rule.subType) === CFSubRuleType.formula) return rule.value;
+		return "=";
+	});
+	const [formulaError, setFormulaError] = useState(void 0);
+	const getResult = (config) => {
+		return {
+			style: config.style,
+			value: formula,
+			type: CFRuleType.highlightCell,
+			subType: CFSubRuleType.formula
+		};
+	};
+	useEffect(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({
+				style,
+				formula
+			});
+		} });
+	}, [
+		style,
+		formula,
+		interceptorManager
+	]);
+	useEffect(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().beforeSubmit, { handler: (v, _c, next) => {
+			const isFormulaValid = formula.length > 1 && formula.startsWith(operatorToken.EQUALS) && lexerTreeBuilder.checkIfAddBracket(formula) === 0;
+			if (formulaError || !isFormulaValid) {
+				setFormulaError(localeService.t("sheets-conditional-formatting-ui.errorMessage.formulaError"));
+				return false;
+			}
+			return next(v);
+		} });
+	}, [
+		formulaError,
+		formula,
+		interceptorManager,
+		lexerTreeBuilder,
+		localeService
+	]);
+	const _onChange = (config) => {
+		onChange(getResult(config));
+	};
+	useSidebarClick((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	return /* @__PURE__ */ jsxs("div", {
+		ref: divEleRef,
+		children: [
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+				children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-3",
+				children: /* @__PURE__ */ jsx(FormulaEditor, {
+					ref: formulaEditorRef,
+					className: clsx("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", borderClassName),
+					errorText: formulaError,
+					isFocus: isFocusFormulaEditor,
+					initValue: formula,
+					unitId: workbook.getUnitId(),
+					subUnitId: worksheet === null || worksheet === void 0 ? void 0 : worksheet.getSheetId(),
+					onFocus: () => {
+						setIsFocusFormulaEditor(true);
+					},
+					onChange: (formula) => {
+						setFormula(formula);
+						_onChange({
+							style,
+							formula
+						});
+					},
+					onVerify: (result, formula) => {
+						if (!result || formula.length === 1) setFormulaError(localeService.t("sheets-conditional-formatting-ui.errorMessage.formulaError"));
+						else setFormulaError(void 0);
+					}
+				})
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: previewClassName,
+				children: /* @__PURE__ */ jsx(Preview, { rule: getResult({
+					style,
+					formula
+				}) })
+			}),
+			/* @__PURE__ */ jsx(ConditionalStyleEditor, {
+				style: rule === null || rule === void 0 ? void 0 : rule.style,
+				className: "univer-mt-3",
+				onChange: (v) => {
+					setStyle(v);
+					_onChange({
+						style: v,
+						formula
+					});
+				}
+			})
+		]
+	});
+};
+
+//#endregion
+//#region src/views/wrapper-error/WrapperError.tsx
+const WrapperError = (props) => {
+	return /* @__PURE__ */ jsxs("div", { children: [props.children, props.errorText && /* @__PURE__ */ jsx("div", {
+		className: "univer-mt-1 univer-text-xs univer-text-red-500",
+		children: props.errorText
+	})] });
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/HighlightCell.tsx
+const textOperators = new Set(Object.values(CFTextOperator));
+const numberOperators = new Set(Object.values(CFNumberOperator));
+const timePeriodOperators = new Set(Object.values(CFTimePeriodOperator));
+const isTextOperator = (value) => typeof value === "string" && textOperators.has(value);
+const isNumberOperator = (value) => typeof value === "string" && numberOperators.has(value);
+const isTimePeriodOperator = (value) => typeof value === "string" && timePeriodOperators.has(value);
+const createOptionItem = (text) => ({
+	label: `sheets-conditional-formatting-ui.operator.${text}`,
+	value: text
+});
+function HighlightCellInput(props) {
+	const { type, operator, onChange, value, interceptorManager } = props;
+	const localeService = useDependency(LocaleService);
+	const [inputNumberValue, setInputNumberValue] = useState(() => typeof value === "number" ? value : 0);
+	const [numberError, setNumberError] = useState("");
+	const [inputTextValue, setInputTextValue] = useState(() => typeof value === "string" ? value : "");
+	const [textError, setTextError] = useState("");
+	const [inputNumberMin, setInputNumberMin] = useState(() => Array.isArray(value) ? value[0] === void 0 ? 0 : value[0] : 0);
+	const [numberMinError, setNumberMinError] = useState("");
+	const [inputNumberMax, setInputNumberMax] = useState(() => Array.isArray(value) ? value[1] === void 0 ? 100 : value[1] : 100);
+	const [numberMaxError, setNumberMaxError] = useState("");
+	useEffect(() => {
+		switch (type) {
+			case CFSubRuleType.text:
+				if ([
+					CFTextOperator.beginsWith,
+					CFTextOperator.endsWith,
+					CFTextOperator.containsText,
+					CFTextOperator.notContainsText,
+					CFTextOperator.equal,
+					CFTextOperator.notEqual
+				].includes(operator)) onChange(inputTextValue);
+				break;
+			case CFSubRuleType.number:
+				if ([
+					CFNumberOperator.equal,
+					CFNumberOperator.notEqual,
+					CFNumberOperator.greaterThan,
+					CFNumberOperator.greaterThanOrEqual,
+					CFNumberOperator.lessThan,
+					CFNumberOperator.lessThanOrEqual
+				].includes(operator)) onChange(inputNumberValue);
+				if ([CFNumberOperator.between, CFNumberOperator.notBetween].includes(operator)) onChange([inputNumberMin, inputNumberMax]);
+				break;
+		}
+	}, [type]);
+	useEffect(() => {
+		const dispose = interceptorManager.intercept(interceptorManager.getInterceptPoints().beforeSubmit, { handler: (v, _c, next) => {
+			switch (type) {
+				case CFSubRuleType.text: if ([
+					CFTextOperator.beginsWith,
+					CFTextOperator.containsText,
+					CFTextOperator.endsWith,
+					CFTextOperator.notEqual,
+					CFTextOperator.notContainsText,
+					CFTextOperator.equal
+				].includes(operator)) {
+					if (!inputTextValue) {
+						setTextError(localeService.t("sheets-conditional-formatting-ui.errorMessage.notBlank"));
+						return false;
+					}
+					return next(v);
+				}
+			}
+			return next(v);
+		} });
+		return () => {
+			dispose();
+		};
+	}, [
+		type,
+		inputNumberValue,
+		inputTextValue,
+		operator
+	]);
+	switch (type) {
+		case CFSubRuleType.text:
+			if ([
+				CFTextOperator.beginsWith,
+				CFTextOperator.endsWith,
+				CFTextOperator.containsText,
+				CFTextOperator.notContainsText,
+				CFTextOperator.equal,
+				CFTextOperator.notEqual
+			].includes(operator)) {
+				const _onChange = (value) => {
+					setInputTextValue(value);
+					onChange(value);
+				};
+				return /* @__PURE__ */ jsx("div", {
+					className: "univer-mt-3",
+					children: /* @__PURE__ */ jsx(WrapperError, {
+						errorText: textError,
+						children: /* @__PURE__ */ jsx(Input, {
+							value: inputTextValue,
+							onChange: (v) => {
+								setTextError("");
+								_onChange(v);
+							}
+						})
+					})
+				});
+			}
+			break;
+		case CFSubRuleType.number:
+			if ([
+				CFNumberOperator.equal,
+				CFNumberOperator.notEqual,
+				CFNumberOperator.greaterThan,
+				CFNumberOperator.greaterThanOrEqual,
+				CFNumberOperator.lessThan,
+				CFNumberOperator.lessThanOrEqual
+			].includes(operator)) {
+				const _onChange = (value) => {
+					setInputNumberValue(value || 0);
+					onChange(value || 0);
+					setNumberError("");
+				};
+				return /* @__PURE__ */ jsx("div", {
+					className: "univer-mt-3",
+					children: /* @__PURE__ */ jsx(WrapperError, {
+						errorText: numberError,
+						children: /* @__PURE__ */ jsx(InputNumber, {
+							className: "univer-w-full",
+							min: Number.MIN_SAFE_INTEGER,
+							max: Number.MAX_SAFE_INTEGER,
+							value: inputNumberValue,
+							onChange: _onChange
+						})
+					})
+				});
+			}
+			if ([CFNumberOperator.between, CFNumberOperator.notBetween].includes(operator)) {
+				const onChangeMin = (_value) => {
+					setInputNumberMin(_value || 0);
+					onChange([_value || 0, inputNumberMax]);
+					setNumberMinError("");
+				};
+				const onChangeMax = (_value) => {
+					setInputNumberMax(_value || 0);
+					onChange([inputNumberMin, _value || 0]);
+					setNumberMaxError("");
+				};
+				return /* @__PURE__ */ jsxs("div", {
+					className: "univer-mt-3 univer-flex univer-items-center",
+					children: [/* @__PURE__ */ jsx(WrapperError, {
+						errorText: numberMinError,
+						children: /* @__PURE__ */ jsx(InputNumber, {
+							min: Number.MIN_SAFE_INTEGER,
+							max: Number.MAX_SAFE_INTEGER,
+							value: inputNumberMin,
+							onChange: onChangeMin
+						})
+					}), /* @__PURE__ */ jsx(WrapperError, {
+						errorText: numberMaxError,
+						children: /* @__PURE__ */ jsx(InputNumber, {
+							className: "univer-ml-3",
+							min: Number.MIN_SAFE_INTEGER,
+							max: Number.MAX_SAFE_INTEGER,
+							value: inputNumberMax,
+							onChange: onChangeMax
+						})
+					})]
+				});
+			}
+	}
+	return null;
+}
+const getOperatorOptions = (type) => {
+	switch (type) {
+		case CFSubRuleType.text: return [
+			createOptionItem(CFTextOperator.containsText),
+			createOptionItem(CFTextOperator.notContainsText),
+			createOptionItem(CFTextOperator.beginsWith),
+			createOptionItem(CFTextOperator.endsWith),
+			createOptionItem(CFTextOperator.equal),
+			createOptionItem(CFTextOperator.notEqual),
+			createOptionItem(CFTextOperator.containsBlanks),
+			createOptionItem(CFTextOperator.notContainsBlanks),
+			createOptionItem(CFTextOperator.containsErrors),
+			createOptionItem(CFTextOperator.notContainsErrors)
+		];
+		case CFSubRuleType.number: return [
+			createOptionItem(CFNumberOperator.between),
+			createOptionItem(CFNumberOperator.notBetween),
+			createOptionItem(CFNumberOperator.equal),
+			createOptionItem(CFNumberOperator.notEqual),
+			createOptionItem(CFNumberOperator.greaterThan),
+			createOptionItem(CFNumberOperator.greaterThanOrEqual),
+			createOptionItem(CFNumberOperator.lessThan),
+			createOptionItem(CFNumberOperator.lessThanOrEqual)
+		];
+		case CFSubRuleType.timePeriod: return [
+			createOptionItem(CFTimePeriodOperator.yesterday),
+			createOptionItem(CFTimePeriodOperator.today),
+			createOptionItem(CFTimePeriodOperator.tomorrow),
+			createOptionItem(CFTimePeriodOperator.last7Days),
+			createOptionItem(CFTimePeriodOperator.lastWeek),
+			createOptionItem(CFTimePeriodOperator.thisWeek),
+			createOptionItem(CFTimePeriodOperator.nextWeek),
+			createOptionItem(CFTimePeriodOperator.lastMonth),
+			createOptionItem(CFTimePeriodOperator.thisMonth),
+			createOptionItem(CFTimePeriodOperator.nextMonth)
+		];
+		default: return [];
+	}
+};
+const HighlightCellStyleEditor = (props) => {
+	var _props$rule;
+	const { interceptorManager, onChange } = props;
+	const localeService = useDependency(LocaleService);
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === CFRuleType.highlightCell ? props.rule : void 0;
+	const [subType, setSubType] = useState(() => {
+		const defaultV = CFSubRuleType.text;
+		if (!rule) return defaultV;
+		return rule.subType || defaultV;
+	});
+	const typeOptions = [
+		{
+			value: CFSubRuleType.text,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.text")
+		},
+		{
+			value: CFSubRuleType.number,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.number")
+		},
+		{
+			value: CFSubRuleType.timePeriod,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.timePeriod")
+		},
+		{
+			value: CFSubRuleType.duplicateValues,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.duplicateValues")
+		},
+		{
+			value: CFSubRuleType.uniqueValues,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.uniqueValues")
+		}
+	];
+	const operatorOptions = useMemo(() => getOperatorOptions(subType).map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	})), [localeService, subType]);
+	const [operator, setOperator] = useState(() => {
+		var _operatorOptions$;
+		const defaultV = (_operatorOptions$ = operatorOptions[0]) === null || _operatorOptions$ === void 0 ? void 0 : _operatorOptions$.value;
+		if (!rule) return defaultV;
+		return "operator" in rule ? rule.operator : defaultV;
+	});
+	const [value, setValue] = useState(() => {
+		const defaultV = "";
+		if (!rule) return defaultV;
+		if ("value" in rule && rule.value !== void 0) return rule.value;
+		return "operator" in rule ? createDefaultValue(rule.subType, rule.operator) : defaultV;
+	});
+	const [style, setStyle] = useState({});
+	const getResult = useMemo(() => (option) => {
+		const nextSubType = option.subType ?? subType;
+		const nextOperator = option.operator ?? operator;
+		const nextValue = option.value ?? value;
+		const nextStyle = option.style ?? style;
+		switch (nextSubType) {
+			case CFSubRuleType.duplicateValues: return {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.duplicateValues,
+				style: nextStyle
+			};
+			case CFSubRuleType.uniqueValues: return {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.uniqueValues,
+				style: nextStyle
+			};
+			case CFSubRuleType.text: return {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.text,
+				operator: isTextOperator(nextOperator) ? nextOperator : CFTextOperator.containsText,
+				style: nextStyle,
+				value: typeof nextValue === "string" ? nextValue : void 0
+			};
+			case CFSubRuleType.timePeriod: return {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.timePeriod,
+				operator: isTimePeriodOperator(nextOperator) ? nextOperator : CFTimePeriodOperator.today,
+				style: nextStyle
+			};
+			case CFSubRuleType.number: {
+				const numberOperator = isNumberOperator(nextOperator) ? nextOperator : CFNumberOperator.equal;
+				if (numberOperator === CFNumberOperator.between || numberOperator === CFNumberOperator.notBetween) {
+					const range = Array.isArray(nextValue) ? nextValue : [0, 100];
+					return {
+						type: CFRuleType.highlightCell,
+						subType: CFSubRuleType.number,
+						operator: numberOperator,
+						style: nextStyle,
+						value: range
+					};
+				}
+				return {
+					type: CFRuleType.highlightCell,
+					subType: CFSubRuleType.number,
+					operator: numberOperator,
+					style: nextStyle,
+					value: typeof nextValue === "number" ? nextValue : void 0
+				};
+			}
+		}
+	}, [
+		subType,
+		operator,
+		value,
+		style
+	]);
+	useEffect(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({});
+		} });
+	}, [getResult, interceptorManager]);
+	useEffect(() => {
+		if (!typeOptions.some((item) => item.value === subType)) setSubType(typeOptions[0].value);
+	}, [typeOptions]);
+	const onTypeChange = (v) => {
+		var _typeOptions$find, _operatorList$;
+		const _subType = (_typeOptions$find = typeOptions.find((item) => item.value === v)) === null || _typeOptions$find === void 0 ? void 0 : _typeOptions$find.value;
+		if (!_subType) return;
+		const _operator = (_operatorList$ = getOperatorOptions(_subType).map((option) => ({
+			...option,
+			label: localeService.t(option.label)
+		}))[0]) === null || _operatorList$ === void 0 ? void 0 : _operatorList$.value;
+		setSubType(_subType);
+		setOperator(_operator);
+		_operator && setValue(createDefaultValue(_subType, _operator));
+		onChange(getResult({
+			subType: _subType,
+			operator: _operator
+		}));
+	};
+	const onOperatorChange = (v) => {
+		var _operatorOptions$find;
+		const _operator = (_operatorOptions$find = operatorOptions.find((item) => item.value === v)) === null || _operatorOptions$find === void 0 ? void 0 : _operatorOptions$find.value;
+		if (!_operator) return;
+		setOperator(_operator);
+		onChange(getResult({ operator: _operator }));
+	};
+	const onInputChange = (value) => {
+		setValue(value);
+		onChange(getResult({ value }));
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+		}),
+		/* @__PURE__ */ jsxs("div", {
+			className: "univer-flex univer-justify-between univer-gap-4",
+			children: [/* @__PURE__ */ jsx(Select, {
+				className: "univer-mt-3 univer-w-full",
+				onChange: onTypeChange,
+				value: subType,
+				options: typeOptions
+			}), (operatorOptions === null || operatorOptions === void 0 ? void 0 : operatorOptions.length) && /* @__PURE__ */ jsx(Select, {
+				className: "univer-mt-3 univer-w-full",
+				onChange: onOperatorChange,
+				value: operator || "",
+				options: operatorOptions
+			})]
+		}),
+		/* @__PURE__ */ jsx(HighlightCellInput, {
+			value,
+			interceptorManager,
+			type: subType,
+			operator,
+			rule,
+			onChange: onInputChange
+		}, `${subType}_${operator}`),
+		/* @__PURE__ */ jsx("div", {
+			className: previewClassName,
+			children: /* @__PURE__ */ jsx(Preview, { rule: getResult({}) })
+		}),
+		/* @__PURE__ */ jsx(ConditionalStyleEditor, {
+			style: rule === null || rule === void 0 ? void 0 : rule.style,
+			className: "univer-ml-1",
+			onChange: (v) => {
+				setStyle(v);
+				onChange(getResult({ style: v }));
+			}
+		})
+	] });
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/IconSet.tsx
+const getIcon = (iconType, iconId) => {
+	return (iconMap[iconType] || [])[Number(iconId)] || "";
+};
+const TextInput = (props) => {
+	var _getActiveSheet;
+	const { error, type, onChange } = props;
+	const univerInstanceService = useDependency(IUniverInstanceService);
+	const unitId = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getUnitId();
+	const subUnitId = (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+	const formulaEditorRef = useRef(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = useState(false);
+	useSidebarClick((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	return /* @__PURE__ */ jsx("div", {
+		className: "univer-relative",
+		children: type !== CFValueType.formula ? /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(InputNumber, {
+			className: clsx({ "univer-border-red-500": error }),
+			value: Number(props.value) || 0,
+			onChange: (v) => onChange(v ?? 0)
+		}), error && /* @__PURE__ */ jsx("div", {
+			className: "univer-absolute univer-text-xs univer-text-red-500",
+			children: error
+		})] }) : /* @__PURE__ */ jsx("div", {
+			className: "univer-w-full",
+			children: /* @__PURE__ */ jsx(FormulaEditor, {
+				ref: formulaEditorRef,
+				className: clsx("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", borderClassName),
+				initValue: String(props.value),
+				unitId,
+				subUnitId,
+				isFocus: isFocusFormulaEditor,
+				onChange: (v = "") => {
+					onChange(v || "");
+				},
+				onFocus: () => setIsFocusFormulaEditor(true)
+			})
+		})
+	});
+};
+const createDefaultConfigItem = (iconType, index, list) => ({
+	operator: CFNumberOperator.greaterThan,
+	value: {
+		type: CFValueType.num,
+		value: (list.length - 1 - index) * 10
+	},
+	iconType,
+	iconId: String(index)
+});
+const IconGroupList = (props) => {
+	const { iconType, onClick } = props;
+	const localeService = useDependency(LocaleService);
+	const direction = useObservable(localeService.direction$, localeService.getDirection());
+	return /* @__PURE__ */ jsx("div", {
+		dir: direction,
+		className: "univer-w-80",
+		children: iconGroup.map((group) => {
+			return /* @__PURE__ */ jsxs("div", {
+				className: "univer-mb-4 last:univer-mb-0",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "univer-mb-2 univer-px-1 univer-text-xs univer-font-medium univer-text-gray-500 dark:!univer-text-gray-400",
+					children: localeService.t(group.title)
+				}), /* @__PURE__ */ jsx("div", {
+					dir: direction,
+					"data-u-comp": "cf-icon-set-group-grid",
+					className: "univer-grid univer-grid-cols-2 univer-gap-1",
+					children: group.group.map((groupItem, groupItemIndex) => {
+						const selected = groupItem.name === iconType;
+						return /* @__PURE__ */ jsx("button", {
+							type: "button",
+							"aria-label": `${localeService.t(group.title)} ${groupItemIndex + 1}`,
+							"aria-pressed": selected,
+							className: clsx("univer-flex univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-justify-start univer-rounded-md univer-border-0 univer-bg-transparent univer-px-2 univer-outline-none univer-transition-colors focus-visible:univer-ring-2 focus-visible:univer-ring-primary-600", selected ? "univer-bg-primary-50 univer-ring-1 univer-ring-primary-600 dark:!univer-bg-primary-900" : "hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700"),
+							onClick: () => {
+								onClick(groupItem.name);
+							},
+							children: /* @__PURE__ */ jsx("span", {
+								dir: direction,
+								className: "univer-flex univer-items-center univer-gap-0.5",
+								children: groupItem.list.map((base64, index) => /* @__PURE__ */ jsx("img", {
+									alt: "",
+									className: "univer-size-5",
+									src: base64,
+									draggable: false
+								}, index))
+							})
+						}, groupItem.name);
+					})
+				})]
+			}, group.title);
+		})
+	});
+};
+const IconItemList = (props) => {
+	const { onClick } = props;
+	const localeService = useDependency(LocaleService);
+	const direction = useObservable(localeService.direction$, localeService.getDirection());
+	const list = useMemo(() => {
+		const result = [];
+		for (const key in iconMap) {
+			const iconType = key;
+			iconMap[iconType].forEach((base64, index) => {
+				result.push({
+					iconType,
+					base64,
+					iconId: String(index)
+				});
+			});
+		}
+		return result;
+	}, []);
+	const handleClick = (item) => {
+		onClick(item.iconType, item.iconId);
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		dir: direction,
+		children: [/* @__PURE__ */ jsx("div", {
+			"data-u-comp": "cf-icon-set-no-icon-option",
+			className: "univer-mb-2.5 univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm",
+			onClick: () => handleClick({
+				iconType: IIconSetType.empty,
+				iconId: "",
+				base64: ""
+			}),
+			children: localeService.t("sheets-conditional-formatting-ui.iconSet.noCellIcon")
+		}), /* @__PURE__ */ jsx("div", {
+			className: "univer-flex univer-w-64 univer-flex-wrap univer-gap-2",
+			children: list.map((item) => /* @__PURE__ */ jsx("div", {
+				className: "univer-mb-2 univer-flex univer-cursor-pointer univer-items-center univer-justify-center univer-rounded hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700",
+				children: /* @__PURE__ */ jsx("img", {
+					className: "univer-size-5",
+					src: item.base64,
+					draggable: false,
+					onClick: () => handleClick(item)
+				})
+			}, `${item.iconType}_${item.iconId}`))
+		})]
+	});
+};
+const IconSetRuleEdit = (props) => {
+	const { onChange, configList, errorMap = {} } = props;
+	const localeService = useDependency(LocaleService);
+	const options = [{
+		label: localeService.t(`sheets-conditional-formatting-ui.symbol.${CFNumberOperator.greaterThan}`),
+		value: CFNumberOperator.greaterThan
+	}, {
+		label: localeService.t(`sheets-conditional-formatting-ui.symbol.${CFNumberOperator.greaterThanOrEqual}`),
+		value: CFNumberOperator.greaterThanOrEqual
+	}];
+	const valueTypeOptions = [
+		{
+			label: localeService.t(`sheets-conditional-formatting-ui.valueType.${CFValueType.num}`),
+			value: CFValueType.num
+		},
+		{
+			label: localeService.t(`sheets-conditional-formatting-ui.valueType.${CFValueType.percent}`),
+			value: CFValueType.percent
+		},
+		{
+			label: localeService.t(`sheets-conditional-formatting-ui.valueType.${CFValueType.percentile}`),
+			value: CFValueType.percentile
+		},
+		{
+			label: localeService.t(`sheets-conditional-formatting-ui.valueType.${CFValueType.formula}`),
+			value: CFValueType.formula
+		}
+	];
+	const handleValueValueChange = (v, index) => {
+		onChange([
+			String(index),
+			"value",
+			"value"
+		], v);
+	};
+	const handleOperatorChange = (operator, index) => {
+		onChange([String(index), "operator"], operator);
+		const defaultValue = createDefaultValue(CFSubRuleType.number, operator);
+		handleValueValueChange(defaultValue, index);
+	};
+	const handleValueTypeChange = (v, index) => {
+		onChange([
+			String(index),
+			"value",
+			"type"
+		], v);
+		const item = configList[index];
+		const defaultValue = createDefaultValue(CFSubRuleType.number, item.operator);
+		handleValueValueChange(defaultValue, index);
+	};
+	return useMemo(() => {
+		return configList.map((item, index) => {
+			const error = errorMap[index];
+			const icon = getIcon(item.iconType, item.iconId);
+			const isEnd = index === configList.length - 1;
+			const isFirst = index === 0;
+			const preItem = configList[index - 1];
+			const lessThanText = (preItem === null || preItem === void 0 ? void 0 : preItem.value.type) === CFValueType.formula ? localeService.t("sheets-conditional-formatting-ui.valueType.formula") : preItem === null || preItem === void 0 ? void 0 : preItem.value.value;
+			const handleIconClick = (iconType, iconId) => {
+				const value = {
+					...item,
+					iconId,
+					iconType
+				};
+				onChange([String(index)], value);
+			};
+			return /* @__PURE__ */ jsxs("div", {
+				className: index ? "univer-mt-6" : "univer-mt-3",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "univer-mt-3 univer-flex univer-items-center univer-justify-between univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "univer-w-[45%]",
+							children: [localeService.t("sheets-conditional-formatting-ui.iconSet.icon"), index + 1]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "univer-w-[45%]",
+							children: /* @__PURE__ */ jsxs(Fragment, { children: [!isFirst && !isEnd && localeService.t("sheets-conditional-formatting-ui.iconSet.rule"), !isFirst && !isEnd && /* @__PURE__ */ jsxs("span", {
+								className: "univer-font-medium univer-text-gray-600 dark:!univer-text-gray-200",
+								children: [
+									localeService.t("sheets-conditional-formatting-ui.iconSet.when"),
+									" ",
+									localeService.t(`sheets-conditional-formatting-ui.symbol.${getOppositeOperator(preItem.operator)}`),
+									lessThanText,
+									isEnd ? "" : ` ${localeService.t("sheets-conditional-formatting-ui.iconSet.and")} `
+								]
+							})] })
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						"data-u-comp": "cf-icon-set-rule-grid",
+						className: "univer-mt-3 univer-grid univer-grid-cols-2 univer-gap-4 rtl:univer-grid-flow-dense",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "univer-flex univer-items-center",
+							children: /* @__PURE__ */ jsx(Dropdown, {
+								overlay: /* @__PURE__ */ jsx("div", {
+									className: "univer-rounded-lg univer-p-4",
+									children: /* @__PURE__ */ jsx(IconItemList, {
+										onClick: handleIconClick,
+										iconId: item.iconId,
+										iconType: item.iconType
+									})
+								}),
+								children: /* @__PURE__ */ jsxs("div", {
+									className: clsx("univer-box-border univer-flex univer-h-8 univer-w-full univer-items-center univer-justify-between univer-rounded-md univer-bg-gray-0 univer-px-4 univer-py-2 univer-text-xs univer-text-gray-600 univer-transition-all hover:univer-border-primary-600 dark:!univer-text-gray-200", borderClassName),
+									children: [icon ? /* @__PURE__ */ jsx("img", {
+										src: icon,
+										className: "univer-size-4",
+										draggable: false
+									}) : /* @__PURE__ */ jsx(SlashDoubleIcon, {}), /* @__PURE__ */ jsx(MoreDownIcon, {})]
+								})
+							})
+						}), !isEnd ? /* @__PURE__ */ jsx(Select, {
+							options,
+							value: item.operator,
+							onChange: (v) => {
+								handleOperatorChange(v, index);
+							}
+						}) : /* @__PURE__ */ jsxs("div", {
+							className: "univer-mt-0 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+							children: [localeService.t("sheets-conditional-formatting-ui.iconSet.rule"), /* @__PURE__ */ jsxs("span", {
+								className: "univer-font-medium",
+								children: [
+									localeService.t("sheets-conditional-formatting-ui.iconSet.when"),
+									" ",
+									localeService.t(`sheets-conditional-formatting-ui.symbol.${getOppositeOperator(preItem.operator)}`),
+									lessThanText,
+									isEnd ? "" : ` ${localeService.t("sheets-conditional-formatting-ui.iconSet.and")} `
+								]
+							})]
+						})]
+					}),
+					!isEnd ? /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsxs("div", {
+						className: "univer-mt-3 univer-grid univer-grid-cols-2 univer-gap-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+						children: [/* @__PURE__ */ jsx("div", { children: localeService.t("sheets-conditional-formatting-ui.iconSet.type") }), /* @__PURE__ */ jsx("div", { children: localeService.t("sheets-conditional-formatting-ui.iconSet.value") })]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "univer-mt-3 univer-grid univer-grid-cols-2 univer-gap-4",
+						children: [/* @__PURE__ */ jsx(Select, {
+							options: valueTypeOptions,
+							value: item.value.type,
+							onChange: (v) => {
+								handleValueTypeChange(v, index);
+							}
+						}), /* @__PURE__ */ jsx(TextInput, {
+							id: index,
+							type: item.value.type,
+							error,
+							value: item.value.value || "",
+							onChange: (v) => {
+								handleValueValueChange(v, index);
+							}
+						})]
+					})] }) : /* @__PURE__ */ jsx("div", {})
+				]
+			}, index);
+		});
+	}, [configList, errorMap]);
+};
+const IconSet = (props) => {
+	var _props$rule;
+	const { interceptorManager } = props;
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === CFRuleType.iconSet ? props.rule : void 0;
+	const localeService = useDependency(LocaleService);
+	const direction = useObservable(localeService.direction$, localeService.getDirection());
+	const [errorMap, setErrorMap] = useState({});
+	const [currentIconType, setCurrentIconType] = useState(() => {
+		const defaultV = Object.keys(iconMap)[0];
+		if (rule && rule.config.length) {
+			const type = rule.config[0].iconType;
+			if (!rule.config.some((item) => item.iconType !== type)) return type;
+		}
+		return defaultV;
+	});
+	const [configList, setConfigList] = useState(() => {
+		if (rule && rule.config.length) return Tools.deepClone(rule === null || rule === void 0 ? void 0 : rule.config);
+		const list = iconMap[currentIconType] || [];
+		return new Array(list.length).fill("").map((_e, index, list) => {
+			if (index === list.length - 1) return {
+				operator: CFNumberOperator.lessThanOrEqual,
+				value: {
+					type: CFValueType.num,
+					value: Number.MAX_SAFE_INTEGER
+				},
+				iconType: currentIconType,
+				iconId: String(index)
+			};
+			return createDefaultConfigItem(currentIconType, index, list);
+		});
+	});
+	const [isShowValue, setIsShowValue] = useState(() => {
+		if (!rule) return true;
+		return !!rule.isShowValue;
+	});
+	const previewIcon = useMemo(() => {
+		return /* @__PURE__ */ jsx("div", {
+			"data-u-comp": "cf-icon-set-preview",
+			className: "univer-flex univer-items-center rtl:univer-flex-row-reverse",
+			children: configList.map((item) => {
+				return getIcon(item.iconType, item.iconId);
+			}).map((icon, index) => icon ? /* @__PURE__ */ jsx("img", {
+				className: "univer-size-5",
+				src: icon
+			}, index) : /* @__PURE__ */ jsx(SlashDoubleIcon, { className: "univer-size-5" }, index))
+		});
+	}, [configList]);
+	const checkResult = (_configList) => {
+		if (_configList.reduce((pre, cur, index) => {
+			if (pre.preType && !pre.result || _configList.length - 1 === index) return pre;
+			if (cur.value.type === CFValueType.formula) return {
+				preType: CFValueType.formula,
+				result: false
+			};
+			if (pre.preType) return {
+				result: pre.preType === cur.value.type,
+				preType: cur.value.type
+			};
+			else return {
+				result: true,
+				preType: cur.value.type
+			};
+		}, {
+			result: true,
+			preType: ""
+		}).result && [
+			CFValueType.num,
+			CFValueType.percent,
+			CFValueType.percentile
+		].includes(_configList[0].value.type)) {
+			const result = {};
+			_configList.forEach((item, index, arr) => {
+				if (index - 1 < 0 || index === arr.length - 1) return;
+				const preItem = _configList[index - 1];
+				const preOperator = getOppositeOperator(preItem.operator);
+				if (!compareWithNumber({
+					operator: preOperator,
+					value: preItem.value.value
+				}, item.value.value)) result[index] = `${localeService.t(`sheets-conditional-formatting-ui.form.${preOperator}`, String(preItem.value.value))} `;
+			});
+			return result;
+		}
+		return {};
+	};
+	const handleChange = (keys, v) => {
+		if (get(configList, keys) !== v) {
+			set(configList, keys, v);
+			setConfigList([...configList]);
+			setErrorMap(checkResult(configList));
+		}
+	};
+	const handleClickIconList = (iconType) => {
+		setCurrentIconType(iconType);
+		const list = iconMap[iconType] || [];
+		const config = new Array(list.length).fill("").map((_e, index, list) => createDefaultConfigItem(iconType, index, list));
+		setConfigList(config);
+		setErrorMap(checkResult(config));
+	};
+	useEffect(() => {
+		const dispose = interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return {
+				type: CFRuleType.iconSet,
+				isShowValue,
+				config: configList
+			};
+		} });
+		return () => {
+			dispose();
+		};
+	}, [
+		isShowValue,
+		configList,
+		interceptorManager
+	]);
+	useEffect(() => {
+		const dispose = interceptorManager.intercept(interceptorManager.getInterceptPoints().beforeSubmit, { handler() {
+			const currentErrorMap = checkResult(configList);
+			setErrorMap(currentErrorMap);
+			return Object.keys(currentErrorMap).length === 0;
+		} });
+		return () => {
+			dispose();
+		};
+	}, [
+		isShowValue,
+		configList,
+		interceptorManager,
+		errorMap
+	]);
+	const reverseIcon = () => {
+		const iconList = configList.map((item) => ({ ...item }));
+		configList.forEach((item, index) => {
+			const mirrorIndex = configList.length - 1 - index;
+			const newIcon = iconList[mirrorIndex];
+			item.iconId = newIcon.iconId;
+			item.iconType = newIcon.iconType;
+		});
+		setConfigList([...configList]);
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		"data-u-comp": "cf-icon-set-editor",
+		dir: direction,
+		children: [
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-4 univer-text-sm univer-text-gray-600",
+				children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-3",
+				children: /* @__PURE__ */ jsx(Dropdown, {
+					overlay: /* @__PURE__ */ jsx("div", {
+						dir: direction,
+						className: "univer-rounded-lg univer-p-3",
+						children: /* @__PURE__ */ jsx(IconGroupList, {
+							iconType: currentIconType,
+							onClick: handleClickIconList
+						})
+					}),
+					children: /* @__PURE__ */ jsxs("div", {
+						className: clsx("univer-box-border univer-flex univer-h-8 univer-w-full univer-items-center univer-justify-between univer-rounded-md univer-bg-gray-0 univer-px-4 univer-py-2 univer-text-xs univer-text-gray-600 univer-transition-all hover:univer-border-primary-600", borderClassName),
+						children: [previewIcon, /* @__PURE__ */ jsx(MoreDownIcon, {})]
+					})
+				})
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "univer-mt-3 univer-flex univer-items-center univer-gap-2 univer-text-xs rtl:univer-flex-row-reverse rtl:univer-justify-end",
+				children: [/* @__PURE__ */ jsxs("div", {
+					"data-u-comp": "cf-icon-set-option-row",
+					className: "univer-flex univer-items-center univer-text-xs",
+					children: [/* @__PURE__ */ jsx(Checkbox, { onChange: reverseIcon }), localeService.t("sheets-conditional-formatting-ui.iconSet.reverseIconOrder")]
+				}), /* @__PURE__ */ jsxs("div", {
+					"data-u-comp": "cf-icon-set-option-row",
+					className: "univer-flex univer-items-center univer-text-xs",
+					children: [/* @__PURE__ */ jsx(Checkbox, {
+						checked: !isShowValue,
+						onChange: (v) => {
+							setIsShowValue(!v);
+						}
+					}), localeService.t("sheets-conditional-formatting-ui.iconSet.onlyShowIcon")]
+				})]
+			}),
+			/* @__PURE__ */ jsx(IconSetRuleEdit, {
+				errorMap,
+				onChange: handleChange,
+				configList
+			})
+		]
+	});
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/Rank.tsx
+const RankStyleEditor = (props) => {
+	var _props$rule;
+	const { onChange, interceptorManager } = props;
+	const localeService = useDependency(LocaleService);
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === CFRuleType.highlightCell ? props.rule : void 0;
+	const options = [
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.isNotBottom"),
+			value: "isNotBottom"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.isBottom"),
+			value: "isBottom"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.greaterThanAverage"),
+			value: "greaterThanAverage"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.lessThanAverage"),
+			value: "lessThanAverage"
+		}
+	];
+	const [type, setType] = useState(() => {
+		const defaultV = options[0].value;
+		const type = rule === null || rule === void 0 ? void 0 : rule.type;
+		if (!rule) return defaultV;
+		switch (type) {
+			case CFRuleType.highlightCell: switch (rule.subType) {
+				case CFSubRuleType.average:
+					if ([CFNumberOperator.greaterThan, CFNumberOperator.greaterThanOrEqual].includes(rule.operator)) return "greaterThanAverage";
+					if ([CFNumberOperator.lessThan, CFNumberOperator.lessThanOrEqual].includes(rule.operator)) return "lessThanAverage";
+					return defaultV;
+				case CFSubRuleType.rank: if (rule.isBottom) return "isBottom";
+				else return "isNotBottom";
+			}
+		}
+		return defaultV;
+	});
+	const [value, setValue] = useState(() => {
+		const defaultV = 10;
+		const type = rule === null || rule === void 0 ? void 0 : rule.type;
+		if (!rule) return defaultV;
+		switch (type) {
+			case CFRuleType.highlightCell: switch (rule.subType) {
+				case CFSubRuleType.rank: return rule.value || defaultV;
+			}
+		}
+		return defaultV;
+	});
+	const [isPercent, setIsPercent] = useState(() => {
+		const defaultV = false;
+		const type = rule === null || rule === void 0 ? void 0 : rule.type;
+		if (!rule) return defaultV;
+		switch (type) {
+			case CFRuleType.highlightCell: switch (rule.subType) {
+				case CFSubRuleType.rank: return rule.isPercent || defaultV;
+			}
+		}
+		return defaultV;
+	});
+	const [style, setStyle] = useState({});
+	const getResult = (config) => {
+		const { type, isPercent, value, style } = config;
+		switch (type) {
+			case "isNotBottom": return {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.rank,
+				isPercent,
+				isBottom: false,
+				value,
+				style
+			};
+			case "isBottom": return {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.rank,
+				isPercent,
+				isBottom: true,
+				value,
+				style
+			};
+			case "greaterThanAverage": return {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.average,
+				operator: CFNumberOperator.greaterThan,
+				style
+			};
+			case "lessThanAverage": return {
+				type: CFRuleType.highlightCell,
+				subType: CFSubRuleType.average,
+				operator: CFNumberOperator.lessThan,
+				style
+			};
+		}
+	};
+	useEffect(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({
+				type,
+				isPercent,
+				value,
+				style
+			});
+		} });
+	}, [
+		type,
+		isPercent,
+		value,
+		style,
+		interceptorManager
+	]);
+	const _onChange = (config) => {
+		onChange(getResult(config));
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+		}),
+		/* @__PURE__ */ jsx(Select, {
+			className: "univer-mt-3 univer-w-full",
+			value: type,
+			options,
+			onChange: (v) => {
+				var _options$find;
+				const nextType = (_options$find = options.find((option) => option.value === v)) === null || _options$find === void 0 ? void 0 : _options$find.value;
+				if (nextType) {
+					setType(nextType);
+					_onChange({
+						type: nextType,
+						isPercent,
+						value,
+						style
+					});
+				}
+			}
+		}),
+		["isNotBottom", "isBottom"].includes(type) && /* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-3 univer-flex univer-items-center univer-gap-2",
+			children: [/* @__PURE__ */ jsx(InputNumber, {
+				min: 1,
+				max: 1e3,
+				value,
+				onChange: (v) => {
+					const value = v || 0;
+					setValue(value);
+					_onChange({
+						type,
+						isPercent,
+						value,
+						style
+					});
+				}
+			}), /* @__PURE__ */ jsxs("div", {
+				className: "univer-flex univer-items-center univer-text-xs",
+				children: [/* @__PURE__ */ jsx(Checkbox, {
+					checked: isPercent,
+					onChange: (v) => {
+						setIsPercent(!!v);
+						_onChange({
+							type,
+							isPercent: !!v,
+							value,
+							style
+						});
+					}
+				}), localeService.t("sheets-conditional-formatting-ui.valueType.percent")]
+			})]
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: previewClassName,
+			children: /* @__PURE__ */ jsx(Preview, { rule: getResult({
+				type,
+				isPercent,
+				value,
+				style
+			}) })
+		}),
+		/* @__PURE__ */ jsx(ConditionalStyleEditor, {
+			style: rule === null || rule === void 0 ? void 0 : rule.style,
+			className: "univer-mt-3",
+			onChange: (v) => {
+				setStyle(v);
+				_onChange({
+					type,
+					isPercent,
+					value,
+					style: v
+				});
+			}
+		})
+	] });
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/type.ts
+const beforeSubmit = createInterceptorKey("beforeSubmit");
+const submit = createInterceptorKey("submit");
+
+//#endregion
+//#region src/views/panel/RuleEdit.tsx
+const getUnitId = (univerInstanceService) => univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getUnitId();
+const getSubUnitId = (univerInstanceService) => {
+	var _getActiveSheet;
+	return (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+};
+const RuleEdit = (props) => {
+	var _props$rule, _props$rule5;
+	const localeService = useDependency(LocaleService);
+	const commandService = useDependency(ICommandService);
+	const univerInstanceService = useDependency(IUniverInstanceService);
+	const conditionalFormattingRuleModel = useDependency(ConditionalFormattingRuleModel);
+	const selectionManagerService = useDependency(SheetsSelectionsService);
+	const unitId = getUnitId(univerInstanceService);
+	const subUnitId = getSubUnitId(univerInstanceService);
+	const [errorText, setErrorText] = useState(void 0);
+	const rangeResult = useRef(((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.ranges) ?? []);
+	const rangeSelectorTouched = useRef(false);
+	const rangeString = useMemo(() => {
+		var _props$rule2;
+		let ranges = (_props$rule2 = props.rule) === null || _props$rule2 === void 0 ? void 0 : _props$rule2.ranges;
+		if (!(ranges === null || ranges === void 0 ? void 0 : ranges.length)) {
+			var _selectionManagerServ;
+			ranges = ((_selectionManagerServ = selectionManagerService.getCurrentSelections()) === null || _selectionManagerServ === void 0 ? void 0 : _selectionManagerServ.map((s) => s.range)) ?? [];
+		}
+		rangeResult.current = ranges;
+		if (!(ranges === null || ranges === void 0 ? void 0 : ranges.length)) return "";
+		return ranges.map((range) => {
+			const v = serializeRange(range);
+			return v === "NaN" ? "" : v;
+		}).filter((r) => !!r).join(",");
+	}, [props.rule]);
+	const options = [
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.highlightCell"),
+			value: "1"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.rankAndAverage"),
+			value: "2"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.dataBar"),
+			value: "3"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.colorScale"),
+			value: "4"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.formula"),
+			value: "5"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.iconSet"),
+			value: "6"
+		}
+	];
+	const [ruleType, setRuleType] = useState(() => {
+		var _props$rule3;
+		const type = (_props$rule3 = props.rule) === null || _props$rule3 === void 0 ? void 0 : _props$rule3.rule.type;
+		const defaultType = options[0].value;
+		if (!type) return defaultType;
+		switch (type) {
+			case CFRuleType.highlightCell:
+				var _props$rule4;
+				switch ((_props$rule4 = props.rule) === null || _props$rule4 === void 0 ? void 0 : _props$rule4.rule.subType) {
+					case CFSubRuleType.number:
+					case CFSubRuleType.text:
+					case CFSubRuleType.duplicateValues:
+					case CFSubRuleType.uniqueValues:
+					case CFSubRuleType.timePeriod: return "1";
+					case CFSubRuleType.average:
+					case CFSubRuleType.rank: return "2";
+					case CFSubRuleType.formula: return "5";
+				}
+				break;
+			case CFRuleType.dataBar: return "3";
+			case CFRuleType.colorScale: return "4";
+			case CFRuleType.iconSet: return "6";
+		}
+		return defaultType;
+	});
+	const result = useRef(void 0);
+	const interceptorManager = useMemo(() => {
+		return new InterceptorManager({
+			beforeSubmit,
+			submit
+		});
+	}, []);
+	const StyleEditor = useMemo(() => {
+		switch (ruleType) {
+			case "1": return HighlightCellStyleEditor;
+			case "2": return RankStyleEditor;
+			case "3": return DataBarStyleEditor;
+			case "4": return ColorScaleStyleEditor;
+			case "5": return FormulaStyleEditor;
+			case "6": return IconSet;
+			default: return HighlightCellStyleEditor;
+		}
+	}, [ruleType]);
+	useEffect(() => {
+		const disposable = commandService.onCommandExecuted((commandInfo) => {
+			if (commandInfo.id === RemoveSheetMutation.id) {
+				const params = commandInfo.params;
+				if (params.subUnitId === subUnitId && params.unitId === unitId) props.onCancel();
+			}
+			if (commandInfo.id === SetWorksheetActiveOperation.id) props.onCancel();
+		});
+		return () => disposable.dispose();
+	}, []);
+	const onStyleChange = (config) => {
+		result.current = config;
+	};
+	const onRangeSelectorChange = (rangeString) => {
+		if (!rangeSelectorTouched.current && rangeString.length < 1 && rangeResult.current.length > 0) return;
+		rangeSelectorTouched.current = true;
+		const result = rangeString.split(",").filter((e) => !!e).map(deserializeRangeWithSheet).map((item) => item.range);
+		rangeResult.current = result;
+	};
+	const handleSubmit = () => {
+		const getRanges = () => {
+			const worksheet = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getActiveSheet();
+			if (!worksheet) throw new Error("No active sheet found");
+			return rangeResult.current.map((range) => setEndForRange(range, worksheet.getRowCount(), worksheet.getColumnCount())).filter((range) => !(Number.isNaN(range.startRow) || Number.isNaN(range.startColumn)));
+		};
+		const ranges = getRanges();
+		if (ranges.length < 1) {
+			setErrorText(localeService.t("sheets-conditional-formatting-ui.errorMessage.rangeError"));
+			return;
+		}
+		if (interceptorManager.fetchThroughInterceptors(interceptorManager.getInterceptPoints().beforeSubmit)(true, null)) {
+			const result = interceptorManager.fetchThroughInterceptors(interceptorManager.getInterceptPoints().submit)(null, null);
+			if (result) {
+				const unitId = getUnitId(univerInstanceService);
+				const subUnitId = getSubUnitId(univerInstanceService);
+				if (!unitId || !subUnitId) throw new Error("No active sheet found");
+				let rule = {};
+				if (props.rule && props.rule.cfId) {
+					rule = {
+						...props.rule,
+						ranges,
+						rule: result
+					};
+					commandService.executeCommand(SetCfCommand.id, {
+						unitId,
+						subUnitId,
+						rule
+					});
+					props.onCancel();
+				} else {
+					rule = {
+						cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+						ranges,
+						rule: result,
+						stopIfTrue: false
+					};
+					commandService.executeCommand(AddCfCommand.id, {
+						unitId,
+						subUnitId,
+						rule
+					});
+					props.onCancel();
+				}
+			}
+		}
+	};
+	const handleCancel = () => {
+		props.onCancel();
+	};
+	const handleVerify = (v, rangeText) => {
+		if (!rangeSelectorTouched.current && !v && rangeText.length < 1) {
+			setErrorText(void 0);
+			return;
+		}
+		if (v) if (rangeText.length < 1) setErrorText(localeService.t("sheets-conditional-formatting-ui.errorMessage.rangeError"));
+		else setErrorText(void 0);
+		else setErrorText(localeService.t("sheets-conditional-formatting-ui.errorMessage.rangeError"));
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.range")
+		}),
+		/* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-4",
+			children: [/* @__PURE__ */ jsx(RangeSelector, {
+				unitId,
+				subUnitId,
+				initialValue: rangeString,
+				onChange: (_, text) => onRangeSelectorChange(text),
+				onVerify: handleVerify
+			}), errorText && /* @__PURE__ */ jsx("div", {
+				className: "univer-mt-1 univer-text-xs univer-text-red-500",
+				children: errorText
+			})]
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleType")
+		}),
+		/* @__PURE__ */ jsx(Select, {
+			className: "univer-mt-4 univer-w-full",
+			value: ruleType,
+			options,
+			onChange: (e) => setRuleType(e)
+		}),
+		/* @__PURE__ */ jsx(StyleEditor, {
+			interceptorManager,
+			rule: (_props$rule5 = props.rule) === null || _props$rule5 === void 0 ? void 0 : _props$rule5.rule,
+			onChange: onStyleChange
+		}),
+		/* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-4 univer-flex univer-justify-end univer-gap-2",
+			children: [/* @__PURE__ */ jsx(Button, {
+				onClick: handleCancel,
+				children: localeService.t("sheets-conditional-formatting-ui.panel.cancel")
+			}), /* @__PURE__ */ jsx(Button, {
+				variant: "primary",
+				onClick: handleSubmit,
+				children: localeService.t("sheets-conditional-formatting-ui.panel.submit")
+			})]
+		})
+	] });
+};
+
+//#endregion
+//#region src/views/panel/RuleList.tsx
+const getRuleDescribe = (rule, localeService) => {
+	const ruleConfig = rule.rule;
+	switch (ruleConfig.type) {
+		case CFRuleType.colorScale: return localeService.t("sheets-conditional-formatting-ui.ruleType.colorScale");
+		case CFRuleType.dataBar: return localeService.t("sheets-conditional-formatting-ui.ruleType.dataBar");
+		case CFRuleType.iconSet: return localeService.t("sheets-conditional-formatting-ui.ruleType.iconSet");
+		case CFRuleType.highlightCell: switch (ruleConfig.subType) {
+			case CFSubRuleType.average: {
+				const operator = ruleConfig.operator;
+				return localeService.t(`sheets-conditional-formatting-ui.preview.describe.${operator}`, localeService.t("sheets-conditional-formatting-ui.subRuleType.average"));
+			}
+			case CFSubRuleType.duplicateValues: return localeService.t("sheets-conditional-formatting-ui.subRuleType.duplicateValues");
+			case CFSubRuleType.uniqueValues: return localeService.t("sheets-conditional-formatting-ui.subRuleType.uniqueValues");
+			case CFSubRuleType.number: {
+				const operator = ruleConfig.operator;
+				return localeService.t(`sheets-conditional-formatting-ui.preview.describe.${operator}`, ...Array.isArray(ruleConfig.value) ? ruleConfig.value.map((e) => String(e)) : [String(ruleConfig.value || "")]);
+			}
+			case CFSubRuleType.text: {
+				const operator = ruleConfig.operator;
+				return localeService.t(`sheets-conditional-formatting-ui.preview.describe.${operator}`, ruleConfig.value || "");
+			}
+			case CFSubRuleType.timePeriod: {
+				const operator = ruleConfig.operator;
+				return localeService.t(`sheets-conditional-formatting-ui.preview.describe.${operator}`);
+			}
+			case CFSubRuleType.rank: if (ruleConfig.isPercent) if (ruleConfig.isBottom) return localeService.t("sheets-conditional-formatting-ui.preview.describe.bottomNPercent", String(ruleConfig.value));
+			else return localeService.t("sheets-conditional-formatting-ui.preview.describe.topNPercent", String(ruleConfig.value));
+			else if (ruleConfig.isBottom) return localeService.t("sheets-conditional-formatting-ui.preview.describe.bottomN", String(ruleConfig.value));
+			else return localeService.t("sheets-conditional-formatting-ui.preview.describe.topN", String(ruleConfig.value));
+			case CFSubRuleType.formula: return localeService.t("sheets-conditional-formatting-ui.ruleType.formula");
+		}
+	}
+};
+function RuleList(props) {
+	const { onClick } = props;
+	const conditionalFormattingRuleModel = useDependency(ConditionalFormattingRuleModel);
+	const univerInstanceService = useDependency(IUniverInstanceService);
+	const selectionManagerService = useDependency(SheetsSelectionsService);
+	const commandService = useDependency(ICommandService);
+	const localeService = useDependency(LocaleService);
+	const injector = useDependency(Injector);
+	const conditionalFormattingI18nController = useDependency(ConditionalFormattingI18nController);
+	const workbook = useObservable(() => univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET), void 0, void 0, []);
+	const unitId = workbook.getUnitId();
+	const subUnitId = workbook.getActiveSheet().getSheetId();
+	const [currentRuleRanges, setCurrentRuleRanges] = useState([]);
+	const [selectValue, setSelectValue] = useState("2");
+	const [draggingId, setDraggingId] = useState("");
+	const selectOption = [{
+		label: localeService.t("sheets-conditional-formatting-ui.panel.workSheet"),
+		value: "2"
+	}, {
+		label: localeService.t("sheets-conditional-formatting-ui.panel.selectedRange"),
+		value: "1"
+	}];
+	const getRuleList = () => {
+		const ruleList = conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId);
+		if (!ruleList || !ruleList.length) return [];
+		if (selectValue === "1") {
+			const selection = selectionManagerService.getCurrentLastSelection();
+			if (!selection) return [];
+			const range = selection.range;
+			return ruleList.filter((rule) => {
+				return rule.ranges.some((ruleRange) => Rectangle.intersects(ruleRange, range));
+			});
+		} else if (selectValue === "2") return [...ruleList];
+		return [];
+	};
+	const ruleList = useObservable(() => {
+		const commandEvent$ = new Observable((subscriber) => {
+			const commandList = [
+				SetSelectionsOperation.id,
+				AddConditionalRuleMutation.id,
+				SetConditionalRuleMutation.id,
+				DeleteConditionalRuleMutation.id,
+				MoveConditionalRuleMutation.id
+			];
+			const disposable = commandService.onCommandExecuted((commandInfo) => {
+				var _commandInfo$params;
+				if (commandInfo.id === SetWorksheetActiveOperation.id) {
+					subscriber.next("immediate");
+					return;
+				}
+				const commandUnitId = (_commandInfo$params = commandInfo.params) === null || _commandInfo$params === void 0 ? void 0 : _commandInfo$params.unitId;
+				if (selectValue === "1" && commandList.includes(commandInfo.id) && commandUnitId === unitId) subscriber.next("debounced");
+			});
+			return () => disposable.dispose();
+		}).pipe(share());
+		return merge$1(conditionalFormattingRuleModel.$ruleChange, commandEvent$.pipe(filter((event) => event === "immediate")), commandEvent$.pipe(filter((event) => event === "debounced"), debounceTime(16))).pipe(map(getRuleList), startWith(getRuleList()));
+	}, [], false, [
+		commandService,
+		conditionalFormattingRuleModel,
+		selectValue,
+		subUnitId,
+		unitId
+	]);
+	useHighlightRange(currentRuleRanges);
+	const handleDelete = (rule) => {
+		var _getActiveSheet;
+		const unitId = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getUnitId();
+		const subUnitId = (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+		if (!unitId || !subUnitId) throw new Error("No active sheet found");
+		commandService.executeCommand(DeleteCfCommand.id, {
+			unitId,
+			subUnitId,
+			cfId: rule.cfId
+		});
+	};
+	const handleDragStart = (_layout, from) => {
+		const dragRule = ruleListByPermissionCheck[from.y];
+		setDraggingId((dragRule === null || dragRule === void 0 ? void 0 : dragRule.cfId) ?? "");
+	};
+	const handleDragStop = (_layout, from, to) => {
+		var _getActiveSheet2, _ruleListByPermission, _ruleListByPermission2;
+		setDraggingId("");
+		const unitId = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getUnitId();
+		const subUnitId = (_getActiveSheet2 = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet2 === void 0 ? void 0 : _getActiveSheet2.getSheetId();
+		if (!unitId || !subUnitId) throw new Error("No active sheet found");
+		const getSaveIndex = (index) => {
+			const length = ruleListByPermissionCheck.length;
+			return Math.min(length - 1, Math.max(0, index));
+		};
+		const cfId = (_ruleListByPermission = ruleListByPermissionCheck[getSaveIndex(from.y)]) === null || _ruleListByPermission === void 0 ? void 0 : _ruleListByPermission.cfId;
+		const targetCfId = (_ruleListByPermission2 = ruleListByPermissionCheck[getSaveIndex(to.y)]) === null || _ruleListByPermission2 === void 0 ? void 0 : _ruleListByPermission2.cfId;
+		if (!cfId || !targetCfId) return;
+		if (cfId !== targetCfId) commandService.executeCommand(MoveCfCommand.id, {
+			unitId,
+			subUnitId,
+			start: {
+				id: cfId,
+				type: "self"
+			},
+			end: {
+				id: targetCfId,
+				type: to.y > from.y ? "after" : "before"
+			}
+		});
+	};
+	const handleCreate = () => {
+		props.onCreate();
+	};
+	const handleClear = () => {
+		if (selectValue === "2") commandService.executeCommand(ClearWorksheetCfCommand.id);
+		else if (selectValue === "1") ruleList.map((rule) => ({
+			unitId,
+			subUnitId,
+			cfId: rule.cfId
+		})).forEach((config) => {
+			commandService.executeCommand(DeleteCfCommand.id, config);
+		});
+	};
+	const ruleListByPermissionCheck = useMemo(() => {
+		const workbook = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook.getActiveSheet();
+		return ruleList.filter((rule) => {
+			const ranges = rule.ranges;
+			return checkRangesEditablePermission(injector, workbook.getUnitId(), worksheet.getSheetId(), ranges);
+		});
+	}, [ruleList]);
+	const isHasAllRuleEditPermission = useMemo(() => {
+		const workbook = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook.getActiveSheet();
+		return ruleList.every((rule) => {
+			const ranges = rule.ranges;
+			return checkRangesEditablePermission(injector, workbook.getUnitId(), worksheet.getSheetId(), ranges);
+		});
+	}, [ruleList]);
+	return /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("div", {
+		className: "univer-mb-2 univer-flex univer-items-center univer-justify-between univer-gap-2 univer-text-sm",
+		children: [/* @__PURE__ */ jsx("div", {
+			className: "univer-flex univer-items-center univer-gap-2",
+			children: conditionalFormattingI18nController.tWithReactNode("sheets-conditional-formatting-ui.panel.managerRuleSelect", /* @__PURE__ */ jsx(Select, {
+				className: "univer-w-36",
+				options: selectOption,
+				value: selectValue,
+				onChange: (v) => {
+					setSelectValue(v);
+				}
+			})).map((ele, index) => /* @__PURE__ */ jsx("span", { children: ele }, index))
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "univer-flex univer-justify-end univer-gap-2",
+			children: [/* @__PURE__ */ jsx(Tooltip, {
+				title: localeService.t("sheets-conditional-formatting-ui.panel.createRule"),
+				placement: "bottom",
+				children: /* @__PURE__ */ jsx("a", {
+					className: "univer-size-5 univer-cursor-pointer",
+					onClick: handleCreate,
+					children: /* @__PURE__ */ jsx(IncreaseIcon, {})
+				})
+			}), ruleList.length && isHasAllRuleEditPermission ? /* @__PURE__ */ jsx(Tooltip, {
+				title: localeService.t("sheets-conditional-formatting-ui.panel.clear"),
+				placement: "bottom",
+				children: /* @__PURE__ */ jsx("a", {
+					className: "univer-size-5 univer-cursor-pointer",
+					onClick: handleClear,
+					children: /* @__PURE__ */ jsx(DeleteIcon, { className: "univer-text-red-500" })
+				})
+			}) : /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx(DeleteIcon, { className: "univer-text-gray-300" }) })]
+		})]
+	}), /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx(DraggableList, {
+		className: "univer-w-full",
+		draggableHandle: ".draggableHandle",
+		list: ruleListByPermissionCheck,
+		onListChange: () => void 0,
+		idKey: "cfId",
+		rowHeight: 60,
+		margin: [0, 10],
+		onDragStop: handleDragStop,
+		onDragStart: handleDragStart,
+		itemRender: (rule) => /* @__PURE__ */ jsxs("div", {
+			className: clsx("univer-group univer-relative univer-flex univer-items-center univer-justify-between univer-rounded univer-py-2 univer-pl-5 univer-pr-8 hover:univer-bg-gray-100 rtl:univer-pl-8 rtl:univer-pr-5 dark:hover:!univer-bg-gray-700", { "univer-bg-gray-100 dark:!univer-bg-gray-700": draggingId === rule.cfId }),
+			onMouseMove: () => {
+				rule.ranges !== currentRuleRanges && setCurrentRuleRanges(rule.ranges);
+			},
+			onMouseLeave: () => setCurrentRuleRanges([]),
+			onClick: () => {
+				onClick(rule);
+			},
+			children: [
+				/* @__PURE__ */ jsx("div", {
+					className: clsx("univer-absolute univer-left-0 univer-hidden univer-size-5 univer-cursor-grab univer-items-center univer-justify-center univer-rounded group-hover:univer-flex rtl:univer-left-auto rtl:univer-right-0", "draggableHandle"),
+					onClick: (e) => e.stopPropagation(),
+					children: /* @__PURE__ */ jsx(GripVerticalIcon, {})
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "univer-min-w-0 univer-max-w-full univer-flex-shrink univer-overflow-hidden",
+					children: [/* @__PURE__ */ jsx("div", {
+						className: "univer-text-sm univer-text-gray-900 dark:!univer-text-gray-0",
+						children: getRuleDescribe(rule, localeService)
+					}), /* @__PURE__ */ jsx("div", {
+						className: "univer-max-w-[250px] univer-overflow-hidden univer-text-ellipsis univer-text-xs univer-text-gray-400",
+						children: rule.ranges.map((range) => serializeRange(range)).join(",")
+					})]
+				}),
+				/* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx(Preview, { rule: rule.rule }) }),
+				/* @__PURE__ */ jsx("div", {
+					className: clsx("univer-absolute univer-right-1 univer-hidden univer-size-6 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded univer-text-red-500 group-hover:univer-flex hover:univer-bg-gray-200 rtl:univer-left-1 rtl:univer-right-auto", { "univer-flex univer-items-center univer-justify-center": draggingId === rule.cfId }),
+					onClick: (e) => {
+						e.stopPropagation();
+						handleDelete(rule);
+						setCurrentRuleRanges([]);
+					},
+					children: /* @__PURE__ */ jsx(DeleteIcon, {})
+				})
+			]
+		})
+	}) })] });
+}
+
+//#endregion
+//#region src/views/ConditionFormattingPanel.tsx
+const ConditionFormattingPanel = (props) => {
+	const [currentEditRule, setCurrentEditRule] = useState(props.rule);
+	const [isShowRuleEditor, setIsShowRuleEditor] = useState(!!props.rule);
+	const createCfRule = () => {
+		setIsShowRuleEditor(true);
+	};
+	const handleCancel = () => {
+		setIsShowRuleEditor(false);
+		setCurrentEditRule(void 0);
+	};
+	const handleRuleClick = (rule) => {
+		setCurrentEditRule(rule);
+		setIsShowRuleEditor(true);
+	};
+	return /* @__PURE__ */ jsx("div", {
+		className: "univer-flex univer-h-full univer-flex-col univer-justify-between univer-py-4",
+		children: isShowRuleEditor ? /* @__PURE__ */ jsx(RuleEdit, {
+			onCancel: handleCancel,
+			rule: currentEditRule
+		}) : /* @__PURE__ */ jsx(RuleList, {
+			onClick: handleRuleClick,
+			onCreate: createCfRule
+		})
+	});
+};
+
+//#endregion
+//#region src/controllers/components.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const CF_PANEL_KEY = "sheet.conditional.formatting.panel";
+let ComponentsController = class ComponentsController extends Disposable {
+	constructor(_componentManager, _iconManager) {
+		super();
+		this._componentManager = _componentManager;
+		this._iconManager = _iconManager;
+		this._registerComponents();
+		this._registerIcons();
+	}
+	_registerComponents() {
+		this.disposeWithMe(this._componentManager.register(CF_PANEL_KEY, ConditionFormattingPanel));
+	}
+	_registerIcons() {
+		this.disposeWithMe(this._iconManager.register({
+			ConditionsDoubleIcon,
+			DataBarIcon,
+			RatingIcon
+		}));
+	}
+};
+ComponentsController = __decorate([__decorateParam(0, Inject(ComponentManager)), __decorateParam(1, Inject(IconManager))], ComponentsController);
+
+//#endregion
+//#region src/menu/cf.menu.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ConditionalFormattingMenuController = class ConditionalFormattingMenuController extends Disposable {
+	constructor(_menuManagerService) {
+		super();
+		this._menuManagerService = _menuManagerService;
+		this._menuManagerService.mergeMenu(menuSchema);
+	}
+};
+ConditionalFormattingMenuController = __decorate([__decorateParam(0, IMenuManagerService)], ConditionalFormattingMenuController);
+
+//#endregion
+//#region src/mobile-plugin.ts
+let UniverSheetsConditionalFormattingMobileUIPlugin = class UniverSheetsConditionalFormattingMobileUIPlugin extends Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _commandService, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._commandService = _commandService;
+		this._configService = _configService;
+		const { menu, ...rest } = merge({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_CONDITIONAL_FORMATTING_UI_PLUGIN_CONFIG_KEY, rest);
+		this._initCommand();
+	}
+	onStarting() {
+		registerDependencies(this._injector, [
+			[ComponentsController],
+			[SheetsCfRenderController],
+			[ConditionalFormattingCopyPasteController],
+			[ConditionalFormattingPermissionController],
+			[ConditionalFormattingI18nController],
+			[ConditionalFormattingFormulaRefRangeController],
+			[ConditionalFormattingPanelController],
+			[ConditionalFormattingMenuController]
+		]);
+		touchDependencies(this._injector, [
+			[ComponentsController],
+			[SheetsCfRenderController],
+			[ConditionalFormattingFormulaRefRangeController]
+		]);
+	}
+	onReady() {
+		touchDependencies(this._injector, [[ConditionalFormattingMenuController], [ConditionalFormattingPanelController]]);
+	}
+	onRendered() {
+		touchDependencies(this._injector, [
+			[ConditionalFormattingCopyPasteController],
+			[ConditionalFormattingPermissionController],
+			[ConditionalFormattingI18nController]
+		]);
+	}
+	_initCommand() {
+		[
+			AddAverageCfCommand,
+			AddColorScaleConditionalRuleCommand,
+			AddDataBarConditionalRuleCommand,
+			AddIconSetConditionalRuleCommand,
+			AddDuplicateValuesCfCommand,
+			AddNumberCfCommand,
+			AddRankCfCommand,
+			AddTextCfCommand,
+			AddTimePeriodCfCommand,
+			AddUniqueValuesCfCommand,
+			OpenConditionalFormattingOperator
+		].forEach((m) => {
+			this._commandService.registerCommand(m);
+		});
+	}
+};
+_defineProperty(UniverSheetsConditionalFormattingMobileUIPlugin, "pluginName", `${SHEET_CONDITIONAL_FORMATTING_PLUGIN}_MOBILE_UI_PLUGIN`);
+_defineProperty(UniverSheetsConditionalFormattingMobileUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsConditionalFormattingMobileUIPlugin, "version", version);
+_defineProperty(UniverSheetsConditionalFormattingMobileUIPlugin, "type", UniverInstanceType.UNIVER_SHEET);
+UniverSheetsConditionalFormattingMobileUIPlugin = __decorate([
+	DependentOn(UniverRenderEnginePlugin, UniverSheetsPlugin, UniverSheetsFormulaPlugin, UniverSheetsConditionalFormattingPlugin, UniverSheetsMobileUIPlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, Inject(ICommandService)),
+	__decorateParam(3, IConfigService)
+], UniverSheetsConditionalFormattingMobileUIPlugin);
+
+//#endregion
+//#region src/controllers/cf.auto-fill.controller.ts
+let ConditionalFormattingAutoFillController = class ConditionalFormattingAutoFillController extends Disposable {
+	constructor(_injector, _univerInstanceService, _autoFillService, _conditionalFormattingRuleModel, _conditionalFormattingRangeTransformService) {
+		super();
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		this._autoFillService = _autoFillService;
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._conditionalFormattingRangeTransformService = _conditionalFormattingRangeTransformService;
+		this._initAutoFill();
+	}
+	_initAutoFill() {
+		const noopReturnFunc = () => ({
+			redos: [],
+			undos: []
+		});
+		const generalApplyFunc = (sourceRange, targetRange) => {
+			var _this$_univerInstance, _this$_univerInstance2;
+			const unitId = (_this$_univerInstance = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.getUnitId();
+			const subUnitId = (_this$_univerInstance2 = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance2 === void 0 || (_this$_univerInstance2 = _this$_univerInstance2.getActiveSheet()) === null || _this$_univerInstance2 === void 0 ? void 0 : _this$_univerInstance2.getSheetId();
+			const rangeMap = /* @__PURE__ */ new Map();
+			const rangeDeltaMap = /* @__PURE__ */ new Map();
+			const redos = [];
+			const undos = [];
+			if (!unitId || !subUnitId) return noopReturnFunc();
+			const virtualization = virtualizeDiscreteRanges([sourceRange, targetRange]);
+			const [vSourceRange, vTargetRange] = virtualization.ranges;
+			const repeats = AutoFillTools.getAutoFillRepeatRange(vSourceRange, vTargetRange);
+			const targetRanges = repeats.flatMap((repeat) => virtualization.mapRange(Rectangle.getPositionRange(repeat.relativeRange, {
+				startRow: repeat.repeatStartCell.row,
+				endRow: repeat.repeatStartCell.row,
+				startColumn: repeat.repeatStartCell.col,
+				endColumn: repeat.repeatStartCell.col
+			})));
+			const getRangeDelta = (cfId) => {
+				let rangeDelta = rangeDeltaMap.get(cfId);
+				if (!rangeDelta) {
+					rangeDelta = {
+						add: [],
+						remove: []
+					};
+					rangeDeltaMap.set(cfId, rangeDelta);
+				}
+				return rangeDelta;
+			};
+			(this._conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId) ?? []).forEach((rule) => {
+				if (Rectangle.doAnyRangesIntersect(rule.ranges, targetRanges)) {
+					rangeMap.set(rule.cfId, rule.ranges);
+					getRangeDelta(rule.cfId).remove.push(...targetRanges);
+				}
+				const sourceRanges = rule.ranges.flatMap((range) => {
+					const projected = virtualization.projectRange(range);
+					const intersected = projected && getIntersectRange(projected, vSourceRange);
+					return intersected ? [Rectangle.getRelativeRange(intersected, vSourceRange)] : [];
+				});
+				const additions = repeats.flatMap((repeat) => sourceRanges.flatMap((range) => {
+					const copiedRange = getIntersectRange(range, repeat.relativeRange);
+					return copiedRange ? virtualization.mapRange(Rectangle.getPositionRange(copiedRange, {
+						startRow: repeat.repeatStartCell.row,
+						endRow: repeat.repeatStartCell.row,
+						startColumn: repeat.repeatStartCell.col,
+						endColumn: repeat.repeatStartCell.col
+					})) : [];
+				}));
+				if (additions.length) {
+					rangeMap.set(rule.cfId, rule.ranges);
+					getRangeDelta(rule.cfId).add.push(...additions);
+				}
+			});
+			rangeDeltaMap.forEach((rangeDelta, cfId) => {
+				const ranges = rangeMap.get(cfId);
+				if (!ranges) return;
+				rangeMap.set(cfId, this._conditionalFormattingRangeTransformService.applyRangeDelta(ranges, rangeDelta.remove, rangeDelta.add));
+			});
+			rangeMap.forEach((ranges, cfId) => {
+				const rule = this._conditionalFormattingRuleModel.getRule(unitId, subUnitId, cfId);
+				if (!rule) return;
+				if (ranges.length) {
+					const params = {
+						unitId,
+						subUnitId,
+						rule: {
+							...rule,
+							ranges
+						}
+					};
+					redos.push({
+						id: SetConditionalRuleMutation.id,
+						params
+					});
+					undos.push(...setConditionalRuleMutationUndoFactory(this._injector, params));
+				} else {
+					const params = {
+						unitId,
+						subUnitId,
+						cfId: rule.cfId
+					};
+					redos.push({
+						id: DeleteConditionalRuleMutation.id,
+						params
+					});
+					undos.push(...DeleteConditionalRuleMutationUndoFactory(this._injector, params));
+				}
+			});
+			return {
+				undos,
+				redos
+			};
+		};
+		const hook = {
+			id: SHEET_CONDITIONAL_FORMATTING_PLUGIN,
+			onFillData: (location, direction, applyType) => {
+				if (applyType === AUTO_FILL_APPLY_TYPE.COPY || applyType === AUTO_FILL_APPLY_TYPE.ONLY_FORMAT || applyType === AUTO_FILL_APPLY_TYPE.SERIES) {
+					const { source, target } = location;
+					return generalApplyFunc(source, target);
+				}
+				return noopReturnFunc();
+			}
+		};
+		this.disposeWithMe(this._autoFillService.addHook(hook));
+	}
+};
+ConditionalFormattingAutoFillController = __decorate([
+	__decorateParam(0, Inject(Injector)),
+	__decorateParam(1, Inject(IUniverInstanceService)),
+	__decorateParam(2, Inject(IAutoFillService)),
+	__decorateParam(3, Inject(ConditionalFormattingRuleModel)),
+	__decorateParam(4, Inject(ConditionalFormattingRangeTransformService))
+], ConditionalFormattingAutoFillController);
+
+//#endregion
+//#region src/controllers/cf.editor.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ConditionalFormattingEditorController = class ConditionalFormattingEditorController extends Disposable {
+	constructor(_sheetInterceptorService, _conditionalFormattingService) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._conditionalFormattingService = _conditionalFormattingService;
+		this._initInterceptorEditorEnd();
+	}
+	/**
+	* Process the  values after  edit
+	* @private
+	* @memberof NumfmtService
+	*/
+	_initInterceptorEditorEnd() {
+		this.disposeWithMe(toDisposable(this._sheetInterceptorService.writeCellInterceptor.intercept(AFTER_CELL_EDIT, { handler: (value, context, next) => {
+			if (!value) next(value);
+			const result = this._conditionalFormattingService.composeStyle(context.unitId, context.subUnitId, context.row, context.col);
+			const cfStyle = (result === null || result === void 0 ? void 0 : result.style) ?? {};
+			const keys = Object.keys(cfStyle);
+			if (value === null || value === void 0 ? void 0 : value.p) {
+				var _value$p$body;
+				(_value$p$body = value.p.body) === null || _value$p$body === void 0 || (_value$p$body = _value$p$body.textRuns) === null || _value$p$body === void 0 || _value$p$body.forEach((item) => {
+					if (item.ts) keys.forEach((key) => {
+						var _item$ts;
+						(_item$ts = item.ts) === null || _item$ts === void 0 || delete _item$ts[key];
+					});
+				});
+				return next(value);
+			} else {
+				const s = { ...(typeof (value === null || value === void 0 ? void 0 : value.s) === "string" ? context.workbook.getStyles().get(value.s) : value === null || value === void 0 ? void 0 : value.s) || {} };
+				keys.forEach((key) => {
+					delete s[key];
+				});
+				return next({
+					...value,
+					s: { ...s }
+				});
+			}
+		} })));
+	}
+};
+ConditionalFormattingEditorController = __decorate([__decorateParam(0, Inject(SheetInterceptorService)), __decorateParam(1, Inject(ConditionalFormattingService))], ConditionalFormattingEditorController);
+
+//#endregion
+//#region src/controllers/cf.painter.controller.ts
+const repeatByRange = (sourceRange, targetRange) => {
+	const getRowLength = (range) => range.endRow - range.startRow + 1;
+	const getColLength = (range) => range.endColumn - range.startColumn + 1;
+	const rowMod = getRowLength(targetRange) % getRowLength(sourceRange);
+	const colMod = getColLength(targetRange) % getColLength(sourceRange);
+	const repeatRow = Math.floor(getRowLength(targetRange) / getRowLength(sourceRange));
+	const repeatCol = Math.floor(getColLength(targetRange) / getColLength(sourceRange));
+	const repeatList = [];
+	const repeatRelativeRange = {
+		startRow: 0,
+		endRow: getRowLength(sourceRange) - 1,
+		startColumn: 0,
+		endColumn: getColLength(sourceRange) - 1
+	};
+	if (getRowLength(targetRange) === 1 && getColLength(targetRange) === 1) {
+		const startRange = {
+			startRow: targetRange.startRow,
+			endRow: targetRange.startRow,
+			startColumn: targetRange.startColumn,
+			endColumn: targetRange.startColumn
+		};
+		repeatList.push({
+			repeatRelativeRange,
+			startRange
+		});
+		return repeatList;
+	}
+	for (let countRow = 0; countRow < repeatRow + (rowMod ? .1 : 0); countRow++) for (let countCol = 0; countCol < repeatCol + (colMod ? .1 : 0); countCol++) {
+		const row = getRowLength(sourceRange) * countRow;
+		const col = getColLength(sourceRange) * countCol;
+		const startRange = {
+			startRow: row + targetRange.startRow,
+			endRow: row + targetRange.startRow,
+			startColumn: col + targetRange.startColumn,
+			endColumn: col + targetRange.startColumn
+		};
+		let _repeatRelativeRange = repeatRelativeRange;
+		if (countRow === repeatRow && rowMod) {
+			_repeatRelativeRange = { ..._repeatRelativeRange };
+			_repeatRelativeRange.endRow = _repeatRelativeRange.endRow - (getRowLength(sourceRange) - rowMod);
+		}
+		if (countCol === repeatCol && colMod) {
+			_repeatRelativeRange = { ..._repeatRelativeRange };
+			_repeatRelativeRange.endColumn = _repeatRelativeRange.endColumn - (getColLength(sourceRange) - colMod);
+		}
+		repeatList.push({
+			repeatRelativeRange: _repeatRelativeRange,
+			startRange
+		});
+	}
+	return repeatList;
+};
+let ConditionalFormattingPainterController = class ConditionalFormattingPainterController extends Disposable {
+	constructor(_injector, _univerInstanceService, _formatPainterService, _sheetsSelectionsService, _conditionalFormattingRuleModel, _conditionalFormattingRangeTransformService) {
+		super();
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		this._formatPainterService = _formatPainterService;
+		this._sheetsSelectionsService = _sheetsSelectionsService;
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._conditionalFormattingRangeTransformService = _conditionalFormattingRangeTransformService;
+		_defineProperty(this, "_painterConfig", null);
+		this._initFormattingPainter();
+	}
+	_initFormattingPainter() {
+		const noopReturnFunc = () => ({
+			redos: [],
+			undos: []
+		});
+		const generalApplyFunc = (targetUnitId, targetSubUnitId, targetRange) => {
+			const { range: sourceRange, unitId: sourceUnitId, subUnitId: sourceSubUnitId } = this._painterConfig;
+			const isSkipSheet = targetUnitId !== sourceUnitId || sourceSubUnitId !== targetSubUnitId;
+			const rangeMap = /* @__PURE__ */ new Map();
+			const rangeDeltaMap = /* @__PURE__ */ new Map();
+			const redos = [];
+			const undos = [];
+			if (!targetUnitId || !targetSubUnitId || !sourceUnitId || !sourceSubUnitId) return noopReturnFunc();
+			const repeats = repeatByRange(sourceRange, targetRange);
+			const targetRanges = repeats.map((repeat) => Rectangle.getPositionRange(repeat.repeatRelativeRange, repeat.startRange));
+			const getRangeDelta = (cfId) => {
+				let rangeDelta = rangeDeltaMap.get(cfId);
+				if (!rangeDelta) {
+					rangeDelta = {
+						add: [],
+						remove: []
+					};
+					rangeDeltaMap.set(cfId, rangeDelta);
+				}
+				return rangeDelta;
+			};
+			const targetRuleList = this._conditionalFormattingRuleModel.getSubunitRules(targetUnitId, targetSubUnitId) ?? [];
+			const waitAddRule = /* @__PURE__ */ new Map();
+			targetRuleList.forEach((rule) => {
+				if (Rectangle.doAnyRangesIntersect(rule.ranges, targetRanges)) {
+					rangeMap.set(rule.cfId, rule.ranges);
+					getRangeDelta(rule.cfId).remove.push(...targetRanges);
+				}
+			});
+			const sourceRuleList = this._conditionalFormattingRuleModel.getSubunitRules(sourceUnitId, sourceSubUnitId) ?? [];
+			(isSkipSheet ? [...sourceRuleList].reverse() : sourceRuleList).forEach((rule) => {
+				const sourceRanges = rule.ranges.flatMap((range) => {
+					const intersected = getIntersectRange(range, sourceRange);
+					return intersected ? [Rectangle.getRelativeRange(intersected, sourceRange)] : [];
+				});
+				const additions = repeats.flatMap((repeat) => sourceRanges.flatMap((range) => {
+					const copiedRange = getIntersectRange(range, repeat.repeatRelativeRange);
+					return copiedRange ? [Rectangle.getPositionRange(copiedRange, repeat.startRange)] : [];
+				}));
+				if (additions.length) {
+					let targetCfId = rule.cfId;
+					if (isSkipSheet) {
+						targetCfId = this._conditionalFormattingRuleModel.createCfId(targetUnitId, targetSubUnitId);
+						waitAddRule.set(targetCfId, {
+							...Tools.deepClone(rule),
+							cfId: targetCfId,
+							ranges: []
+						});
+						rangeMap.set(targetCfId, []);
+					}
+					if (!rangeMap.has(targetCfId)) rangeMap.set(targetCfId, rule.ranges);
+					getRangeDelta(targetCfId).add.push(...additions);
+				}
+			});
+			rangeDeltaMap.forEach((rangeDelta, cfId) => {
+				const ranges = rangeMap.get(cfId);
+				if (!ranges) return;
+				rangeMap.set(cfId, this._conditionalFormattingRangeTransformService.applyRangeDelta(ranges, rangeDelta.remove, rangeDelta.add));
+			});
+			rangeMap.forEach((ranges, cfId) => {
+				if (!isSkipSheet) {
+					const rule = this._conditionalFormattingRuleModel.getRule(sourceUnitId, sourceSubUnitId, cfId);
+					if (!rule) return;
+					if (ranges.length) {
+						const params = {
+							unitId: sourceUnitId,
+							subUnitId: sourceSubUnitId,
+							rule: {
+								...rule,
+								ranges
+							}
+						};
+						redos.push({
+							id: SetConditionalRuleMutation.id,
+							params
+						});
+						undos.push(...setConditionalRuleMutationUndoFactory(this._injector, params));
+					} else {
+						const params = {
+							unitId: sourceUnitId,
+							subUnitId: sourceSubUnitId,
+							cfId: rule.cfId
+						};
+						redos.push({
+							id: DeleteConditionalRuleMutation.id,
+							params
+						});
+						undos.push(...DeleteConditionalRuleMutationUndoFactory(this._injector, params));
+					}
+				} else {
+					const waitAdd = waitAddRule.get(cfId);
+					if (waitAdd) {
+						if (ranges.length) {
+							const params = {
+								unitId: targetUnitId,
+								subUnitId: targetSubUnitId,
+								rule: {
+									...waitAdd,
+									ranges
+								}
+							};
+							redos.push({
+								id: AddConditionalRuleMutation.id,
+								params
+							});
+							undos.push(AddConditionalRuleMutationUndoFactory(this._injector, params));
+						}
+						return;
+					}
+					const rule = this._conditionalFormattingRuleModel.getRule(targetUnitId, targetSubUnitId, cfId);
+					if (rule) if (ranges.length) {
+						const params = {
+							unitId: targetUnitId,
+							subUnitId: targetSubUnitId,
+							rule: {
+								...rule,
+								ranges
+							}
+						};
+						redos.push({
+							id: SetConditionalRuleMutation.id,
+							params
+						});
+						undos.push(...setConditionalRuleMutationUndoFactory(this._injector, params));
+					} else {
+						const params = {
+							unitId: targetUnitId,
+							subUnitId: targetSubUnitId,
+							cfId: rule.cfId
+						};
+						redos.push({
+							id: DeleteConditionalRuleMutation.id,
+							params
+						});
+						undos.push(...DeleteConditionalRuleMutationUndoFactory(this._injector, params));
+					}
+				}
+			});
+			return {
+				undos,
+				redos
+			};
+		};
+		const hook = {
+			id: SHEET_CONDITIONAL_FORMATTING_PLUGIN,
+			onStatusChange: (status) => {
+				switch (status) {
+					case FormatPainterStatus.INFINITE:
+					case FormatPainterStatus.ONCE: {
+						var _this$_univerInstance, _this$_univerInstance2;
+						const unitId = (_this$_univerInstance = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.getUnitId();
+						const subUnitId = (_this$_univerInstance2 = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance2 === void 0 || (_this$_univerInstance2 = _this$_univerInstance2.getActiveSheet()) === null || _this$_univerInstance2 === void 0 ? void 0 : _this$_univerInstance2.getSheetId();
+						const selection = this._sheetsSelectionsService.getCurrentLastSelection();
+						const range = selection === null || selection === void 0 ? void 0 : selection.range;
+						if (unitId && subUnitId && range) this._painterConfig = {
+							unitId,
+							subUnitId,
+							range
+						};
+						break;
+					}
+					case FormatPainterStatus.OFF:
+						this._painterConfig = null;
+						break;
+				}
+			},
+			onApply: (unitId, subUnitId, targetRange) => {
+				if (this._painterConfig) return generalApplyFunc(unitId, subUnitId, targetRange);
+				return {
+					redos: [],
+					undos: []
+				};
+			}
+		};
+		this._formatPainterService.addHook(hook);
+	}
+};
+ConditionalFormattingPainterController = __decorate([
+	__decorateParam(0, Inject(Injector)),
+	__decorateParam(1, Inject(IUniverInstanceService)),
+	__decorateParam(2, Inject(IFormatPainterService)),
+	__decorateParam(3, Inject(SheetsSelectionsService)),
+	__decorateParam(4, Inject(ConditionalFormattingRuleModel)),
+	__decorateParam(5, Inject(ConditionalFormattingRangeTransformService))
+], ConditionalFormattingPainterController);
+
+//#endregion
+//#region src/controllers/cf.viewport.controller.ts
+let ConditionalFormattingViewportController = class ConditionalFormattingViewportController extends Disposable {
+	constructor(_conditionalFormattingViewModel, _univerInstanceService, _renderManagerService) {
+		super();
+		this._conditionalFormattingViewModel = _conditionalFormattingViewModel;
+		this._univerInstanceService = _univerInstanceService;
+		this._renderManagerService = _renderManagerService;
+		_defineProperty(this, "_unitDisposable", new DisposableCollection());
+		this._init();
+	}
+	_init() {
+		const unit = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		const bindUnit = (unit) => {
+			this._unitDisposable.dispose();
+			this._unitDisposable = new DisposableCollection();
+			const unitId = unit.getUnitId();
+			const render = this._renderManagerService.getRenderUnitById(unitId);
+			if (!render) return;
+			const sheetSkeletonManagerService = render.with(SheetSkeletonManagerService);
+			this._unitDisposable.add(sheetSkeletonManagerService.currentSkeleton$.subscribe((s) => {
+				if (s) {
+					const range = s.skeleton.rowColumnSegment;
+					const col = range.endColumn - range.startColumn + 1;
+					const length = (range.endRow - range.startRow + 1) * col * 9;
+					const result = Math.max(CONDITIONAL_FORMATTING_VIEWPORT_CACHE_LENGTH, length);
+					this._conditionalFormattingViewModel.setCacheLength(result);
+				}
+			}));
+		};
+		if (unit) bindUnit(unit);
+		this.disposeWithMe(this._univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).subscribe((unit) => {
+			if (!unit) {
+				this._unitDisposable.dispose();
+				return;
+			}
+			bindUnit(unit);
+		}));
+	}
+	dispose() {
+		this._unitDisposable.dispose();
+		super.dispose();
+	}
+};
+ConditionalFormattingViewportController = __decorate([
+	__decorateParam(0, Inject(ConditionalFormattingViewModel)),
+	__decorateParam(1, IUniverInstanceService),
+	__decorateParam(2, IRenderManagerService)
+], ConditionalFormattingViewportController);
+
+//#endregion
+//#region src/plugin.ts
+let UniverSheetsConditionalFormattingUIPlugin = class UniverSheetsConditionalFormattingUIPlugin extends Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _commandService, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._commandService = _commandService;
+		this._configService = _configService;
+		const { menu, ...rest } = merge({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_CONDITIONAL_FORMATTING_UI_PLUGIN_CONFIG_KEY, rest);
+		this._initCommand();
+	}
+	onStarting() {
+		this._injector.add([ComponentsController]);
+		this._injector.get(ComponentsController);
+		registerDependencies(this._injector, [
+			[SheetsCfRenderController],
+			[ConditionalFormattingCopyPasteController],
+			[ConditionalFormattingAutoFillController],
+			[ConditionalFormattingPermissionController],
+			[ConditionalFormattingPanelController],
+			[ConditionalFormattingMenuController],
+			[ConditionalFormattingI18nController],
+			[ConditionalFormattingEditorController],
+			[ConditionalFormattingClearController],
+			[ConditionalFormattingPainterController],
+			[ConditionalFormattingViewportController],
+			[ConditionalFormattingFormulaRefRangeController]
+		]);
+		touchDependencies(this._injector, [[SheetsCfRenderController], [ConditionalFormattingFormulaRefRangeController]]);
+	}
+	onReady() {
+		touchDependencies(this._injector, [[ConditionalFormattingMenuController], [ConditionalFormattingPanelController]]);
+	}
+	onRendered() {
+		touchDependencies(this._injector, [
+			[ConditionalFormattingAutoFillController],
+			[ConditionalFormattingClearController],
+			[ConditionalFormattingCopyPasteController],
+			[ConditionalFormattingEditorController],
+			[ConditionalFormattingI18nController],
+			[ConditionalFormattingPainterController],
+			[ConditionalFormattingPermissionController],
+			[ConditionalFormattingViewportController]
+		]);
+	}
+	_initCommand() {
+		[
+			AddAverageCfCommand,
+			AddColorScaleConditionalRuleCommand,
+			AddDataBarConditionalRuleCommand,
+			AddIconSetConditionalRuleCommand,
+			AddDuplicateValuesCfCommand,
+			AddNumberCfCommand,
+			AddRankCfCommand,
+			AddTextCfCommand,
+			AddTimePeriodCfCommand,
+			AddUniqueValuesCfCommand,
+			OpenConditionalFormattingOperator
+		].forEach((m) => {
+			this._commandService.registerCommand(m);
+		});
+	}
+};
+_defineProperty(UniverSheetsConditionalFormattingUIPlugin, "pluginName", `${SHEET_CONDITIONAL_FORMATTING_PLUGIN}_UI_PLUGIN`);
+_defineProperty(UniverSheetsConditionalFormattingUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsConditionalFormattingUIPlugin, "version", version);
+_defineProperty(UniverSheetsConditionalFormattingUIPlugin, "type", UniverInstanceType.UNIVER_SHEET);
+UniverSheetsConditionalFormattingUIPlugin = __decorate([
+	DependentOn(UniverRenderEnginePlugin, UniverSheetsPlugin, UniverSheetsFormulaPlugin, UniverSheetsConditionalFormattingPlugin, UniverSheetsUIPlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, Inject(ICommandService)),
+	__decorateParam(3, IConfigService)
+], UniverSheetsConditionalFormattingUIPlugin);
+
+//#endregion
+export { AddAverageCfCommand, AddColorScaleConditionalRuleCommand, AddDataBarConditionalRuleCommand, AddDuplicateValuesCfCommand, AddIconSetConditionalRuleCommand, AddNumberCfCommand, AddRankCfCommand, AddTextCfCommand, AddTimePeriodCfCommand, AddUniqueValuesCfCommand, ConditionalFormattingClearController, OpenConditionalFormattingOperator, menuSchema as SheetsConditionalFormattingUIMenuSchema, UniverSheetsConditionalFormattingMobileUIPlugin, UniverSheetsConditionalFormattingUIPlugin };

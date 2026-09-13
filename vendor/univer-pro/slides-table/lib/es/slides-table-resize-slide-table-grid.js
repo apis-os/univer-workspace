@@ -1,0 +1,25 @@
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, ThemeService, Tools, UniverInstanceType, generateRandomId, merge, sequenceExecute, touchDependencies } from '@univerjs/core';
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, UpdateSlideElementMutation, getSlideCommandTarget, plainTextToSlideDocumentData } from '@univerjs-pro/slides';
+import { Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { he } from "./slides-table-insert-slide-table-rows.js";
+import { fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F } from "./slides-table-slide-table-rows.js";
+import { ge } from "./slides-table-insert-slide-table-columns.js";
+import { ve } from "./slides-table-slide-table-columns.js";
+function De(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46735, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46736, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46737) {
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D20 = Math.max(1, Math.floor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46736)),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D21 = Math.max(1, Math.floor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46737)),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46735);
+  if (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D20 > var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.rows["length"]) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46739;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46739 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.rows[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.rows["length"] - 1]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46739.height;
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738 = he(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.rows['length'], var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D20 - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.rows['length'], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114);
+  } else var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D20 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.rows["length"] && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738 = fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D20, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.rows["length"] - 1));
+  if (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D21 > var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.columns["length"]) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46740;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46740 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.columns[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.columns["length"] - 1]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46740.width;
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738 = ge(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.columns['length'], var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D21 - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.columns['length'], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115);
+  } else var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D21 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.columns['length'] && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738 = ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D21, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738.columns["length"] - 1));
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46738;
+}
+export { De as resizeSlideTableGrid };

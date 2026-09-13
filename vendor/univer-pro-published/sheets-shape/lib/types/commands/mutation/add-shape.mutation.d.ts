@@ -1,0 +1,10 @@
+import type { IShapeData, ShapeTypeEnum } from '@univerjs-pro/engine-shape';
+import type { IMutation } from '@univerjs/core';
+import type { ISheetCommandSharedParams } from '@univerjs/sheets';
+export interface IInsertSheetsShapeMutationParams extends ISheetCommandSharedParams {
+    shapeId: string;
+    shapeName?: string;
+    shapeType: ShapeTypeEnum;
+    shapeData?: IShapeData;
+}
+export declare const InsertSheetsShapeMutation: IMutation<IInsertSheetsShapeMutationParams>;

@@ -1,0 +1,55 @@
+
+//#region src/locale/pl-PL.ts
+const locale = { "find-replace": {
+	toolbar: "Znajdź i zamień",
+	shortcut: {
+		"open-find-dialog": "Otwórz okno Znajdź",
+		"open-replace-dialog": "Otwórz okno Zamień",
+		"go-to-next-match": "Przejdź do następnego dopasowania",
+		"go-to-previous-match": "Przejdź do poprzedniego dopasowania",
+		"focus-selection": "Skup na zaznaczeniu",
+		panel: "Znajdź i zamień"
+	},
+	dialog: {
+		title: "Znajdź",
+		find: "Znajdź",
+		replace: "Zamień",
+		"replace-all": "Zamień wszystko",
+		"case-sensitive": "Rozróżniaj wielkość liter",
+		"find-placeholder": "Znajdź",
+		"advanced-finding": "Zaawansowane wyszukiwanie i zastępowanie",
+		"replace-placeholder": "Wprowadź ciąg zastępujący",
+		"match-the-whole-cell": "Dopasuj całą komórkę",
+		"match-the-whole-word": "Dopasuj całe słowo",
+		"find-direction": {
+			title: "Kierunek wyszukiwania",
+			row: "Szukaj według wierszy",
+			column: "Szukaj według kolumn"
+		},
+		"find-scope": {
+			title: "Zakres wyszukiwania",
+			"current-sheet": "Bieżący arkusz",
+			workbook: "Skoroszyt"
+		},
+		"find-by": {
+			title: "Szukaj według",
+			value: "Szukaj według wartości",
+			formula: "Szukaj formuły"
+		},
+		"no-match": "Wyszukiwanie zakończone, ale nie znaleziono dopasowania.",
+		"no-result": "Brak wyników"
+	},
+	replace: {
+		"all-success": "Zastąpiono wszystkie dopasowania: {0}",
+		"partial-success": "Zastąpiono dopasowania: {0}, nie udało się zastąpić: {1}",
+		"all-failure": "Zastępowanie nie powiodło się",
+		confirm: { title: "Czy na pewno chcesz zastąpić wszystkie dopasowania?" }
+	},
+	button: {
+		confirm: "OK",
+		cancel: "Anuluj"
+	}
+} };
+
+//#endregion
+module.exports = locale;

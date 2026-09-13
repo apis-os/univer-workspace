@@ -1,0 +1,1 @@
+export { UniverThreadCommentResourcePlugin } from './plugin';

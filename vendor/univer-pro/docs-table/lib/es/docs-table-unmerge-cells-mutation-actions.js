@@ -1,0 +1,21 @@
+import { BooleanNumber, CommandType, DOC_RANGE_TYPE, DashStyleType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentFlavor, ICommandService, IConfigService, IResourceManagerService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, TableAlignmentType, TableRowHeightRule, TableSizeType, TableTextWrapType, TextX, Tools, UniverInstanceType, containsInteriorInsertionOffset, createParagraphId, createSectionId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getCustomBlockIdsInSelections, getParagraphContentStartOffset, getTableCellTokenInterval, getTableRangeInterval, getTableRowTokenInterval, merge } from "@univerjs/core";
+import { DocHistoryAction, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { A, Le, O, Re, ze } from "./internal-core-endo.js";
+import { Me } from "./docs-table-unmerge-cells.js";
+function Ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018.documentData["tableSource"]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461019[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018.tableId],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021 = O(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461022 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020 ? ze(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021.startRow, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021.startColumn) : null;
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461022 || !Me(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018.documentData, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018.tableId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021)) return null;
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A26 = [];
+  return A(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461022, (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197) => {
+    Le(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A26, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018.tableId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197, "rowSpan", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.rowSpan, undefined), Le(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A26, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018.tableId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197, "columnSpan", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.columnSpan, undefined);
+  }), {
+    actions: Re(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A26),
+    range: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461022
+  };
+}
+export { Ie as buildUnmergeCellsMutationActions };

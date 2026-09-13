@@ -1,0 +1,56 @@
+import { ArrangeTypeEnum, BooleanNumber, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, LocaleType, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, createIdentifier, createParagraphId, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, shallowEqual } from '@univerjs/core';
+import { UnitDrawingService } from '@univerjs/drawing';
+import { IShapeHostAdapterRegistry, ShapeFillEnum, ShapeLineTypeEnum, ShapeModel, ShapeTextAutoFitType, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, applyDocumentToShapeText, applySmartArtOperation, canApplyShapeFormulaLastValue, convertSmartArtToShapes, createDefaultInsertedShapeData, createUniqueShapeName, isConnectorShape, isSmartArtShapeData, normalizeShapeTextData } from '@univerjs-pro/engine-shape';
+import { transformObjectOutOfGroup } from '@univerjs/engine-render';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { Zi } from "./slides-slide-element-text-document.js";
+import { fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11 } from "./slides-plain-text-to-slide-document-data.js";
+import { na } from "./internal-core-endo.js";
+function Qi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462588, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462589, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462590) {
+  return Zi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462588, fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462589, ta(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462588, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462590)));
+}
+function ta(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599 = {}) {
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.type === "text") {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462600, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462601;
+    return {
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.id ?? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462600 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.textData) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462600.id) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.id,
+      'textStyle': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.textStyle ?? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462601 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.textData) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462601 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462601.documentStyle) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462601.textStyle) ?? na(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.textStyle),
+      'horizontalAlign': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.horizontalAlign,
+      'verticalAlign': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.verticalAlign,
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.bullet ? {
+        'bullet': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.bullet
+      } : {})
+    };
+  }
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.type === 'shape') {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462602, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462603, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462604, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462605, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462606;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865 = normalizeShapeTextData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.shapeData["shapeText"]),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46866 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462602 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865.dataModel) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462602.doc;
+    return {
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.id ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46866 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46866.id) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.id,
+      'textStyle': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.textStyle ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46866 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462603 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46866.documentStyle) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462603.textStyle) ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46866 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462604 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46866.body) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462604 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462604.textRuns) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462604 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462604[0]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462604.ts),
+      'horizontalAlign': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.horizontalAlign ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462605 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865.dataModel) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462605.ha),
+      'verticalAlign': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.verticalAlign ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462606 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865.dataModel) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462606.va),
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.bullet ? {
+        'bullet': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.bullet
+      } : {})
+    };
+  }
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.type === "placeholder") {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462607, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462608, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462609, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462610;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462607 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.placeholder["textConfig"]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462607.textData;
+    return {
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.id ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867.id) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462598.id,
+      'textStyle': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.textStyle ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462608 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867.documentStyle) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462608.textStyle),
+      'horizontalAlign': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.horizontalAlign ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462609 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867.documentStyle) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462609 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462609.renderConfig) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462609.horizontalAlign),
+      'verticalAlign': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.verticalAlign ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462610 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46867.documentStyle) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462610 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462610.renderConfig) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462610.verticalAlign),
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.bullet ? {
+        'bullet': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599.bullet
+      } : {})
+    };
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462599;
+}
+export { Qi as applySlideElementPlainText };

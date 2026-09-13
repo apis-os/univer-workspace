@@ -1,0 +1,12 @@
+import type { IChartChordEmphasisSpec, IChartChordLabelSpec, IChartChordLayoutSpec, IChartChordMappingSpec, IChartChordNodeStyleSpec, IChartChordRibbonStyleSpec } from '../../types';
+export declare function setChordMapping(value: IChartChordMappingSpec): import("./chart-config-operation").IChartConfigOperation;
+export declare const setChordLayout: (value: IChartChordLayoutSpec) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetChordLayout: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setChordNode: (value: IChartChordNodeStyleSpec) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetChordNode: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setChordLabel: (value: IChartChordLabelSpec) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetChordLabel: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setChordRibbon: (value: IChartChordRibbonStyleSpec) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetChordRibbon: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setChordEmphasis: (value: IChartChordEmphasisSpec) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetChordEmphasis: () => import("./chart-config-operation").IChartConfigOperation;

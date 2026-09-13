@@ -1,0 +1,45 @@
+const e = {
+  "collaboration-client": {
+    collabClient: {
+      tooltip: {
+        reconnect: "Click\x20to\x20Reconnect"
+      }
+    },
+    collabStatus: {
+      fetchMiss: "Syncing server data...",
+      conflict: "Edit\x20conflicts",
+      notCollab: "Local file",
+      synced: "Synced",
+      syncing: "Syncing...",
+      offline: "Offline, edits would be save on local"
+    },
+    session: {
+      "connection-failed": "Connection failed. Please check your network.",
+      "will-retry": "Connection failed. We will retry in a while.",
+      "room-full": "The document has reached its collaboration limit. Your edits will be cached locally.",
+      "join-failed": "Failed to join collaboration. Please try again later. Your edits will be cached locally.",
+      "room-not-exists": "Failed to join collaboration. Your edits will be cached locally.",
+      "room-permission-denied": "No collaboration permission. Your edits will be cached locally.",
+      "room-cnt-exceeds": "Number\x20of\x20collaborative\x20documents\x20exceeds\x20the\x20limit.\x20Your\x20edits\x20will\x20be\x20cached\x20locally.",
+      "collaboration-timeout": "The server is not responding to your collaboration request. Your edits would be saved locally."
+    },
+    conflict: {
+      title: "Collaboration\x20Conflict",
+      content: "There is a conflict between your local copy and the copy on the server. Please save your local edits, because they will be lost when you reload the page."
+    },
+    permission: {
+      title: "Authentication Error",
+      content: "Your\x20actions\x20are\x20conflicting\x20with\x20the\x20server\x27s\x20permissions.\x20Please\x20save\x20your\x20local\x20edits\x20elsewhere\x20as\x20they\x20will\x20be\x20discarded\x20after\x20refreshing\x20the\x20page."
+    },
+    collaboration: {
+      "single-unit": {
+        warning: "You opened the same file in another tab. In case of data missing, you cannot edit on this tab."
+      },
+      closeRoom: "Editing\x20privileges\x20were\x20revoked\x20because\x20the\x20collaborative\x20room\x20was\x20closed."
+    },
+    auth: {
+      needGotoLoginAlert: "Your login has expired, click OK to re-login, click Cancel to save your local edits."
+    }
+  }
+};
+export { e as default };

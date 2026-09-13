@@ -1,0 +1,68 @@
+import type { IDomChartHost, IImageChartHost } from '@univerjs-pro/engine-chart';
+import type { Observable } from 'rxjs';
+import type { IChartOuterRect } from './chart-content-layout';
+import type { IChartHostHandle } from './sheet-chart-host';
+import { ChartRenderMode } from '@univerjs-pro/engine-chart';
+import { Disposable } from '@univerjs/core';
+import { IRenderManagerService } from '@univerjs/engine-render';
+import { SheetCanvasFloatDomManagerService } from '@univerjs/sheets-drawing-ui';
+import { CanvasFloatDomService } from '@univerjs/ui';
+import { ChartSnapshotStoreService } from './chart-snapshot-store.service';
+export interface IChartHostProviderService {
+    ensureHost(chartId: string, mode: 'image'): Promise<IImageChartHost | null>;
+    ensureHost(chartId: string, mode: 'dom'): Promise<IDomChartHost | null>;
+    ensureHost(chartId: string, mode: ChartRenderMode): Promise<IImageChartHost | IDomChartHost | null>;
+    ensureHost(chartId: string): Promise<{
+        mountNode: string | HTMLElement;
+        dispose: () => void;
+    }>;
+    setHostStyle: (chartId: string, style: Record<string, any>) => void;
+    getHostSize: (chartId: string) => IChartOuterRect | null;
+    getHostClientRect: (chartId: string) => DOMRect | null;
+    setDataUpdateAnimation: (chartId: string, duration: number | null) => void;
+    removeHost$: Observable<string>;
+    removeHost: (chartId: string) => void;
+    checkHost: (chartId: string) => boolean;
+    syncHostLayout: (chartId: string) => void;
+    isDomReady: (chartId: string) => boolean;
+    markHostNotReady: (chartId: string) => void;
+    invalidateSnapshot: (chartId: string) => void;
+}
+export declare function toSheetFloatDomStyle(style: Record<string, any>): Record<string, any>;
+export declare class SheetsChartHostProviderService extends Disposable implements IChartHostProviderService {
+    private readonly _sheetCanvasFloatDomManagerService;
+    private _renderManagerService;
+    private readonly _chartSnapshotStoreService;
+    private readonly _canvasFloatDomService;
+    private _chartHostMap;
+    private _activeDomReadyChartIds;
+    private _removeHost$;
+    readonly removeHost$: Observable<string>;
+    constructor(_sheetCanvasFloatDomManagerService: SheetCanvasFloatDomManagerService, _renderManagerService: IRenderManagerService, _chartSnapshotStoreService: ChartSnapshotStoreService, _canvasFloatDomService: CanvasFloatDomService);
+    private _getSceneAndTransformerByDrawingSearch;
+    setBorder(id: string, color: string): void;
+    setHostStyle(id: string, style: Record<string, any>): void;
+    getHostSize(id: string): IChartOuterRect | null;
+    getHostClientRect(id: string): DOMRect | null;
+    setDataUpdateAnimation(id: string, duration: number | null): void;
+    checkHost(id: string): boolean;
+    syncHostLayout(id: string): void;
+    removeHost(id: string): void;
+    ensureHost(id: string): Promise<IChartHostHandle>;
+    ensureHost(id: string, mode: ChartRenderMode.Image | 'image'): Promise<IImageChartHost | null>;
+    ensureHost(id: string, mode: ChartRenderMode.Dom | 'dom'): Promise<IDomChartHost | null>;
+    ensureHost(id: string, mode: ChartRenderMode | 'image' | 'dom'): Promise<IImageChartHost | IDomChartHost | null>;
+    isDomReady(id: string): boolean;
+    markHostNotReady(id: string): void;
+    invalidateSnapshot(id: string): void;
+    private _createImageChartHost;
+    private _getOrCreateSheetChartHost;
+    private _markHostReady;
+    private _alignFloatDomPositionWithSceneRender;
+    private _restoreFloatDomPositionStream;
+    private _getChartSnapshotKey;
+    private _requestChartCanvasRender;
+    private _getHostPlacement;
+    dispose(): void;
+}
+export declare const IChartHostProviderService: import("@wendellhu/redi").IdentifierDecorator<IChartHostProviderService>;

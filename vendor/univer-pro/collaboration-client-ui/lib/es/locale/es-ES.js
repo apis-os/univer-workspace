@@ -1,0 +1,53 @@
+const e = {
+  "collaboration-client-ui": {
+    collabClient: {
+      tooltip: {
+        reconnect: "Haga clic para reconectar"
+      }
+    },
+    collabStatus: {
+      fetchMiss: "Sincronizando\x20datos\x20del\x20servidor...",
+      conflict: "Conflictos\x20de\x20edición",
+      notCollab: "Archivo local",
+      synced: "Sincronizado",
+      syncing: "Sincronizando...",
+      offline: "Desconectado, los cambios se guardarán localmente"
+    },
+    snapshotLoading: {
+      timeout: "La carga de datos se detuvo en {0}/{1}. Actualiza la página para volver a intentarlo.",
+      refresh: "Actualizar página"
+    },
+    session: {
+      "connection-failed": "Error de conexión, verifique su red.",
+      "will-retry": "Error de conexión, intentaremos de nuevo en un momento.",
+      "room-full": "La sala de colaboración está llena. Sus cambios se guardarán localmente.",
+      "collaboration-timeout": "El\x20servidor\x20no\x20responde\x20a\x20su\x20solicitud\x20de\x20colaboración.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente."
+    },
+    conflict: {
+      title: "Conflicto\x20de\x20colaboración",
+      content: "Hay un conflicto entre su copia local y la copia en el servidor. Guarde sus cambios locales, ya que se perderán cuando recargue la página."
+    },
+    permission: {
+      title: "Error de autenticación",
+      content: "Sus acciones entran en conflicto con los permisos del servidor. Guarde sus cambios locales en otro lugar, ya que se descartarán después de actualizar la página."
+    },
+    collaboration: {
+      "offline-data-not-saved": "Tiene\x20cambios\x20sin\x20guardar\x20en\x20el\x20servidor.\x20Verifique\x20su\x20red\x20e\x20inténtelo\x20de\x20nuevo.",
+      "single-unit": {
+        warning: "Abrió el mismo archivo en otra pestaña. Para evitar pérdida de datos, no puede editar en esta pestaña."
+      },
+      closeRoom: "Los privilegios de edición fueron revocados porque la sala de colaboración fue cerrada."
+    },
+    auth: {
+      needGotoLoginAlert: "Su sesión ha expirado. Haga clic en Aceptar para volver a iniciar sesión, o en Cancelar para guardar sus cambios locales."
+    },
+    formula: {
+      calculation: {
+        started: "Cálculo de fórmulas iniciado.",
+        waiting: "La cola de cálculo de fórmulas está llena, esperando espacio disponible...",
+        unable: "No se puede realizar el cálculo de fórmulas en este momento. Inténtelo de nuevo más tarde."
+      }
+    }
+  }
+};
+export { e as default };

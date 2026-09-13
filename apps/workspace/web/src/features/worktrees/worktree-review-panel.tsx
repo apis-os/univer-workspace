@@ -4,11 +4,6 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { LocaleType } from "@univerjs/core";
-import {
-  UnitComparisonViewer,
-  type UnitComparisonViewerValue,
-} from "@univer/unit-comparison-viewer";
 import {
   CheckCircle2,
   Database,
@@ -41,10 +36,9 @@ import {
   Tooltip,
   toast,
 } from "../../shared/ui";
-import { useTheme } from "../../shared/theme";
 import { cn } from "../../shared/utils/cn";
 import type { MergeReviewStatus } from "../editor/merge-review";
-import { createComparisonUniver } from "../editor/comparison-univer";
+import { SnapshotComparisonView } from "./snapshot-comparison-view";
 import {
   worktreeUnitComparisonQueryOptions,
   worktreeUnitMergeReviewQueryOptions,
@@ -335,25 +329,12 @@ function UnitReview({
   readonly mergeReviewFailed: boolean;
   readonly onSelectedViewChange?: (view: WorktreeReviewView) => void;
 }) {
-  const { language, t } = useI18n();
-  const { resolvedTheme } = useTheme();
+  const { t } = useI18n();
   const comparisonQuery = useQuery({
     ...worktreeUnitComparisonQueryOptions(worktree.id, unit.unitId),
     enabled: activeView === "comparison",
   });
-  const comparison = comparisonQuery.data
-    ? ({
-        result: comparisonQuery.data.result,
-        left: {
-          label: t("officialVersion"),
-          ...comparisonQuery.data.left,
-        },
-        right: {
-          label: t("agentVersion"),
-          ...comparisonQuery.data.right,
-        },
-      } as UnitComparisonViewerValue)
-    : null;
+  const comparison = comparisonQuery.data ?? null;
   const canPreview =
     activeView === "comparison" ||
     activeView === "trunk" ||
@@ -423,16 +404,10 @@ function UnitReview({
               title={t("comparisonFailed")}
             />
           ) : (
-            <UnitComparisonViewer
+            <SnapshotComparisonView
               key={`${comparison.result.comparisonId}:${unit.unitId}`}
               comparison={comparison}
-              createUniver={createComparisonUniver}
-              locale={
-                language === "zh-CN"
-                  ? LocaleType.ZH_CN
-                  : LocaleType.EN_US
-              }
-              darkMode={resolvedTheme === "dark"}
+              worktreeName={worktree.name}
             />
           )}
         </div>

@@ -1,0 +1,9 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_sheets_note_ui_locale_zh_CN = require("@univerjs/sheets-note-ui/locale/zh-CN");
+_univerjs_sheets_note_ui_locale_zh_CN = require_rolldown_runtime.__toESM(_univerjs_sheets_note_ui_locale_zh_CN);
+
+//#region src/locales/zh-CN.ts
+var zh_CN_default = Object.assign({}, _univerjs_sheets_note_ui_locale_zh_CN.default);
+
+//#endregion
+module.exports = zh_CN_default;

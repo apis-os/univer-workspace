@@ -1,0 +1,15 @@
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { Ka, qa } from "./boards-board-connector-labels.js";
+function Ja(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463664, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463665, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463666) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463667 = Ka(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463664),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D223 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463667.findIndex(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46955 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46955.id === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463665);
+  if (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D223 < 0) return null;
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A114 = [...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463667];
+  return var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A114[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D223] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463666(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463667[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D223]), qa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463664, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A114);
+}
+export { Ja as updateBoardConnectorLabel };

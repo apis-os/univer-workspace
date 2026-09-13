@@ -1,0 +1,32 @@
+import type { ILocalUnitPresenceState, IRemoteUnitPresenceState, IUnitPresenceUIAdapter } from '@univerjs/ui';
+import type { Observable } from 'rxjs';
+import { IUniverInstanceService, RxDisposable, UniverInstanceType } from '@univerjs/core';
+import { IBoardElementStateService } from './board-element-state.service';
+import { IBoardPointerStateService } from './board-pointer-state.service';
+import { IBoardUIStateService } from './board-ui-state.service';
+export declare class BoardUnitPresenceUIAdapter extends RxDisposable implements IUnitPresenceUIAdapter {
+    private readonly _boardElementStateService;
+    private readonly _boardPointerStateService;
+    private readonly _boardUIStateService;
+    private readonly _univerInstanceService;
+    readonly unitType = UniverInstanceType.UNIVER_BOARD;
+    readonly presenceKind = "board-element-selection";
+    readonly statusUIPart = "board.top-right-menu.leading";
+    private readonly _active$;
+    private _activationCount;
+    readonly active$: Observable<boolean>;
+    readonly localPresence$: Observable<ILocalUnitPresenceState>;
+    private readonly _remotePresences;
+    constructor(_boardElementStateService: IBoardElementStateService, _boardPointerStateService: IBoardPointerStateService, _boardUIStateService: IBoardUIStateService, _univerInstanceService: IUniverInstanceService);
+    dispose(): void;
+    activate(): import("@wendellhu/redi").IDisposable;
+    isActive(): boolean;
+    getLocalPresence(unitId: string): ILocalUnitPresenceState | null;
+    getRemotePresences$(unitId: string): Observable<ReadonlyMap<string, IRemoteUnitPresenceState>>;
+    setRemotePresence(state: IRemoteUnitPresenceState): void;
+    removeRemotePresence(unitId: string, memberId: string): void;
+    clearRemotePresences(unitId: string): void;
+    private _getShareInterval;
+    private _getOrCreateRemotePresenceSubject;
+    private _disposeRemotePresenceSubject;
+}

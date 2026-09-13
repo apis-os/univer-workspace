@@ -1,0 +1,23 @@
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { Ai, Ni, Pi } from "./internal-core-endo.js";
+function Ri(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463324, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463325, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463326) {
+  return Pi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463324, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463325).find(({
+    bounds: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46904
+  }) => Ai(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46904, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463326)) ?? null;
+}
+function zi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463330, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463331, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463332) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463333 = Ni(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463330, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463331);
+  return Ri(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463333 ? {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463330,
+    containerData: {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463330.containerData,
+      swimlane: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463333
+    }
+  } : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463330, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463331, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463332);
+}
+export { zi as resolveBoardSwimlaneLaneAtPointInFilledBounds };

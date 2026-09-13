@@ -1,0 +1,36 @@
+import type { IChartEditPanelRoute, IChartPanelRouteState } from '@univerjs-pro/chart-ui';
+import type { ChartModel } from '@univerjs-pro/engine-chart';
+import type { IChartSourceMultiRangeItem, IChartUpdateConfigCommandParams, ISheetChartSourceSingleRange } from '@univerjs-pro/sheets-chart';
+import { ChartUIService, ChartViewStateRegistry } from '@univerjs-pro/chart-ui';
+import { DataOrientation } from '@univerjs-pro/engine-chart';
+import { ChartModelService, SheetsChartService } from '@univerjs-pro/sheets-chart';
+import { ICommandService, IUniverInstanceService } from '@univerjs/core';
+type SheetsChartUpdateConfigParams = Omit<IChartUpdateConfigCommandParams, 'unitId'>;
+export type ISheetsChartUIService = SheetsChartUIService;
+export declare const ISheetsChartUIService: import("@wendellhu/redi").IdentifierDecorator<SheetsChartUIService>;
+export declare class SheetsChartUIService extends ChartUIService<ChartModel, SheetsChartUpdateConfigParams> {
+    private readonly _chartModelService;
+    private readonly _sheetsChartService;
+    private readonly _commandService;
+    private readonly _univerInstanceService;
+    private _rangeSelectMode;
+    private readonly _chartEditorOpen$;
+    private readonly _panelRoute$;
+    readonly chartEditorOpen$: import("rxjs").Observable<boolean>;
+    readonly panelRoute$: import("rxjs").Observable<IChartPanelRouteState | null>;
+    constructor(_chartModelService: ChartModelService, _sheetsChartService: SheetsChartService, _commandService: ICommandService, _univerInstanceService: IUniverInstanceService, viewStates: ChartViewStateRegistry);
+    get activeRuntimeModel(): ChartModel | null;
+    get chartEditorOpen(): boolean;
+    get rangeSelectMode(): boolean;
+    setRangeSelectMode(on: boolean): void;
+    setChartEditorOpen(open: boolean): void;
+    isElementEditModeActive(chartId: string): boolean;
+    setPanelRoute(chartId: string, route: IChartEditPanelRoute | null): void;
+    clearPanelRoute(): void;
+    setDataRange(range: ISheetChartSourceSingleRange | IChartSourceMultiRangeItem[]): void;
+    setOrientation(orientation: DataOrientation): void;
+    executeChartUpdateConfig(params: SheetsChartUpdateConfigParams): void;
+    private _executeChartUpdateSourceConfig;
+    dispose(): void;
+}
+export {};

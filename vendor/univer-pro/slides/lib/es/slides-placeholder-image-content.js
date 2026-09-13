@@ -1,0 +1,30 @@
+import { ArrangeTypeEnum, BooleanNumber, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, LocaleType, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, createIdentifier, createParagraphId, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, shallowEqual } from '@univerjs/core';
+import { UnitDrawingService } from '@univerjs/drawing';
+import { IShapeHostAdapterRegistry, ShapeFillEnum, ShapeLineTypeEnum, ShapeModel, ShapeTextAutoFitType, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, applyDocumentToShapeText, applySmartArtOperation, canApplyShapeFormulaLastValue, convertSmartArtToShapes, createDefaultInsertedShapeData, createUniqueShapeName, isConnectorShape, isSmartArtShapeData, normalizeShapeTextData } from '@univerjs-pro/engine-shape';
+import { transformObjectOutOfGroup } from '@univerjs/engine-render';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+const Ui = 'slidePlaceholderContent';
+function Wi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462542) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462543 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462542.custom;
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462543 || typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462543 != 'object') return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462544 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462543[Ui];
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462544 || typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462544 != "object") return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462545 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462544;
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462545.kind !== "image" || typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462545.source != "string" || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462545.source["length"] === 0 ? null : {
+    'kind': "image",
+    'source': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462545.source,
+    'imageSourceType': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462545.imageSourceType
+  };
+}
+function Gi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462550, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462551) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB148 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462550.custom && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462550.custom == "object" ? {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462550.custom
+  } : {};
+  return var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB148[Ui] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462551, {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462550,
+    'custom': var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB148
+  };
+}
+export { Wi as getPlaceholderImageContent, Gi as setPlaceholderImageContent };

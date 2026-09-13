@@ -1,0 +1,3985 @@
+import { ComponentManager, IDialogService, IMenuManagerService, ISidebarService, IconManager, KeyCode, MenuItemType, RibbonDataGroup, RibbonInsertGroup, UniverMobileUIPlugin, getMenuHiddenObservable, useDependency, useEvent, useObservable, useSidebarClick } from "@univerjs/ui";
+import { CellValueType, ColorKit, CommandType, DEFAULT_STYLES, DataValidationErrorStyle, DataValidationRenderMode, DataValidationStatus, DataValidationType, DateSystem, DependentOn, Disposable, DisposableCollection, HorizontalAlign, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, InterceptorEffectEnum, LocaleService, Optional, Plugin, Rectangle, RedoCommand, RxDisposable, ThemeService, UndoCommand, UniverInstanceType, VerticalAlign, WrapStrategy, bufferDebounceTime, dateKit, debounce, excelDateTimePartsToSerial, excelSerialToDateTimeParts, generateRandomId, getIntersectRange, isFormulaString, isUnitRangesEqual, merge, numfmt, sequenceExecute, shallowEqual, toDisposable } from "@univerjs/core";
+import { AUTO_FILL_APPLY_TYPE, AutoFillTools, IAutoFillService, INTERCEPTOR_POINT, InterceptCellContentPriority, RangeProtectionPermissionEditPoint, SetRangeValuesCommand, SetWorksheetActiveOperation, SheetInterceptorService, SheetPermissionCheckController, SheetsSelectionsService, UniverSheetsPlugin, VALIDATE_CELL, WorkbookEditablePermission, WorksheetEditPermission, WorksheetSetCellStylePermission, checkRangesEditablePermission, deserializeListOptions, getSheetCommandTarget, rangeToDiscreteRange, serializeListOptions } from "@univerjs/sheets";
+import { AddSheetDataValidationCommand, BASE_FORMULA_INPUT_NAME, CHECKBOX_FORMULA_1, CHECKBOX_FORMULA_2, CHECKBOX_FORMULA_INPUT_NAME, CUSTOM_FORMULA_INPUT_NAME, ClearRangeDataValidationCommand, DATA_VALIDATION_PLUGIN_NAME, DataValidationCacheService, DataValidationFormulaController, DataValidationFormulaService, LIST_FORMULA_INPUT_NAME, RemoveSheetAllDataValidationCommand, RemoveSheetDataValidationCommand, SheetDataValidationModel, SheetsDataValidationValidatorService, UniverSheetsDataValidationPlugin, UpdateSheetDataValidationOptionsCommand, UpdateSheetDataValidationRangeCommand, UpdateSheetDataValidationSettingCommand, createDefaultNewRule, getCellValueOrigin, getDataValidationCellValue, getDataValidationDiffMutations, getFormulaResult, isLegalFormulaResult, transformCheckboxValue } from "@univerjs/sheets-data-validation";
+import { DataValidationModel, DataValidatorDropdownType, DataValidatorRegistryScope, DataValidatorRegistryService, TWO_FORMULA_OPERATOR_COUNT, UniverDataValidationPlugin, getRuleOptions, getRuleSetting } from "@univerjs/data-validation";
+import { BehaviorSubject, Subject, bufferTime, debounceTime, distinctUntilChanged, filter, map, of, startWith } from "rxjs";
+import { CURSOR_TYPE, CheckboxShape, DeviceInputEventType, DocSimpleSkeleton, FontCache, IRenderManagerService, Rect, Shape, Text, Transform, UniverRenderEnginePlugin, fixLineWidthByScale, getCurrentTypeOfRenderer, getFontStyleString } from "@univerjs/engine-render";
+import { getPatternType } from "@univerjs/sheets-numfmt";
+import { AutoHeightController, COPY_TYPE, CellAlertManagerService, CellAlertType, HoverManagerService, IEditorBridgeService, IMarkSelectionService, ISheetCellDropdownManagerService, ISheetClipboardService, PREDEFINED_HOOK_NAME_PASTE, SetCellEditVisibleOperation, SheetSkeletonManagerService, UniverSheetsMobileUIPlugin, UniverSheetsUIPlugin, getCurrentRangeDisable$, getRepeatRange, virtualizeDiscreteRanges } from "@univerjs/sheets-ui";
+import { ActionRow, Button, Checkbox, DraggableList, Dropdown, FormLayout, Input, Radio, RadioGroup, Select, Separator, borderClassName, clsx } from "@univerjs/design";
+import { createElement, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { CheckboxIcon, DataValidationIcon, DatePickerIcon, DeleteIcon, DropdownListIcon, GripVerticalIcon, IncreaseIcon, MoreDownIcon, MoreUpIcon } from "@univerjs/icons";
+import { deserializeRangeWithSheet, serializeRange } from "@univerjs/engine-formula";
+import { FormulaEditor, RangeSelector } from "@univerjs/sheets-formula-ui";
+
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/services/data-validation-panel.service.ts
+let DataValidationPanelService = class DataValidationPanelService extends Disposable {
+	get activeRule() {
+		return this._activeRule;
+	}
+	get isOpen() {
+		return this._open$.getValue();
+	}
+	constructor(_univerInstanceService, _sidebarService) {
+		super();
+		this._univerInstanceService = _univerInstanceService;
+		this._sidebarService = _sidebarService;
+		_defineProperty(this, "_open$", new BehaviorSubject(false));
+		_defineProperty(this, "open$", this._open$.pipe(distinctUntilChanged()));
+		_defineProperty(this, "_activeRule", void 0);
+		_defineProperty(this, "_activeRule$", new BehaviorSubject(void 0));
+		_defineProperty(this, "activeRule$", this._activeRule$.asObservable());
+		_defineProperty(this, "_closeDisposable", null);
+		_defineProperty(this, "_focusFormulaEditorActiveRuleSubUnitId", null);
+		this.disposeWithMe(this._univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).pipe(filter((sheet) => !sheet)).subscribe(() => {
+			this.close();
+		}));
+		this.disposeWithMe(this._sidebarService.sidebarOptions$.subscribe((info) => {
+			if (info.id === "DataValidationPanel") {
+				if (!info.visible) setTimeout(() => {
+					this._sidebarService.sidebarOptions$.next({ visible: false });
+				});
+			}
+		}));
+	}
+	dispose() {
+		var _this$_closeDisposabl;
+		super.dispose();
+		this._open$.next(false);
+		this._open$.complete();
+		this._activeRule$.complete();
+		(_this$_closeDisposabl = this._closeDisposable) === null || _this$_closeDisposabl === void 0 || _this$_closeDisposabl.dispose();
+	}
+	open() {
+		this._open$.next(true);
+	}
+	close() {
+		var _this$_closeDisposabl2;
+		this._open$.next(false);
+		(_this$_closeDisposabl2 = this._closeDisposable) === null || _this$_closeDisposabl2 === void 0 || _this$_closeDisposabl2.dispose();
+	}
+	setCloseDisposable(disposable) {
+		this._closeDisposable = toDisposable(() => {
+			disposable.dispose();
+			this._closeDisposable = null;
+		});
+	}
+	setActiveRule(rule) {
+		this._activeRule = rule;
+		this._activeRule$.next(rule);
+	}
+	setFocusFormulaEditorActiveRuleSubUnitId(subUnitId) {
+		this._focusFormulaEditorActiveRuleSubUnitId = subUnitId;
+	}
+	getFocusFormulaEditorActiveRuleSubUnitId() {
+		return this._focusFormulaEditorActiveRuleSubUnitId;
+	}
+};
+DataValidationPanelService = __decorate([__decorateParam(0, IUniverInstanceService), __decorateParam(1, ISidebarService)], DataValidationPanelService);
+
+//#endregion
+//#region src/config/config.ts
+const SHEETS_DATA_VALIDATION_UI_PLUGIN_CONFIG_KEY = "sheets-data-validation-ui.config";
+const configSymbol = Symbol(SHEETS_DATA_VALIDATION_UI_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/const.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const DROP_DOWN_DEFAULT_COLOR = "gray.100";
+const DROP_DOWN_ICON_COLOR = "gray.600";
+
+//#endregion
+//#region src/controllers/dv-reject-input.controller.ts
+let DataValidationRejectInputController = class DataValidationRejectInputController extends Disposable {
+	constructor(_sheetInterceptorService, _dataValidationModel, _dataValidatorRegistryService, _dialogService, _localeService, _sheetsDataValidationValidatorService) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._dataValidationModel = _dataValidationModel;
+		this._dataValidatorRegistryService = _dataValidatorRegistryService;
+		this._dialogService = _dialogService;
+		this._localeService = _localeService;
+		this._sheetsDataValidationValidatorService = _sheetsDataValidationValidatorService;
+		this._initEditorBridgeInterceptor();
+	}
+	_initEditorBridgeInterceptor() {
+		this.disposeWithMe(this._sheetInterceptorService.writeCellInterceptor.intercept(VALIDATE_CELL, { handler: async (lastResult, context, next) => {
+			const cell = await lastResult;
+			const { row, col, unitId, subUnitId } = context;
+			const ruleId = this._dataValidationModel.getRuleIdByLocation(unitId, subUnitId, row, col);
+			const rule = ruleId ? this._dataValidationModel.getRuleById(unitId, subUnitId, ruleId) : void 0;
+			if (cell === false) return next(Promise.resolve(false));
+			if (!rule || rule.errorStyle !== DataValidationErrorStyle.STOP) return next(Promise.resolve(true));
+			const validator = this._dataValidatorRegistryService.getValidatorItem(rule.type);
+			if (!validator) return next(Promise.resolve(true));
+			if (await this._sheetsDataValidationValidatorService.validatorCell(unitId, subUnitId, row, col) === DataValidationStatus.VALID) return next(Promise.resolve(true));
+			this._dialogService.open({
+				width: 368,
+				title: { title: this._localeService.t("sheets-data-validation-ui.alert.title") },
+				id: "reject-input-dialog",
+				children: { title: validator.getRuleFinalError(rule, {
+					row,
+					col,
+					unitId,
+					subUnitId
+				}) },
+				footer: { title: createElement(Button, {
+					variant: "primary",
+					onClick: () => this._dialogService.close("reject-input-dialog")
+				}, this._localeService.t("sheets-data-validation-ui.alert.ok")) },
+				onClose: () => {
+					this._dialogService.close("reject-input-dialog");
+				}
+			});
+			return next(Promise.resolve(false));
+		} }));
+	}
+	showReject(title) {
+		this._dialogService.open({
+			width: 368,
+			title: { title: this._localeService.t("sheets-data-validation-ui.alert.title") },
+			id: "reject-input-dialog",
+			children: { title },
+			footer: { title: createElement(Button, {
+				variant: "primary",
+				onClick: () => this._dialogService.close("reject-input-dialog")
+			}, this._localeService.t("sheets-data-validation-ui.alert.ok")) },
+			onClose: () => {
+				this._dialogService.close("reject-input-dialog");
+			}
+		});
+	}
+};
+DataValidationRejectInputController = __decorate([
+	__decorateParam(0, Inject(SheetInterceptorService)),
+	__decorateParam(1, Inject(SheetDataValidationModel)),
+	__decorateParam(2, Inject(DataValidatorRegistryService)),
+	__decorateParam(3, IDialogService),
+	__decorateParam(4, Inject(LocaleService)),
+	__decorateParam(5, Inject(SheetsDataValidationValidatorService))
+], DataValidationRejectInputController);
+
+//#endregion
+//#region src/services/dropdown-manager.service.ts
+function getExceptionalDateLabel(parts, patternType) {
+	if (!parts || parts.day !== 0 && !(parts.year === 1900 && parts.month === 2 && parts.day === 29)) return;
+	const date = `${String(parts.year).padStart(4, "0")}-${String(parts.month).padStart(2, "0")}-${String(parts.day).padStart(2, "0")}`;
+	if (patternType === "date") return date;
+	return `${date} ${`${String(parts.hours).padStart(2, "0")}:${String(parts.minutes).padStart(2, "0")}:${String(parts.seconds).padStart(2, "0")}`}`;
+}
+const transformDate = (value, dateSystem, patternType) => {
+	const timeAnchorYear = dateSystem === DateSystem.Date1904 ? 1904 : 1900;
+	if (value === void 0 || value === null) return patternType === "time" ? dateKit(new Date(timeAnchorYear, 0, 1)) : void 0;
+	if (typeof value === "boolean") return;
+	if (value === "") return patternType === "time" ? dateKit(new Date(timeAnchorYear, 0, 1)) : dateKit();
+	if (typeof value === "number" || !Number.isNaN(+value)) {
+		const parts = excelSerialToDateTimeParts(Number(value), { dateSystem });
+		if (!parts) return void 0;
+		const year = patternType === "time" ? timeAnchorYear : parts.year;
+		const month = patternType === "time" ? 1 : parts.month;
+		const day = patternType === "time" ? 1 : parts.day === 0 ? 1 : parts.year === 1900 && parts.month === 2 && parts.day === 29 ? 28 : parts.day;
+		return dateKit(new Date(year, month - 1, day, parts.hours, parts.minutes, parts.seconds, Math.round(parts.fractionalSecond * 1e3)));
+	}
+	const date = dateKit(value);
+	if (date.isValid()) return date;
+};
+function getDefaultFormat(patternType, format) {
+	if (patternType === "duration" && numfmt.getFormatDateInfo(format).isDuration) return format;
+	if (patternType === getPatternType(format)) return format;
+	switch (patternType) {
+		case "datetime": return "yyyy-MM-dd hh:mm:ss";
+		case "date": return "yyyy-MM-dd";
+		case "time": return "HH:mm:ss";
+		case "duration": return "[h]:mm:ss";
+	}
+}
+let DataValidationDropdownManagerService = class DataValidationDropdownManagerService extends Disposable {
+	get activeDropdown() {
+		return this._activeDropdown;
+	}
+	constructor(_univerInstanceService, _dataValidatorRegistryService, _dataValidationModel, _sheetsSelectionsService, _cellDropdownManagerService, _sheetDataValidationModel, _commandService, _editorBridgeService, _injector, _configService) {
+		super();
+		this._univerInstanceService = _univerInstanceService;
+		this._dataValidatorRegistryService = _dataValidatorRegistryService;
+		this._dataValidationModel = _dataValidationModel;
+		this._sheetsSelectionsService = _sheetsSelectionsService;
+		this._cellDropdownManagerService = _cellDropdownManagerService;
+		this._sheetDataValidationModel = _sheetDataValidationModel;
+		this._commandService = _commandService;
+		this._editorBridgeService = _editorBridgeService;
+		this._injector = _injector;
+		this._configService = _configService;
+		_defineProperty(this, "_activeDropdown", void 0);
+		_defineProperty(this, "_activeDropdown$", new Subject());
+		_defineProperty(this, "_currentPopup", null);
+		_defineProperty(this, "activeDropdown$", this._activeDropdown$.asObservable());
+		this._initSelectionChange();
+		this.disposeWithMe(() => {
+			this._activeDropdown$.complete();
+		});
+	}
+	_getDropdownByCell(unitId, subUnitId, row, col) {
+		const workbook = unitId ? this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET) : this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return;
+		const worksheet = subUnitId ? workbook.getSheetBySheetId(subUnitId) : workbook.getActiveSheet();
+		if (!worksheet) return;
+		const rule = this._dataValidationModel.getRuleByLocation(workbook.getUnitId(), worksheet.getSheetId(), row, col);
+		if (!rule) return;
+		const validator = this._dataValidatorRegistryService.getValidatorItem(rule.type);
+		return validator === null || validator === void 0 ? void 0 : validator.dropdownType;
+	}
+	_initSelectionChange() {
+		this.disposeWithMe(this._sheetsSelectionsService.selectionMoveEnd$.subscribe((selections) => {
+			if (selections && selections.every((selection) => !(selection.primary && this._getDropdownByCell(selection.primary.unitId, selection.primary.sheetId, selection.primary.actualRow, selection.primary.actualColumn)))) this.hideDropdown();
+		}));
+	}
+	showDropdown(param) {
+		var _cellStyle$n;
+		const { location } = param;
+		const { row, col, unitId, subUnitId, workbook, worksheet } = location;
+		if (this._currentPopup) this._currentPopup.dispose();
+		this._activeDropdown = param;
+		this._activeDropdown$.next(this._activeDropdown);
+		const rule = this._sheetDataValidationModel.getRuleByLocation(unitId, subUnitId, row, col);
+		if (!rule) return;
+		const validator = this._dataValidatorRegistryService.getValidatorItem(rule.type);
+		if (!(validator === null || validator === void 0 ? void 0 : validator.dropdownType)) return;
+		let popupDisposable;
+		const dateSystem = workbook.getDateSystem();
+		const originalValue = getCellValueOrigin(worksheet.getCellRaw(row, col));
+		const originalSerial = typeof originalValue === "number" ? originalValue : typeof originalValue === "string" && originalValue !== "" && !Number.isNaN(+originalValue) ? Number(originalValue) : null;
+		const originalParts = originalSerial == null ? null : excelSerialToDateTimeParts(originalSerial, { dateSystem });
+		const cellData = worksheet.getCell(row, col);
+		const cellStyle = workbook.getStyles().getStyleByCell(cellData);
+		const format = (cellStyle === null || cellStyle === void 0 || (_cellStyle$n = cellStyle.n) === null || _cellStyle$n === void 0 ? void 0 : _cellStyle$n.pattern) ?? "";
+		const finishCellEditing = async () => {
+			await this._commandService.executeCommand(SetCellEditVisibleOperation.id, {
+				visible: false,
+				eventType: DeviceInputEventType.Keyboard,
+				unitId,
+				keycode: KeyCode.ESC
+			});
+			return true;
+		};
+		const handleSerialSave = async (serial, targetPatternType, interceptValue) => {
+			if (rule.errorStyle !== DataValidationErrorStyle.STOP || await validator.validator({
+				value: serial,
+				unitId,
+				subUnitId,
+				row,
+				column: col,
+				worksheet,
+				workbook,
+				interceptValue,
+				t: CellValueType.NUMBER
+			}, rule)) {
+				await this._commandService.executeCommand(SetRangeValuesCommand.id, {
+					unitId,
+					subUnitId,
+					range: {
+						startColumn: col,
+						endColumn: col,
+						startRow: row,
+						endRow: row
+					},
+					value: {
+						v: serial,
+						t: CellValueType.NUMBER,
+						p: null,
+						f: null,
+						si: null,
+						s: { n: { pattern: getDefaultFormat(targetPatternType, format) } }
+					}
+				});
+				return finishCellEditing();
+			}
+			if (this._injector.has(DataValidationRejectInputController)) this._injector.get(DataValidationRejectInputController).showReject(validator.getRuleFinalError(rule, {
+				row,
+				col,
+				unitId,
+				subUnitId
+			}));
+			return false;
+		};
+		const handleSave = async (date, targetPatternType, changeType) => {
+			if (!date) return finishCellEditing();
+			const nativeDate = date.toDate();
+			const selectedParts = {
+				year: nativeDate.getFullYear(),
+				month: nativeDate.getMonth() + 1,
+				day: nativeDate.getDate(),
+				hours: nativeDate.getHours(),
+				minutes: nativeDate.getMinutes(),
+				seconds: nativeDate.getSeconds(),
+				fractionalSecond: nativeDate.getMilliseconds() / 1e3
+			};
+			const isExceptionalDateAnchor = originalParts != null && (originalParts.day === 0 && selectedParts.year === 1900 && selectedParts.month === 1 && selectedParts.day === 1 || originalParts.year === 1900 && originalParts.month === 2 && originalParts.day === 29 && selectedParts.year === 1900 && selectedParts.month === 2 && selectedParts.day === 28);
+			const timeParts = targetPatternType === "date" ? originalParts ?? {
+				hours: 0,
+				minutes: 0,
+				seconds: 0,
+				fractionalSecond: 0
+			} : selectedParts;
+			const serialNum = excelDateTimePartsToSerial({
+				year: targetPatternType === "time" && originalParts && (originalSerial ?? 0) >= 1 ? originalParts.year : selectedParts.year,
+				month: targetPatternType === "time" && originalParts && (originalSerial ?? 0) >= 1 ? originalParts.month : selectedParts.month,
+				day: targetPatternType === "time" && originalParts && (originalSerial ?? 0) >= 1 ? originalParts.day : targetPatternType === "datetime" && changeType === "time" && isExceptionalDateAnchor ? originalParts.day : selectedParts.day,
+				hours: timeParts.hours,
+				minutes: timeParts.minutes,
+				seconds: timeParts.seconds,
+				fractionalSecond: timeParts.fractionalSecond
+			}, { dateSystem });
+			if (serialNum == null) return false;
+			const serialTime = targetPatternType === "time" && (originalSerial == null || originalSerial < 1) ? serialNum - Math.floor(serialNum) : serialNum;
+			const dateStr = date.format(targetPatternType === "date" ? "YYYY-MM-DD 00:00:00" : "YYYY-MM-DD HH:mm:ss");
+			return handleSerialSave(serialTime, targetPatternType, dateStr.replace("Z", "").replace("T", " "));
+		};
+		let dropdownParam;
+		const unsupportedValue = originalSerial != null && !originalParts ? originalSerial : void 0;
+		const serialProps = unsupportedValue == null ? {} : {
+			unsupportedValue,
+			onSerialChange: (newValue) => {
+				if (newValue == null || !excelSerialToDateTimeParts(newValue, { dateSystem })) return Promise.resolve(false);
+				return handleSerialSave(newValue, validator.dropdownType === DataValidatorDropdownType.DATE ? "date" : validator.dropdownType === DataValidatorDropdownType.TIME ? "time" : "datetime", String(newValue));
+			}
+		};
+		switch (validator.dropdownType) {
+			case DataValidatorDropdownType.DATE: {
+				var _rule$bizInfo;
+				const originDate = transformDate(originalValue, dateSystem, "date");
+				const showTime = Boolean((_rule$bizInfo = rule.bizInfo) === null || _rule$bizInfo === void 0 ? void 0 : _rule$bizInfo.showTime);
+				dropdownParam = {
+					location,
+					type: "datepicker",
+					props: {
+						showTime,
+						onChange: (newValue, changeType) => handleSave(newValue, showTime ? "datetime" : "date", changeType),
+						...originDate ? { defaultValue: originDate } : {},
+						exceptionalDateLabel: getExceptionalDateLabel(originalParts, showTime ? "datetime" : "date"),
+						patternType: "date",
+						preserveDefaultValue: true,
+						...serialProps
+					}
+				};
+				break;
+			}
+			case DataValidatorDropdownType.TIME: {
+				if (numfmt.getFormatDateInfo(format).isDuration) {
+					dropdownParam = {
+						location,
+						type: "datepicker",
+						props: {
+							durationValue: originalSerial ?? void 0,
+							onDurationChange: (newValue) => newValue == null ? finishCellEditing() : handleSerialSave(newValue, "duration", String(newValue)),
+							patternType: "duration",
+							preserveDefaultValue: true
+						}
+					};
+					break;
+				}
+				const originDate = transformDate(originalValue, dateSystem, "time");
+				dropdownParam = {
+					location,
+					type: "datepicker",
+					props: {
+						onChange: (newValue, changeType) => handleSave(newValue, "time", changeType),
+						...originDate ? { defaultValue: originDate } : {},
+						patternType: "time",
+						preserveDefaultValue: true,
+						...serialProps
+					}
+				};
+				break;
+			}
+			case DataValidatorDropdownType.DATETIME: {
+				const originDate = transformDate(originalValue, dateSystem, "datetime");
+				dropdownParam = {
+					location,
+					type: "datepicker",
+					props: {
+						onChange: (newValue, changeType) => handleSave(newValue, "datetime", changeType),
+						...originDate ? { defaultValue: originDate } : {},
+						exceptionalDateLabel: getExceptionalDateLabel(originalParts, "datetime"),
+						patternType: "datetime",
+						preserveDefaultValue: true,
+						...serialProps
+					}
+				};
+				break;
+			}
+			case DataValidatorDropdownType.LIST:
+			case DataValidatorDropdownType.MULTIPLE_LIST: {
+				var _this$_configService$, _this$_configService$2;
+				const multiple = validator.dropdownType === DataValidatorDropdownType.MULTIPLE_LIST;
+				const handleSave = async (newValue) => {
+					const str = multiple ? serializeListOptions(newValue) : newValue[0] ?? "";
+					const params = {
+						unitId,
+						subUnitId,
+						range: {
+							startColumn: col,
+							endColumn: col,
+							startRow: row,
+							endRow: row
+						},
+						value: {
+							v: str,
+							p: null,
+							f: null,
+							si: null
+						}
+					};
+					this._commandService.executeCommand(SetRangeValuesCommand.id, params);
+					if (this._editorBridgeService.isVisible().visible) await this._commandService.executeCommand(SetCellEditVisibleOperation.id, {
+						visible: false,
+						eventType: DeviceInputEventType.Keyboard,
+						unitId,
+						keycode: KeyCode.ESC
+					});
+					if (multiple) return false;
+					return true;
+				};
+				const showColor = (rule === null || rule === void 0 ? void 0 : rule.renderMode) === DataValidationRenderMode.CUSTOM || (rule === null || rule === void 0 ? void 0 : rule.renderMode) === void 0;
+				const list = validator.getListWithColor(rule, unitId, subUnitId);
+				const cellStr = getDataValidationCellValue(worksheet.getCellRaw(row, col));
+				const handleEdit = () => {
+					this._commandService.executeCommand(OpenValidationPanelOperation.id, { ruleId: rule.uid });
+					popupDisposable === null || popupDisposable === void 0 || popupDisposable.dispose();
+				};
+				dropdownParam = {
+					location,
+					type: "list",
+					props: {
+						onChange: (newValue) => handleSave(newValue),
+						options: list.map((item) => ({
+							label: item.label,
+							value: item.label,
+							color: showColor || item.color ? item.color || "gray.100" : "transparent"
+						})),
+						onEdit: handleEdit,
+						defaultValue: cellStr,
+						multiple,
+						showEdit: ((_this$_configService$ = this._configService.getConfig("sheets-data-validation-ui.config")) === null || _this$_configService$ === void 0 ? void 0 : _this$_configService$.showEditOnDropdown) ?? true,
+						showSearch: ((_this$_configService$2 = this._configService.getConfig("sheets-data-validation-ui.config")) === null || _this$_configService$2 === void 0 ? void 0 : _this$_configService$2.showSearchOnDropdown) ?? true
+					}
+				};
+				break;
+			}
+			case DataValidatorDropdownType.CASCADE: {
+				const handleSave = (newValue) => {
+					const params = {
+						unitId,
+						subUnitId,
+						range: {
+							startColumn: col,
+							endColumn: col,
+							startRow: row,
+							endRow: row
+						},
+						value: {
+							v: newValue.join("/"),
+							p: null,
+							f: null,
+							si: null
+						}
+					};
+					this._commandService.syncExecuteCommand(SetRangeValuesCommand.id, params);
+					if (this._editorBridgeService.isVisible().visible) this._commandService.syncExecuteCommand(SetCellEditVisibleOperation.id, {
+						visible: false,
+						eventType: DeviceInputEventType.Keyboard,
+						unitId,
+						keycode: KeyCode.ESC
+					});
+					return true;
+				};
+				dropdownParam = {
+					type: "cascader",
+					props: {
+						onChange: handleSave,
+						defaultValue: getDataValidationCellValue(worksheet.getCellRaw(row, col)).split("/"),
+						options: JSON.parse(rule.formula1 ?? "[]")
+					},
+					location
+				};
+				break;
+			}
+			case DataValidatorDropdownType.COLOR: {
+				const handleSave = (newValue) => {
+					const params = {
+						unitId,
+						subUnitId,
+						range: {
+							startColumn: col,
+							endColumn: col,
+							startRow: row,
+							endRow: row
+						},
+						value: {
+							v: newValue,
+							p: null,
+							f: null,
+							si: null
+						}
+					};
+					this._commandService.syncExecuteCommand(SetRangeValuesCommand.id, params);
+					if (this._editorBridgeService.isVisible().visible) this._commandService.syncExecuteCommand(SetCellEditVisibleOperation.id, {
+						visible: false,
+						eventType: DeviceInputEventType.Keyboard,
+						unitId,
+						keycode: KeyCode.ESC
+					});
+					return true;
+				};
+				dropdownParam = {
+					type: "color",
+					props: {
+						onChange: handleSave,
+						defaultValue: getDataValidationCellValue(worksheet.getCellRaw(row, col))
+					},
+					location
+				};
+				break;
+			}
+			default: throw new Error("[DataValidationDropdownManagerService]: unknown type!");
+		}
+		popupDisposable = this._cellDropdownManagerService.showDropdown({
+			...dropdownParam,
+			onHide: () => {
+				this._activeDropdown = null;
+				this._activeDropdown$.next(null);
+			}
+		});
+		if (!popupDisposable) throw new Error("[DataValidationDropdownManagerService]: cannot show dropdown!");
+		const disposableCollection = new DisposableCollection();
+		disposableCollection.add(popupDisposable);
+		disposableCollection.add({ dispose: () => {
+			var _this$_activeDropdown, _this$_activeDropdown2;
+			(_this$_activeDropdown = this._activeDropdown) === null || _this$_activeDropdown === void 0 || (_this$_activeDropdown2 = _this$_activeDropdown.onHide) === null || _this$_activeDropdown2 === void 0 || _this$_activeDropdown2.call(_this$_activeDropdown);
+		} });
+		this._currentPopup = disposableCollection;
+	}
+	hideDropdown() {
+		if (!this._activeDropdown) return;
+		this._currentPopup && this._currentPopup.dispose();
+		this._currentPopup = null;
+		this._activeDropdown = null;
+		this._activeDropdown$.next(null);
+	}
+	showDataValidationDropdown(unitId, subUnitId, row, col, onHide) {
+		const workbook = this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return;
+		const worksheet = workbook.getSheetBySheetId(subUnitId);
+		if (!worksheet) return;
+		const rule = this._dataValidationModel.getRuleByLocation(workbook.getUnitId(), worksheet.getSheetId(), row, col);
+		if (!rule) return;
+		const validator = this._dataValidatorRegistryService.getValidatorItem(rule.type);
+		if (!validator || !validator.dropdownType) {
+			this.hideDropdown();
+			return;
+		}
+		this.showDropdown({
+			location: {
+				workbook,
+				worksheet,
+				row,
+				col,
+				unitId,
+				subUnitId
+			},
+			onHide
+		});
+	}
+};
+DataValidationDropdownManagerService = __decorate([
+	__decorateParam(0, IUniverInstanceService),
+	__decorateParam(1, Inject(DataValidatorRegistryService)),
+	__decorateParam(2, Inject(SheetDataValidationModel)),
+	__decorateParam(3, Inject(SheetsSelectionsService)),
+	__decorateParam(4, Inject(ISheetCellDropdownManagerService)),
+	__decorateParam(5, Inject(SheetDataValidationModel)),
+	__decorateParam(6, ICommandService),
+	__decorateParam(7, IEditorBridgeService),
+	__decorateParam(8, Inject(Injector)),
+	__decorateParam(9, IConfigService)
+], DataValidationDropdownManagerService);
+
+//#endregion
+//#region src/commands/operations/data-validation.operation.ts
+const DATA_VALIDATION_PANEL = "DataValidationPanel";
+const OpenValidationPanelOperation = {
+	id: "data-validation.operation.open-validation-panel",
+	type: CommandType.OPERATION,
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ruleId, isAdd } = params;
+		const dataValidationPanelService = accessor.get(DataValidationPanelService);
+		const dataValidationModel = accessor.get(DataValidationModel);
+		const univerInstanceService = accessor.get(IUniverInstanceService);
+		const sidebarService = accessor.get(ISidebarService);
+		const target = getSheetCommandTarget(univerInstanceService);
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = ruleId ? dataValidationModel.getRuleById(unitId, subUnitId, ruleId) : void 0;
+		dataValidationPanelService.open();
+		dataValidationPanelService.setActiveRule(rule && {
+			unitId,
+			subUnitId,
+			rule
+		});
+		const disposable = sidebarService.open({
+			id: DATA_VALIDATION_PANEL,
+			header: { title: isAdd ? "sheets-data-validation-ui.panel.addTitle" : "sheets-data-validation-ui.panel.title" },
+			children: { label: DATA_VALIDATION_PANEL },
+			width: 312,
+			onClose: () => dataValidationPanelService.close()
+		});
+		dataValidationPanelService.setCloseDisposable(disposable);
+		return true;
+	}
+};
+const CloseValidationPanelOperation = {
+	id: "data-validation.operation.close-validation-panel",
+	type: CommandType.OPERATION,
+	handler(accessor) {
+		accessor.get(DataValidationPanelService).close();
+		return true;
+	}
+};
+const ToggleValidationPanelOperation = {
+	id: "data-validation.operation.toggle-validation-panel",
+	type: CommandType.OPERATION,
+	handler(accessor) {
+		const commandService = accessor.get(ICommandService);
+		const dataValidationPanelService = accessor.get(DataValidationPanelService);
+		dataValidationPanelService.open();
+		if (dataValidationPanelService.isOpen) commandService.executeCommand(CloseValidationPanelOperation.id);
+		else commandService.executeCommand(OpenValidationPanelOperation.id);
+		return true;
+	}
+};
+const ShowDataValidationDropdown = {
+	type: CommandType.OPERATION,
+	id: "sheet.operation.show-data-validation-dropdown",
+	handler(accessor, params) {
+		if (!params) return false;
+		const dataValidationDropdownManagerService = accessor.get(DataValidationDropdownManagerService);
+		const { unitId, subUnitId, row, column } = params;
+		const activeDropdown = dataValidationDropdownManagerService.activeDropdown;
+		const currLoc = activeDropdown === null || activeDropdown === void 0 ? void 0 : activeDropdown.location;
+		if (currLoc && currLoc.unitId === unitId && currLoc.subUnitId === subUnitId && currLoc.row === row && currLoc.col === column) return true;
+		dataValidationDropdownManagerService.showDataValidationDropdown(unitId, subUnitId, row, column);
+		return true;
+	}
+};
+const HideDataValidationDropdown = {
+	type: CommandType.OPERATION,
+	id: "sheet.operation.hide-data-validation-dropdown",
+	handler(accessor, params) {
+		if (!params) return false;
+		accessor.get(DataValidationDropdownManagerService).hideDropdown();
+		return true;
+	}
+};
+
+//#endregion
+//#region src/commands/commands/data-validation-ui.command.ts
+function createRule(accessor, rule) {
+	const defaultRule = createDefaultNewRule(accessor);
+	return {
+		...defaultRule,
+		...rule,
+		uid: defaultRule.uid,
+		ranges: defaultRule.ranges
+	};
+}
+const InsertQuickSheetDataValidationCommand = {
+	type: CommandType.COMMAND,
+	id: "data-validation.command.insert-quick-rule",
+	handler(accessor, params) {
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		const ranges = accessor.get(SheetsSelectionsService).getCurrentSelections().map((selection) => selection.range);
+		if (!target || !ranges.length || !(params === null || params === void 0 ? void 0 : params.rule)) return false;
+		const rule = createRule(accessor, params.rule);
+		return accessor.get(ICommandService).syncExecuteCommand(AddSheetDataValidationCommand.id, {
+			unitId: target.workbook.getUnitId(),
+			subUnitId: target.worksheet.getSheetId(),
+			rule
+		});
+	}
+};
+const ClearQuickSheetDataValidationCommand = {
+	type: CommandType.COMMAND,
+	id: "data-validation.command.clear-quick-rule",
+	handler(accessor, params) {
+		var _params$types;
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		const ranges = accessor.get(SheetsSelectionsService).getCurrentSelections().map((selection) => selection.range);
+		if (!target || !ranges.length || !(params === null || params === void 0 || (_params$types = params.types) === null || _params$types === void 0 ? void 0 : _params$types.length)) return false;
+		return accessor.get(ICommandService).syncExecuteCommand(ClearRangeDataValidationCommand.id, {
+			unitId: target.workbook.getUnitId(),
+			subUnitId: target.worksheet.getSheetId(),
+			ranges,
+			types: params.types
+		});
+	}
+};
+const AddSheetDataValidationAndOpenCommand = {
+	type: CommandType.COMMAND,
+	id: "data-validation.command.addRuleAndOpen",
+	handler(accessor, params) {
+		const target = getSheetCommandTarget(accessor.get(IUniverInstanceService));
+		if (!target) return false;
+		const { workbook, worksheet } = target;
+		if (!accessor.get(SheetsSelectionsService).getCurrentSelections().length) return false;
+		const rule = createRule(accessor, params === null || params === void 0 ? void 0 : params.rule);
+		const commandService = accessor.get(ICommandService);
+		const addParams = {
+			rule,
+			unitId: workbook.getUnitId(),
+			subUnitId: worksheet.getSheetId()
+		};
+		if (commandService.syncExecuteCommand(AddSheetDataValidationCommand.id, addParams)) {
+			commandService.syncExecuteCommand(OpenValidationPanelOperation.id, {
+				ruleId: rule.uid,
+				isAdd: true
+			});
+			return true;
+		}
+		return false;
+	}
+};
+
+//#endregion
+//#region src/views/components/DropdownPresets.tsx
+const DROPDOWN_PRESETS_COMPONENT = "SHEETS_DATA_VALIDATION_DROPDOWN_PRESETS";
+function DropdownPresets({ onChange }) {
+	const localeService = useDependency(LocaleService);
+	const presets = [
+		[localeService.t("sheets-data-validation-ui.ribbon.presets.yes"), localeService.t("sheets-data-validation-ui.ribbon.presets.no")],
+		[
+			localeService.t("sheets-data-validation-ui.ribbon.presets.notStarted"),
+			localeService.t("sheets-data-validation-ui.ribbon.presets.inProgress"),
+			localeService.t("sheets-data-validation-ui.ribbon.presets.completed")
+		],
+		[
+			"A",
+			"B",
+			"C"
+		]
+	];
+	return /* @__PURE__ */ jsxs("div", {
+		className: "univer-box-border univer-w-[360px]",
+		children: [
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-px-2 univer-text-sm univer-font-semibold",
+				children: localeService.t("sheets-data-validation-ui.ribbon.dropdownPresetTitle")
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-2 univer-grid univer-grid-cols-3 univer-gap-1.5",
+				children: presets.map((values) => /* @__PURE__ */ jsx("button", {
+					type: "button",
+					"aria-label": values.join(" / "),
+					className: "univer-flex univer-min-h-20 univer-cursor-pointer univer-flex-col univer-items-start univer-gap-1.5 univer-rounded-md univer-border-0 univer-bg-gray-50 univer-p-3 univer-text-left univer-text-sm univer-leading-5 univer-text-gray-900 univer-transition-colors hover:univer-bg-gray-100 focus-visible:univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-primary-600 focus-visible:univer-ring-offset-0 dark:!univer-bg-gray-800 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",
+					onClick: () => onChange(serializeListOptions(values)),
+					children: values.map((value) => /* @__PURE__ */ jsx("span", {
+						className: "univer-w-full univer-break-words",
+						children: value
+					}, value))
+				}, values.join("\0")))
+			}),
+			/* @__PURE__ */ jsx(Separator, { className: "univer-mt-2" })
+		]
+	});
+}
+
+//#endregion
+//#region src/menu/dv.menu.ts
+const DATA_VALIDATION_MENU_ID = "sheet.menu.data-validation";
+const QUICK_DROPDOWN_MENU_ID = "sheet.menu.quick-dropdown";
+const QUICK_DATE_MENU_ID = "sheet.menu.quick-date";
+const CHECKBOX_RULE_INPUT = {
+	type: DataValidationType.CHECKBOX,
+	operator: void 0,
+	formula1: void 0,
+	formula2: void 0
+};
+const DATE_RULE_INPUT = {
+	type: DataValidationType.DATE,
+	operator: void 0,
+	formula1: void 0,
+	formula2: void 0
+};
+const DATE_TIME_RULE_INPUT = {
+	...DATE_RULE_INPUT,
+	bizInfo: { showTime: true }
+};
+function createDropdownRuleInput(formula1) {
+	return {
+		type: DataValidationType.LIST,
+		operator: void 0,
+		formula1,
+		formula2: "",
+		renderMode: DataValidationRenderMode.CUSTOM
+	};
+}
+function createDropdownCommandParams(value) {
+	return typeof value === "undefined" ? {} : { rule: createDropdownRuleInput(String(value)) };
+}
+function getQuickDataValidationMenuState(accessor) {
+	return {
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetSetCellStylePermission, WorksheetEditPermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function dataValidationMenuFactory(accessor) {
+	return {
+		id: DATA_VALIDATION_MENU_ID,
+		type: MenuItemType.SUBITEMS,
+		icon: "DataValidationIcon",
+		tooltip: "sheets-data-validation-ui.title",
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetSetCellStylePermission, WorksheetEditPermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function quickCheckboxMenuFactory(accessor) {
+	return {
+		id: InsertQuickSheetDataValidationCommand.id,
+		type: MenuItemType.BUTTON_SELECTOR,
+		icon: "CheckboxIcon",
+		tooltip: "sheets-data-validation-ui.checkbox.title",
+		params: { rule: CHECKBOX_RULE_INPUT },
+		selectionsCommandId: InsertQuickSheetDataValidationCommand.id,
+		selections: [{
+			label: "sheets-data-validation-ui.ribbon.setCheckbox",
+			value: DataValidationType.CHECKBOX,
+			params: { rule: CHECKBOX_RULE_INPUT }
+		}, {
+			label: "sheets-data-validation-ui.ribbon.clearCheckbox",
+			id: ClearQuickSheetDataValidationCommand.id,
+			value: DataValidationType.CHECKBOX,
+			params: { types: [DataValidationType.CHECKBOX] }
+		}],
+		...getQuickDataValidationMenuState(accessor)
+	};
+}
+function quickDropdownMenuFactory(accessor) {
+	const localeService = accessor.get(LocaleService);
+	const editDropdownValue = serializeListOptions([localeService.t("sheets-data-validation-ui.ribbon.presets.option1"), localeService.t("sheets-data-validation-ui.ribbon.presets.option2")]);
+	return {
+		id: QUICK_DROPDOWN_MENU_ID,
+		type: MenuItemType.SUBITEMS,
+		icon: "DropdownListIcon",
+		tooltip: "sheets-data-validation-ui.list.title",
+		selectionsCommandId: InsertQuickSheetDataValidationCommand.id,
+		selections: [
+			{
+				label: {
+					name: DROPDOWN_PRESETS_COMPONENT,
+					hoverable: false,
+					selectable: false
+				},
+				params: createDropdownCommandParams
+			},
+			{
+				id: AddSheetDataValidationAndOpenCommand.id,
+				label: "sheets-data-validation-ui.ribbon.editDropdown",
+				value: editDropdownValue,
+				params: { rule: createDropdownRuleInput(editDropdownValue) }
+			},
+			{
+				id: ClearQuickSheetDataValidationCommand.id,
+				label: "sheets-data-validation-ui.ribbon.clearDropdown",
+				value: DataValidationType.LIST,
+				params: { types: [DataValidationType.LIST, DataValidationType.LIST_MULTIPLE] }
+			}
+		],
+		...getQuickDataValidationMenuState(accessor)
+	};
+}
+function quickDateMenuFactory(accessor) {
+	return {
+		id: QUICK_DATE_MENU_ID,
+		commandId: InsertQuickSheetDataValidationCommand.id,
+		type: MenuItemType.BUTTON_SELECTOR,
+		icon: "DatePickerIcon",
+		tooltip: "sheets-data-validation-ui.date.title",
+		params: { rule: DATE_RULE_INPUT },
+		selectionsCommandId: InsertQuickSheetDataValidationCommand.id,
+		selections: [
+			{
+				label: "sheets-data-validation-ui.date.title",
+				value: DataValidationType.DATE,
+				params: { rule: DATE_RULE_INPUT }
+			},
+			{
+				label: "sheets-data-validation-ui.ribbon.dateTime",
+				value: DataValidationType.DATE,
+				params: { rule: DATE_TIME_RULE_INPUT }
+			},
+			{
+				id: AddSheetDataValidationAndOpenCommand.id,
+				label: "sheets-data-validation-ui.list.edit",
+				value: DataValidationType.DATE,
+				params: { rule: DATE_RULE_INPUT }
+			},
+			{
+				id: ClearQuickSheetDataValidationCommand.id,
+				label: "sheets-data-validation-ui.panel.removeRule",
+				value: DataValidationType.DATE,
+				params: { types: [DataValidationType.DATE] }
+			}
+		],
+		...getQuickDataValidationMenuState(accessor)
+	};
+}
+function openDataValidationMenuFactory() {
+	return {
+		id: OpenValidationPanelOperation.id,
+		title: "sheets-data-validation-ui.panel.title",
+		type: MenuItemType.BUTTON,
+		params: {}
+	};
+}
+function addDataValidationMenuFactory() {
+	return {
+		id: AddSheetDataValidationAndOpenCommand.id,
+		title: "sheets-data-validation-ui.panel.add",
+		type: MenuItemType.BUTTON
+	};
+}
+
+//#endregion
+//#region src/menu/schema.ts
+const menuSchema = {
+	[RibbonInsertGroup.CELL]: {
+		[InsertQuickSheetDataValidationCommand.id]: {
+			order: 0,
+			menuItemFactory: quickCheckboxMenuFactory
+		},
+		[QUICK_DROPDOWN_MENU_ID]: {
+			order: 1,
+			menuItemFactory: quickDropdownMenuFactory
+		},
+		[QUICK_DATE_MENU_ID]: {
+			order: 2,
+			menuItemFactory: quickDateMenuFactory
+		}
+	},
+	[RibbonDataGroup.RULES]: { [DATA_VALIDATION_MENU_ID]: {
+		order: 0,
+		gridLayout: {
+			row: 1,
+			column: 1,
+			showLabel: true
+		},
+		menuItemFactory: dataValidationMenuFactory,
+		[OpenValidationPanelOperation.id]: {
+			order: 0,
+			menuItemFactory: openDataValidationMenuFactory
+		},
+		[AddSheetDataValidationAndOpenCommand.id]: {
+			order: 1,
+			menuItemFactory: addDataValidationMenuFactory
+		}
+	} }
+};
+
+//#endregion
+//#region package.json
+var name = "@univerjs/sheets-data-validation-ui";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/views/components/DataValidationOptions.tsx
+function DataValidationOptions(props) {
+	const localeService = useDependency(LocaleService);
+	const componentManager = useDependency(ComponentManager);
+	const { value, onChange, extraComponent } = props;
+	const [show, setShow] = useState(false);
+	const ExtraOptions = extraComponent ? componentManager.get(extraComponent) : null;
+	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsxs("div", {
+		className: "univer-mb-3 univer-flex univer-cursor-pointer univer-items-center univer-text-sm univer-text-gray-900 dark:!univer-text-gray-0",
+		onClick: () => setShow(!show),
+		children: [localeService.t("sheets-data-validation-ui.panel.options"), show ? /* @__PURE__ */ jsx(MoreUpIcon, { className: "univer-ml-1" }) : /* @__PURE__ */ jsx(MoreDownIcon, { className: "univer-ml-1" })]
+	}), show && /* @__PURE__ */ jsxs(Fragment, { children: [
+		ExtraOptions ? /* @__PURE__ */ jsx(ExtraOptions, {
+			value,
+			onChange
+		}) : null,
+		/* @__PURE__ */ jsx(FormLayout, {
+			label: localeService.t("sheets-data-validation-ui.panel.invalid"),
+			children: /* @__PURE__ */ jsxs(RadioGroup, {
+				value: `${value.errorStyle ?? DataValidationErrorStyle.WARNING}`,
+				onChange: (errorStyle) => onChange({
+					...value,
+					errorStyle: +errorStyle
+				}),
+				children: [/* @__PURE__ */ jsx(Radio, {
+					value: `${DataValidationErrorStyle.WARNING}`,
+					children: localeService.t("sheets-data-validation-ui.panel.showWarning")
+				}), /* @__PURE__ */ jsx(Radio, {
+					value: `${DataValidationErrorStyle.STOP}`,
+					children: localeService.t("sheets-data-validation-ui.panel.rejectInput")
+				})]
+			})
+		}),
+		/* @__PURE__ */ jsx(FormLayout, {
+			label: localeService.t("sheets-data-validation-ui.panel.messageInfo"),
+			children: /* @__PURE__ */ jsx(Checkbox, {
+				checked: value.showErrorMessage,
+				onChange: () => onChange({
+					...value,
+					showErrorMessage: !value.showErrorMessage
+				}),
+				children: localeService.t("sheets-data-validation-ui.panel.showInfo")
+			})
+		}),
+		value.showErrorMessage ? /* @__PURE__ */ jsx(FormLayout, { children: /* @__PURE__ */ jsx(Input, {
+			value: value.error,
+			onChange: (error) => onChange({
+				...value,
+				error
+			})
+		}) }) : null
+	] })] });
+}
+
+//#endregion
+//#region src/views/components/DataValidationDetail.tsx
+const debounceExecuteFactory = (commandService) => debounce(async (id, params, options, callback) => {
+	const res = await commandService.executeCommand(id, params, options);
+	callback === null || callback === void 0 || callback(res);
+}, 1e3);
+function getSheetIdByName(univerInstanceService, unitId, name) {
+	var _univerInstanceServic2;
+	if (unitId) {
+		var _univerInstanceServic;
+		return ((_univerInstanceServic = univerInstanceService.getUnit(unitId)) === null || _univerInstanceServic === void 0 || (_univerInstanceServic = _univerInstanceServic.getSheetBySheetName(name)) === null || _univerInstanceServic === void 0 ? void 0 : _univerInstanceServic.getSheetId()) || "";
+	}
+	return ((_univerInstanceServic2 = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _univerInstanceServic2 === void 0 || (_univerInstanceServic2 = _univerInstanceServic2.getSheetBySheetName(name)) === null || _univerInstanceServic2 === void 0 ? void 0 : _univerInstanceServic2.getSheetId()) || "";
+}
+function DataValidationDetail() {
+	const dataValidationPanelService = useDependency(DataValidationPanelService);
+	const { unitId, subUnitId, rule } = useObservable(dataValidationPanelService.activeRule$, dataValidationPanelService.activeRule) || {};
+	if (!unitId || !subUnitId || !rule) return null;
+	return /* @__PURE__ */ jsx(DataValidationDetailInner, { activeRuleInfo: {
+		unitId,
+		subUnitId,
+		rule
+	} });
+}
+function DataValidationDetailInner(props) {
+	var _validators$sort;
+	const [key, setKey] = useState(0);
+	const dataValidationPanelService = useDependency(DataValidationPanelService);
+	const { unitId, subUnitId, rule } = props.activeRuleInfo;
+	const ruleId = rule.uid;
+	const validatorService = useDependency(DataValidatorRegistryService);
+	const univerInstanceService = useDependency(IUniverInstanceService);
+	const componentManager = useDependency(ComponentManager);
+	const commandService = useDependency(ICommandService);
+	const dataValidationModel = useDependency(DataValidationModel);
+	const localeService = useDependency(LocaleService);
+	const workbook = useObservable(() => univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET), void 0, void 0, []);
+	const worksheet = useObservable(() => (workbook === null || workbook === void 0 ? void 0 : workbook.activeSheet$) ?? of(null), void 0, void 0, []);
+	const [localRule, setLocalRule] = useState(rule);
+	const validator = validatorService.getValidatorItem(localRule.type);
+	const [showError, setShowError] = useState(false);
+	const validators = validatorService.getValidatorsByScope(DataValidatorRegistryScope.SHEET);
+	const [localRanges, setLocalRanges] = useState(() => localRule.ranges.map((i) => ({
+		unitId: "",
+		sheetId: "",
+		range: i
+	})));
+	const debounceExecute = useMemo(() => debounceExecuteFactory(commandService), [commandService]);
+	const [isRangeError, setIsRangeError] = useState(false);
+	const [isFocusRangeSelector, setIsFocusRangeSelector] = useState(false);
+	const rangeSelectorInstance = useRef(null);
+	const sheetSelectionService = useDependency(SheetsSelectionsService);
+	useEffect(() => {
+		return () => {
+			const currentSelection = sheetSelectionService.getCurrentLastSelection();
+			if (currentSelection) sheetSelectionService.setSelections([currentSelection]);
+		};
+	}, [sheetSelectionService]);
+	useEffect(() => {
+		let timer;
+		const disposable = commandService.onCommandExecuted((commandInfo) => {
+			if (commandInfo.id === UndoCommand.id || commandInfo.id === RedoCommand.id) {
+				if (timer !== void 0) clearTimeout(timer);
+				timer = setTimeout(() => {
+					const activeRule = dataValidationModel.getRuleById(unitId, subUnitId, ruleId);
+					setKey((k) => k + 1);
+					if (activeRule) {
+						setLocalRule(activeRule);
+						setLocalRanges(activeRule.ranges.map((i) => ({
+							unitId: "",
+							sheetId: "",
+							range: i
+						})));
+					}
+				}, 20);
+			}
+		});
+		return () => {
+			disposable.dispose();
+			if (timer !== void 0) clearTimeout(timer);
+		};
+	}, [
+		commandService,
+		dataValidationModel,
+		ruleId,
+		subUnitId,
+		unitId
+	]);
+	const handleUpdateRuleRanges = useEvent((rangeText) => {
+		const unitRanges = rangeText.split(",").filter(Boolean).map(deserializeRangeWithSheet).map((unitRange) => {
+			const sheetName = unitRange.sheetName;
+			if (sheetName) {
+				const sheetId = getSheetIdByName(univerInstanceService, unitRange.unitId, sheetName);
+				return {
+					...unitRange,
+					sheetId
+				};
+			}
+			return {
+				...unitRange,
+				sheetId: ""
+			};
+		});
+		if (isUnitRangesEqual(unitRanges, localRanges)) return;
+		setLocalRanges(unitRanges);
+		const ranges = unitRanges.filter((i) => (!i.unitId || i.unitId === unitId) && (!i.sheetId || i.sheetId === subUnitId)).map((i) => i.range);
+		setLocalRule({
+			...localRule,
+			ranges
+		});
+		if (ranges.length === 0) return;
+		const params = {
+			unitId,
+			subUnitId,
+			ruleId,
+			ranges
+		};
+		debounceExecute(UpdateSheetDataValidationRangeCommand.id, params);
+	});
+	const rangeStr = useMemo(() => localRanges.map((i) => serializeRange(i.range)).join(","), []);
+	if (!validator) return null;
+	const operators = validator.operators;
+	const operatorNames = validator.operatorNames;
+	const isTwoFormula = localRule.operator ? TWO_FORMULA_OPERATOR_COUNT.includes(localRule.operator) : false;
+	const goBackActiveRuleSheet = () => {
+		if ((worksheet === null || worksheet === void 0 ? void 0 : worksheet.getSheetId()) !== subUnitId) commandService.syncExecuteCommand(SetWorksheetActiveOperation.id, {
+			unitId,
+			subUnitId
+		});
+	};
+	const handleOk = () => {
+		var _rangeSelectorInstanc;
+		if ((_rangeSelectorInstanc = rangeSelectorInstance.current) === null || _rangeSelectorInstanc === void 0 || (_rangeSelectorInstanc = _rangeSelectorInstanc.editor) === null || _rangeSelectorInstanc === void 0 ? void 0 : _rangeSelectorInstanc.isFocus()) {
+			var _rangeSelectorInstanc2;
+			handleUpdateRuleRanges((_rangeSelectorInstanc2 = rangeSelectorInstance.current) === null || _rangeSelectorInstanc2 === void 0 ? void 0 : _rangeSelectorInstanc2.getValue());
+		}
+		if (!localRule.ranges.length || isRangeError) return;
+		if (validator.validatorFormula(localRule, unitId, subUnitId).success) dataValidationPanelService.setActiveRule(null);
+		else setShowError(true);
+		goBackActiveRuleSheet();
+	};
+	const handleUpdateRuleSetting = (setting) => {
+		if (shallowEqual(setting, getRuleSetting(localRule))) return;
+		setLocalRule({
+			...localRule,
+			...setting
+		});
+		const params = {
+			unitId,
+			subUnitId,
+			ruleId,
+			setting
+		};
+		debounceExecute(UpdateSheetDataValidationSettingCommand.id, params, void 0);
+	};
+	const handleDelete = async () => {
+		await commandService.executeCommand(RemoveSheetDataValidationCommand.id, {
+			ruleId,
+			unitId,
+			subUnitId
+		});
+		dataValidationPanelService.setActiveRule(null);
+		goBackActiveRuleSheet();
+	};
+	const baseRule = {
+		type: localRule.type,
+		operator: localRule.operator,
+		formula1: localRule.formula1,
+		formula2: localRule.formula2,
+		allowBlank: localRule.allowBlank
+	};
+	const handleChangeType = (newType) => {
+		const validator = validatorService.getValidatorItem(newType);
+		if (!validator) return;
+		const operators = validator.operators;
+		const rule = dataValidationModel.getRuleById(unitId, subUnitId, ruleId);
+		const newRule = newType === (rule === null || rule === void 0 ? void 0 : rule.type) || newType.includes("list") && (rule === null || rule === void 0 ? void 0 : rule.type.includes("list")) ? {
+			...rule,
+			type: newType
+		} : {
+			...localRule,
+			type: newType,
+			operator: operators[0],
+			formula1: void 0,
+			formula2: void 0
+		};
+		setLocalRule(newRule);
+		commandService.executeCommand(UpdateSheetDataValidationSettingCommand.id, {
+			unitId,
+			subUnitId,
+			ruleId: localRule.uid,
+			setting: getRuleSetting(newRule)
+		});
+	};
+	const FormulaInput = componentManager.get(validator.formulaInput);
+	const options = getRuleOptions(localRule);
+	const handleUpdateRuleOptions = (newOptions) => {
+		if (shallowEqual(newOptions, getRuleOptions(localRule))) return;
+		setLocalRule({
+			...localRule,
+			...newOptions
+		});
+		debounceExecute(UpdateSheetDataValidationOptionsCommand.id, {
+			unitId,
+			subUnitId,
+			ruleId,
+			options: newOptions
+		});
+	};
+	const shouldHideFormula = operators.length && !localRule.operator;
+	return /* @__PURE__ */ jsxs("div", {
+		"data-u-comp": "data-validation-detail",
+		className: "univer-py-2",
+		children: [
+			/* @__PURE__ */ jsx(FormLayout, {
+				label: localeService.t("sheets-data-validation-ui.panel.range"),
+				error: !localRule.ranges.length || isRangeError ? localeService.t("sheets-data-validation-ui.panel.rangeError") : "",
+				children: /* @__PURE__ */ jsx(RangeSelector, {
+					selectorRef: rangeSelectorInstance,
+					unitId,
+					subUnitId,
+					initialValue: rangeStr,
+					onChange: (doc, str) => {
+						var _rangeSelectorInstanc3;
+						if (!isFocusRangeSelector && ((_rangeSelectorInstanc3 = rangeSelectorInstance.current) === null || _rangeSelectorInstanc3 === void 0 ? void 0 : _rangeSelectorInstanc3.verify())) handleUpdateRuleRanges(str);
+					},
+					onFocusChange: (focusing, str) => {
+						var _rangeSelectorInstanc4;
+						setIsFocusRangeSelector(focusing);
+						if (!focusing && str && ((_rangeSelectorInstanc4 = rangeSelectorInstance.current) === null || _rangeSelectorInstanc4 === void 0 ? void 0 : _rangeSelectorInstanc4.verify())) handleUpdateRuleRanges(str);
+					},
+					onVerify: (isValid) => setIsRangeError(!isValid)
+				})
+			}),
+			/* @__PURE__ */ jsx(FormLayout, {
+				label: localeService.t("sheets-data-validation-ui.panel.type"),
+				children: /* @__PURE__ */ jsx(Select, {
+					className: "univer-w-full",
+					value: localRule.type,
+					options: validators === null || validators === void 0 || (_validators$sort = validators.sort((a, b) => a.order - b.order)) === null || _validators$sort === void 0 ? void 0 : _validators$sort.map((validator) => ({
+						label: localeService.t(validator.title),
+						value: validator.id
+					})),
+					onChange: handleChangeType
+				})
+			}),
+			(operators === null || operators === void 0 ? void 0 : operators.length) ? /* @__PURE__ */ jsx(FormLayout, {
+				label: localeService.t("sheets-data-validation-ui.panel.operator"),
+				children: /* @__PURE__ */ jsx(Select, {
+					className: "univer-w-full",
+					value: `${localRule.operator}`,
+					options: [{
+						value: "",
+						label: localeService.t("sheets-data-validation-ui.operators.legal")
+					}, ...operators.map((op, i) => ({
+						value: `${op}`,
+						label: operatorNames[i]
+					}))],
+					onChange: (operator) => {
+						handleUpdateRuleSetting({
+							...baseRule,
+							operator
+						});
+					}
+				})
+			}) : null,
+			FormulaInput && !shouldHideFormula ? /* @__PURE__ */ jsx(FormulaInput, {
+				isTwoFormula,
+				value: {
+					formula1: localRule.formula1,
+					formula2: localRule.formula2
+				},
+				onChange: (value) => {
+					handleUpdateRuleSetting({
+						...baseRule,
+						...value
+					});
+				},
+				showError,
+				validResult: validator.validatorFormula(localRule, unitId, subUnitId),
+				unitId,
+				subUnitId,
+				ruleId
+			}, key + localRule.type) : null,
+			/* @__PURE__ */ jsx(FormLayout, { children: /* @__PURE__ */ jsx(Checkbox, {
+				checked: localRule.allowBlank ?? true,
+				onChange: () => handleUpdateRuleSetting({
+					...baseRule,
+					allowBlank: !(localRule.allowBlank ?? true)
+				}),
+				children: localeService.t("sheets-data-validation-ui.panel.allowBlank")
+			}) }),
+			/* @__PURE__ */ jsx(DataValidationOptions, {
+				value: options,
+				onChange: handleUpdateRuleOptions,
+				extraComponent: validator.optionsInput
+			}),
+			/* @__PURE__ */ jsxs(ActionRow, {
+				className: "univer-mt-5 univer-flex univer-flex-row univer-justify-end",
+				children: [/* @__PURE__ */ jsx(Button, {
+					className: "univer-ml-3",
+					onClick: handleDelete,
+					children: localeService.t("sheets-data-validation-ui.panel.removeRule")
+				}), /* @__PURE__ */ jsx(Button, {
+					className: "univer-ml-3",
+					variant: "primary",
+					onClick: handleOk,
+					children: localeService.t("sheets-data-validation-ui.panel.done")
+				})]
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/views/components/DataValidationItem.tsx
+const DataValidationItem = (props) => {
+	const { rule, onClick, unitId, subUnitId, disable } = props;
+	const validatorRegistry = useDependency(DataValidatorRegistryService);
+	const commandService = useDependency(ICommandService);
+	const markSelectionService = useDependency(IMarkSelectionService);
+	const validator = validatorRegistry.getValidatorItem(rule.type);
+	const ids = useRef(void 0);
+	const [isHover, setIsHover] = useState(false);
+	const themeService = useDependency(ThemeService);
+	const style = useMemo(() => {
+		const defaultColor = themeService.getColorFromTheme("primary.600");
+		const key = themeService.getColorFromTheme("loop-color.2");
+		const color = themeService.getColorFromTheme(key) ?? defaultColor;
+		const rgb = new ColorKit(color).toRgb();
+		return {
+			fill: `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`,
+			stroke: color
+		};
+	}, [useObservable(themeService.currentTheme$)]);
+	const handleDelete = (e) => {
+		commandService.executeCommand(RemoveSheetDataValidationCommand.id, {
+			ruleId: rule.uid,
+			unitId,
+			subUnitId
+		});
+		e.stopPropagation();
+	};
+	useEffect(() => {
+		return () => {
+			if (ids.current) {
+				var _ids$current;
+				(_ids$current = ids.current) === null || _ids$current === void 0 || _ids$current.forEach((id) => {
+					id && markSelectionService.removeShape(id);
+				});
+			}
+		};
+	}, [markSelectionService]);
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-bg-secondary univer-relative univer--mx-2 univer-box-border univer-flex univer-w-[287px] univer-cursor-pointer univer-flex-col univer-justify-between univer-overflow-hidden univer-rounded-md univer-p-2 univer-pr-9 rtl:univer-pl-9 rtl:univer-pr-2", {
+			"hover:univer-bg-gray-50 dark:hover:!univer-bg-gray-700": !disable,
+			"univer-opacity-50": disable
+		}),
+		onClick,
+		onMouseEnter: () => {
+			if (disable) return;
+			setIsHover(true);
+			ids.current = rule.ranges.map((range) => markSelectionService.addShape({
+				range,
+				style,
+				primary: null
+			}));
+		},
+		onMouseLeave: () => {
+			var _ids$current2;
+			setIsHover(false);
+			(_ids$current2 = ids.current) === null || _ids$current2 === void 0 || _ids$current2.forEach((id) => {
+				id && markSelectionService.removeShape(id);
+			});
+			ids.current = void 0;
+		},
+		children: [
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-truncate univer-text-sm univer-font-medium univer-leading-[22px] univer-text-gray-900 dark:!univer-text-gray-0",
+				children: validator === null || validator === void 0 ? void 0 : validator.generateRuleName(rule)
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-text-secondary univer-truncate univer-text-xs univer-leading-[18px] dark:!univer-text-gray-300",
+				children: rule.ranges.map((range) => serializeRange(range)).join(",")
+			}),
+			isHover && /* @__PURE__ */ jsx("div", {
+				className: "univer-absolute univer-right-2 univer-top-[19px] univer-flex univer-size-5 univer-items-center univer-justify-center univer-rounded hover:univer-bg-gray-200 rtl:univer-left-2 rtl:univer-right-auto dark:!univer-text-gray-300 dark:hover:!univer-bg-gray-700",
+				onClick: handleDelete,
+				children: /* @__PURE__ */ jsx(DeleteIcon, {})
+			})
+		]
+	});
+};
+
+//#endregion
+//#region src/views/components/DataValidationList.tsx
+function DataValidationList(props) {
+	const sheetDataValidationModel = useDependency(SheetDataValidationModel);
+	const univerInstanceService = useDependency(IUniverInstanceService);
+	const commandService = useDependency(ICommandService);
+	const injector = useDependency(Injector);
+	const dataValidationPanelService = useDependency(DataValidationPanelService);
+	const localeService = useDependency(LocaleService);
+	const { workbook } = props;
+	const worksheet = useObservable(workbook.activeSheet$, void 0, true);
+	const unitId = workbook.getUnitId();
+	const subUnitId = worksheet === null || worksheet === void 0 ? void 0 : worksheet.getSheetId();
+	const rules = useObservable(() => sheetDataValidationModel.ruleChange$.pipe(filter((change) => change.unitId === unitId && change.subUnitId === subUnitId), map(() => sheetDataValidationModel.getRules(unitId, subUnitId)), startWith(sheetDataValidationModel.getRules(unitId, subUnitId))), [], false, [
+		sheetDataValidationModel,
+		subUnitId,
+		unitId
+	]);
+	const handleAddRule = async () => {
+		const rule = createDefaultNewRule(injector);
+		const params = {
+			unitId,
+			subUnitId,
+			rule
+		};
+		await commandService.executeCommand(AddSheetDataValidationCommand.id, params);
+		dataValidationPanelService.setActiveRule({
+			unitId,
+			subUnitId,
+			rule
+		});
+	};
+	const handleRemoveAll = () => {
+		commandService.executeCommand(RemoveSheetAllDataValidationCommand.id, {
+			unitId,
+			subUnitId
+		});
+	};
+	const getDvRulesByPermissionCorrect = (rules) => {
+		const workbook = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook.getActiveSheet();
+		const unitId = workbook.getUnitId();
+		const subUnitId = worksheet.getSheetId();
+		return rules.map((rule) => {
+			if (checkRangesEditablePermission(injector, unitId, subUnitId, rule.ranges)) return { ...rule };
+			else return {
+				...rule,
+				disable: true
+			};
+		});
+	};
+	const rulesByPermissionCheck = getDvRulesByPermissionCorrect(rules);
+	const hasDisableRule = rulesByPermissionCheck === null || rulesByPermissionCheck === void 0 ? void 0 : rulesByPermissionCheck.some((rule) => rule.disable);
+	return /* @__PURE__ */ jsxs("div", {
+		className: "univer-pb-4",
+		children: [rulesByPermissionCheck === null || rulesByPermissionCheck === void 0 ? void 0 : rulesByPermissionCheck.map((rule) => /* @__PURE__ */ jsx(DataValidationItem, {
+			unitId,
+			subUnitId,
+			onClick: () => {
+				if (rule.disable) return;
+				dataValidationPanelService.setActiveRule({
+					unitId,
+					subUnitId,
+					rule
+				});
+			},
+			rule,
+			disable: rule.disable ?? false
+		}, rule.uid)), /* @__PURE__ */ jsxs(ActionRow, {
+			className: "univer-mt-4 univer-flex univer-flex-row univer-justify-end univer-gap-2",
+			children: [rules.length && !hasDisableRule ? /* @__PURE__ */ jsx(Button, {
+				onClick: handleRemoveAll,
+				children: localeService.t("sheets-data-validation-ui.panel.removeAll")
+			}) : null, /* @__PURE__ */ jsx(Button, {
+				variant: "primary",
+				onClick: handleAddRule,
+				children: localeService.t("sheets-data-validation-ui.panel.add")
+			})]
+		})]
+	});
+}
+
+//#endregion
+//#region src/views/components/DataValidationPanel.tsx
+const DataValidationPanel = () => {
+	const dataValidationPanelService = useDependency(DataValidationPanelService);
+	const activeRule = useObservable(dataValidationPanelService.activeRule$, dataValidationPanelService.activeRule);
+	const univerInstanceService = useDependency(IUniverInstanceService);
+	const workbook = useObservable(() => univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET), void 0, void 0, []);
+	const worksheet = useObservable(() => (workbook === null || workbook === void 0 ? void 0 : workbook.activeSheet$) ?? of(null), void 0, void 0, []);
+	if (!workbook || !worksheet) return null;
+	return activeRule && (activeRule.subUnitId === worksheet.getSheetId() || activeRule.subUnitId === dataValidationPanelService.getFocusFormulaEditorActiveRuleSubUnitId()) ? /* @__PURE__ */ jsx(DataValidationDetail, {}, activeRule.rule.uid) : /* @__PURE__ */ jsx(DataValidationList, { workbook });
+};
+
+//#endregion
+//#region src/views/components/DateShowTimeOption.tsx
+const DATE_SHOW_TIME_OPTION = "DATE_SHOW_TIME_OPTION";
+function DateShowTimeOption(props) {
+	var _value$bizInfo;
+	const { value, onChange } = props;
+	const localeService = useDependency(LocaleService);
+	return /* @__PURE__ */ jsx(FormLayout, { children: /* @__PURE__ */ jsx(Checkbox, {
+		checked: (_value$bizInfo = value.bizInfo) === null || _value$bizInfo === void 0 ? void 0 : _value$bizInfo.showTime,
+		onChange: (showTime) => {
+			onChange({
+				...value,
+				bizInfo: {
+					...value.bizInfo,
+					showTime
+				}
+			});
+		},
+		children: localeService.t("sheets-data-validation-ui.showTime.label")
+	}) });
+}
+DateShowTimeOption.componentKey = DATE_SHOW_TIME_OPTION;
+
+//#endregion
+//#region src/views/components/formula-input/BaseFormulaInput.tsx
+const BaseFormulaInput = (props) => {
+	const { isTwoFormula = false, value, onChange, showError, validResult } = props;
+	const localeService = useDependency(LocaleService);
+	const formula1Res = showError ? validResult === null || validResult === void 0 ? void 0 : validResult.formula1 : "";
+	const formula2Res = showError ? validResult === null || validResult === void 0 ? void 0 : validResult.formula2 : "";
+	if (isTwoFormula) return /* @__PURE__ */ jsxs(Fragment, { children: [
+		/* @__PURE__ */ jsx(FormLayout, {
+			error: formula1Res,
+			children: /* @__PURE__ */ jsx(Input, {
+				className: "univer-w-full",
+				placeholder: localeService.t("sheets-data-validation-ui.panel.formulaPlaceholder"),
+				value: value === null || value === void 0 ? void 0 : value.formula1,
+				onChange: (newValue) => {
+					onChange === null || onChange === void 0 || onChange({
+						...value,
+						formula1: newValue
+					});
+				}
+			})
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "-univer-mt-2 univer-mb-1 univer-text-sm univer-text-gray-400",
+			children: localeService.t("sheets-data-validation-ui.panel.formulaAnd")
+		}),
+		/* @__PURE__ */ jsx(FormLayout, {
+			error: formula2Res,
+			children: /* @__PURE__ */ jsx(Input, {
+				className: "univer-w-full",
+				placeholder: localeService.t("sheets-data-validation-ui.panel.formulaPlaceholder"),
+				value: value === null || value === void 0 ? void 0 : value.formula2,
+				onChange: (newValue) => {
+					onChange === null || onChange === void 0 || onChange({
+						...value,
+						formula2: newValue
+					});
+				}
+			})
+		})
+	] });
+	return /* @__PURE__ */ jsx(FormLayout, {
+		error: formula1Res,
+		children: /* @__PURE__ */ jsx(Input, {
+			className: "univer-w-full",
+			placeholder: localeService.t("sheets-data-validation-ui.panel.formulaPlaceholder"),
+			value: value === null || value === void 0 ? void 0 : value.formula1,
+			onChange: (newValue) => {
+				onChange === null || onChange === void 0 || onChange({ formula1: newValue });
+			}
+		})
+	});
+};
+
+//#endregion
+//#region src/views/components/formula-input/CheckboxFormulaInput.tsx
+function CheckboxFormulaInput(props) {
+	const { value, onChange, showError, validResult } = props;
+	const localeService = useDependency(LocaleService);
+	const formula1Res = showError ? validResult === null || validResult === void 0 ? void 0 : validResult.formula1 : "";
+	const formula2Res = showError ? validResult === null || validResult === void 0 ? void 0 : validResult.formula2 : "";
+	const [checked, setChecked] = useState(!((value === null || value === void 0 ? void 0 : value.formula1) === void 0 && (value === null || value === void 0 ? void 0 : value.formula2) === void 0));
+	return /* @__PURE__ */ jsxs(Fragment, { children: [
+		/* @__PURE__ */ jsx(FormLayout, { children: /* @__PURE__ */ jsx(Checkbox, {
+			checked,
+			onChange: (newValue) => {
+				if (newValue) setChecked(true);
+				else {
+					setChecked(false);
+					onChange === null || onChange === void 0 || onChange({
+						...value,
+						formula1: void 0,
+						formula2: void 0
+					});
+				}
+			},
+			children: localeService.t("sheets-data-validation-ui.checkbox.tips")
+		}) }),
+		checked ? /* @__PURE__ */ jsx(FormLayout, {
+			label: localeService.t("sheets-data-validation-ui.checkbox.checked"),
+			error: formula1Res,
+			children: /* @__PURE__ */ jsx(Input, {
+				className: "univer-w-full",
+				placeholder: localeService.t("sheets-data-validation-ui.panel.valuePlaceholder"),
+				value: value === null || value === void 0 ? void 0 : value.formula1,
+				onChange: (newValue) => {
+					onChange === null || onChange === void 0 || onChange({
+						...value,
+						formula1: newValue || void 0
+					});
+				}
+			})
+		}) : null,
+		checked ? /* @__PURE__ */ jsx(FormLayout, {
+			label: localeService.t("sheets-data-validation-ui.checkbox.unchecked"),
+			error: formula2Res,
+			children: /* @__PURE__ */ jsx(Input, {
+				className: "univer-w-full",
+				placeholder: localeService.t("sheets-data-validation-ui.panel.valuePlaceholder"),
+				value: value === null || value === void 0 ? void 0 : value.formula2,
+				onChange: (newValue) => {
+					onChange === null || onChange === void 0 || onChange({
+						...value,
+						formula2: newValue || void 0
+					});
+				}
+			})
+		}) : null
+	] });
+}
+
+//#endregion
+//#region src/views/components/formula-input/CustomFormulaInput.tsx
+function CustomFormulaInput(props) {
+	const { unitId, subUnitId, value, onChange, showError, validResult } = props;
+	const formula1Res = showError ? validResult === null || validResult === void 0 ? void 0 : validResult.formula1 : void 0;
+	const formulaEditorRef = useRef(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = useState(false);
+	useSidebarClick((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	return /* @__PURE__ */ jsx(FormLayout, {
+		error: formula1Res,
+		children: /* @__PURE__ */ jsx(FormulaEditor, {
+			ref: formulaEditorRef,
+			className: clsx("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", borderClassName),
+			initValue: (value === null || value === void 0 ? void 0 : value.formula1) ?? "=",
+			unitId,
+			subUnitId,
+			isFocus: isFocusFormulaEditor,
+			isSupportAcrossSheet: true,
+			onChange: (newValue) => {
+				const newFormula = (newValue ?? "").trim();
+				if (newFormula === (value === null || value === void 0 ? void 0 : value.formula1)) return;
+				onChange === null || onChange === void 0 || onChange({
+					...value,
+					formula1: newFormula
+				});
+			},
+			onFocus: () => setIsFocusFormulaEditor(true)
+		})
+	});
+}
+
+//#endregion
+//#region src/views/components/formula-input/utils.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function buildCustomListFormulaPayload(items, defaultColor) {
+	const labelSet = /* @__PURE__ */ new Set();
+	const finalList = [];
+	items.forEach((item) => {
+		if (!item.label || labelSet.has(item.label)) return;
+		labelSet.add(item.label);
+		finalList.push(item);
+	});
+	return {
+		formula1: serializeListOptions(finalList.map((item) => item.label)),
+		formula2: finalList.map((item) => item.color === defaultColor ? "" : item.color).join(",")
+	};
+}
+
+//#endregion
+//#region src/views/components/formula-input/ListFormulaInput.tsx
+const DEFAULT_COLOR_PRESET = [
+	"#FFFFFF",
+	"#FEE7E7",
+	"#FEF0E6",
+	"#EFFBD0",
+	"#E4F4FE",
+	"#E8ECFD",
+	"#F1EAFA",
+	"#FDE8F3",
+	"#E5E5E5",
+	"#FDCECE",
+	"#FDC49B",
+	"#DEF6A2",
+	"#9FDAFF",
+	"#D0D9FB",
+	"#E3D5F6",
+	"#FBD0E8",
+	"#656565",
+	"#FE4B4B",
+	"#FF8C51",
+	"#8BBB11",
+	"#0B9EFB",
+	"#3A60F7",
+	"#9E6DE3",
+	"#F248A6"
+];
+const ColorSelect = (props) => {
+	const { value, onChange, disabled } = props;
+	const [open, setOpen] = useState(false);
+	const themeService = useDependency(ThemeService);
+	useObservable(themeService.currentTheme$);
+	const backgroundColor = value.includes(".") && themeService.isValidThemeColor(value) ? themeService.getColorFromTheme(value) : value;
+	return /* @__PURE__ */ jsx(Dropdown, {
+		align: "start",
+		disabled,
+		open,
+		onOpenChange: setOpen,
+		overlay: /* @__PURE__ */ jsx("div", {
+			className: "univer-box-border univer-grid univer-w-fit univer-grid-cols-6 univer-flex-wrap univer-gap-2 univer-p-1.5",
+			children: DEFAULT_COLOR_PRESET.map((color) => /* @__PURE__ */ jsx("div", {
+				className: clsx("univer-box-border univer-size-4 univer-cursor-pointer univer-rounded", borderClassName),
+				style: { background: color },
+				onClick: () => {
+					onChange(color);
+					setOpen(false);
+				}
+			}, color))
+		}),
+		children: /* @__PURE__ */ jsxs("div", {
+			className: clsx("univer-box-border univer-inline-flex univer-h-8 univer-w-16 univer-cursor-pointer univer-items-center univer-justify-between univer-gap-2 univer-rounded-lg univer-bg-gray-0 univer-px-2.5 univer-transition-colors univer-duration-200 hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0", borderClassName),
+			children: [/* @__PURE__ */ jsx("div", {
+				className: "univer-box-border univer-size-4 univer-rounded univer-text-base",
+				style: { background: backgroundColor }
+			}), /* @__PURE__ */ jsx(MoreDownIcon, {})]
+		})
+	});
+};
+const Template = (props) => {
+	const { item, commonProps, className } = props;
+	const { onItemChange, onItemDelete } = commonProps;
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-flex univer-items-center univer-gap-2", className),
+		children: [
+			!item.isRef && /* @__PURE__ */ jsx("div", {
+				className: clsx("univer-cursor-move", "draggableHandle"),
+				children: /* @__PURE__ */ jsx(GripVerticalIcon, {})
+			}),
+			/* @__PURE__ */ jsx(ColorSelect, {
+				value: item.color,
+				onChange: (color) => {
+					onItemChange(item.id, item.label, color);
+				}
+			}),
+			/* @__PURE__ */ jsx(Input, {
+				disabled: item.isRef,
+				value: item.label,
+				onChange: (label) => {
+					onItemChange(item.id, label, item.color);
+				}
+			}),
+			item.isRef ? null : /* @__PURE__ */ jsx("div", {
+				className: "univer-ml-1 univer-cursor-pointer univer-rounded univer-text-base hover:univer-bg-gray-200",
+				children: /* @__PURE__ */ jsx(DeleteIcon, { onClick: () => onItemDelete(item.id) })
+			})
+		]
+	});
+};
+const NOOP = () => {};
+function ListFormulaInput(props) {
+	const { value, onChange: _onChange = NOOP, unitId, subUnitId, validResult, showError, ruleId } = props;
+	const { formula1 = "", formula2 = "" } = value || {};
+	const [isFormulaStr, setIsFormulaStr] = useState(() => isFormulaString(formula1) ? "1" : "0");
+	const [formulaStr, setFormulaStr] = useState(isFormulaStr === "1" ? formula1 : "=");
+	const [formulaStrCopy, setFormulaStrCopy] = useState(isFormulaStr === "1" ? formula1 : "=");
+	const localeService = useDependency(LocaleService);
+	const dataValidatorRegistryService = useDependency(DataValidatorRegistryService);
+	const dataValidationModel = useDependency(DataValidationModel);
+	const dataValidationFormulaController = useDependency(DataValidationFormulaController);
+	const dataValidationPanelService = useDependency(DataValidationPanelService);
+	const [refColors, setRefColors] = useState(() => formula2.split(","));
+	const listValidator = dataValidatorRegistryService.getValidatorItem(DataValidationType.LIST);
+	const [refOptions, setRefOptions] = useState([]);
+	const [localError, setLocalError] = useState("");
+	const formula1Res = showError ? validResult === null || validResult === void 0 ? void 0 : validResult.formula1 : "";
+	const ruleChange = useObservable(useMemo(() => dataValidationModel.ruleChange$.pipe(debounceTime(16)), []));
+	const onChange = useEvent(_onChange);
+	useEffect(() => {
+		let cancelled = false;
+		const timer = setTimeout(() => {
+			const rule = dataValidationModel.getRuleById(unitId, subUnitId, ruleId);
+			if (isFormulaString(rule === null || rule === void 0 ? void 0 : rule.formula1) && listValidator && rule) listValidator.getListAsync(rule, unitId, subUnitId).then((options) => {
+				if (!cancelled) setRefOptions(options);
+			});
+		}, 100);
+		return () => {
+			cancelled = true;
+			clearTimeout(timer);
+		};
+	}, [
+		dataValidationModel,
+		ruleChange,
+		listValidator,
+		ruleId,
+		subUnitId,
+		unitId
+	]);
+	useEffect(() => {
+		if (isFormulaString(formula1) && formula1 !== formulaStrCopy) {
+			setFormulaStr(formula1);
+			setFormulaStrCopy(formula1);
+		}
+	}, [formulaStrCopy, formula1]);
+	const [strList, setStrList] = useState(() => {
+		const strOptions = isFormulaStr !== "1" ? deserializeListOptions(formula1) : [];
+		const strColors = formula2.split(",");
+		return strOptions.map((label, i) => ({
+			label,
+			color: strColors[i] || "gray.100",
+			isRef: false,
+			id: generateRandomId(4)
+		}));
+	});
+	const handleStrItemChange = (id, value, color) => {
+		const item = strList.find((i) => i.id === id);
+		if (!item) return;
+		item.label = value;
+		item.color = color;
+		setStrList([...strList]);
+	};
+	const handleStrItemDelete = (id) => {
+		const index = strList.findIndex((i) => i.id === id);
+		if (index !== -1) {
+			strList.splice(index, 1);
+			setStrList([...strList]);
+		}
+	};
+	const refFinalList = useMemo(() => refOptions.map((label, i) => ({
+		label,
+		color: refColors[i] || "gray.100",
+		id: `${i}`,
+		isRef: true
+	})), [refColors, refOptions]);
+	const handleRefItemChange = (id, value, color) => {
+		const newColors = [...refColors];
+		newColors[+id] = color;
+		setRefColors(newColors);
+		onChange({
+			formula1,
+			formula2: newColors.join(",")
+		});
+	};
+	const handleAdd = () => {
+		setStrList([...strList, {
+			label: "",
+			color: DROP_DOWN_DEFAULT_COLOR,
+			isRef: false,
+			id: generateRandomId(4)
+		}]);
+	};
+	useEffect(() => {
+		if (isFormulaStr === "1") return;
+		onChange(buildCustomListFormulaPayload(strList, DROP_DOWN_DEFAULT_COLOR));
+	}, [
+		strList,
+		onChange,
+		isFormulaStr
+	]);
+	const updateFormula = useEvent(async (str) => {
+		if (!isFormulaString(str)) {
+			onChange === null || onChange === void 0 || onChange({
+				formula1: "",
+				formula2
+			});
+			return;
+		}
+		if (dataValidationFormulaController.getFormulaRefCheck(str)) {
+			onChange === null || onChange === void 0 || onChange({
+				formula1: isFormulaString(str) ? str : "",
+				formula2
+			});
+			setLocalError("");
+		} else {
+			onChange === null || onChange === void 0 || onChange({
+				formula1: "",
+				formula2
+			});
+			setFormulaStr("=");
+			setLocalError(localeService.t("sheets-data-validation-ui.validFail.formulaError"));
+		}
+	});
+	const formulaEditorRef = useRef(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = useState(false);
+	useSidebarClick((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	useEffect(() => {
+		if (isFocusFormulaEditor) dataValidationPanelService.setFocusFormulaEditorActiveRuleSubUnitId(subUnitId);
+		else dataValidationPanelService.setFocusFormulaEditorActiveRuleSubUnitId(null);
+	}, [
+		isFocusFormulaEditor,
+		subUnitId,
+		dataValidationPanelService
+	]);
+	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(FormLayout, {
+		label: localeService.t("sheets-data-validation-ui.list.options"),
+		children: /* @__PURE__ */ jsxs(RadioGroup, {
+			value: isFormulaStr,
+			onChange: (v) => {
+				setIsFormulaStr(v);
+				setFormulaStr(formulaStrCopy);
+				if (v === "1") onChange({
+					formula1: formulaStrCopy === "=" ? "" : formulaStrCopy,
+					formula2: refColors.join(",")
+				});
+			},
+			children: [/* @__PURE__ */ jsx(Radio, {
+				value: "0",
+				children: localeService.t("sheets-data-validation-ui.list.customOptions")
+			}), /* @__PURE__ */ jsx(Radio, {
+				value: "1",
+				children: localeService.t("sheets-data-validation-ui.list.refOptions")
+			})]
+		})
+	}), isFormulaStr === "1" ? /* @__PURE__ */ jsxs(FormLayout, {
+		error: formula1Res || localError || void 0,
+		children: [/* @__PURE__ */ jsx(FormulaEditor, {
+			ref: formulaEditorRef,
+			className: clsx("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", borderClassName),
+			initValue: formulaStr,
+			unitId,
+			subUnitId,
+			isFocus: isFocusFormulaEditor,
+			isSupportAcrossSheet: true,
+			onFocus: () => setIsFocusFormulaEditor(true),
+			onChange: (v = "") => {
+				const str = (v ?? "").trim();
+				setFormulaStrCopy(str);
+				updateFormula(str);
+			}
+		}), refFinalList.length > 0 && /* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3",
+			children: refFinalList.map((item) => {
+				return /* @__PURE__ */ jsx(Template, {
+					className: "univer-mb-3",
+					item,
+					commonProps: { onItemChange: handleRefItemChange }
+				}, item.id);
+			})
+		})]
+	}) : /* @__PURE__ */ jsx(FormLayout, {
+		error: formula1Res,
+		children: /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx(DraggableList, {
+			list: strList,
+			onListChange: setStrList,
+			rowHeight: 28,
+			margin: [0, 12],
+			draggableHandle: ".draggableHandle",
+			itemRender: (item) => /* @__PURE__ */ jsx(Template, {
+				item,
+				commonProps: {
+					onItemChange: handleStrItemChange,
+					onItemDelete: handleStrItemDelete
+				}
+			}, item.id),
+			idKey: "id"
+		}), /* @__PURE__ */ jsxs("a", {
+			className: "univer-text-primary univer-flex univer-w-fit univer-cursor-pointer univer-flex-row univer-items-center univer-rounded univer-p-1 univer-px-2 univer-text-sm hover:univer-bg-primary-50 dark:hover:!univer-bg-gray-800",
+			onClick: handleAdd,
+			children: [/* @__PURE__ */ jsx(IncreaseIcon, { className: "univer-mr-1" }), localeService.t("sheets-data-validation-ui.list.add")]
+		})] })
+	})] });
+}
+
+//#endregion
+//#region src/views/components/formula-input/index.ts
+const FORMULA_INPUTS = [
+	[CUSTOM_FORMULA_INPUT_NAME, CustomFormulaInput],
+	[BASE_FORMULA_INPUT_NAME, BaseFormulaInput],
+	[LIST_FORMULA_INPUT_NAME, ListFormulaInput],
+	[CHECKBOX_FORMULA_INPUT_NAME, CheckboxFormulaInput]
+];
+
+//#endregion
+//#region src/views/components/ListRenderModeInput.tsx
+const LIST_RENDER_MODE_OPTION_INPUT = "LIST_RENDER_MODE_OPTION_INPUT";
+function ListRenderModeInput(props) {
+	const { value, onChange } = props;
+	const localeService = useDependency(LocaleService);
+	return /* @__PURE__ */ jsx(FormLayout, {
+		label: localeService.t("sheets-data-validation-ui.renderMode.label"),
+		children: /* @__PURE__ */ jsxs(RadioGroup, {
+			value: `${value.renderMode ?? DataValidationRenderMode.CUSTOM}`,
+			onChange: (renderMode) => onChange({
+				...value,
+				renderMode: +renderMode
+			}),
+			children: [
+				/* @__PURE__ */ jsx(Radio, {
+					value: `${DataValidationRenderMode.CUSTOM}`,
+					children: localeService.t("sheets-data-validation-ui.renderMode.chip")
+				}),
+				/* @__PURE__ */ jsx(Radio, {
+					value: `${DataValidationRenderMode.ARROW}`,
+					children: localeService.t("sheets-data-validation-ui.renderMode.arrow")
+				}),
+				/* @__PURE__ */ jsx(Radio, {
+					value: `${DataValidationRenderMode.TEXT}`,
+					children: localeService.t("sheets-data-validation-ui.renderMode.text")
+				})
+			]
+		})
+	});
+}
+ListRenderModeInput.componentKey = LIST_RENDER_MODE_OPTION_INPUT;
+
+//#endregion
+//#region src/controllers/components.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ComponentsController = class ComponentsController extends Disposable {
+	constructor(_componentManager, _iconManager) {
+		super();
+		this._componentManager = _componentManager;
+		this._iconManager = _iconManager;
+		this._registerIcons();
+		this._registerComponents();
+	}
+	_registerIcons() {
+		this.disposeWithMe(this._iconManager.register({
+			CheckboxIcon,
+			DataValidationIcon,
+			DatePickerIcon,
+			DropdownListIcon
+		}));
+	}
+	_registerComponents() {
+		[
+			[DATA_VALIDATION_PANEL, DataValidationPanel],
+			[ListRenderModeInput.componentKey, ListRenderModeInput],
+			[DateShowTimeOption.componentKey, DateShowTimeOption],
+			[DROPDOWN_PRESETS_COMPONENT, DropdownPresets],
+			...FORMULA_INPUTS
+		].forEach(([key, component]) => {
+			this.disposeWithMe(this._componentManager.register(key, component));
+		});
+	}
+};
+ComponentsController = __decorate([__decorateParam(0, Inject(ComponentManager)), __decorateParam(1, Inject(IconManager))], ComponentsController);
+
+//#endregion
+//#region src/controllers/dv-alert.controller.ts
+const ALERT_KEY = "SHEET_DATA_VALIDATION_ALERT";
+let DataValidationAlertController = class DataValidationAlertController extends Disposable {
+	constructor(_hoverManagerService, _cellAlertManagerService, _univerInstanceService, _localeService, _dataValidationModel) {
+		super();
+		this._hoverManagerService = _hoverManagerService;
+		this._cellAlertManagerService = _cellAlertManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._localeService = _localeService;
+		this._dataValidationModel = _dataValidationModel;
+		this._init();
+	}
+	_init() {
+		this._initCellAlertPopup();
+	}
+	_initCellAlertPopup() {
+		this.disposeWithMe(this._hoverManagerService.currentCell$.pipe(debounceTime(100)).subscribe((cellPos) => {
+			if (cellPos) {
+				const workbook = this._univerInstanceService.getUnit(cellPos.location.unitId, UniverInstanceType.UNIVER_SHEET);
+				const worksheet = workbook.getSheetBySheetId(cellPos.location.subUnitId);
+				if (!worksheet) return;
+				const rule = this._dataValidationModel.getRuleByLocation(cellPos.location.unitId, cellPos.location.subUnitId, cellPos.location.row, cellPos.location.col);
+				if (!rule) {
+					this._cellAlertManagerService.removeAlert(ALERT_KEY);
+					return;
+				}
+				if (this._dataValidationModel.validator(rule, {
+					...cellPos.location,
+					workbook,
+					worksheet
+				}) === DataValidationStatus.INVALID) {
+					var _currentAlert$alert;
+					const currentAlert = this._cellAlertManagerService.currentAlert.get(ALERT_KEY);
+					const currentLoc = currentAlert === null || currentAlert === void 0 || (_currentAlert$alert = currentAlert.alert) === null || _currentAlert$alert === void 0 ? void 0 : _currentAlert$alert.location;
+					if (currentLoc && currentLoc.row === cellPos.location.row && currentLoc.col === cellPos.location.col && currentLoc.subUnitId === cellPos.location.subUnitId && currentLoc.unitId === cellPos.location.unitId) {
+						this._cellAlertManagerService.removeAlert(ALERT_KEY);
+						return;
+					}
+					const validator = this._dataValidationModel.getValidator(rule.type);
+					if (!validator) {
+						this._cellAlertManagerService.removeAlert(ALERT_KEY);
+						return;
+					}
+					this._cellAlertManagerService.showAlert({
+						type: CellAlertType.ERROR,
+						title: this._localeService.t("sheets-data-validation-ui.error.title"),
+						message: validator === null || validator === void 0 ? void 0 : validator.getRuleFinalError(rule, cellPos.location),
+						location: cellPos.location,
+						width: 200,
+						height: 74,
+						key: ALERT_KEY
+					});
+					return;
+				}
+			}
+			this._cellAlertManagerService.removeAlert(ALERT_KEY);
+		}));
+	}
+};
+DataValidationAlertController = __decorate([
+	__decorateParam(0, Inject(HoverManagerService)),
+	__decorateParam(1, Inject(CellAlertManagerService)),
+	__decorateParam(2, IUniverInstanceService),
+	__decorateParam(3, Inject(LocaleService)),
+	__decorateParam(4, Inject(SheetDataValidationModel))
+], DataValidationAlertController);
+
+//#endregion
+//#region src/controllers/dv-auto-fill.controller.ts
+let DataValidationAutoFillController = class DataValidationAutoFillController extends Disposable {
+	constructor(_autoFillService, _sheetDataValidationModel, _injector) {
+		super();
+		this._autoFillService = _autoFillService;
+		this._sheetDataValidationModel = _sheetDataValidationModel;
+		this._injector = _injector;
+		this._initAutoFill();
+	}
+	_initAutoFill() {
+		const noopReturnFunc = () => ({
+			redos: [],
+			undos: []
+		});
+		const generalApplyFunc = (location, applyType) => {
+			const { source: sourceRange, target: targetRange, unitId, subUnitId } = location;
+			const ruleMatrixCopy = this._sheetDataValidationModel.getRuleObjectMatrix(unitId, subUnitId).clone();
+			const virtualRange = virtualizeDiscreteRanges([sourceRange, targetRange]);
+			const [vSourceRange, vTargetRange] = virtualRange.ranges;
+			const { mapRange, projectRange } = virtualRange;
+			const repeats = AutoFillTools.getAutoFillRepeatRange(vSourceRange, vTargetRange);
+			const additionsByRuleId = /* @__PURE__ */ new Map();
+			additionsByRuleId.set("", repeats.flatMap((repeat) => mapRange(Rectangle.getPositionRange(repeat.relativeRange, {
+				startRow: repeat.repeatStartCell.row,
+				endRow: repeat.repeatStartCell.row,
+				startColumn: repeat.repeatStartCell.col,
+				endColumn: repeat.repeatStartCell.col
+			}))));
+			this._sheetDataValidationModel.getRules(unitId, subUnitId).forEach((rule) => {
+				const relativeSourceRanges = rule.ranges.flatMap((range) => {
+					const projected = projectRange(range);
+					const intersected = projected && getIntersectRange(projected, vSourceRange);
+					return intersected ? [Rectangle.getRelativeRange(intersected, vSourceRange)] : [];
+				});
+				const targetRanges = repeats.flatMap((repeat) => relativeSourceRanges.flatMap((sourceRange) => {
+					const copiedRange = getIntersectRange(sourceRange, repeat.relativeRange);
+					if (!copiedRange) return [];
+					return mapRange(Rectangle.getPositionRange(copiedRange, {
+						startRow: repeat.repeatStartCell.row,
+						endRow: repeat.repeatStartCell.row,
+						startColumn: repeat.repeatStartCell.col,
+						endColumn: repeat.repeatStartCell.col
+					}));
+				}));
+				if (targetRanges.length) additionsByRuleId.set(rule.uid, targetRanges);
+			});
+			const additions = Array.from(additionsByRuleId, ([id, ranges]) => ({
+				id,
+				ranges: ranges.length > 1 ? Rectangle.mergeRanges(ranges) : ranges
+			}));
+			ruleMatrixCopy.addRangeRules(additions);
+			const { redoMutations, undoMutations } = getDataValidationDiffMutations(unitId, subUnitId, ruleMatrixCopy.diff(this._sheetDataValidationModel.getRules(unitId, subUnitId)), this._injector, "patched", applyType === AUTO_FILL_APPLY_TYPE.ONLY_FORMAT);
+			return {
+				undos: undoMutations,
+				redos: redoMutations
+			};
+		};
+		const hook = {
+			id: DATA_VALIDATION_PLUGIN_NAME,
+			onBeforeFillData: (location) => {
+				const { source: sourceRange, unitId, subUnitId } = location;
+				const { projectRange } = virtualizeDiscreteRanges([sourceRange]);
+				if (this._sheetDataValidationModel.getRules(unitId, subUnitId).some((rule) => rule.type === DataValidationType.CHECKBOX && rule.ranges.some((range) => projectRange(range) !== null))) this._autoFillService.setDisableApplyType(AUTO_FILL_APPLY_TYPE.SERIES, true);
+			},
+			onFillData: (location, direction, applyType) => {
+				if (applyType === AUTO_FILL_APPLY_TYPE.COPY || applyType === AUTO_FILL_APPLY_TYPE.ONLY_FORMAT || applyType === AUTO_FILL_APPLY_TYPE.SERIES) return generalApplyFunc(location, applyType);
+				return noopReturnFunc();
+			},
+			onAfterFillData: () => {}
+		};
+		this.disposeWithMe(this._autoFillService.addHook(hook));
+	}
+};
+DataValidationAutoFillController = __decorate([
+	__decorateParam(0, IAutoFillService),
+	__decorateParam(1, Inject(SheetDataValidationModel)),
+	__decorateParam(2, Inject(Injector))
+], DataValidationAutoFillController);
+
+//#endregion
+//#region src/controllers/dv-copy-paste.controller.ts
+const specialPastes = [
+	PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_COL_WIDTH,
+	PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_VALUE,
+	PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_FORMAT,
+	PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_FORMULA
+];
+let DataValidationCopyPasteController = class DataValidationCopyPasteController extends Disposable {
+	constructor(_sheetClipboardService, _sheetDataValidationModel, _injector, _univerInstanceService) {
+		super();
+		this._sheetClipboardService = _sheetClipboardService;
+		this._sheetDataValidationModel = _sheetDataValidationModel;
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		_defineProperty(this, "_copyInfo", void 0);
+		this._initCopyPaste();
+	}
+	_initCopyPaste() {
+		this._sheetClipboardService.addClipboardHook({
+			id: DATA_VALIDATION_PLUGIN_NAME,
+			onBeforeCopy: (unitId, subUnitId, range) => this._collect(unitId, subUnitId, range),
+			onPasteCells: (pasteFrom, pasteTo, data, payload) => {
+				if (!pasteFrom || !this._copyInfo || specialPastes.includes(payload.pasteType)) return {
+					redos: [],
+					undos: []
+				};
+				return this._generateMutations(pasteFrom, pasteTo, payload);
+			}
+		});
+	}
+	_collect(unitId, subUnitId, range) {
+		const rules = /* @__PURE__ */ new Map();
+		this._copyInfo = {
+			unitId,
+			subUnitId,
+			rules
+		};
+		const discreteRange = this._injector.invoke((accessor) => {
+			return rangeToDiscreteRange(range, accessor, unitId, subUnitId);
+		});
+		if (!discreteRange) return;
+		const { projectRange } = virtualizeDiscreteRanges([discreteRange]);
+		this._sheetDataValidationModel.getRules(unitId, subUnitId).forEach((rule) => {
+			const projectedRanges = rule.ranges.flatMap((ruleRange) => {
+				const projected = projectRange(ruleRange);
+				return projected ? [projected] : [];
+			});
+			if (projectedRanges.length) rules.set(rule.uid, projectedRanges.length > 1 ? Rectangle.mergeRanges(projectedRanges) : projectedRanges);
+		});
+	}
+	_generateMutations(pasteFrom, pasteTo, payload) {
+		const copyInfo = this._copyInfo;
+		if (!copyInfo) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId: copyUnitId, subUnitId: copySubUnitId, range: copyRange } = pasteFrom;
+		const { unitId: pastedUnitId, subUnitId: pastedSubUnitId, range: pastedRange } = pasteTo;
+		const { copyType = COPY_TYPE.COPY } = payload;
+		if (!getSheetCommandTarget(this._univerInstanceService, {
+			unitId: pastedUnitId,
+			subUnitId: pastedSubUnitId
+		})) return {
+			redos: [],
+			undos: []
+		};
+		if (copyType === COPY_TYPE.CUT && pastedUnitId === copyUnitId && pastedSubUnitId === copySubUnitId) {
+			this._copyInfo = null;
+			return {
+				redos: [],
+				undos: []
+			};
+		}
+		const sourceVirtualRange = virtualizeDiscreteRanges([copyRange]).ranges[0];
+		const targetVirtualization = virtualizeDiscreteRanges([pastedRange]);
+		const targetVirtualRange = targetVirtualization.ranges[0];
+		const repeatRange = getRepeatRange(sourceVirtualRange, targetVirtualRange, true);
+		const clearTargetRanges = targetVirtualization.mapRange(targetVirtualRange);
+		const getTargetRanges = (sourceRanges) => repeatRange.flatMap(({ startRange }) => sourceRanges.flatMap((sourceRange) => targetVirtualization.mapRange(Rectangle.getPositionRange(sourceRange, startRange))));
+		if (pastedUnitId !== copyUnitId || pastedSubUnitId !== copySubUnitId) {
+			const ruleMatrix = this._sheetDataValidationModel.getRuleObjectMatrix(pastedUnitId, pastedSubUnitId).clone();
+			const additionRules = /* @__PURE__ */ new Map();
+			const additions = [{
+				id: "",
+				ranges: clearTargetRanges
+			}];
+			copyInfo.rules.forEach((ranges, ruleId) => {
+				const transformedRuleId = `${copySubUnitId}-${ruleId}`;
+				const oldRule = this._sheetDataValidationModel.getRuleById(copyUnitId, copySubUnitId, ruleId);
+				if (!this._sheetDataValidationModel.getRuleById(pastedUnitId, pastedSubUnitId, transformedRuleId) && oldRule) additionRules.set(transformedRuleId, {
+					...oldRule,
+					uid: transformedRuleId
+				});
+				additions.push({
+					id: transformedRuleId,
+					ranges: getTargetRanges(ranges)
+				});
+			});
+			ruleMatrix.addRangeRules(additions);
+			const { redoMutations, undoMutations } = getDataValidationDiffMutations(pastedUnitId, pastedSubUnitId, ruleMatrix.diffWithAddition(this._sheetDataValidationModel.getRules(pastedUnitId, pastedSubUnitId), additionRules.values()), this._injector, "patched", false);
+			if (copyType === COPY_TYPE.CUT) {
+				const copySheetRuleMatrix = this._sheetDataValidationModel.getRuleObjectMatrix(copyUnitId, copySubUnitId).clone();
+				copySheetRuleMatrix.addRangeRules([{
+					id: "",
+					ranges: virtualizeDiscreteRanges([copyRange]).mapRange(sourceVirtualRange)
+				}]);
+				const { redoMutations: cutRedos, undoMutations: cutUndos } = getDataValidationDiffMutations(copyUnitId, copySubUnitId, copySheetRuleMatrix.diff(this._sheetDataValidationModel.getRules(copyUnitId, copySubUnitId)), this._injector, "patched", false);
+				redoMutations.push(...cutRedos);
+				undoMutations.push(...cutUndos);
+			}
+			return {
+				redos: redoMutations,
+				undos: undoMutations
+			};
+		} else {
+			const ruleMatrix = this._sheetDataValidationModel.getRuleObjectMatrix(copyUnitId, copySubUnitId).clone();
+			const additions = [{
+				id: "",
+				ranges: clearTargetRanges
+			}, ...Array.from(copyInfo.rules, ([id, ranges]) => ({
+				id,
+				ranges: getTargetRanges(ranges)
+			}))];
+			ruleMatrix.addRangeRules(additions);
+			const { redoMutations, undoMutations } = getDataValidationDiffMutations(pastedUnitId, pastedSubUnitId, ruleMatrix.diff(this._sheetDataValidationModel.getRules(copyUnitId, copySubUnitId)), this._injector, "patched", false);
+			return {
+				redos: redoMutations,
+				undos: undoMutations
+			};
+		}
+	}
+};
+DataValidationCopyPasteController = __decorate([
+	__decorateParam(0, ISheetClipboardService),
+	__decorateParam(1, Inject(SheetDataValidationModel)),
+	__decorateParam(2, Inject(Injector)),
+	__decorateParam(3, Inject(IUniverInstanceService))
+], DataValidationCopyPasteController);
+
+//#endregion
+//#region src/controllers/dv-permission.controller.ts
+let DataValidationPermissionController = class DataValidationPermissionController extends Disposable {
+	constructor(_localeService, _commandService, _sheetPermissionCheckController) {
+		super();
+		this._localeService = _localeService;
+		this._commandService = _commandService;
+		this._sheetPermissionCheckController = _sheetPermissionCheckController;
+		this._commandExecutedListener();
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._commandService.beforeCommandExecuted((command) => {
+			if (command.id === AddSheetDataValidationCommand.id) {
+				const { unitId, subUnitId, rule: { ranges } } = command.params;
+				if (!this._sheetPermissionCheckController.permissionCheckWithRanges({
+					workbookTypes: [WorkbookEditablePermission],
+					rangeTypes: [RangeProtectionPermissionEditPoint],
+					worksheetTypes: [WorksheetEditPermission, WorksheetSetCellStylePermission]
+				}, ranges, unitId, subUnitId)) this._sheetPermissionCheckController.blockExecuteWithoutPermission(this._localeService.t("sheets-data-validation-ui.permission.dialog.setStyleErr"));
+			}
+			if (command.id === UpdateSheetDataValidationRangeCommand.id) {
+				const { unitId, subUnitId, ranges } = command.params;
+				if (!this._sheetPermissionCheckController.permissionCheckWithRanges({
+					workbookTypes: [WorkbookEditablePermission],
+					rangeTypes: [RangeProtectionPermissionEditPoint],
+					worksheetTypes: [WorksheetEditPermission, WorksheetSetCellStylePermission]
+				}, ranges, unitId, subUnitId)) this._sheetPermissionCheckController.blockExecuteWithoutPermission(this._localeService.t("sheets-data-validation-ui.permission.dialog.setStyleErr"));
+			}
+		}));
+	}
+};
+DataValidationPermissionController = __decorate([
+	__decorateParam(0, Inject(LocaleService)),
+	__decorateParam(1, ICommandService),
+	__decorateParam(2, Inject(SheetPermissionCheckController))
+], DataValidationPermissionController);
+
+//#endregion
+//#region src/controllers/dv-render.controller.ts
+const INVALID_MARK = { tr: {
+	size: 6,
+	color: "#fe4b4b"
+} };
+let SheetsDataValidationRenderController = class SheetsDataValidationRenderController extends RxDisposable {
+	constructor(_commandService, _menuManagerService, _renderManagerService, _univerInstanceService, _autoHeightController, _dropdownManagerService, _sheetDataValidationModel, _dataValidatorRegistryService, _sheetInterceptorService, _dataValidationCacheService, _editorBridgeService) {
+		super();
+		this._commandService = _commandService;
+		this._menuManagerService = _menuManagerService;
+		this._renderManagerService = _renderManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._autoHeightController = _autoHeightController;
+		this._dropdownManagerService = _dropdownManagerService;
+		this._sheetDataValidationModel = _sheetDataValidationModel;
+		this._dataValidatorRegistryService = _dataValidatorRegistryService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._dataValidationCacheService = _dataValidationCacheService;
+		this._editorBridgeService = _editorBridgeService;
+		this._initMenu();
+		this._initDropdown();
+		this._initViewModelIntercept();
+		this._initAutoHeight();
+	}
+	_initMenu() {
+		this._menuManagerService.mergeMenu(menuSchema);
+	}
+	_initDropdown() {
+		if (!this._editorBridgeService) return;
+		this.disposeWithMe(this._editorBridgeService.visible$.subscribe((visible) => {
+			if (!visible.visible) {
+				var _this$_dropdownManage;
+				if (((_this$_dropdownManage = this._dropdownManagerService.activeDropdown) === null || _this$_dropdownManage === void 0 ? void 0 : _this$_dropdownManage.trigger) === "editor-bridge") this._dropdownManagerService.hideDropdown();
+				return;
+			}
+			const state = this._editorBridgeService.getEditCellState();
+			if (state) {
+				const { unitId, sheetId, row, column } = state;
+				const workbook = this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET);
+				if (!workbook) return;
+				const rule = this._sheetDataValidationModel.getRuleByLocation(unitId, sheetId, row, column);
+				if (!rule) return;
+				const validator = this._dataValidatorRegistryService.getValidatorItem(rule.type);
+				if (!(validator === null || validator === void 0 ? void 0 : validator.dropdownType)) return;
+				const worksheet = workbook.getActiveSheet();
+				if (!worksheet) return;
+				const activeDropdown = this._dropdownManagerService.activeDropdown;
+				const currLoc = activeDropdown === null || activeDropdown === void 0 ? void 0 : activeDropdown.location;
+				if (currLoc && currLoc.unitId === unitId && currLoc.subUnitId === sheetId && currLoc.row === row && currLoc.col === column) return;
+				this._dropdownManagerService.showDropdown({
+					location: {
+						unitId,
+						subUnitId: sheetId,
+						row,
+						col: column,
+						workbook,
+						worksheet
+					},
+					trigger: "editor-bridge",
+					closeOnOutSide: false
+				});
+			}
+		}));
+	}
+	_initViewModelIntercept() {
+		this.disposeWithMe(this._sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT, {
+			effect: InterceptorEffectEnum.Style,
+			priority: InterceptCellContentPriority.DATA_VALIDATION,
+			handler: (cell, pos, next) => {
+				var _cell$fontRenderExten, _validator$skipDefaul;
+				const { row, col, unitId, subUnitId, workbook, worksheet } = pos;
+				const ruleId = this._sheetDataValidationModel.getRuleIdByLocation(unitId, subUnitId, row, col);
+				if (!ruleId) return next(cell);
+				const rule = this._sheetDataValidationModel.getRuleById(unitId, subUnitId, ruleId);
+				if (!rule) return next(cell);
+				const validStatus = this._dataValidationCacheService.getValue(unitId, subUnitId, row, col) ?? DataValidationStatus.VALID;
+				const validator = this._dataValidatorRegistryService.getValidatorItem(rule.type);
+				const cellOrigin = pos.rawData;
+				let cache;
+				const cellValue = { get value() {
+					if (cache !== void 0) return cache;
+					cache = getCellValueOrigin(cellOrigin) ?? null;
+					return cache;
+				} };
+				const valueStr = { get value() {
+					return `${cellValue.value ?? ""}`;
+				} };
+				if (!cell || cell === pos.rawData) cell = { ...pos.rawData };
+				cell.markers = {
+					...cell === null || cell === void 0 ? void 0 : cell.markers,
+					...validStatus === DataValidationStatus.INVALID ? INVALID_MARK : null
+				};
+				cell.customRender = [...(cell === null || cell === void 0 ? void 0 : cell.customRender) ?? [], ...(validator === null || validator === void 0 ? void 0 : validator.canvasRender) ? [validator.canvasRender] : []];
+				cell.fontRenderExtension = {
+					...cell === null || cell === void 0 ? void 0 : cell.fontRenderExtension,
+					isSkip: (cell === null || cell === void 0 || (_cell$fontRenderExten = cell.fontRenderExtension) === null || _cell$fontRenderExten === void 0 ? void 0 : _cell$fontRenderExten.isSkip) || (validator === null || validator === void 0 || (_validator$skipDefaul = validator.skipDefaultFontRender) === null || _validator$skipDefaul === void 0 ? void 0 : _validator$skipDefaul.call(validator, rule, cellValue.value, pos))
+				};
+				cell.interceptorStyle = {
+					...cell === null || cell === void 0 ? void 0 : cell.interceptorStyle,
+					...validator === null || validator === void 0 ? void 0 : validator.getExtraStyle(rule, valueStr.value, { get style() {
+						const styleMap = workbook.getStyles();
+						return (typeof (cell === null || cell === void 0 ? void 0 : cell.s) === "string" ? styleMap.get(cell === null || cell === void 0 ? void 0 : cell.s) : cell === null || cell === void 0 ? void 0 : cell.s) || {};
+					} }, row, col)
+				};
+				cell.interceptorAutoHeight = () => {
+					var _this$_renderManagerS, _validator$canvasRend, _validator$canvasRend2;
+					const skeleton = (_this$_renderManagerS = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS === void 0 || (_this$_renderManagerS = _this$_renderManagerS.with(SheetSkeletonManagerService).getSkeletonParam(subUnitId)) === null || _this$_renderManagerS === void 0 ? void 0 : _this$_renderManagerS.skeleton;
+					if (!skeleton) return;
+					const mergeCell = skeleton.worksheet.getMergedCell(row, col);
+					const info = {
+						data: cell,
+						style: workbook.getStyles().getStyleByCell(cell),
+						primaryWithCoord: skeleton.getCellWithCoordByIndex((mergeCell === null || mergeCell === void 0 ? void 0 : mergeCell.startRow) ?? row, (mergeCell === null || mergeCell === void 0 ? void 0 : mergeCell.startColumn) ?? col),
+						unitId,
+						subUnitId,
+						row,
+						col,
+						workbook,
+						worksheet
+					};
+					return validator === null || validator === void 0 || (_validator$canvasRend = validator.canvasRender) === null || _validator$canvasRend === void 0 || (_validator$canvasRend2 = _validator$canvasRend.calcCellAutoHeight) === null || _validator$canvasRend2 === void 0 ? void 0 : _validator$canvasRend2.call(_validator$canvasRend, info);
+				};
+				cell.interceptorAutoWidth = () => {
+					var _this$_renderManagerS2, _validator$canvasRend3, _validator$canvasRend4;
+					const skeleton = (_this$_renderManagerS2 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS2 === void 0 || (_this$_renderManagerS2 = _this$_renderManagerS2.with(SheetSkeletonManagerService).getSkeletonParam(subUnitId)) === null || _this$_renderManagerS2 === void 0 ? void 0 : _this$_renderManagerS2.skeleton;
+					if (!skeleton) return;
+					const mergeCell = skeleton.worksheet.getMergedCell(row, col);
+					const info = {
+						data: cell,
+						style: workbook.getStyles().getStyleByCell(cell),
+						primaryWithCoord: skeleton.getCellWithCoordByIndex((mergeCell === null || mergeCell === void 0 ? void 0 : mergeCell.startRow) ?? row, (mergeCell === null || mergeCell === void 0 ? void 0 : mergeCell.startColumn) ?? col),
+						unitId,
+						subUnitId,
+						row,
+						col,
+						workbook,
+						worksheet
+					};
+					return validator === null || validator === void 0 || (_validator$canvasRend3 = validator.canvasRender) === null || _validator$canvasRend3 === void 0 || (_validator$canvasRend4 = _validator$canvasRend3.calcCellAutoWidth) === null || _validator$canvasRend4 === void 0 ? void 0 : _validator$canvasRend4.call(_validator$canvasRend3, info);
+				};
+				cell.coverable = ((cell === null || cell === void 0 ? void 0 : cell.coverable) ?? true) && !(rule.type === DataValidationType.LIST || rule.type === DataValidationType.LIST_MULTIPLE);
+				return next(cell);
+			}
+		}));
+	}
+	_initAutoHeight() {
+		this._sheetDataValidationModel.ruleChange$.pipe(filter((change) => change.source === "command"), bufferTime(100)).subscribe((infos) => {
+			if (infos.length === 0) return;
+			const ranges = [];
+			infos.forEach((info) => {
+				if (info.rule.type === DataValidationType.LIST_MULTIPLE || info.rule.type === DataValidationType.LIST) {
+					var _info$rule;
+					if ((_info$rule = info.rule) === null || _info$rule === void 0 ? void 0 : _info$rule.ranges) ranges.push(...info.rule.ranges);
+				}
+			});
+			if (ranges.length) sequenceExecute(this._autoHeightController.getUndoRedoParamsOfAutoHeight(ranges).redos, this._commandService);
+		});
+	}
+};
+SheetsDataValidationRenderController = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, IMenuManagerService),
+	__decorateParam(2, IRenderManagerService),
+	__decorateParam(3, IUniverInstanceService),
+	__decorateParam(4, Inject(AutoHeightController)),
+	__decorateParam(5, Inject(DataValidationDropdownManagerService)),
+	__decorateParam(6, Inject(SheetDataValidationModel)),
+	__decorateParam(7, Inject(DataValidatorRegistryService)),
+	__decorateParam(8, Inject(SheetInterceptorService)),
+	__decorateParam(9, Inject(DataValidationCacheService)),
+	__decorateParam(10, Optional(IEditorBridgeService))
+], SheetsDataValidationRenderController);
+let SheetsDataValidationMobileRenderController = class SheetsDataValidationMobileRenderController extends RxDisposable {
+	constructor(_commandService, _renderManagerService, _autoHeightController, _dataValidatorRegistryService, _sheetInterceptorService, _sheetDataValidationModel, _dataValidationCacheService) {
+		super();
+		this._commandService = _commandService;
+		this._renderManagerService = _renderManagerService;
+		this._autoHeightController = _autoHeightController;
+		this._dataValidatorRegistryService = _dataValidatorRegistryService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._sheetDataValidationModel = _sheetDataValidationModel;
+		this._dataValidationCacheService = _dataValidationCacheService;
+		this._initViewModelIntercept();
+		this._initAutoHeight();
+	}
+	_initViewModelIntercept() {
+		this.disposeWithMe(this._sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT, {
+			effect: InterceptorEffectEnum.Style,
+			priority: InterceptCellContentPriority.DATA_VALIDATION,
+			handler: (cell, pos, next) => {
+				var _cell$fontRenderExten2, _validator$skipDefaul2;
+				const { row, col, unitId, subUnitId, workbook, worksheet } = pos;
+				const ruleId = this._sheetDataValidationModel.getRuleIdByLocation(unitId, subUnitId, row, col);
+				if (!ruleId) return next(cell);
+				const rule = this._sheetDataValidationModel.getRuleById(unitId, subUnitId, ruleId);
+				if (!rule) return next(cell);
+				const validStatus = this._dataValidationCacheService.getValue(unitId, subUnitId, row, col) ?? DataValidationStatus.VALID;
+				const validator = this._dataValidatorRegistryService.getValidatorItem(rule.type);
+				const cellValue = getCellValueOrigin(worksheet.getCellRaw(row, col));
+				const valueStr = `${cellValue ?? ""}`;
+				if (!cell || cell === pos.rawData) cell = { ...pos.rawData };
+				cell.markers = {
+					...cell === null || cell === void 0 ? void 0 : cell.markers,
+					...validStatus === DataValidationStatus.INVALID ? INVALID_MARK : null
+				};
+				cell.customRender = [...(cell === null || cell === void 0 ? void 0 : cell.customRender) ?? [], ...(validator === null || validator === void 0 ? void 0 : validator.canvasRender) ? [validator.canvasRender] : []];
+				cell.fontRenderExtension = {
+					...cell === null || cell === void 0 ? void 0 : cell.fontRenderExtension,
+					isSkip: (cell === null || cell === void 0 || (_cell$fontRenderExten2 = cell.fontRenderExtension) === null || _cell$fontRenderExten2 === void 0 ? void 0 : _cell$fontRenderExten2.isSkip) || (validator === null || validator === void 0 || (_validator$skipDefaul2 = validator.skipDefaultFontRender) === null || _validator$skipDefaul2 === void 0 ? void 0 : _validator$skipDefaul2.call(validator, rule, cellValue, pos))
+				};
+				cell.interceptorStyle = {
+					...cell === null || cell === void 0 ? void 0 : cell.interceptorStyle,
+					...validator === null || validator === void 0 ? void 0 : validator.getExtraStyle(rule, valueStr, { get style() {
+						const styleMap = workbook.getStyles();
+						return (typeof (cell === null || cell === void 0 ? void 0 : cell.s) === "string" ? styleMap.get(cell === null || cell === void 0 ? void 0 : cell.s) : cell === null || cell === void 0 ? void 0 : cell.s) || {};
+					} }, row, col)
+				};
+				cell.interceptorAutoHeight = () => {
+					var _this$_renderManagerS3, _validator$canvasRend5, _validator$canvasRend6;
+					const skeleton = (_this$_renderManagerS3 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS3 === void 0 || (_this$_renderManagerS3 = _this$_renderManagerS3.with(SheetSkeletonManagerService).getSkeletonParam(subUnitId)) === null || _this$_renderManagerS3 === void 0 ? void 0 : _this$_renderManagerS3.skeleton;
+					if (!skeleton) return;
+					const mergeCell = skeleton.worksheet.getMergedCell(row, col);
+					const info = {
+						data: cell,
+						style: workbook.getStyles().getStyleByCell(cell),
+						primaryWithCoord: skeleton.getCellWithCoordByIndex((mergeCell === null || mergeCell === void 0 ? void 0 : mergeCell.startRow) ?? row, (mergeCell === null || mergeCell === void 0 ? void 0 : mergeCell.startColumn) ?? col),
+						unitId,
+						subUnitId,
+						row,
+						col,
+						workbook,
+						worksheet
+					};
+					return validator === null || validator === void 0 || (_validator$canvasRend5 = validator.canvasRender) === null || _validator$canvasRend5 === void 0 || (_validator$canvasRend6 = _validator$canvasRend5.calcCellAutoHeight) === null || _validator$canvasRend6 === void 0 ? void 0 : _validator$canvasRend6.call(_validator$canvasRend5, info);
+				};
+				cell.interceptorAutoWidth = () => {
+					var _this$_renderManagerS4, _validator$canvasRend7, _validator$canvasRend8;
+					const skeleton = (_this$_renderManagerS4 = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS4 === void 0 || (_this$_renderManagerS4 = _this$_renderManagerS4.with(SheetSkeletonManagerService).getSkeletonParam(subUnitId)) === null || _this$_renderManagerS4 === void 0 ? void 0 : _this$_renderManagerS4.skeleton;
+					if (!skeleton) return;
+					const mergeCell = skeleton.worksheet.getMergedCell(row, col);
+					const info = {
+						data: cell,
+						style: workbook.getStyles().getStyleByCell(cell),
+						primaryWithCoord: skeleton.getCellWithCoordByIndex((mergeCell === null || mergeCell === void 0 ? void 0 : mergeCell.startRow) ?? row, (mergeCell === null || mergeCell === void 0 ? void 0 : mergeCell.startColumn) ?? col),
+						unitId,
+						subUnitId,
+						row,
+						col,
+						workbook,
+						worksheet
+					};
+					return validator === null || validator === void 0 || (_validator$canvasRend7 = validator.canvasRender) === null || _validator$canvasRend7 === void 0 || (_validator$canvasRend8 = _validator$canvasRend7.calcCellAutoWidth) === null || _validator$canvasRend8 === void 0 ? void 0 : _validator$canvasRend8.call(_validator$canvasRend7, info);
+				};
+				cell.coverable = ((cell === null || cell === void 0 ? void 0 : cell.coverable) ?? true) && !(rule.type === DataValidationType.LIST || rule.type === DataValidationType.LIST_MULTIPLE);
+				return next(cell);
+			}
+		}));
+	}
+	_initAutoHeight() {
+		this._sheetDataValidationModel.ruleChange$.pipe(filter((change) => change.source === "command"), bufferTime(16)).subscribe((infos) => {
+			const ranges = [];
+			infos.forEach((info) => {
+				if (info.rule.type === DataValidationType.LIST_MULTIPLE || info.rule.type === DataValidationType.LIST) {
+					var _info$rule2;
+					if ((_info$rule2 = info.rule) === null || _info$rule2 === void 0 ? void 0 : _info$rule2.ranges) ranges.push(...info.rule.ranges);
+				}
+			});
+			if (ranges.length) sequenceExecute(this._autoHeightController.getUndoRedoParamsOfAutoHeight(ranges).redos, this._commandService);
+		});
+	}
+};
+SheetsDataValidationMobileRenderController = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, IRenderManagerService),
+	__decorateParam(2, Inject(AutoHeightController)),
+	__decorateParam(3, Inject(DataValidatorRegistryService)),
+	__decorateParam(4, Inject(SheetInterceptorService)),
+	__decorateParam(5, Inject(SheetDataValidationModel)),
+	__decorateParam(6, Inject(DataValidationCacheService))
+], SheetsDataValidationMobileRenderController);
+
+//#endregion
+//#region src/controllers/dv-rerender.controller.ts
+let SheetsDataValidationReRenderController = class SheetsDataValidationReRenderController extends Disposable {
+	constructor(_context, _sheetDataValidationModel, _sheetSkeletonManagerService) {
+		super();
+		this._context = _context;
+		this._sheetDataValidationModel = _sheetDataValidationModel;
+		this._sheetSkeletonManagerService = _sheetSkeletonManagerService;
+		this._initSkeletonChange();
+	}
+	_initSkeletonChange() {
+		const reRender = (values) => {
+			var _this$_context$mainCo;
+			if (!values.length) return;
+			const sheetIds = /* @__PURE__ */ new Set();
+			values.forEach((value) => {
+				sheetIds.add(value.subUnitId);
+			});
+			sheetIds.forEach((sheetId) => {
+				var _this$_sheetSkeletonM;
+				(_this$_sheetSkeletonM = this._sheetSkeletonManagerService.getSkeletonParam(sheetId)) === null || _this$_sheetSkeletonM === void 0 || _this$_sheetSkeletonM.skeleton.makeDirty(true);
+			});
+			(_this$_context$mainCo = this._context.mainComponent) === null || _this$_context$mainCo === void 0 || _this$_context$mainCo.makeForceDirty();
+		};
+		this.disposeWithMe(this._sheetDataValidationModel.validStatusChange$.pipe(bufferDebounceTime(16)).subscribe(reRender));
+	}
+};
+SheetsDataValidationReRenderController = __decorate([__decorateParam(1, Inject(SheetDataValidationModel)), __decorateParam(2, Inject(SheetSkeletonManagerService))], SheetsDataValidationReRenderController);
+
+//#endregion
+//#region src/views/widgets/checkbox-widget.ts
+const MARGIN_H$2 = 6;
+let CheckboxRender = class CheckboxRender {
+	_calc(cellInfo, style) {
+		const { vt, ht } = style || {};
+		const width = cellInfo.endX - cellInfo.startX - MARGIN_H$2 * 2;
+		const height = cellInfo.endY - cellInfo.startY;
+		const size = ((style === null || style === void 0 ? void 0 : style.fs) ?? 10) * 1.6;
+		let widgetLeft = 0;
+		let widgetTop = 0;
+		switch (vt) {
+			case VerticalAlign.TOP:
+				widgetTop = 0;
+				break;
+			case VerticalAlign.BOTTOM:
+				widgetTop = 0 + (height - size);
+				break;
+			default:
+				widgetTop = 0 + (height - size) / 2;
+				break;
+		}
+		switch (ht) {
+			case HorizontalAlign.LEFT:
+				widgetLeft = MARGIN_H$2;
+				break;
+			case HorizontalAlign.RIGHT:
+				widgetLeft = MARGIN_H$2 + (width - size);
+				break;
+			default:
+				widgetLeft = MARGIN_H$2 + (width - size) / 2;
+				break;
+		}
+		return {
+			left: cellInfo.startX + widgetLeft,
+			top: cellInfo.startY + widgetTop,
+			width: ((style === null || style === void 0 ? void 0 : style.fs) ?? 10) * 1.6,
+			height: ((style === null || style === void 0 ? void 0 : style.fs) ?? 10) * 1.6
+		};
+	}
+	constructor(_commandService, _univerInstanceService, _formulaService, _themeService, _renderManagerService, _dataValidationModel) {
+		this._commandService = _commandService;
+		this._univerInstanceService = _univerInstanceService;
+		this._formulaService = _formulaService;
+		this._themeService = _themeService;
+		this._renderManagerService = _renderManagerService;
+		this._dataValidationModel = _dataValidationModel;
+	}
+	calcCellAutoHeight(info) {
+		const { style } = info;
+		return ((style === null || style === void 0 ? void 0 : style.fs) ?? 10) * 1.6;
+	}
+	calcCellAutoWidth(info) {
+		const { style } = info;
+		return ((style === null || style === void 0 ? void 0 : style.fs) ?? 10) * 1.6;
+	}
+	async _parseFormula(rule, unitId, subUnitId) {
+		var _results$, _results$2, _results$3;
+		const { formula1 = CHECKBOX_FORMULA_1, formula2 = CHECKBOX_FORMULA_2 } = rule;
+		const results = await this._formulaService.getRuleFormulaResult(unitId, subUnitId, rule.uid);
+		const formulaResult1 = getFormulaResult(results === null || results === void 0 || (_results$ = results[0]) === null || _results$ === void 0 || (_results$ = _results$.result) === null || _results$ === void 0 || (_results$ = _results$[0]) === null || _results$ === void 0 ? void 0 : _results$[0]);
+		const formulaResult2 = getFormulaResult(results === null || results === void 0 || (_results$2 = results[1]) === null || _results$2 === void 0 || (_results$2 = _results$2.result) === null || _results$2 === void 0 || (_results$2 = _results$2[0]) === null || _results$2 === void 0 ? void 0 : _results$2[0]);
+		const isFormulaValid = isLegalFormulaResult(String(formulaResult1)) && isLegalFormulaResult(String(formulaResult2));
+		return {
+			formula1: isFormulaString(formula1) ? getFormulaResult(results === null || results === void 0 || (_results$3 = results[0]) === null || _results$3 === void 0 || (_results$3 = _results$3.result) === null || _results$3 === void 0 || (_results$3 = _results$3[0]) === null || _results$3 === void 0 ? void 0 : _results$3[0]) : formula1,
+			formula2: isFormulaString(formula2) ? formulaResult2 : formula2,
+			isFormulaValid
+		};
+	}
+	drawWith(ctx, info) {
+		var _validator$skipDefaul, _style$cl;
+		const { style, primaryWithCoord, unitId, subUnitId, worksheet, row, col } = info;
+		const cellBounding = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+		const value = getCellValueOrigin(worksheet.getCellRaw(row, col));
+		const rule = this._dataValidationModel.getRuleByLocation(unitId, subUnitId, row, col);
+		if (!rule) return;
+		const validator = this._dataValidationModel.getValidator(rule.type);
+		if (!validator) return;
+		if (!((_validator$skipDefaul = validator.skipDefaultFontRender) === null || _validator$skipDefaul === void 0 ? void 0 : _validator$skipDefaul.call(validator, rule, value, {
+			unitId,
+			subUnitId,
+			row,
+			column: col
+		}))) return;
+		const { formula1 } = validator.parseFormulaSync(rule, unitId, subUnitId);
+		const layout = this._calc(cellBounding, style);
+		const { a: scaleX, d: scaleY } = ctx.getTransform();
+		const left = fixLineWidthByScale(layout.left, scaleX);
+		const top = fixLineWidthByScale(layout.top, scaleY);
+		const transform = Transform.create().composeMatrix({
+			left,
+			top,
+			scaleX: 1,
+			scaleY: 1,
+			angle: 0,
+			skewX: 0,
+			skewY: 0,
+			flipX: false,
+			flipY: false
+		});
+		const cellWidth = cellBounding.endX - cellBounding.startX;
+		const cellHeight = cellBounding.endY - cellBounding.startY;
+		ctx.save();
+		ctx.beginPath();
+		ctx.rect(cellBounding.startX, cellBounding.startY, cellWidth, cellHeight);
+		ctx.clip();
+		const m = transform.getMatrix();
+		ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+		const size = ((style === null || style === void 0 ? void 0 : style.fs) ?? 10) * 1.6;
+		const checked = String(value) === String(formula1);
+		const defaultColor = this._themeService.getColorFromTheme("primary.600");
+		CheckboxShape.drawWith(ctx, {
+			checked,
+			width: size,
+			height: size,
+			fill: (style === null || style === void 0 || (_style$cl = style.cl) === null || _style$cl === void 0 ? void 0 : _style$cl.rgb) ?? defaultColor
+		});
+		ctx.restore();
+	}
+	isHit(evt, info) {
+		const cellBounding = info.primaryWithCoord.isMergedMainCell ? info.primaryWithCoord.mergeInfo : info.primaryWithCoord;
+		const layout = this._calc(cellBounding, info.style);
+		const startY = layout.top;
+		const endY = layout.top + layout.height;
+		const startX = layout.left;
+		const endX = layout.left + layout.width;
+		const { x: offsetX, y: offsetY } = evt;
+		if (offsetX <= endX && offsetX >= startX && offsetY <= endY && offsetY >= startY) return true;
+		return false;
+	}
+	async onPointerDown(info, evt) {
+		var _validator$skipDefaul2;
+		if (evt.button === 2) return;
+		const { primaryWithCoord, unitId, subUnitId, worksheet, row, col } = info;
+		const value = getCellValueOrigin(worksheet.getCellRaw(row, col));
+		const rule = this._dataValidationModel.getRuleByLocation(unitId, subUnitId, row, col);
+		if (!rule) return;
+		const validator = this._dataValidationModel.getValidator(rule.type);
+		if (!validator) return;
+		if (!((_validator$skipDefaul2 = validator.skipDefaultFontRender) === null || _validator$skipDefaul2 === void 0 ? void 0 : _validator$skipDefaul2.call(validator, rule, value, {
+			unitId,
+			subUnitId,
+			row,
+			column: col
+		}))) return;
+		const { formula1, formula2 } = await this._parseFormula(rule, unitId, subUnitId);
+		const params = {
+			range: {
+				startColumn: primaryWithCoord.actualColumn,
+				endColumn: primaryWithCoord.actualColumn,
+				startRow: primaryWithCoord.actualRow,
+				endRow: primaryWithCoord.actualRow
+			},
+			value: {
+				v: String(value) === transformCheckboxValue(String(formula1)) ? formula2 : formula1,
+				p: null
+			}
+		};
+		this._commandService.executeCommand(SetRangeValuesCommand.id, params);
+	}
+	onPointerEnter(info, evt) {
+		var _getCurrentTypeOfRend;
+		(_getCurrentTypeOfRend = getCurrentTypeOfRenderer(UniverInstanceType.UNIVER_SHEET, this._univerInstanceService, this._renderManagerService)) === null || _getCurrentTypeOfRend === void 0 || (_getCurrentTypeOfRend = _getCurrentTypeOfRend.mainComponent) === null || _getCurrentTypeOfRend === void 0 || _getCurrentTypeOfRend.setCursor(CURSOR_TYPE.POINTER);
+	}
+	onPointerLeave(info, evt) {
+		var _getCurrentTypeOfRend2;
+		(_getCurrentTypeOfRend2 = getCurrentTypeOfRenderer(UniverInstanceType.UNIVER_SHEET, this._univerInstanceService, this._renderManagerService)) === null || _getCurrentTypeOfRend2 === void 0 || (_getCurrentTypeOfRend2 = _getCurrentTypeOfRend2.mainComponent) === null || _getCurrentTypeOfRend2 === void 0 || _getCurrentTypeOfRend2.setCursor(CURSOR_TYPE.DEFAULT);
+	}
+};
+CheckboxRender = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, IUniverInstanceService),
+	__decorateParam(2, Inject(DataValidationFormulaService)),
+	__decorateParam(3, Inject(ThemeService)),
+	__decorateParam(4, Inject(IRenderManagerService)),
+	__decorateParam(5, Inject(SheetDataValidationModel))
+], CheckboxRender);
+
+//#endregion
+//#region src/views/validator-views/sheet-validator-view.ts
+let BaseSheetDataValidatorView = class BaseSheetDataValidatorView {
+	constructor(injector) {
+		this.injector = injector;
+		_defineProperty(this, "canvasRender", null);
+		_defineProperty(this, "dropdownType", void 0);
+		_defineProperty(this, "optionsInput", void 0);
+		_defineProperty(this, "formulaInput", LIST_FORMULA_INPUT_NAME);
+	}
+};
+BaseSheetDataValidatorView = __decorate([__decorateParam(0, Inject(Injector))], BaseSheetDataValidatorView);
+
+//#endregion
+//#region src/views/validator-views/checkbox-validator-view.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var CheckboxValidatorView = class extends BaseSheetDataValidatorView {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "id", DataValidationType.CHECKBOX);
+		_defineProperty(this, "canvasRender", this.injector.createInstance(CheckboxRender));
+		_defineProperty(this, "formulaInput", CHECKBOX_FORMULA_INPUT_NAME);
+	}
+};
+
+//#endregion
+//#region src/views/validator-views/custom-validator-view.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var CustomFormulaValidatorView = class extends BaseSheetDataValidatorView {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "id", DataValidationType.CUSTOM);
+		_defineProperty(this, "formulaInput", CUSTOM_FORMULA_INPUT_NAME);
+	}
+};
+
+//#endregion
+//#region src/views/validator-views/date-validator-view.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var DateValidatorView = class extends BaseSheetDataValidatorView {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "id", DataValidationType.DATE);
+		_defineProperty(this, "formulaInput", BASE_FORMULA_INPUT_NAME);
+		_defineProperty(this, "optionsInput", DateShowTimeOption.componentKey);
+		_defineProperty(this, "dropdownType", DataValidatorDropdownType.DATE);
+	}
+};
+
+//#endregion
+//#region src/views/validator-views/decimal-validator-view.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var DecimalValidatorView = class extends BaseSheetDataValidatorView {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "id", DataValidationType.DECIMAL);
+		_defineProperty(this, "formulaInput", BASE_FORMULA_INPUT_NAME);
+	}
+};
+
+//#endregion
+//#region src/views/widgets/shape/layout.ts
+const PADDING_H$1 = 4;
+const PADDING_V$1 = 0;
+const MARGIN_H$1 = 4;
+const MARGIN_V$1 = 4;
+const CELL_PADDING_V = 6;
+function getDropdownItemSize(text, fontStyle) {
+	const bBox = FontCache.getTextSize(text, fontStyle);
+	const rectWidth = bBox.width + 4 * 2;
+	const { ba, bd } = bBox;
+	return {
+		width: rectWidth,
+		height: ba + bd + 0 * 2,
+		ba
+	};
+}
+function layoutDropdowns(items, fontStyle, cellWidth, cellHeight) {
+	const cellPaddingH = 26;
+	const widthAvailableForContent = cellWidth - cellPaddingH;
+	const heightAvailableForContent = cellHeight - 6 * 2;
+	const textLayout = items.map((item) => ({
+		layout: getDropdownItemSize(item, fontStyle),
+		text: item
+	}));
+	let currentLine;
+	const lines = [];
+	textLayout.forEach((item) => {
+		const { layout } = item;
+		const { width, height } = layout;
+		if (!currentLine || currentLine.width + width + 4 > widthAvailableForContent) {
+			currentLine = {
+				width,
+				height,
+				items: [{
+					...item,
+					left: 0
+				}]
+			};
+			lines.push(currentLine);
+		} else {
+			currentLine.items.push({
+				...item,
+				left: currentLine.width + 4
+			});
+			currentLine.width = currentLine.width + width + 4;
+		}
+	});
+	let totalHeight = 0;
+	let maxLineWidth = 0;
+	lines.forEach((line, index) => {
+		maxLineWidth = Math.max(maxLineWidth, line.width);
+		if (index === lines.length - 1) totalHeight += line.height;
+		else totalHeight += line.height + 4;
+	});
+	return {
+		lines,
+		totalHeight,
+		contentWidth: widthAvailableForContent,
+		contentHeight: heightAvailableForContent,
+		cellAutoHeight: totalHeight + 6 * 2,
+		calcAutoWidth: maxLineWidth + cellPaddingH
+	};
+}
+
+//#endregion
+//#region src/views/widgets/shape/dropdown.ts
+const RADIUS = 8;
+var Dropdown$1 = class extends Shape {
+	static drawWith(ctx, props) {
+		const { fontString, info, fill, color } = props;
+		const { layout, text } = info;
+		ctx.save();
+		Rect.drawWith(ctx, {
+			width: layout.width,
+			height: layout.height,
+			radius: RADIUS,
+			fill: fill || "gray.100"
+		});
+		ctx.translateWithPrecision(4, layout.ba);
+		ctx.font = fontString;
+		ctx.fillStyle = color;
+		ctx.fillText(text, 0, 0);
+		ctx.restore();
+	}
+};
+
+//#endregion
+//#region src/views/widgets/dropdown-multiple-widget.ts
+const downPath$1 = new Path2D("M3.32201 4.84556C3.14417 5.05148 2.85583 5.05148 2.67799 4.84556L0.134292 1.90016C-0.152586 1.56798 0.0505937 1 0.456301 1L5.5437 1C5.94941 1 6.15259 1.56798 5.86571 1.90016L3.32201 4.84556Z");
+let DropdownMultipleWidget = class DropdownMultipleWidget {
+	constructor(_commandService, _univerInstanceService, _renderManagerService, _dataValidationModel) {
+		this._commandService = _commandService;
+		this._univerInstanceService = _univerInstanceService;
+		this._renderManagerService = _renderManagerService;
+		this._dataValidationModel = _dataValidationModel;
+		_defineProperty(this, "zIndex", void 0);
+		_defineProperty(this, "_dropdownInfoMap", /* @__PURE__ */ new Map());
+	}
+	_ensureMap(subUnitId) {
+		let map = this._dropdownInfoMap.get(subUnitId);
+		if (!map) {
+			map = /* @__PURE__ */ new Map();
+			this._dropdownInfoMap.set(subUnitId, map);
+		}
+		return map;
+	}
+	_generateKey(row, col) {
+		return `${row}.${col}`;
+	}
+	_drawDownIcon(ctx, cellBounding, cellWidth, cellHeight, vt) {
+		const left = cellWidth - 14 + 4;
+		let top = 4;
+		switch (vt) {
+			case VerticalAlign.MIDDLE:
+				top = (cellHeight - 14) / 2 + 4;
+				break;
+			case VerticalAlign.BOTTOM:
+				top = cellHeight - 14 + 4;
+				break;
+			default: break;
+		}
+		ctx.save();
+		ctx.translateWithPrecision(cellBounding.startX + left, cellBounding.startY + top);
+		ctx.fillStyle = DROP_DOWN_ICON_COLOR;
+		ctx.fill(downPath$1);
+		ctx.restore();
+	}
+	drawWith(ctx, info, skeleton, spreadsheets) {
+		const { primaryWithCoord, row, col, style, data, subUnitId } = info;
+		const _cellBounding = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+		const { leftOffset = 0, rightOffset = 0, topOffset = 0, downOffset = 0 } = (data === null || data === void 0 ? void 0 : data.fontRenderExtension) || {};
+		const map = this._ensureMap(subUnitId);
+		const key = this._generateKey(row, col);
+		const _row = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo.startRow : row;
+		const _col = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo.startColumn : col;
+		const rule = this._dataValidationModel.getRuleByLocation(info.unitId, info.subUnitId, _row, _col);
+		if (!rule) return;
+		const validator = this._dataValidationModel.getValidator(rule.type);
+		if (!validator) return;
+		const cellBounding = {
+			startX: _cellBounding.startX + leftOffset,
+			endX: _cellBounding.endX - rightOffset,
+			startY: _cellBounding.startY + topOffset,
+			endY: _cellBounding.endY - downOffset
+		};
+		const cellWidth = cellBounding.endX - cellBounding.startX;
+		const cellHeight = cellBounding.endY - cellBounding.startY;
+		const { cl } = style || {};
+		const color = (typeof cl === "object" ? cl === null || cl === void 0 ? void 0 : cl.rgb : cl) ?? "#000";
+		const fontStyle = getFontStyleString(style ?? void 0);
+		const { vt: _vt, ht } = style || {};
+		const vt = _vt ?? VerticalAlign.MIDDLE;
+		const cellValue = getCellValueOrigin(data) ?? "";
+		const items = validator.parseCellValue(cellValue);
+		const labelColorMap = validator.getListWithColorMap(rule);
+		const layout = layoutDropdowns(items, fontStyle, cellWidth, cellHeight);
+		this._drawDownIcon(ctx, cellBounding, cellWidth, cellHeight, vt);
+		ctx.save();
+		ctx.translateWithPrecision(cellBounding.startX, cellBounding.startY);
+		ctx.beginPath();
+		ctx.rect(0, 0, cellWidth - 14, cellHeight);
+		ctx.clip();
+		ctx.translateWithPrecision(6, 6);
+		let top = 0;
+		switch (vt) {
+			case VerticalAlign.MIDDLE:
+				top = (layout.contentHeight - layout.totalHeight) / 2;
+				break;
+			case VerticalAlign.BOTTOM:
+				top = layout.contentHeight - layout.totalHeight;
+				break;
+			default: break;
+		}
+		ctx.translateWithPrecision(0, top);
+		layout.lines.forEach((line, index) => {
+			ctx.save();
+			const { width, height, items } = line;
+			let left = 0;
+			switch (ht) {
+				case HorizontalAlign.RIGHT:
+					left = layout.contentWidth - width;
+					break;
+				case HorizontalAlign.CENTER:
+					left = (layout.contentWidth - width) / 2;
+					break;
+				default: break;
+			}
+			ctx.translate(left, index * (height + 4));
+			items.forEach((item) => {
+				ctx.save();
+				ctx.translateWithPrecision(item.left, 0);
+				Dropdown$1.drawWith(ctx, {
+					...fontStyle,
+					info: item,
+					color,
+					fill: labelColorMap[item.text]
+				});
+				ctx.restore();
+			});
+			ctx.restore();
+		});
+		ctx.restore();
+		map.set(key, {
+			left: cellBounding.startX,
+			top: cellBounding.startY,
+			width: layout.contentWidth + 6 + 14,
+			height: layout.contentHeight + 6 * 2
+		});
+	}
+	calcCellAutoHeight(info) {
+		const { primaryWithCoord, style, data, row, col } = info;
+		const { leftOffset = 0, rightOffset = 0, topOffset = 0, downOffset = 0 } = (data === null || data === void 0 ? void 0 : data.fontRenderExtension) || {};
+		const _cellBounding = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+		const cellBounding = {
+			startX: _cellBounding.startX + leftOffset,
+			endX: _cellBounding.endX - rightOffset,
+			startY: _cellBounding.startY + topOffset,
+			endY: _cellBounding.endY - downOffset
+		};
+		const rule = this._dataValidationModel.getRuleByLocation(info.unitId, info.subUnitId, row, col);
+		if (!rule) return;
+		const validator = this._dataValidationModel.getValidator(rule.type);
+		if (!validator) return;
+		const cellWidth = cellBounding.endX - cellBounding.startX;
+		const cellHeight = cellBounding.endY - cellBounding.startY;
+		const cellValue = getCellValueOrigin(data) ?? "";
+		return layoutDropdowns(validator.parseCellValue(cellValue), getFontStyleString(style ?? void 0), cellWidth, cellHeight).cellAutoHeight;
+	}
+	calcCellAutoWidth(info) {
+		const { primaryWithCoord, style, data, row, col } = info;
+		const { leftOffset = 0, rightOffset = 0, topOffset = 0, downOffset = 0 } = (data === null || data === void 0 ? void 0 : data.fontRenderExtension) || {};
+		const _cellBounding = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+		const cellBounding = {
+			startX: _cellBounding.startX + leftOffset,
+			endX: _cellBounding.endX - rightOffset,
+			startY: _cellBounding.startY + topOffset,
+			endY: _cellBounding.endY - downOffset
+		};
+		const rule = this._dataValidationModel.getRuleByLocation(info.unitId, info.subUnitId, row, col);
+		if (!rule) return;
+		const validator = this._dataValidationModel.getValidator(rule.type);
+		if (!validator) return;
+		const cellWidth = cellBounding.endX - cellBounding.startX;
+		const cellHeight = cellBounding.endY - cellBounding.startY;
+		const cellValue = getCellValueOrigin(data) ?? "";
+		return layoutDropdowns(validator.parseCellValue(cellValue), getFontStyleString(style ?? void 0), cellWidth, cellHeight).calcAutoWidth;
+	}
+	isHit(position, info) {
+		const { primaryWithCoord } = info;
+		const { endX } = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+		const { x } = position;
+		if (x >= endX - 14 && x <= endX) return true;
+		return false;
+	}
+	onPointerDown(info, evt) {
+		if (evt.button === 2) return;
+		const { unitId, subUnitId, row, col } = info;
+		const params = {
+			unitId,
+			subUnitId,
+			row,
+			column: col
+		};
+		this._commandService.executeCommand(ShowDataValidationDropdown.id, params);
+	}
+	onPointerEnter(info, evt) {
+		var _getCurrentTypeOfRend;
+		return (_getCurrentTypeOfRend = getCurrentTypeOfRenderer(UniverInstanceType.UNIVER_SHEET, this._univerInstanceService, this._renderManagerService)) === null || _getCurrentTypeOfRend === void 0 || (_getCurrentTypeOfRend = _getCurrentTypeOfRend.mainComponent) === null || _getCurrentTypeOfRend === void 0 ? void 0 : _getCurrentTypeOfRend.setCursor(CURSOR_TYPE.POINTER);
+	}
+	onPointerLeave(info, evt) {
+		var _getCurrentTypeOfRend2;
+		return (_getCurrentTypeOfRend2 = getCurrentTypeOfRenderer(UniverInstanceType.UNIVER_SHEET, this._univerInstanceService, this._renderManagerService)) === null || _getCurrentTypeOfRend2 === void 0 || (_getCurrentTypeOfRend2 = _getCurrentTypeOfRend2.mainComponent) === null || _getCurrentTypeOfRend2 === void 0 ? void 0 : _getCurrentTypeOfRend2.setCursor(CURSOR_TYPE.DEFAULT);
+	}
+};
+DropdownMultipleWidget = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, IUniverInstanceService),
+	__decorateParam(2, Inject(IRenderManagerService)),
+	__decorateParam(3, Inject(SheetDataValidationModel))
+], DropdownMultipleWidget);
+
+//#endregion
+//#region src/views/validator-views/list-multiple-view.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var ListMultipleValidatorView = class extends BaseSheetDataValidatorView {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "id", DataValidationType.LIST_MULTIPLE);
+		_defineProperty(this, "canvasRender", this.injector.createInstance(DropdownMultipleWidget));
+		_defineProperty(this, "dropdownType", DataValidatorDropdownType.MULTIPLE_LIST);
+	}
+};
+
+//#endregion
+//#region src/views/widgets/dropdown-widget.ts
+/**
+* padding in Capsule
+*/
+const PADDING_H = 4;
+const ICON_SIZE = 4;
+const ICON_PLACE = 14;
+const PADDING_V = 1;
+/**
+* margin for Capsule, that means distance between capsule and cell border
+*/
+const MARGIN_H = 6;
+const MARGIN_V = 3;
+const RADIUS_BG = 8;
+const downPath = new Path2D("M3.32201 4.84556C3.14417 5.05148 2.85583 5.05148 2.67799 4.84556L0.134292 1.90016C-0.152586 1.56798 0.0505937 1 0.456301 1L5.5437 1C5.94941 1 6.15259 1.56798 5.86571 1.90016L3.32201 4.84556Z");
+function calcPadding(cellWidth, cellHeight, fontWidth, fontHeight, vt, ht, margin = true) {
+	let paddingTop = 0;
+	const realMargin = margin ? MARGIN_V : 0;
+	switch (vt) {
+		case VerticalAlign.BOTTOM:
+			paddingTop = cellHeight - fontHeight - realMargin;
+			break;
+		case VerticalAlign.MIDDLE:
+			paddingTop = (cellHeight - fontHeight) / 2;
+			break;
+		default:
+			paddingTop = realMargin;
+			break;
+	}
+	paddingTop = Math.max(MARGIN_V, paddingTop);
+	let paddingLeft = 0;
+	switch (ht) {
+		case HorizontalAlign.CENTER:
+			paddingLeft = (cellWidth - fontWidth) / 2;
+			break;
+		case HorizontalAlign.RIGHT:
+			paddingLeft = cellWidth - fontWidth;
+			break;
+		default: break;
+	}
+	paddingLeft = Math.max(MARGIN_H, paddingLeft);
+	return {
+		paddingLeft,
+		paddingTop
+	};
+}
+let DropdownWidget = class DropdownWidget {
+	constructor(_univerInstanceService, _localeService, _commandService, _renderManagerService, _dataValidationModel) {
+		this._univerInstanceService = _univerInstanceService;
+		this._localeService = _localeService;
+		this._commandService = _commandService;
+		this._renderManagerService = _renderManagerService;
+		this._dataValidationModel = _dataValidationModel;
+		_defineProperty(this, "_dropdownInfoMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "zIndex", void 0);
+	}
+	_ensureMap(subUnitId) {
+		let map = this._dropdownInfoMap.get(subUnitId);
+		if (!map) {
+			map = /* @__PURE__ */ new Map();
+			this._dropdownInfoMap.set(subUnitId, map);
+		}
+		return map;
+	}
+	_generateKey(row, col) {
+		return `${row}.${col}`;
+	}
+	_drawDownIcon(ctx, cellBounding, cellWidth, cellHeight, fontHeight, vt, pd) {
+		const { t = DEFAULT_STYLES.pd.t, b = DEFAULT_STYLES.pd.b } = pd;
+		const left = cellWidth - ICON_PLACE;
+		let top;
+		switch (vt) {
+			case VerticalAlign.MIDDLE:
+				top = (cellHeight - ICON_SIZE) / 2;
+				break;
+			case VerticalAlign.BOTTOM:
+				top = cellHeight - b - fontHeight - MARGIN_V + (fontHeight / 2 - ICON_SIZE / 2);
+				break;
+			default:
+				top = t + MARGIN_V + (fontHeight / 2 - ICON_SIZE / 2);
+				break;
+		}
+		ctx.save();
+		ctx.translateWithPrecision(cellBounding.startX + left, cellBounding.startY + top);
+		ctx.fillStyle = DROP_DOWN_ICON_COLOR;
+		ctx.fill(downPath);
+		ctx.restore();
+	}
+	drawWith(ctx, info, skeleton) {
+		const { primaryWithCoord, row, col, style, data, subUnitId } = info;
+		const _cellBounding = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+		const _row = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo.startRow : row;
+		const _col = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo.startColumn : col;
+		const rule = this._dataValidationModel.getRuleByLocation(info.unitId, info.subUnitId, _row, _col);
+		if (!rule) return;
+		const validator = this._dataValidationModel.getValidator(rule.type);
+		if (!validator) return;
+		const { leftOffset = 0, rightOffset = 0, topOffset = 0, downOffset = 0 } = (data === null || data === void 0 ? void 0 : data.fontRenderExtension) || {};
+		if (!rule || !validator || !validator || validator.id.indexOf(DataValidationType.LIST) !== 0) return;
+		if (!validator.skipDefaultFontRender(rule)) return;
+		const cellBounding = {
+			startX: _cellBounding.startX + leftOffset,
+			endX: _cellBounding.endX - rightOffset,
+			startY: _cellBounding.startY + topOffset,
+			endY: _cellBounding.endY - downOffset
+		};
+		const cellWidth = cellBounding.endX - cellBounding.startX;
+		const cellHeight = cellBounding.endY - cellBounding.startY;
+		const map = this._ensureMap(subUnitId);
+		const key = this._generateKey(row, col);
+		const colorMap = validator.getListWithColorMap(rule);
+		const valueStr = `${getCellValueOrigin(data) ?? ""}`;
+		const activeColor = colorMap[valueStr];
+		let { tb, vt, ht, pd } = style || {};
+		tb = tb ?? WrapStrategy.WRAP;
+		vt = vt ?? VerticalAlign.BOTTOM;
+		ht = ht ?? DEFAULT_STYLES.ht;
+		pd = pd ?? DEFAULT_STYLES.pd;
+		const fontStyle = getFontStyleString(style).fontCache;
+		if (rule.renderMode === DataValidationRenderMode.ARROW) {
+			var _style$cl, _style$st, _style$ul;
+			const { l = DEFAULT_STYLES.pd.l, t = DEFAULT_STYLES.pd.t, r = DEFAULT_STYLES.pd.r, b = DEFAULT_STYLES.pd.b } = pd;
+			const realWidth = cellWidth - l - r - ICON_PLACE - 4;
+			const textSkeleton = new DocSimpleSkeleton(valueStr, fontStyle, Boolean(tb === WrapStrategy.WRAP), realWidth, Infinity);
+			textSkeleton.calculate();
+			const fontWidth = textSkeleton.getTotalWidth();
+			const fontHeight = textSkeleton.getTotalHeight();
+			const { paddingTop, paddingLeft } = calcPadding(realWidth, cellHeight - t - b, fontWidth, fontHeight, vt, ht, true);
+			this._drawDownIcon(ctx, cellBounding, cellWidth, cellHeight, fontHeight, vt, pd);
+			ctx.save();
+			ctx.translateWithPrecision(cellBounding.startX + l, cellBounding.startY + t);
+			ctx.beginPath();
+			ctx.rect(0, 0, cellWidth - l - r, cellHeight - t - b);
+			ctx.clip();
+			ctx.translateWithPrecision(0, paddingTop);
+			ctx.save();
+			ctx.translateWithPrecision(paddingLeft, 0);
+			ctx.beginPath();
+			ctx.rect(0, 0, realWidth, fontHeight);
+			ctx.clip();
+			Text.drawWith(ctx, {
+				text: valueStr,
+				fontStyle,
+				width: realWidth,
+				height: fontHeight,
+				color: style === null || style === void 0 || (_style$cl = style.cl) === null || _style$cl === void 0 ? void 0 : _style$cl.rgb,
+				strokeLine: Boolean(style === null || style === void 0 || (_style$st = style.st) === null || _style$st === void 0 ? void 0 : _style$st.s),
+				underline: Boolean(style === null || style === void 0 || (_style$ul = style.ul) === null || _style$ul === void 0 ? void 0 : _style$ul.s),
+				warp: tb === WrapStrategy.WRAP,
+				hAlign: HorizontalAlign.LEFT
+			}, textSkeleton);
+			ctx.restore();
+			ctx.restore();
+			map.set(key, {
+				left: cellBounding.endX - ICON_PLACE + skeleton.rowHeaderWidth,
+				top: cellBounding.startY + t + skeleton.columnHeaderHeight,
+				width: ICON_PLACE,
+				height: cellHeight - t - b
+			});
+		} else {
+			var _style$cl2, _style$st2, _style$ul2;
+			ctx.save();
+			ctx.translateWithPrecision(cellBounding.startX, cellBounding.startY);
+			ctx.beginPath();
+			ctx.rect(0, 0, cellWidth, cellHeight);
+			ctx.clip();
+			const realWidth = cellWidth - MARGIN_H * 2 - PADDING_H - ICON_PLACE - 4;
+			const textSkeleton = new DocSimpleSkeleton(valueStr, fontStyle, Boolean(tb === WrapStrategy.WRAP), realWidth, Infinity);
+			textSkeleton.calculate();
+			const fontWidth = textSkeleton.getTotalWidth();
+			const fontHeight = textSkeleton.getTotalHeight();
+			const rectHeight = fontHeight + PADDING_V * 2;
+			const rectWidth = Math.max(cellWidth - MARGIN_H * 2, 1);
+			const { paddingTop } = calcPadding(rectWidth, cellHeight, fontWidth, rectHeight, vt, ht);
+			ctx.translateWithPrecision(MARGIN_H, paddingTop);
+			Rect.drawWith(ctx, {
+				width: rectWidth,
+				height: rectHeight,
+				fill: activeColor || "gray.100",
+				radius: RADIUS_BG
+			});
+			ctx.save();
+			ctx.translateWithPrecision(PADDING_H, PADDING_V);
+			ctx.beginPath();
+			ctx.rect(0, 0, realWidth, fontHeight);
+			ctx.clip();
+			Text.drawWith(ctx, {
+				text: valueStr,
+				fontStyle,
+				width: realWidth,
+				height: fontHeight,
+				color: style === null || style === void 0 || (_style$cl2 = style.cl) === null || _style$cl2 === void 0 ? void 0 : _style$cl2.rgb,
+				strokeLine: Boolean(style === null || style === void 0 || (_style$st2 = style.st) === null || _style$st2 === void 0 ? void 0 : _style$st2.s),
+				underline: Boolean(style === null || style === void 0 || (_style$ul2 = style.ul) === null || _style$ul2 === void 0 ? void 0 : _style$ul2.s),
+				warp: tb === WrapStrategy.WRAP,
+				hAlign: HorizontalAlign.LEFT
+			}, textSkeleton);
+			ctx.restore();
+			ctx.translateWithPrecision(realWidth + PADDING_H + 4, (fontHeight - ICON_SIZE) / 2);
+			ctx.fillStyle = DROP_DOWN_ICON_COLOR;
+			ctx.fill(downPath);
+			ctx.restore();
+			map.set(key, {
+				left: cellBounding.startX + MARGIN_H + skeleton.rowHeaderWidth,
+				top: cellBounding.startY + paddingTop + skeleton.columnHeaderHeight,
+				width: rectWidth,
+				height: rectHeight
+			});
+		}
+	}
+	calcCellAutoHeight(info) {
+		const { primaryWithCoord, style, data, row, col } = info;
+		const _cellBounding = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+		const { leftOffset = 0, rightOffset = 0, topOffset = 0, downOffset = 0 } = (data === null || data === void 0 ? void 0 : data.fontRenderExtension) || {};
+		const rule = this._dataValidationModel.getRuleByLocation(info.unitId, info.subUnitId, row, col);
+		if (!rule) return;
+		if (rule.renderMode === DataValidationRenderMode.TEXT) return;
+		const cellBounding = {
+			startX: _cellBounding.startX + leftOffset,
+			endX: _cellBounding.endX - rightOffset,
+			startY: _cellBounding.startY + topOffset,
+			endY: _cellBounding.endY - downOffset
+		};
+		const cellWidth = cellBounding.endX - cellBounding.startX;
+		const valueStr = `${getCellValueOrigin(data) ?? ""}`;
+		let { tb, pd } = style || {};
+		const { t = DEFAULT_STYLES.pd.t, b = DEFAULT_STYLES.pd.b } = pd ?? {};
+		tb = tb ?? WrapStrategy.WRAP;
+		if (rule.renderMode === DataValidationRenderMode.ARROW) {
+			const { l = DEFAULT_STYLES.pd.l, r = DEFAULT_STYLES.pd.r } = pd ?? {};
+			const realWidth = cellWidth - l - r - ICON_PLACE - 4;
+			const skeleton = new DocSimpleSkeleton(valueStr, getFontStyleString(style).fontCache, Boolean(tb === WrapStrategy.WRAP), realWidth, Infinity);
+			skeleton.calculate();
+			return skeleton.getTotalHeight() + t + b + MARGIN_V * 2;
+		} else {
+			const realWidth = Math.max(cellWidth - MARGIN_H * 2 - PADDING_H - ICON_PLACE - 4, 10);
+			const skeleton = new DocSimpleSkeleton(valueStr, getFontStyleString(style).fontCache, Boolean(tb === WrapStrategy.WRAP), realWidth, Infinity);
+			skeleton.calculate();
+			return skeleton.getTotalHeight() + MARGIN_V * 2 + PADDING_V * 2;
+		}
+	}
+	calcCellAutoWidth(info) {
+		const { primaryWithCoord, style, data, row, col } = info;
+		const cellRange = primaryWithCoord.isMergedMainCell ? primaryWithCoord.mergeInfo : primaryWithCoord;
+		const { leftOffset = 0, rightOffset = 0, topOffset = 0, downOffset = 0 } = (data === null || data === void 0 ? void 0 : data.fontRenderExtension) || {};
+		const rule = this._dataValidationModel.getRuleByLocation(info.unitId, info.subUnitId, row, col);
+		if (!rule) return;
+		if (rule.renderMode === DataValidationRenderMode.TEXT) return;
+		const cellBounding = {
+			startX: cellRange.startX + leftOffset,
+			endX: cellRange.endX - rightOffset,
+			startY: cellRange.startY + topOffset,
+			endY: cellRange.endY - downOffset
+		};
+		const cellWidth = cellBounding.endX - cellBounding.startX;
+		const valueStr = `${getCellValueOrigin(data) ?? ""}`;
+		let { tb, pd } = style || {};
+		const { l = DEFAULT_STYLES.pd.l, r = DEFAULT_STYLES.pd.r } = pd ?? {};
+		tb = tb ?? WrapStrategy.WRAP;
+		let paddingAll = 26;
+		switch (rule.renderMode) {
+			case DataValidationRenderMode.ARROW:
+				paddingAll = 18 + r + l;
+				break;
+			case DataValidationRenderMode.CUSTOM:
+				paddingAll = 34 + r + l + RADIUS_BG / 2 + 1;
+				break;
+			default: paddingAll = 34 + r + l + RADIUS_BG / 2 + 1;
+		}
+		const widthForTextLayout = cellWidth - paddingAll;
+		const skeleton = new DocSimpleSkeleton(valueStr, getFontStyleString(style).fontCache, Boolean(tb === WrapStrategy.WRAP), widthForTextLayout, Infinity);
+		skeleton.calculate();
+		return skeleton.getTotalWidth() + paddingAll;
+	}
+	isHit(position, info) {
+		const { subUnitId, row, col } = info;
+		const dropdownInfo = this._ensureMap(subUnitId).get(this._generateKey(row, col));
+		const rule = this._dataValidationModel.getRuleByLocation(info.unitId, info.subUnitId, row, col);
+		if (!rule) return false;
+		if (!dropdownInfo) return false;
+		if (rule.renderMode === DataValidationRenderMode.TEXT) return false;
+		const { top, left, width, height } = dropdownInfo;
+		const { x, y } = position;
+		if (x >= left && x <= left + width && y >= top && y <= top + height) return true;
+		return false;
+	}
+	onPointerDown(info, evt) {
+		if (evt.button === 2) return;
+		const { unitId, subUnitId, row, col } = info;
+		const params = {
+			unitId,
+			subUnitId,
+			row,
+			column: col
+		};
+		this._commandService.executeCommand(ShowDataValidationDropdown.id, params);
+	}
+	onPointerEnter(_info, _evt) {
+		var _getCurrentTypeOfRend;
+		(_getCurrentTypeOfRend = getCurrentTypeOfRenderer(UniverInstanceType.UNIVER_SHEET, this._univerInstanceService, this._renderManagerService)) === null || _getCurrentTypeOfRend === void 0 || (_getCurrentTypeOfRend = _getCurrentTypeOfRend.mainComponent) === null || _getCurrentTypeOfRend === void 0 || _getCurrentTypeOfRend.setCursor(CURSOR_TYPE.POINTER);
+	}
+	onPointerLeave(_info, _evt) {
+		var _getCurrentTypeOfRend2;
+		(_getCurrentTypeOfRend2 = getCurrentTypeOfRenderer(UniverInstanceType.UNIVER_SHEET, this._univerInstanceService, this._renderManagerService)) === null || _getCurrentTypeOfRend2 === void 0 || (_getCurrentTypeOfRend2 = _getCurrentTypeOfRend2.mainComponent) === null || _getCurrentTypeOfRend2 === void 0 || _getCurrentTypeOfRend2.setCursor(CURSOR_TYPE.DEFAULT);
+	}
+};
+DropdownWidget = __decorate([
+	__decorateParam(0, IUniverInstanceService),
+	__decorateParam(1, Inject(LocaleService)),
+	__decorateParam(2, ICommandService),
+	__decorateParam(3, Inject(IRenderManagerService)),
+	__decorateParam(4, Inject(SheetDataValidationModel))
+], DropdownWidget);
+
+//#endregion
+//#region src/views/validator-views/list-validator-view.ts
+var ListValidatorView = class extends BaseSheetDataValidatorView {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "id", DataValidationType.LIST);
+		_defineProperty(this, "canvasRender", this.injector.createInstance(DropdownWidget));
+		_defineProperty(this, "dropdownType", DataValidatorDropdownType.LIST);
+		_defineProperty(this, "optionsInput", ListRenderModeInput.componentKey);
+		_defineProperty(this, "formulaInput", LIST_FORMULA_INPUT_NAME);
+	}
+};
+
+//#endregion
+//#region src/views/validator-views/text-length-validator.view.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var TextLengthValidatorView = class extends BaseSheetDataValidatorView {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "id", DataValidationType.TEXT_LENGTH);
+		_defineProperty(this, "formulaInput", BASE_FORMULA_INPUT_NAME);
+	}
+};
+
+//#endregion
+//#region src/views/validator-views/whole-validator-view.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var WholeValidatorView = class extends BaseSheetDataValidatorView {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "id", DataValidationType.WHOLE);
+		_defineProperty(this, "formulaInput", BASE_FORMULA_INPUT_NAME);
+	}
+};
+
+//#endregion
+//#region src/controllers/ui.controller.ts
+let SheetsDataValidationUIController = class SheetsDataValidationUIController extends RxDisposable {
+	constructor(_injector, _dataValidatorRegistryService) {
+		super();
+		this._injector = _injector;
+		this._dataValidatorRegistryService = _dataValidatorRegistryService;
+		this._registerValidatorViews();
+	}
+	_registerValidatorViews() {
+		[
+			DecimalValidatorView,
+			WholeValidatorView,
+			TextLengthValidatorView,
+			DateValidatorView,
+			CheckboxValidatorView,
+			ListValidatorView,
+			ListMultipleValidatorView,
+			CustomFormulaValidatorView
+		].forEach((v) => {
+			const view = this._injector.createInstance(v);
+			const validator = this._dataValidatorRegistryService.getValidatorItem(view.id);
+			if (validator) {
+				validator.formulaInput = view.formulaInput;
+				validator.canvasRender = view.canvasRender;
+				validator.dropdownType = view.dropdownType;
+				validator.optionsInput = view.optionsInput;
+			}
+		});
+	}
+};
+SheetsDataValidationUIController = __decorate([__decorateParam(0, Inject(Injector)), __decorateParam(1, Inject(DataValidatorRegistryService))], SheetsDataValidationUIController);
+
+//#endregion
+//#region src/mobile-plugin.ts
+let UniverSheetsDataValidationMobileUIPlugin = class UniverSheetsDataValidationMobileUIPlugin extends Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _commandService, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._commandService = _commandService;
+		this._configService = _configService;
+		const { menu, ...rest } = merge({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_DATA_VALIDATION_UI_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		this._injector.add([ComponentsController]);
+		this._injector.get(ComponentsController);
+		[
+			[DataValidationPanelService],
+			[DataValidationDropdownManagerService],
+			[DataValidationAlertController],
+			[DataValidationAutoFillController],
+			[SheetsDataValidationRenderController],
+			[DataValidationPermissionController],
+			[DataValidationCopyPasteController],
+			[SheetsDataValidationUIController]
+		].forEach((dep) => {
+			this._injector.add(dep);
+		});
+		[
+			AddSheetDataValidationAndOpenCommand,
+			InsertQuickSheetDataValidationCommand,
+			ClearQuickSheetDataValidationCommand,
+			ShowDataValidationDropdown,
+			HideDataValidationDropdown,
+			CloseValidationPanelOperation,
+			OpenValidationPanelOperation,
+			ToggleValidationPanelOperation
+		].forEach((command) => {
+			this._commandService.registerCommand(command);
+		});
+	}
+	onReady() {
+		this._injector.get(DataValidationCopyPasteController);
+		this._injector.get(DataValidationPermissionController);
+		this._injector.get(IRenderManagerService).registerRenderModule(UniverInstanceType.UNIVER_SHEET, [SheetsDataValidationReRenderController]);
+	}
+	onRendered() {
+		this._injector.get(SheetsDataValidationUIController);
+		this._injector.get(SheetsDataValidationRenderController);
+	}
+	onSteady() {
+		this._injector.get(DataValidationAutoFillController);
+	}
+};
+_defineProperty(UniverSheetsDataValidationMobileUIPlugin, "pluginName", "SHEET_DATA_VALIDATION_UI_PLUGIN");
+_defineProperty(UniverSheetsDataValidationMobileUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsDataValidationMobileUIPlugin, "version", version);
+_defineProperty(UniverSheetsDataValidationMobileUIPlugin, "type", UniverInstanceType.UNIVER_SHEET);
+UniverSheetsDataValidationMobileUIPlugin = __decorate([
+	DependentOn(UniverDataValidationPlugin, UniverRenderEnginePlugin, UniverSheetsPlugin, UniverMobileUIPlugin, UniverSheetsMobileUIPlugin, UniverSheetsDataValidationPlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, ICommandService),
+	__decorateParam(3, IConfigService)
+], UniverSheetsDataValidationMobileUIPlugin);
+
+//#endregion
+//#region src/plugin.ts
+let UniverSheetsDataValidationUIPlugin = class UniverSheetsDataValidationUIPlugin extends Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _commandService, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._commandService = _commandService;
+		this._configService = _configService;
+		const { menu, ...rest } = merge({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_DATA_VALIDATION_UI_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		this._injector.add([ComponentsController]);
+		this._injector.get(ComponentsController);
+		[
+			[DataValidationPanelService],
+			[DataValidationDropdownManagerService],
+			[DataValidationAlertController],
+			[DataValidationAutoFillController],
+			[SheetsDataValidationRenderController],
+			[DataValidationPermissionController],
+			[DataValidationCopyPasteController],
+			[DataValidationRejectInputController],
+			[SheetsDataValidationUIController]
+		].forEach((dep) => {
+			this._injector.add(dep);
+		});
+		[
+			AddSheetDataValidationAndOpenCommand,
+			InsertQuickSheetDataValidationCommand,
+			ClearQuickSheetDataValidationCommand,
+			ShowDataValidationDropdown,
+			HideDataValidationDropdown,
+			CloseValidationPanelOperation,
+			OpenValidationPanelOperation,
+			ToggleValidationPanelOperation
+		].forEach((command) => {
+			this._commandService.registerCommand(command);
+		});
+	}
+	onReady() {
+		this._injector.get(DataValidationCopyPasteController);
+		this._injector.get(DataValidationPermissionController);
+		this._injector.get(DataValidationRejectInputController);
+		this._injector.get(DataValidationAlertController);
+		this._injector.get(IRenderManagerService).registerRenderModule(UniverInstanceType.UNIVER_SHEET, [SheetsDataValidationReRenderController]);
+	}
+	onRendered() {
+		this._injector.get(SheetsDataValidationUIController);
+		this._injector.get(SheetsDataValidationRenderController);
+	}
+	onSteady() {
+		this._injector.get(DataValidationAutoFillController);
+	}
+};
+_defineProperty(UniverSheetsDataValidationUIPlugin, "pluginName", "SHEET_DATA_VALIDATION_UI_PLUGIN");
+_defineProperty(UniverSheetsDataValidationUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsDataValidationUIPlugin, "version", version);
+_defineProperty(UniverSheetsDataValidationUIPlugin, "type", UniverInstanceType.UNIVER_SHEET);
+UniverSheetsDataValidationUIPlugin = __decorate([
+	DependentOn(UniverDataValidationPlugin, UniverRenderEnginePlugin, UniverSheetsPlugin, UniverSheetsUIPlugin, UniverSheetsDataValidationPlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, ICommandService),
+	__decorateParam(3, IConfigService)
+], UniverSheetsDataValidationUIPlugin);
+
+//#endregion
+export { menuSchema as SheetsDataValidationUIMenuSchema, UniverSheetsDataValidationMobileUIPlugin, UniverSheetsDataValidationUIPlugin };

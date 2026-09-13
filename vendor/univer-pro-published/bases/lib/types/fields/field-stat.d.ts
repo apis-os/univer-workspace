@@ -1,0 +1,10 @@
+import type { IFieldSnapshot } from '@univerjs/core';
+export declare const BASE_FIELD_STAT_TYPES: readonly ["count", "filled", "empty", "unique", "sum", "average", "min", "max"];
+export type BaseFieldStatType = typeof BASE_FIELD_STAT_TYPES[number];
+export declare function isBaseFieldStatType(value: unknown): value is BaseFieldStatType;
+export declare function normalizeBaseFieldStatsConfig(value: unknown): Record<string, BaseFieldStatType>;
+export declare function getSupportedBaseFieldStatTypes(field: IFieldSnapshot): readonly BaseFieldStatType[];
+export declare function isBaseFieldStatSupported(field: IFieldSnapshot, statType: BaseFieldStatType): boolean;
+export declare function calculateBaseFieldStat(field: IFieldSnapshot, values: readonly unknown[], statType: BaseFieldStatType): number | null;
+export declare function formatBaseFieldStatValue(field: IFieldSnapshot, statType: BaseFieldStatType, value: number | null): string;
+export declare function isBaseFieldStatEmptyValue(field: IFieldSnapshot, value: unknown): boolean;

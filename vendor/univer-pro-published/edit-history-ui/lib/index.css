@@ -1,0 +1,344 @@
+.univer-pointer-events-none {
+  pointer-events: none;
+}
+
+.univer-absolute {
+  position: absolute;
+}
+
+.univer-relative {
+  position: relative;
+}
+
+.univer-left-0 {
+  left: 0;
+}
+
+.univer-left-\[30px\] {
+  left: 30px;
+}
+
+.univer-top-0 {
+  top: 0;
+}
+
+.univer-top-1\/2 {
+  top: 50%;
+}
+
+.\!univer-mb-0 {
+  margin-bottom: 0 !important;
+}
+
+.\!univer-mt-0 {
+  margin-top: 0 !important;
+}
+
+.univer-ml-1 {
+  margin-left: .25rem;
+}
+
+.univer-ml-6 {
+  margin-left: 1.5rem;
+}
+
+.univer-mr-6 {
+  margin-right: 1.5rem;
+}
+
+.univer-flex {
+  display: flex;
+}
+
+.univer-size-4 {
+  width: 1rem;
+  height: 1rem;
+}
+
+.univer-size-5 {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.univer-size-8 {
+  width: 2rem;
+  height: 2rem;
+}
+
+.univer-h-1\/2 {
+  height: 50%;
+}
+
+.univer-h-12 {
+  height: 3rem;
+}
+
+.univer-h-full {
+  height: 100%;
+}
+
+.univer-h-px {
+  height: 1px;
+}
+
+.univer-min-h-0 {
+  min-height: 0;
+}
+
+.univer-min-h-6 {
+  min-height: 1.5rem;
+}
+
+.univer-w-2\.5 {
+  width: .625rem;
+}
+
+.univer-w-3 {
+  width: .75rem;
+}
+
+.univer-w-full {
+  width: 100%;
+}
+
+.univer-w-px {
+  width: 1px;
+}
+
+.univer-flex-1 {
+  flex: 1;
+}
+
+.univer-flex-shrink-0, .univer-shrink-0 {
+  flex-shrink: 0;
+}
+
+.-univer-translate-y-1\/2 {
+  --univer-tw-translate-y: -50%;
+  transform: translate(var(--univer-tw-translate-x), -50%) rotate(var(--univer-tw-rotate)) skewX(var(--univer-tw-skew-x)) skewY(var(--univer-tw-skew-y)) scaleX(var(--univer-tw-scale-x)) scaleY(var(--univer-tw-scale-y));
+  transform: translate(var(--univer-tw-translate-x), var(--univer-tw-translate-y)) rotate(var(--univer-tw-rotate)) skewX(var(--univer-tw-skew-x)) skewY(var(--univer-tw-skew-y)) scaleX(var(--univer-tw-scale-x)) scaleY(var(--univer-tw-scale-y));
+}
+
+@keyframes univer-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.univer-animate-spin {
+  animation: 1s linear infinite univer-spin;
+}
+
+.univer-cursor-pointer {
+  cursor: pointer;
+}
+
+.univer-flex-col {
+  flex-direction: column;
+}
+
+.univer-items-center {
+  align-items: center;
+}
+
+.univer-justify-center {
+  justify-content: center;
+}
+
+.univer-justify-between {
+  justify-content: space-between;
+}
+
+.univer-gap-1 {
+  gap: .25rem;
+}
+
+.univer-gap-1\.5 {
+  gap: .375rem;
+}
+
+.univer-gap-2 {
+  gap: .5rem;
+}
+
+.univer-gap-2\.5 {
+  gap: .625rem;
+}
+
+.univer-overflow-auto {
+  overflow: auto;
+}
+
+.univer-break-all {
+  word-break: break-all;
+}
+
+.univer-rounded {
+  border-radius: .25rem;
+}
+
+.univer-rounded-md {
+  border-radius: .375rem;
+}
+
+.univer-border {
+  border-width: 1px;
+}
+
+.univer-border-primary-600 {
+  border-color: var(--univer-primary-600);
+}
+
+.\!univer-bg-gray-900 {
+  background-color: var(--univer-gray-900) !important;
+}
+
+.univer-bg-gray-100 {
+  background-color: var(--univer-gray-100);
+}
+
+.univer-bg-gray-50 {
+  background-color: var(--univer-gray-50);
+}
+
+.univer-bg-primary-50 {
+  background-color: var(--univer-primary-50);
+}
+
+.univer-p-3 {
+  padding: .75rem;
+}
+
+.univer-px-1 {
+  padding-left: .25rem;
+  padding-right: .25rem;
+}
+
+.univer-px-1\.5 {
+  padding-left: .375rem;
+  padding-right: .375rem;
+}
+
+.univer-px-3 {
+  padding-left: .75rem;
+  padding-right: .75rem;
+}
+
+.univer-py-1\.5 {
+  padding-top: .375rem;
+  padding-bottom: .375rem;
+}
+
+.univer-pt-1\.5 {
+  padding-top: .375rem;
+}
+
+.univer-text-center {
+  text-align: center;
+}
+
+.univer-text-sm {
+  font-size: .875rem;
+  line-height: 1.25rem;
+}
+
+.univer-text-xs {
+  font-size: .75rem;
+  line-height: 1rem;
+}
+
+.univer-font-medium {
+  font-weight: 500;
+}
+
+.univer-leading-5 {
+  line-height: 1.25rem;
+}
+
+.univer-text-gray-400 {
+  color: var(--univer-gray-400);
+}
+
+.univer-text-gray-500 {
+  color: var(--univer-gray-500);
+}
+
+.univer-text-gray-600 {
+  color: var(--univer-gray-600);
+}
+
+.univer-text-gray-700 {
+  color: var(--univer-gray-700);
+}
+
+.univer-text-primary-600 {
+  color: var(--univer-primary-600);
+}
+
+.univer-opacity-60 {
+  opacity: .6;
+}
+
+.univer-transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: .15s;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hover\:univer-bg-gray-100:hover {
+    background-color: var(--univer-gray-100);
+  }
+}
+
+.rtl\:univer-left-auto:where([dir="rtl"], [dir="rtl"] *) {
+  left: auto;
+}
+
+.rtl\:univer-right-0:where([dir="rtl"], [dir="rtl"] *) {
+  right: 0;
+}
+
+.rtl\:univer-right-\[30px\]:where([dir="rtl"], [dir="rtl"] *) {
+  right: 30px;
+}
+
+.rtl\:univer-ml-0:where([dir="rtl"], [dir="rtl"] *) {
+  margin-left: 0;
+}
+
+.rtl\:univer-mr-6:where([dir="rtl"], [dir="rtl"] *) {
+  margin-right: 1.5rem;
+}
+
+.rtl\:univer-rotate-180:where([dir="rtl"], [dir="rtl"] *) {
+  --univer-tw-rotate: 180deg;
+  transform: translate(var(--univer-tw-translate-x), var(--univer-tw-translate-y)) rotate(180deg) skewX(var(--univer-tw-skew-x)) skewY(var(--univer-tw-skew-y)) scaleX(var(--univer-tw-scale-x)) scaleY(var(--univer-tw-scale-y));
+  transform: translate(var(--univer-tw-translate-x), var(--univer-tw-translate-y)) rotate(var(--univer-tw-rotate)) skewX(var(--univer-tw-skew-x)) skewY(var(--univer-tw-skew-y)) scaleX(var(--univer-tw-scale-x)) scaleY(var(--univer-tw-scale-y));
+}
+
+.dark\:\!univer-bg-gray-800:where(.univer-dark, .univer-dark *) {
+  background-color: var(--univer-gray-800) !important;
+}
+
+.dark\:\!univer-bg-gray-900:where(.univer-dark, .univer-dark *) {
+  background-color: var(--univer-gray-900) !important;
+}
+
+.dark\:\!univer-text-gray-200:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-200) !important;
+}
+
+.dark\:\!univer-text-gray-300:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-300) !important;
+}
+
+.dark\:\!univer-text-gray-400:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-400) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dark\:hover\:\!univer-bg-gray-800:hover:where(.univer-dark, .univer-dark *) {
+    background-color: var(--univer-gray-800) !important;
+  }
+}

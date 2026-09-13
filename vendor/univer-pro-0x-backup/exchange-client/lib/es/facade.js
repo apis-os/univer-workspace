@@ -1,0 +1,1 @@
+import{IExchangeService as v4}from"@univerjs-pro/exchange-client";import{FUniver as v5}from"@univerjs/core/facade";var n=class extends v5{downloadFile(v1,v2,v3){this._injector["get"](v4).downloadFile(v1,v2,v3);}};v5.extend(n);export{};

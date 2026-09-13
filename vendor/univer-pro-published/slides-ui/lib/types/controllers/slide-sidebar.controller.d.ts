@@ -1,0 +1,31 @@
+import { ISlideDrawingService } from '@univerjs-pro/slides';
+import { Disposable, ICommandService, LocaleService } from '@univerjs/core';
+import { ISidebarService } from '@univerjs/ui';
+import { ISlideSidebarStateService } from '../services/slide-sidebar-state.service';
+export declare class SlideSidebarController extends Disposable {
+    private readonly _sidebarService;
+    private readonly _slideDrawingService;
+    private readonly _localeService;
+    private readonly _sidebarStateService;
+    private readonly _commandService;
+    private _sidebarDisposable;
+    private _activeShapeInfo;
+    private _isOpenedShapeEditPanel;
+    private _activeBackgroundInfo;
+    private _isOpenedBackgroundEditPanel;
+    private _activeTransitionInfo;
+    private _isOpenedTransitionPanel;
+    private _activeObjectListInfo;
+    constructor(_sidebarService: ISidebarService, _slideDrawingService: ISlideDrawingService, _localeService: LocaleService, _sidebarStateService: ISlideSidebarStateService, _commandService: ICommandService);
+    private _registerPanelOperations;
+    private _listenFocusChanges;
+    private _getPanelInfo;
+    private _openShapeEditPanel;
+    private _closeShapeEditPanel;
+    private _openBackgroundEditPanel;
+    private _closeBackgroundEditPanel;
+    private _openTransitionPanel;
+    private _closeTransitionPanel;
+    private _openObjectListPanel;
+    private _closeObjectListPanel;
+}

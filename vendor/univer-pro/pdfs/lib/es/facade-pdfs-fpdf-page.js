@@ -1,0 +1,326 @@
+import { ApplyPdfHistoryCommand, ApplyPdfMutationBatchMutation, DEFAULT_PDF_TABLE_THEME_PRESETS, PDF_A4_PAGE_HEIGHT_PT, PDF_A4_PAGE_WIDTH_PT, PDF_EDITOR_NATIVE_TEXT_VISUAL_EDIT_METADATA, PdfAnnotationType, PdfAssetType, PdfDisplayOpType, PdfEditorMutationSource, PdfExportDisposition, PdfListKind, PdfListPresetId, PdfObjectType, PdfSemanticRole, PdfTableCellVerticalAlign, PdfTextAnchor, createPdfDefaultDividerInsertionBbox, createPdfDefaultListInsertionBbox, createPdfDefaultParagraphInsertionBbox, createPdfDefaultTableInsertionLayout, createPdfDefaultTextBoxInsertionBbox, createPdfEditorSession, createPdfNativeTextHitTargets, createPdfPage, createPdfTableGrid, emuToPt, isPdfEditorDividerObject, normalizePdfEditorManagedImageResource, pdfAddAnnotationAction, pdfAddDividerAction, pdfAddImageAction, pdfAddListAction, pdfAddParagraphAction, pdfAddTableAction, pdfAddTextBoxAction, pdfChangeListLevelAction, pdfChangeListStyleAction, pdfCropImageAction, pdfDeleteObjectsAction, pdfEditTextAction, pdfInsertListItemAction, pdfInsertPageAction, pdfInsertParagraphBlockAction, pdfMoveObjectAction, pdfPromoteNativeTextAction, pdfRemoveListItemAction, pdfRemoveManagedImageAction, pdfRemoveParagraphBlockAction, pdfReorderObjectAction, pdfResizeTableAction, pdfSetListStartNumberAction, pdfUpdateManagedImageAction, pdfUpdateObjectAppearanceAction, pdfUpdateObjectStateAction, pdfUpdateObjectStrokeAction, pdfUpdateParagraphStyleAction, pdfUpdateTableCellStyleAction, pdfUpdateTableThemeAction, pdfUpdateTextRangeStyleAction, pdfUpdateTextStyleAction, ptToEmu } from "@univerjs-pro/pdfs";
+import { FBaseInitialable, FEnum, FUniver } from "@univerjs/core/facade";
+import { HorizontalAlign, ICommandService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, Tools, UniverInstanceType, generateRandomId } from "@univerjs/core";
+import { D, T, ct, lt, st, vt } from "./facade-internal-glue.js";
+import { q } from "./facade-pdfs-fpdf-text-span.js";
+import { K } from "./facade-pdfs-fpdf-text-box.js";
+import { H } from "./facade-pdfs-fpdf-paragraph.js";
+import { V } from "./facade-pdfs-fpdf-list.js";
+import { U } from "./facade-pdfs-fpdf-table.js";
+import { F } from "./facade-pdfs-fpdf-divider.js";
+import { N } from "./facade-pdfs-fpdf-annotation.js";
+import { R } from "./facade-pdfs-fpdf-image.js";
+import { it } from "./facade-pdfs-fpdf-image-builder.js";
+let J = class {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46565, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46566, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46567) {
+    this._model = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46565, this._pageId = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46566, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46567;
+  }
+  getId() {
+    return this._pageId;
+  }
+  getIndex() {
+    return this._getCurrentPage().index;
+  }
+  getData() {
+    return JSON.parse(JSON.stringify(this._getCurrentPage()));
+  }
+  getElements() {
+    return Object.values(this._model["getEditState"]().overlayObjects).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4667 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4667.pageId === this._pageId).sort((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4668, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4668.zIndex - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669.zIndex).flatMap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671 = this._createElement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670.object["id"]);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671 ? [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671] : [];
+    });
+  }
+  getElementById(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46571) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46572 = this._model["getEditState"]().overlayObjects[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46571];
+    return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46572 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46572.pageId !== this._pageId ? null : this._createElement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46571);
+  }
+  getTextBoxes() {
+    return this._filterTextElements(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674 => !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674);
+  }
+  getImages() {
+    return this.getElements().filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675.getType() === PdfObjectType.IMAGE);
+  }
+  getParagraphs() {
+    return this._filterTextElements(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676 => !!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676 && !Et(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676)));
+  }
+  getLists() {
+    return this._filterTextElements(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677 => !!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677 && Et(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677)));
+  }
+  getTables() {
+    return this.getElements().filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4678 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4678.getType() === PdfObjectType.TABLE);
+  }
+  getDividers() {
+    return this.getElements().filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679.getType() === PdfObjectType.PATH);
+  }
+  getAnnotations() {
+    return this.getElements().filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4680 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4680.getType() === PdfObjectType.ANNOTATION);
+  }
+  getTextSpans() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46575 = this._model["getMaterializedDocument"](),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46576 = jt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46575, this._pageId);
+    return createPdfNativeTextHitTargets(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46575, this._pageId, {
+      rootDisplayListIds: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46576
+    }).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681 => !vt(this._model, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681)).map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4682 => this._injector["createInstance"](q, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4682, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46576));
+  }
+  insertTextBox(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46580 = this._getCurrentPage(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46581 = Y("textBox", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.id),
+      {
+        bbox: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582,
+        transform: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46583
+      } = Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579, createPdfDefaultTextBoxInsertionBbox(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46580));
+    return D(this._model, this._injector, pdfAddTextBoxAction, {
+      pageId: this._pageId,
+      text: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.text,
+      objectId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46581,
+      zIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.index,
+      bbox: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582,
+      transform: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46583,
+      fontFamily: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.fontFamily,
+      fontSize: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.fontSize,
+      fill: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.fill
+    }), this._injector["createInstance"](K, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46581);
+  }
+  insertParagraph(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46589) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46590 = this._getCurrentPage(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46591 = Y("paragraph", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46589.id),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46592 = Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46589, createPdfDefaultParagraphInsertionBbox(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46590));
+    return D(this._model, this._injector, pdfAddParagraphAction, {
+      pageId: this._pageId,
+      objectId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46591,
+      text: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46589.text,
+      zIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46589.index,
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46592,
+      fontFamily: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46589.fontFamily,
+      fontSize: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46589.fontSize,
+      fill: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46589.fill
+    }), this._injector["createInstance"](H, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46591);
+  }
+  insertList(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46598 = this._getCurrentPage(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46599 = Y("list", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.id),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46600 = Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597, createPdfDefaultListInsertionBbox(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46598));
+    return D(this._model, this._injector, pdfAddListAction, {
+      pageId: this._pageId,
+      objectId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46599,
+      text: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.text,
+      kind: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.kind,
+      presetId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.preset,
+      zIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.index,
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46600,
+      fontFamily: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.fontFamily,
+      fontSize: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.fontSize,
+      fill: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.fill
+    }), this._injector["createInstance"](V, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46599);
+  }
+  insertTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46606 = this._getCurrentPage(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46607 = Y("table", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.id),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608 = createPdfDefaultTableInsertionLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46606, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.rowCount, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.columnCount),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609 = Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608.bbox);
+    return D(this._model, this._injector, pdfAddTableAction, {
+      pageId: this._pageId,
+      tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46607,
+      rowCount: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.rowCount,
+      columnCount: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.columnCount,
+      cellTexts: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.cellTexts,
+      defaultCellStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.defaultCellStyle ?? {
+        padding: {
+          top: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608.padding,
+          right: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608.padding,
+          bottom: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608.padding,
+          left: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608.padding
+        }
+      },
+      styleId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.styleId,
+      options: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.options,
+      zIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46605.index,
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609
+    }), this._injector["createInstance"](U, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46607);
+  }
+  insertDivider(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615 = {}) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616 = this._getCurrentPage(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46617 = Y("divider", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615.id),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46618 = Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615, createPdfDefaultDividerInsertionBbox(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616));
+    return D(this._model, this._injector, pdfAddDividerAction, {
+      pageId: this._pageId,
+      objectId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46617,
+      strokeColor: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615.strokeColor,
+      strokeWidth: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615.strokeWidth === undefined ? undefined : ptToEmu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615.strokeWidth),
+      zIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615.index,
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46618
+    }), this._injector["createInstance"](F, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46617);
+  }
+  insertAnnotation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46624 = Y("annotation", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623.id),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46625 = Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623, [0, 0, ptToEmu(144), ptToEmu(36)]);
+    return D(this._model, this._injector, pdfAddAnnotationAction, {
+      pageId: this._pageId,
+      objectId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46624,
+      annotationType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623.annotationType,
+      ...Ot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46625.bbox),
+      zIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46623.index,
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46625
+    }), this._injector["createInstance"](N, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46624);
+  }
+  newImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46629) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46629 instanceof R ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46629.toBuilder() : new it(this._model["getUnitId"](), this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46629 ? {
+      id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46629
+    } : undefined);
+  }
+  insertImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46632) {
+    Dt(this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631);
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46633 = st(this._model, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46634 = ct(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631.element["transform"]);
+    return D(this._model, this._injector, pdfAddImageAction, {
+      pageId: this._pageId,
+      objectId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631.element["id"],
+      assetId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46633.asset["id"],
+      resource: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46633,
+      crop: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631.element["crop"] ? lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631.element["crop"], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46634.bbox) : undefined,
+      opacity: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631.element["opacity"],
+      zIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46632,
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46634
+    }), this._injector["createInstance"](R, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631.element["id"]);
+  }
+  async insertImageAsync(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640 = {}) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641 = this.newImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.id),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46642 = typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639 == "string" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639 : await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639.getBlob().getDataAsString();
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641.setSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46642, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.imageSourceType), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.left !== undefined || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.top !== undefined) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641.setAbsolutePosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.left ?? 0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.top ?? 0), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.width !== undefined || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.height !== undefined) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641.setSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.width ?? 288, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.height ?? 162), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.rotation !== undefined && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641.setRotation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.rotation), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.crop && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641.setCrop(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.crop);
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46643 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46641.build();
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46643.element["opacity"] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.opacity, this.insertImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46643, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46640.index);
+  }
+  _filterTextElements(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46649) {
+    let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A12 = this.getElements().filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4683 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4683.getType() === PdfObjectType.TEXT_BOX);
+    if (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A12.length === 0) return [];
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46650 = this._model["getMaterializedDocument"]();
+    return var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A12.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46649(this._getTextStory(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46650, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684.getId())));
+  }
+  _getTextStory(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46654) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46655;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653.objects[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46654] ?? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46655 = this._model["getEditState"]().overlayObjects[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46654]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46655.object);
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656.type) === PdfObjectType.TEXT_BOX && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656.textStoryId ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46653.textStories[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656.textStoryId] : undefined;
+  }
+  _createElement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46662;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663 = this._model["getMaterializedDocument"](),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663.objects[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661] ?? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46662 = this._model["getEditState"]().overlayObjects[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46662.object);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664) return null;
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664.type === PdfObjectType.TEXT_BOX) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664.textStoryId,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663.textStories[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685] : undefined;
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686 ? Et(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686) ? this._injector["createInstance"](V, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661) : this._injector["createInstance"](H, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661) : this._injector["createInstance"](K, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661);
+    }
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664.type === PdfObjectType.IMAGE ? this._injector["createInstance"](R, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664.type === PdfObjectType.TABLE ? this._injector["createInstance"](U, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664.type === PdfObjectType.PATH && isPdfEditorDividerObject(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664) ? this._injector["createInstance"](F, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664.type === PdfObjectType.ANNOTATION ? this._injector["createInstance"](N, this._model, this._pageId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46661) : null;
+  }
+  _getCurrentPage() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46669 = this._model["getMaterializedDocument"]().pages["find"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687.id === this._pageId);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46669) throw Error("PDF page " + this._pageId + " no longer exists.");
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46669;
+  }
+};
+function Et(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46928) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46928.blocks["some"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46671 => !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46671.listItem) || Object.keys(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46928.lists ?? {}).length > 0;
+}
+function Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46930, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46931) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46931 ?? "pdf-facade-" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46930 + "-" + generateRandomId(12);
+}
+function Dt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46934, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46935, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46936) {
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46936.unitId !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46934.getUnitId() || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46936.pageId !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46935) throw RangeError("PDF\x20image\x20builder\x20info\x20belongs\x20to\x20another\x20PDF\x20unit\x20or\x20page.");
+}
+function Ot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46940, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46941) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46942 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46940.annotationType;
+  switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46940.annotationType) {
+    case PdfAnnotationType.HIGHLIGHT:
+    case PdfAnnotationType.UNDERLINE:
+    case PdfAnnotationType.STRIKEOUT:
+    case PdfAnnotationType.SQUIGGLY:
+      {
+        let {
+          quadPoints: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB,
+          stroke: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB1,
+          ...var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46940.markup ?? {};
+        return {
+          markup: {
+            ...var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2,
+            ...(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB1 === undefined ? {} : {
+              stroke: T(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB1)
+            }),
+            quadPoints: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB != null && var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB.length ? var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB.map(kt) : [At(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46941)]
+          }
+        };
+      }
+    case PdfAnnotationType.INK:
+      {
+        if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46940.ink["paths"].length || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46940.ink["paths"].some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465 => !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465.length)) throw RangeError("PDF ink annotation requires at least one non-empty path.");
+        let {
+          paths: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688,
+          stroke: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46940.ink;
+        return {
+          ink: {
+            ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689 === undefined ? {} : {
+              stroke: T(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689)
+            }),
+            paths: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.map(X))
+          }
+        };
+      }
+    default:
+      throw RangeError("Unsupported\x20PDF\x20Facade\x20annotation\x20type:\x20" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46942 + ".");
+  }
+}
+function X([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46946, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46947]) {
+  return [ptToEmu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46946), ptToEmu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46947)];
+}
+function kt([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46950, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46951, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46952, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46953]) {
+  return [X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46950), X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46951), X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46952), X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46953)];
+}
+function At([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46958, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46959, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46960, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46961]) {
+  return [[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46958, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46959], [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46960, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46959], [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46958, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46961], [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46960, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46961]];
+}
+function jt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46966, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46967) {
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18 = Object.values(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46966.displayLists).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46672 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46672.pageId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46967),
+    var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig92992 = new Set();
+  var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46673 => {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46673.ops["forEach"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690 => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690.type !== PdfDisplayOpType.FORM_XOBJECT) return;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690.displayListId ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690.assetId ? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46966.assets["formXObjects"][var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690.assetId]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691.displayListId : undefined);
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692 && var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig92992.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692);
+    });
+  });
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A19 = var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46675 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46675.id).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676 => !var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig92992.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676));
+  return var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A19.length ? var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A19 : var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46677 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46677.id);
+}
+function Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46972 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970.left ?? emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971[0]),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46973 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970.top ?? emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971[1]),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46974 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970.width ?? emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971[2] - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971[0]),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46975 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970.height ?? emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971[3] - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971[1]),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D58 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970.rotation ?? 0;
+  Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46972, "left"), Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46973, "top"), Nt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46974, "width"), Nt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46975, "height"), Q(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D58, "rotation");
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22 = [ptToEmu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46972), ptToEmu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46973), ptToEmu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46972 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46974), ptToEmu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46973 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46975)];
+  return {
+    bbox: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22,
+    ...(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D58 === 0 ? {} : {
+      transform: Mt(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D58)
+    })
+  };
+}
+function Mt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46983) {
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D60 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46983 * Math.PI / 180,
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D61 = Math.cos(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D60),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D62 = Math.sin(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D60),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D63 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982[0] + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982[2]) / 2,
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D64 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982[1] + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982[3]) / 2;
+  return [var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D61, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D62, -var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D62, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D61, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D63 - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D61 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D63 + var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D62 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D64, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D64 - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D62 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D63 - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D61 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D64];
+}
+function Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46986, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46987) {
+  if (!Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46986)) throw RangeError("PDF text box " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46987 + " must be a finite number.");
+}
+function Nt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46991) {
+  if (!Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990 <= 0) throw RangeError("PDF text box " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46991 + " must be a positive finite number.");
+}
+export { J as FPdfPage };

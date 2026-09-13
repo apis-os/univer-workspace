@@ -1,0 +1,14 @@
+import { combineDrawingEffectFilter, createDrawingEffectFilter, expandDrawingEffectBounds } from '@univerjs/engine-render';
+import { BooleanNumber, DependentOn, HorizontalAlign, IConfigService, ImageSourceType, Inject, Injector, JSONX, Plugin, RichTextBuilder, RichTextValue, TextX, Tools, UniverInstanceType, VerticalAlign, createIdentifier, generateRandomId, getSingleDataStreamChange, merge, toDisposable } from '@univerjs/core';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { HostExternalReferenceModel } from '@univerjs-pro/engine-formula';
+let ue = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358.Horz = 'horz', var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358.Vert = "vert", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358.Vert270 = "vert270", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358.WordArtVert = "wordArtVert", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358.EaVert = "eaVert", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358.MongolianVert = "mongolianVert", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358.WordArtVertRtl = "wordArtVertRtl", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466358;
+  }({}),
+  de = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466360) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466360.None = "none", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466360.Square = "square", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466360;
+  }({}),
+  fe = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466362) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466362.NoAutoFit = "noAutoFit", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466362.NormAutoFit = 'normAutoFit', var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466362.SpAutoFit = "spAutoFit", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466362;
+  }({});
+export { ue as ShapeTextDirection, de as ShapeTextWrapType, fe as ShapeTextAutoFitType };

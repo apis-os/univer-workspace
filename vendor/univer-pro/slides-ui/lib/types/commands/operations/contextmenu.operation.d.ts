@@ -1,0 +1,17 @@
+import type { ICommand } from '@univerjs/core';
+export declare const SlideContextMenuOpenShapePanelOperation: ICommand;
+export declare const SlideContextMenuOpenBackgroundPanelOperation: ICommand;
+export declare const SlideContextMenuOpenTransitionPanelOperation: ICommand;
+export declare const SlideContextMenuOpenObjectListPanelOperation: ICommand;
+export declare const SlideContextMenuOpenSpeakerNotesDialogOperation: ICommand;
+export declare const SlideContextMenuToggleRulerOperation: ICommand;
+export declare const SlideContextMenuOpenTableSizeDialogOperation: ICommand;
+export declare const SlideContextMenuArrangeForwardOperation: ICommand<object, boolean>;
+export declare const SlideContextMenuArrangeBackwardOperation: ICommand<object, boolean>;
+export declare const SlideContextMenuArrangeFrontOperation: ICommand<object, boolean>;
+export declare const SlideContextMenuArrangeBackOperation: ICommand<object, boolean>;
+export declare const SlideContextMenuFlipHorizontalOperation: ICommand<object, boolean>;
+export declare const SlideContextMenuFlipVerticalOperation: ICommand<object, boolean>;
+export declare const SlideContextMenuGroupOperation: ICommand;
+export declare const SlideContextMenuUngroupOperation: ICommand;
+export declare const SlideContextMenuAddPageOperation: ICommand;

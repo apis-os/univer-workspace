@@ -1,0 +1,40 @@
+import type { IBaseProjectionService } from '@univerjs-pro/bases';
+import type { BaseCellValue, BaseDataModel, BaseViewProjection, ICalendarViewConfig, ICommandService, IGanttProjection, IGridProjection, IRecordSnapshot, ITableSnapshot, IViewSnapshot } from '@univerjs/core';
+import type { LocaleKey } from '../../locale/types';
+import type { IBaseUIStateService } from '../../services/base-ui-state.service';
+import type { IBaseWorkbenchContext } from './WorkbenchContext';
+type BaseCanvasRootResolver = (unitId?: string) => HTMLElement | null;
+export declare function scrollGridCellIntoView(context: IBaseWorkbenchContext, projection: IGridProjection, stateService: IBaseUIStateService, recordId: string, fieldId: string, getCanvasRoot?: BaseCanvasRootResolver): void;
+export declare function scrollGanttCellIntoView(context: IBaseWorkbenchContext, projection: IGanttProjection, stateService: IBaseUIStateService, recordId: string, fieldId: string, getCanvasRoot?: BaseCanvasRootResolver): void;
+export declare function resolveBaseHierarchyErrorLocaleKey(error: unknown): LocaleKey;
+export declare function createRecordSnapshot(index: number, values?: Record<string, BaseCellValue>): IRecordSnapshot;
+export declare function createRecordSnapshotsAround(table: ITableSnapshot, targetRecordId: string, placement: 'above' | 'below', count: number): IRecordSnapshot[];
+export declare function getGridContextSelectedRecordIds(context: IBaseWorkbenchContext, projectionService: IBaseProjectionService, stateService: IBaseUIStateService, fallbackRecordId?: string): string[];
+export declare function isDraftRecordDetailState(value: unknown): value is {
+    mode: 'draft';
+    values: Record<string, unknown>;
+};
+export declare function createInitialDraftRecordValues(context: IBaseWorkbenchContext, projectionService: IBaseProjectionService): Record<string, unknown>;
+export declare function resolveCalendarConfig(context: IBaseWorkbenchContext, projectionService: IBaseProjectionService): ICalendarViewConfig;
+export declare function toolbarPayloadText(payload: Record<string, unknown> | undefined, ...keys: string[]): string | undefined;
+export declare function toolbarPayloadIndex(payload: Record<string, unknown> | undefined): number | undefined;
+export declare function toolbarPayloadViewIndex(payload: Record<string, unknown> | undefined): number | undefined;
+export declare function resolveFieldHeaderMenuIndexes(table: ITableSnapshot, fieldId: string, projectedFieldIndex: number | undefined): {
+    tableIndex: number;
+    viewIndex: number;
+    isPrimary: boolean;
+};
+export declare function normalizeSubmittedRecordValues(table: ITableSnapshot, values: Record<string, unknown>): Record<string, BaseCellValue>;
+export declare function createAndOpenBaseDraftRecord(context: IBaseWorkbenchContext, projectionService: IBaseProjectionService, stateService: IBaseUIStateService, commandService: Pick<ICommandService, 'executeCommand'>, values: Record<string, unknown>, getCanvasRoot?: BaseCanvasRootResolver): Promise<IRecordSnapshot | null>;
+export declare function firstVisibleFieldId(table: ITableSnapshot, view: IViewSnapshot): string | null;
+export declare function resolveKanbanGroupFieldId(table: ITableSnapshot, view: IViewSnapshot): string | null;
+export declare function resolveKanbanColumnColor(table: ITableSnapshot, groupFieldId: string, groupKey: string): string | undefined;
+export declare function renameOption(option: unknown, groupKey: string, title: string, index: number): unknown;
+export declare function updateOptionColor(option: unknown, groupKey: string, color: string, index: number): unknown;
+export declare function scrollRecordIntoView(context: IBaseWorkbenchContext, projectionService: {
+    getProjection: (snapshot: ReturnType<BaseDataModel['getSnapshot']>, tableId: string, viewId: string) => BaseViewProjection;
+}, stateService: IBaseUIStateService, recordId: string, getCanvasRoot?: BaseCanvasRootResolver): void;
+export declare function openRecordDetailAndReveal(context: IBaseWorkbenchContext, projectionService: IBaseProjectionService, stateService: IBaseUIStateService, recordId: string, getCanvasRoot?: BaseCanvasRootResolver): void;
+export declare function orderedRecordIdsForDetail(projection: BaseViewProjection, collapsedGroupPaths?: ReadonlySet<string>): string[];
+export declare function stringifyCellValue(value: unknown): string;
+export {};

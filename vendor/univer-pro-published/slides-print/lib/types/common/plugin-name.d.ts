@@ -1,0 +1,1 @@
+export declare const SLIDES_PRINT_PLUGIN_NAME = "SLIDES_PRINT_PLUGIN";

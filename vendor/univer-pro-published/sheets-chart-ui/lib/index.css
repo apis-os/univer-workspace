@@ -1,0 +1,66 @@
+.-univer-mx-4 {
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
+.univer-my-1 {
+  margin-top: .25rem;
+  margin-bottom: .25rem;
+}
+
+.univer-flex {
+  display: flex;
+}
+
+.univer-h-0 {
+  height: 0;
+}
+
+.univer-min-h-full {
+  min-height: 100%;
+}
+
+.univer-w-full {
+  width: 100%;
+}
+
+.univer-shrink-0 {
+  flex-shrink: 0;
+}
+
+.univer-flex-col {
+  flex-direction: column;
+}
+
+.univer-gap-3 {
+  gap: .75rem;
+}
+
+.univer-overflow-hidden {
+  overflow: hidden;
+}
+
+.univer-overflow-visible {
+  overflow: visible;
+}
+
+.univer-bg-gray-0 {
+  background-color: var(--univer-gray-0);
+}
+
+.univer-pb-5 {
+  padding-bottom: 1.25rem;
+}
+
+.univer-text-xs {
+  font-size: .75rem;
+  line-height: 1rem;
+}
+
+.univer-text-red-500 {
+  color: var(--univer-red-500);
+}
+
+.dark\:\!univer-bg-gray-900:where(.univer-dark, .univer-dark *) {
+  background-color: var(--univer-gray-900) !important;
+}

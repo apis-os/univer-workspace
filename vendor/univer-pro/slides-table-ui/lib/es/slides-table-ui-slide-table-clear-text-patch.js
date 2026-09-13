@@ -1,0 +1,41 @@
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { ISlideDrawingService, PageElementTypeEnum, ReorderSlideElementsCommand, UniverSlidesPlugin, UpdateSlideDrawingCommand, getSlidePermissionValue, normalizeSlideDocumentDataStream, slideDocumentDataToPlainText } from "@univerjs-pro/slides";
+import { DEFAULT_SLIDE_TABLE_THEME_PRESETS, DeleteSlideTableColumnsCommand, DeleteSlideTableRowsCommand, InsertSlideTableColumnsCommand, InsertSlideTableRowsCommand, MergeSlideTableCellsCommand, MoveSlideTableColumnsCommand, MoveSlideTableRowsCommand, RemoveSlideTableCommand, RemoveSlideTableMutation, SLIDE_TABLE_CONTROL_GUTTER, SetSlideTableMutation, SlideTableBorderDashEnum, SlideTableBorderPresetEnum, SlideTableFillTypeEnum, SlideTableModelService, SlideTablePictureFillModeEnum, SlideTableResourceService, SlideTableTextDirectionEnum, SlideTableVerticalAlignEnum, UniverSlidesTablePlugin, UnmergeSlideTableCellsCommand, UpdateSlideTableCommand, buildBorderPresetPatch, buildDefaultSlideTableThemes, buildSlideTableCellTextDataPatch, buildSlideTableControls, buildSlideTableTriggers, canMoveSlideTableColumns, canMoveSlideTableRows, collectSlideTableMergeRanges, expandSlideTableRangeToMergedCells, findSlideTableMergeRange, freezeSlideTableTheme, getDefaultSlideTableBorder, hitTestSlideTableControl, hitTestSlideTableFloatingControl, hitTestSlideTableTrigger, isPointInRect, isSlideTableMultiCellRange, iterateSelectedSlideTableCells, mergeSlideTableCellStyle, mergeSlideTableCells, normalizeSlideTableCellRange, resolveSlideTableCellBoundaryBorder, resolveSlideTableCellRect, resolveSlideTableCellTextMargins, resolveSlideTableRenderModel, resolveSlideTableThemePalette, unmergeSlideTableCells } from "@univerjs-pro/slides-table";
+import { IEditorUIService, ISlideAlignmentGuideService, ISlideClipboardResourceAdapterService, ISlideDrawingStateService, ISlideEmbedFloatingActiveService, ISlideEmbedFocusOwnerService, ISlideEmbedMountService, ISlideTransformerVisibilityService, SLIDES_UI_PLUGIN_CONFIG_KEY, SLIDE_MAIN_VIEWPORT_KEY, SlideHitTestService, SlideInsertService, UniverSlidesUIPlugin, buildDrawingOKey, stripEditorUIDocumentData, withSlideEditPermission } from "@univerjs-pro/slides-ui";
+import { ArrangeTypeEnum, BooleanNumber, ColorKit, CommandType, DEFAULT_STYLES, DependentOn, Disposable, DocumentDataModel, DocumentFlavor, EDITOR_ACTIVATED, FOCUSING_COMMON_DRAWINGS, FOCUSING_SLIDE, HorizontalAlign, ICommandService, IConfigService, IContextService, IImageIoService, IPermissionService, IUniverInstanceService, Inject, Injector, LocaleService, Optional, Plugin, PresetListType, RxDisposable, ThemeService, Tools, UniverInstanceType, VerticalAlign, WrapStrategy, createParagraphId, generateRandomId, merge, toDisposable, touchDependencies } from "@univerjs/core";
+import { CURSOR_TYPE, DocumentSkeleton, DocumentViewModel, Documents, IRenderManagerService, RENDER_CLASS_TYPE, Rect, Transform, UniverRenderEnginePlugin, VERTICAL_ROTATE_ANGLE, Vector2, pxToNum } from "@univerjs/engine-render";
+import { BuiltInUIPart, ComponentManager, ContextMenuGroup, FONT_SIZE_LIST, FontFamilyDropdown, IContextMenuService, IMenuManagerService, IRibbonService, IShortcutService, IUIPartsService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, connectInjector, useDependency, useObservable } from "@univerjs/ui";
+import { BehaviorSubject, combineLatest, map, merge as mergeLocal, of, startWith } from "rxjs";
+import { AdjustHeightDoubleIcon, AdjustWidthDoubleIcon, AlignBottomIcon, AlignTextBothIcon, AlignTopIcon, AllBorderIcon, BoldIcon, CancelMergeIcon, CheckMarkIcon, DeleteColumnDoubleIcon, DeleteIcon, DeleteRowDoubleIcon, DownBorderDoubleIcon, FontColorDoubleIcon, FontSizeIncreaseIcon, FontSizeReduceIcon, HorizontalBorderDoubleIcon, HorizontallyIcon, InnerBorderDoubleIcon, InsertRowAboveDoubleIcon, InsertRowBelowDoubleIcon, ItalicIcon, LeftBorderDoubleIcon, LeftInsertColumnDoubleIcon, LeftJustifyingIcon, MergeAllIcon, MoreDownIcon, NoBorderIcon, OrderIcon, OuterBorderDoubleIcon, PaintBucketDoubleIcon, PaintIcon, RightBorderDoubleIcon, RightInsertColumnDoubleIcon, RightJustifyingIcon, ShapeBackgroundColorDoubleIcon, StrikethroughIcon, TextIcon, UnderlineIcon, UnorderIcon, UpBorderDoubleIcon, VerticalBorderDoubleIcon, VerticalCenterIcon } from "@univerjs/icons";
+import { FillStyleTabsEditor, keepFloatingToolbarPanelInteraction } from "@univerjs-pro/shape-editor-ui";
+import { Button, Checkbox, ColorPicker, Dropdown, InputNumber, Select, Separator, Tooltip, borderClassName, clsx } from "@univerjs/design";
+import { BulletListTypePicker, OrderListTypePicker, convertBodyToHtml, convertClipboardHtmlToDocumentData, removeClipboardHtmlImages } from "@univerjs/docs-ui";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getImageSize } from "@univerjs/drawing";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { extractClipboardHtmlImageFiles, extractClipboardImageFiles, extractClipboardTextImageFile, isClipboardTextImage, normalizeClipboardImageFile } from "@univerjs/drawing-ui";
+import { UnitAction } from "@univerjs/protocol";
+import { parseHtmlTableClipboard } from "@univerjs-pro/docs-table";
+import { pc } from "./internal-core-endo.js";
+function uc(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464192, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464193) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464194 = pc(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464192, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464193);
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464192 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464194.length === 0) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464195 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464192.rows),
+    var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A35 = false;
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464194.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012 => {
+    for (let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012.startRow; var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221 <= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012.endRow; var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221 += 1) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464195[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221];
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630) for (let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012.startColumn; var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 <= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012.endColumn; var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 += 1) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630.cells[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616];
+        if (!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464.textData)) continue;
+        let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB = {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464
+        };
+        delete var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB.textData, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630.cells[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616] = var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB, var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A35 = true;
+      }
+    }
+  }), var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A35 ? {
+    rows: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464195
+  } : null;
+}
+export { uc as buildSlideTableClearTextPatch };

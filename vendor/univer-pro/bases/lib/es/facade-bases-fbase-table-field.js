@@ -1,0 +1,105 @@
+import { ApplyBaseJson1Mutation, BASE_TABLE_NAME_REQUIREMENTS, BaseConditionalColorRuleUpdateType, BaseEventSource, BaseHierarchyErrorCode, BatchCreateBaseRecordsCommand, BatchDeleteBaseRecordsCommand, ChangeBaseFieldTypeCommand, CreateBaseChildRecordCommand, CreateBaseFieldCommand, CreateBaseRecordCommand, CreateBaseTableCommand, CreateBaseViewCommand, DeleteBaseFieldCommand, DeleteBaseRecordCommand, DeleteBaseTableCommand, DeleteBaseViewCommand, DuplicateBaseRecordCommand, IBaseProjectionService, MoveBaseFieldCommand, MoveBaseHierarchyRecordCommand, MoveBaseViewCommand, RenameBaseTableCommand, RenameBaseViewCommand, SetBaseNameCommand, SetBasePermissionCommand, SetBaseRangeValuesCommand, SetBaseRecordValuesCommand, SetBaseTableHierarchyFieldCommand, SetBaseViewFieldOrderCommand, SetBaseViewFieldVisibleCommand, SetBaseViewFieldWidthCommand, SetBaseViewFilterCommand, SetBaseViewGroupCommand, SetBaseViewSortCommand, UpdateBaseCellCommand, UpdateBaseFieldCommand, UpdateBaseRecordOrderCommand, UpdateBaseViewConditionalColorRulesCommand, UpdateBaseViewConfigCommand, ValidateBaseFormulaCommand, buildBaseHierarchyIndex, canEditBaseTargets, copyBaseTableSnapshot, createUniqueBaseTableName, ensureBaseTableCellLayout, getActiveBaseHierarchyFieldIds, getBaseCellValue, getBaseFieldPermissionObjectId, getBaseFormulaTableName, getBaseHierarchyDeletePromotions, getBasePermissionValue, getBaseRecordPermissionObjectId, getBaseTablePermissionObjectId, getBaseViewPermissionObjectId, getRecordLinkFieldConfig, matchesBaseCondition, parseRecordLinkIds, resolveBaseHierarchyFieldId, resolveBaseRangeHierarchyPatches, searchBaseTable, serializeRecordLinkIds, validateBaseHierarchyRecordCreations, validateBaseHierarchyRecordPatches, validateBaseTableName, validateRecordLinkValue } from '@univerjs-pro/bases';
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseFieldType, BaseFilterConjunction, BaseFilterOperator, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CanceledError, ICommandService, IPermissionService, IResourceLoaderService, ImageSourceType, Inject, Injector, Tools, UniverInstanceType, createDefaultBaseTableSnapshot, generateRandomId } from '@univerjs/core';
+import * as var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461029 from '@univerjs/core/facade';
+import { FBaseInitialable, FEnum, FEventName, FUniver } from '@univerjs/core/facade';
+import { UnitAction } from '@univerjs/protocol';
+import { UpsertHostExternalReferencesCommand } from '@univerjs-pro/engine-formula';
+import { I } from "./facade-bases-fbase-permission.js";
+let z = class {
+  constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46336, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46337, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46338, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46339) {
+    this._base = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335, this._table = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46336, this._fieldId = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46337, this._commandService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46338, this._permissionService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46339;
+  }
+  getId() {
+    return this._fieldId;
+  }
+  getPermission() {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46345 = this._table["getId"]();
+    return new I(this._base["getId"](), getBaseFieldPermissionObjectId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46345, this._fieldId), [getBaseTablePermissionObjectId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46345)], this._commandService, this._permissionService);
+  }
+  getField() {
+    return this._getField();
+  }
+  getName() {
+    return this._getField().name;
+  }
+  getType() {
+    return this._getField().type;
+  }
+  getConfig() {
+    return this._getField().config;
+  }
+  getDefaultValue() {
+    return this._getField().defaultValue;
+  }
+  getDescription() {
+    return this._getField().description;
+  }
+  isReadonly() {
+    return !!this._getField().readonly;
+  }
+  setName(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46347) {
+    return this.update({
+      'name': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46347
+    });
+  }
+  setConfig(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46349, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46350) {
+    return this.update({
+      'config': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46349
+    }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46350);
+  }
+  setDefaultValue(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46353) {
+    return this.update({
+      'defaultValue': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46353
+    });
+  }
+  update(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46355, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46356) {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46357 = this._getField().type;
+    return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46355.type ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46357) === BaseFieldType.Formula && (Object.prototype["hasOwnProperty"].call(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46355, "config") || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46355.type === BaseFieldType.Formula) && !this._writeFormulaExternalReferences(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46356) ? false : this._commandService["syncExecuteCommand"](UpdateBaseFieldCommand.id, {
+      'unitId': this._base["getId"](),
+      'tableId': this._table["getId"](),
+      'fieldId': this._fieldId,
+      'patch': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46355
+    });
+  }
+  changeType(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46361, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46362 = {}, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46363) {
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46361 === BaseFieldType.Formula && !this._writeFormulaExternalReferences(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46363) ? false : this._commandService["syncExecuteCommand"](ChangeBaseFieldTypeCommand.id, {
+      'unitId': this._base["getId"](),
+      'tableId': this._table["getId"](),
+      'fieldId': this._fieldId,
+      'input': {
+        'type': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46361,
+        'config': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46362
+      }
+    });
+  }
+  delete() {
+    return this._commandService["syncExecuteCommand"](DeleteBaseFieldCommand.id, {
+      'unitId': this._base["getId"](),
+      'tableId': this._table["getId"](),
+      'fieldId': this._fieldId
+    });
+  }
+  move(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46367) {
+    return this._commandService["syncExecuteCommand"](MoveBaseFieldCommand.id, {
+      'unitId': this._base["getId"](),
+      'tableId': this._table["getId"](),
+      'fieldId': this._fieldId,
+      'target': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46367
+    });
+  }
+  _getField() {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46369 = this._table["getTable"]().fields[this._fieldId];
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46369) throw Error('[FField]:\x20field\x20\x22' + this._fieldId + "\" does not exist.");
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46369;
+  }
+  _writeFormulaExternalReferences(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46371) {
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46371 || !Array.isArray(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46371.externalReferences)) return console.warn('[Base\x20Field\x20Facade]:\x20Formula\x20writes\x20require\x20{\x20externalReferences\x20}.\x20Use\x20[]\x20only\x20for\x20a\x20Host-local\x20formula.'), false;
+    if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46371.externalReferences['length'] === 0) return true;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46372 = this._commandService["syncExecuteCommand"](UpsertHostExternalReferencesCommand.id, {
+      'unitId': this._base["getId"](),
+      'references': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46371.externalReferences
+    });
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46372 || console.warn("[Base Field Facade]: Failed to bind External References."), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46372;
+  }
+};
+export { z as FBaseTableField };

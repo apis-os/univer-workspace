@@ -1,0 +1,22 @@
+
+//#region src/locale/sk-SK.ts
+const locale = { "docs-hyper-link-ui": {
+	edit: {
+		confirm: "Potvrdiť",
+		cancel: "Zrušiť",
+		address: "Odkaz",
+		addressError: "URL je neplatná!",
+		label: "Popisok",
+		labelError: "Zadajte popis odkazu"
+	},
+	info: {
+		copy: "Kopírovať",
+		edit: "Upraviť",
+		cancel: "Zrušiť odkaz",
+		coped: "Odkaz skopírovaný do schránky"
+	},
+	menu: { tooltip: "Pridať odkaz" }
+} };
+
+//#endregion
+module.exports = locale;

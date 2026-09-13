@@ -1,0 +1,512 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { IGroupBaseBound } from '@univerjs/core';
+import type { IFBlobSource } from '@univerjs/core/facade';
+import type { ISheetDrawing, ISheetDrawingPlacement, ISheetDrawingPlacementInput, ISheetImage } from '@univerjs/sheets-drawing';
+import { DrawingTypeEnum } from '@univerjs/core';
+import { FWorksheet } from '@univerjs/sheets/facade';
+import { FOverGridImage, FOverGridImageBuilder } from './f-over-grid-image';
+export interface ISheetDrawingLayoutObject {
+    drawingId: string;
+    drawingType: DrawingTypeEnum;
+    bounds: IGroupBaseBound;
+    placement: ISheetDrawingPlacement;
+    groupId?: string;
+}
+export interface ISheetDrawingLayout {
+    /** Entire Sheet grid in model coordinates. */
+    gridBounds: IGroupBaseBound;
+    /** Cell content range in model coordinates. */
+    dataBounds: IGroupBaseBound;
+    /** Drawings ordered from back to front. */
+    drawings: ISheetDrawingLayoutObject[];
+}
+/**
+ * @ignore
+ */
+export interface IFWorksheetDrawingMixin {
+    /**
+     * Insert an image to the sheet
+     * @param {string} url - The image url
+     * @returns true if the image is inserted successfully
+     * @example
+     * ```ts
+     * // Insert an image to the sheet, default position is A1
+     * const fWorksheet = univerAPI.getActiveWorkbook().getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const result = await fWorksheet.insertImage('https://avatars.githubusercontent.com/u/61444807?s=48&v=4');
+     * console.log(result);
+     * ```
+     */
+    insertImage(url: string): Promise<boolean>;
+    /**
+     * @param {string} url - The image url
+     * @param {number} column - The column index to insert the image
+     * @param {number} row - The row index to insert the image
+     * @returns True if the image is inserted successfully
+     * @example
+     * ```ts
+     * // Insert an image to the sheet, position is F6
+     * const fWorksheet = univerAPI.getActiveWorkbook().getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const result = await fWorksheet.insertImage('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', 5, 5);
+     * console.log(result);
+     * ```
+     */
+    insertImage(url: string, column: number, row: number): Promise<boolean>;
+    /**
+     * @param {string} url - The image url
+     * @param {number} column - The column index to insert the image
+     * @param {number} row - The row index to insert the image
+     * @param {number} offsetX - The column offset, pixel unit
+     * @param {number} offsetY - The row offset, pixel unit
+     * @returns True if the image is inserted successfully
+     * @example
+     * ```ts
+     * // Insert an image to the sheet, position is F6, offset is 10px
+     * const fWorksheet = univerAPI.getActiveWorkbook().getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const result = await fWorksheet.insertImage('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', 5, 5, 10, 10);
+     * console.log(result);
+     * ```
+     */
+    insertImage(url: string, column: number, row: number, offsetX: number, offsetY: number): Promise<boolean>;
+    insertImage(url: IFBlobSource): Promise<boolean>;
+    insertImage(url: IFBlobSource, column: number, row: number): Promise<boolean>;
+    insertImage(url: IFBlobSource, column: number, row: number, offsetX: number, offsetY: number): Promise<boolean>;
+    insertImage(url: IFBlobSource | string, column: number, row: number, offsetX: number, offsetY: number): Promise<boolean>;
+    /**
+     * Insert images to the sheet
+     * @param {ISheetImage[]} sheetImages - The images to insert
+     * @returns {FWorksheet} The FWorksheet instance for chaining
+     * @example
+     * ```ts
+     * // create a new image builder and set image source.
+     * // then build `ISheetImage` and insert it into the sheet, position is start from F6 cell, width is 500px, height is 300px
+     * const fWorkbook = univerAPI.getActiveWorkbook();
+     * const fWorksheet = fWorkbook.getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const image = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(5)
+     *   .setRow(5)
+     *   .setWidth(500)
+     *   .setHeight(300)
+     *   .buildAsync();
+     * fWorksheet.insertImages([image]);
+     *
+     * // update the image width to 100px and height to 50px
+     * setTimeout(async () => {
+     *   const imageBuilder = fWorksheet.getImageById(image.drawingId).toBuilder();
+     *   const newImage = await imageBuilder.setWidth(100).setHeight(50).buildAsync();
+     *   fWorksheet.updateImages([newImage]);
+     * }, 4000);
+     * ```
+     */
+    insertImages(sheetImages: ISheetImage[]): FWorksheet;
+    /**
+     * Get all images of the sheet.
+     * @returns {FOverGridImage[]} The FOverGridImage instances
+     * @example
+     * ```ts
+     * const fWorksheet = univerAPI.getActiveWorkbook().getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const images = fWorksheet.getImages();
+     * images.forEach((image) => {
+     *   console.log(image, image.getId());
+     * });
+     * ```
+     */
+    getImages(): FOverGridImage[];
+    /**
+     * Get image by drawing id
+     * @param {string} id - The drawing id of the image
+     * @returns {FOverGridImage | null} The FOverGridImage instance
+     * @example
+     * ```ts
+     * const fWorksheet = univerAPI.getActiveWorkbook().getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const image = fWorksheet.getImageById('xxxx');
+     * console.log(image);
+     * ```
+     */
+    getImageById(id: string): FOverGridImage | null;
+    /**
+     * Delete images from the sheet
+     * @param {FOverGridImage[]} sheetImages - The images to delete
+     * @returns {FWorksheet} The FWorksheet instance for chaining
+     * @example
+     * ```ts
+     * const fWorksheet = univerAPI.getActiveWorkbook().getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const image = fWorksheet.getImages()[0];
+     *
+     * // Delete the first image of the sheet
+     * fWorksheet.deleteImages([image]);
+     * ```
+     */
+    deleteImages(sheetImages: FOverGridImage[]): FWorksheet;
+    /**
+     * Update images to the sheet
+     * @param {ISheetImage[]} sheetImages - The images to update
+     * @returns {FWorksheet} The FWorksheet instance for chaining
+     * @example
+     * ```ts
+     * // create a new image builder and set image source.
+     * // then build `ISheetImage` and insert it into the sheet, position is start from F6 cell, width is 500px, height is 300px
+     * const fWorkbook = univerAPI.getActiveWorkbook();
+     * const fWorksheet = fWorkbook.getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const image = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(5)
+     *   .setRow(5)
+     *   .setWidth(500)
+     *   .setHeight(300)
+     *   .buildAsync();
+     * fWorksheet.insertImages([image]);
+     *
+     * // update the image width to 100px and height to 50px after 4 seconds
+     * setTimeout(async () => {
+     *   const imageBuilder = fWorksheet.getImageById(image.drawingId).toBuilder();
+     *   const newImage = await imageBuilder.setWidth(100).setHeight(50).buildAsync();
+     *   fWorksheet.updateImages([newImage]);
+     * }, 4000);
+     * ```
+     */
+    updateImages(sheetImages: ISheetImage[]): FWorksheet;
+    /**
+     * Get the placement of any drawing on this sheet.
+     *
+     * Image, Shape, Chart, and Group use the same placement contract.
+     * @param {string} drawingId Drawing id.
+     * @returns {ISheetDrawingPlacement | null} The placement, or `null` when the drawing does not exist.
+     * @example
+     * ```ts
+     * const sheet = univerAPI.getActiveWorkbook().getActiveSheet();
+     * const placement = sheet.getDrawingPlacement('drawing-id');
+     * if (placement?.kind === univerAPI.Enum.SheetDrawingAnchorType.Both) {
+     *   console.log(placement.from, placement.to);
+     * }
+     * ```
+     */
+    getDrawingPlacement(drawingId: string): ISheetDrawingPlacement | null;
+    /**
+     * Set the placement of any drawing on this sheet through the drawing command.
+     *
+     * @param {string} drawingId Drawing id.
+     * @param {ISheetDrawingPlacementInput} placement Exact markers or model-space bounds with an explicit anchor type.
+     * @returns {boolean} `true` when the command succeeds.
+     * @example OneCell: move with cells, keep pixel size
+     * ```ts
+     * const sheet = univerAPI.getActiveWorkbook().getActiveSheet();
+     * const drawingId = sheet.getImages()[0]?.getId();
+     * if (!drawingId) throw new Error('No drawing found.');
+     * const changed = sheet.setDrawingPlacement(drawingId, {
+     *   kind: univerAPI.Enum.SheetDrawingAnchorType.Position,
+     *   from: { row: 2, column: 2, rowOffset: 8, columnOffset: 8 },
+     *   width: 240,
+     *   height: 120,
+     * });
+     * console.log(changed);
+     * ```
+     * @example TwoCell: move and resize with both cell markers
+     * ```ts
+     * const sheet = univerAPI.getActiveWorkbook().getActiveSheet();
+     * const drawingId = sheet.getImages()[0]?.getId();
+     * if (!drawingId) throw new Error('No drawing found.');
+     * sheet.setDrawingPlacement(drawingId, {
+     *   kind: univerAPI.Enum.SheetDrawingAnchorType.Both,
+     *   from: { row: 2, column: 2, rowOffset: 8, columnOffset: 8 },
+     *   to: { row: 8, column: 6, rowOffset: 0, columnOffset: 0 },
+     * });
+     * ```
+     * @example Absolute: do not move or resize after row or column changes
+     * ```ts
+     * const sheet = univerAPI.getActiveWorkbook().getActiveSheet();
+     * const drawingId = sheet.getImages()[0]?.getId();
+     * if (!drawingId) throw new Error('No drawing found.');
+     * sheet.setDrawingPlacement(drawingId, {
+     *   kind: univerAPI.Enum.SheetDrawingAnchorType.None,
+     *   left: 640,
+     *   top: 96,
+     *   width: 240,
+     *   height: 120,
+     * });
+     * ```
+     */
+    setDrawingPlacement(drawingId: string, placement: ISheetDrawingPlacementInput): boolean;
+    /**
+     * Resolve exact markers or model-space bounds to a normalized Placement.
+     *
+     * Bounds inference is usually preferable when positioning from an existing
+     * transform. Exact markers are useful when the caller must preserve a
+     * user-selected cell and offset. `Position` maps to OOXML OneCell,
+     * `Both` maps to TwoCell, and `None` maps to Absolute.
+     * @param {ISheetDrawingPlacementInput} placement Exact markers or bounds with an explicit anchor type.
+     * @returns {ISheetDrawingPlacement} The normalized Placement.
+     * @example Infer Position and Both placements from bounds in Node/headless
+     * ```ts
+     * const sheet = univerAPI.getActiveWorkbook().getActiveSheet();
+     * const positionPlacement = sheet.resolveDrawingPlacement({
+     *   kind: univerAPI.Enum.SheetDrawingAnchorType.Position,
+     *   bounds: { left: 120, top: 80, width: 320, height: 160 },
+     * });
+     * const bothPlacement = sheet.resolveDrawingPlacement({
+     *   kind: univerAPI.Enum.SheetDrawingAnchorType.Both,
+     *   bounds: { left: 120, top: 80, width: 320, height: 160 },
+     * });
+     * console.log(positionPlacement.from);
+     * console.log(bothPlacement.from, bothPlacement.to);
+     * ```
+     */
+    resolveDrawingPlacement(placement: ISheetDrawingPlacementInput): ISheetDrawingPlacement;
+    /**
+     * Get the Sheet host layout in model coordinates.
+     *
+     * This API is available in Node/headless and does not include viewport,
+     * scroll, zoom, frozen-pane clipping, or screen coordinates.
+     * @returns {ISheetDrawingLayout} Grid, data, and ordered Drawing bounds.
+     * @example
+     * ```ts
+     * const sheet = univerAPI.getActiveWorkbook().getActiveSheet();
+     * const layout = sheet.getDrawingLayout();
+     * console.log(layout.gridBounds, layout.dataBounds);
+     * for (const drawing of layout.drawings) {
+     *   console.log(drawing.drawingId, drawing.bounds);
+     * }
+     * ```
+     */
+    getDrawingLayout(): ISheetDrawingLayout;
+    /**
+     * Get the current selected images.
+     * @returns {FOverGridImage[]} The FOverGridImage instances
+     * @example
+     * ```ts
+     * const fWorksheet = univerAPI.getActiveWorkbook().getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const images = fWorksheet.getActiveImages();
+     * images.forEach((image) => {
+     *   console.log(image, image.getId());
+     * });
+     * ```
+     */
+    getActiveImages(): FOverGridImage[];
+    /**
+     * Create a new over grid image builder.
+     * @returns {FOverGridImageBuilder} The FOverGridImageBuilder instance
+     * @example
+     * ```ts
+     * // create a new image builder and set image source.
+     * // then build `ISheetImage` and insert it into the sheet, position is start from F6 cell, width is 500px, height is 300px
+     * const fWorkbook = univerAPI.getActiveWorkbook();
+     * const fWorksheet = fWorkbook.getSheetByName('Sheet1');
+     * if (!fWorksheet) return;
+     * const image = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(5)
+     *   .setRow(5)
+     *   .setWidth(500)
+     *   .setHeight(300)
+     *   .buildAsync();
+     * fWorksheet.insertImages([image]);
+     * ```
+     */
+    newOverGridImage(): FOverGridImageBuilder;
+    /**
+     * Group drawings on the current sheet.
+     * @param {string[]} drawingIds - The drawing ids to group. At least two drawings are required.
+     * @param {string} [groupId] - Optional group drawing id. If omitted, a new id will be generated.
+     * @returns {string | null} The group id if the operation succeeds, otherwise null.
+     * @example
+     * ```ts
+     * // Group two over-grid images on the active sheet.
+     * const fWorkbook = univerAPI.getActiveWorkbook();
+     * const fWorksheet = fWorkbook.getActiveSheet();
+     * const image1 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(1)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * const image2 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(3)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * fWorksheet.insertImages([image1, image2]);
+     * const groupId = fWorksheet.groupDrawings([image1.drawingId, image2.drawingId]);
+     * console.log(groupId);
+     * ```
+     */
+    groupDrawings(drawingIds: string[], groupId?: string): string | null;
+    /**
+     * Ungroup drawing groups on the current sheet.
+     * @param {string[]} groupIds - The group drawing ids to ungroup.
+     * @returns {boolean} true if the operation succeeds, otherwise false.
+     * @example
+     * ```ts
+     * // Group two images, then ungroup the generated group.
+     * const fWorkbook = univerAPI.getActiveWorkbook();
+     * const fWorksheet = fWorkbook.getActiveSheet();
+     * const image1 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(1)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * const image2 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(3)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * fWorksheet.insertImages([image1, image2]);
+     * const groupId = fWorksheet.groupDrawings([image1.drawingId, image2.drawingId]);
+     * if (groupId) {
+     *   const result = fWorksheet.ungroupDrawings([groupId]);
+     *   console.log(result);
+     * }
+     * ```
+     */
+    ungroupDrawings(groupIds: string[]): boolean;
+    /**
+     * Get children of a drawing group on the current sheet.
+     * @param {string} groupId - The group drawing id.
+     * @param {boolean} [recursive] - Whether to return all descendants.
+     * @returns {ISheetDrawing[]} The child drawings.
+     * @example
+     * ```ts
+     * // Get the direct children of a drawing group.
+     * const fWorkbook = univerAPI.getActiveWorkbook();
+     * const fWorksheet = fWorkbook.getActiveSheet();
+     * const image1 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(1)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * const image2 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(3)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * fWorksheet.insertImages([image1, image2]);
+     * const groupId = fWorksheet.groupDrawings([image1.drawingId, image2.drawingId]);
+     * if (groupId) {
+     *   const children = fWorksheet.getDrawingGroupChildren(groupId);
+     *   console.log(children.map((drawing) => drawing.drawingId));
+     * }
+     * ```
+     */
+    getDrawingGroupChildren(groupId: string, recursive?: boolean): ISheetDrawing[];
+    /**
+     * Get the parent group of a drawing on the current sheet.
+     * @param {string} drawingId - The child drawing id.
+     * @returns {ISheetDrawing | null} The parent group drawing, or null if the drawing is not grouped.
+     * @example
+     * ```ts
+     * // Get the parent group of a drawing.
+     * const fWorkbook = univerAPI.getActiveWorkbook();
+     * const fWorksheet = fWorkbook.getActiveSheet();
+     * const image1 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(1)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * const image2 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(3)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * fWorksheet.insertImages([image1, image2]);
+     * fWorksheet.groupDrawings([image1.drawingId, image2.drawingId]);
+     * const parentGroup = fWorksheet.getDrawingParentGroup(image1.drawingId);
+     * console.log(parentGroup?.drawingId);
+     * ```
+     */
+    getDrawingParentGroup(drawingId: string): ISheetDrawing | null;
+    /**
+     * Returns whether a drawing is inside a group on the current sheet.
+     * @param {string} drawingId - The drawing id.
+     * @returns {boolean} true if the drawing has a parent group.
+     * @example
+     * ```ts
+     * // Check whether a drawing is inside a group.
+     * const fWorkbook = univerAPI.getActiveWorkbook();
+     * const fWorksheet = fWorkbook.getActiveSheet();
+     * const image1 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(1)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * const image2 = await fWorksheet.newOverGridImage()
+     *   .setSource('https://avatars.githubusercontent.com/u/61444807?s=48&v=4', univerAPI.Enum.ImageSourceType.URL)
+     *   .setColumn(3)
+     *   .setRow(1)
+     *   .setWidth(100)
+     *   .setHeight(100)
+     *   .buildAsync();
+     * fWorksheet.insertImages([image1, image2]);
+     * fWorksheet.groupDrawings([image1.drawingId, image2.drawingId]);
+     * const isGrouped = fWorksheet.isDrawingGrouped(image1.drawingId);
+     * console.log(isGrouped);
+     * ```
+     */
+    isDrawingGrouped(drawingId: string): boolean;
+}
+export declare class FWorksheetDrawingMixin extends FWorksheet implements IFWorksheetDrawingMixin {
+    private get _sheetDrawingService();
+    private get _sheetSkeletonService();
+    private get _undoRedoService();
+    insertImage(url: IFBlobSource | string, column?: number, row?: number, offsetX?: number, offsetY?: number): Promise<boolean>;
+    insertImages(sheetImages: ISheetImage[]): FWorksheet;
+    deleteImages(sheetImages: FOverGridImage[]): FWorksheet;
+    getImages(): FOverGridImage[];
+    getImageById(id: string): FOverGridImage | null;
+    getActiveImages(): FOverGridImage[];
+    updateImages(sheetImages: ISheetImage[]): FWorksheet;
+    getDrawingPlacement(drawingId: string): ISheetDrawingPlacement | null;
+    setDrawingPlacement(drawingId: string, placement: ISheetDrawingPlacementInput): boolean;
+    resolveDrawingPlacement(placement: ISheetDrawingPlacementInput): ISheetDrawingPlacement;
+    getDrawingLayout(): ISheetDrawingLayout;
+    newOverGridImage(): FOverGridImageBuilder;
+    groupDrawings(drawingIds: string[], groupId?: string): string | null;
+    ungroupDrawings(groupIds: string[]): boolean;
+    getDrawingGroupChildren(groupId: string, recursive?: boolean): ISheetDrawing[];
+    getDrawingParentGroup(drawingId: string): ISheetDrawing | null;
+    isDrawingGrouped(drawingId: string): boolean;
+    private _applyGroupDrawingOperation;
+    private _invertGroupOperationObjects;
+}
+declare module '@univerjs/sheets/facade' {
+    interface FWorksheet extends IFWorksheetDrawingMixin {
+    }
+}

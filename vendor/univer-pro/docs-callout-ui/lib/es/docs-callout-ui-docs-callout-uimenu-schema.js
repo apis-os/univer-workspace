@@ -1,0 +1,121 @@
+import { DEFAULT_CALLOUT_CONFIG, DOCS_CALLOUT_BACKGROUND_COLOR_TOKEN, DOCS_CALLOUT_BORDER_COLOR_TOKEN, DOCS_CALLOUT_PLUGIN, DocsCalloutCancelEmptyParagraphCommand, DocsCalloutConsumeBoundaryDeleteCommand, DocsCalloutDeleteCommand, DocsCalloutInsertBelowCommand, DocsCalloutInsertCommand, DocsCalloutModel, DocsCalloutResetColorsCommand, DocsCalloutSetTextColorCommand, DocsCalloutUnwrapCommand, DocsCalloutUpdateCommand, RemoveDocsCalloutConfigMutation, SetDocsCalloutConfigMutation, UniverDocsCalloutPlugin, buildCancelEmptyCalloutParagraphActions, isCalloutBoundaryDelete, normalizeDocsCalloutConfig, normalizeDocsCalloutMetadataResource } from "@univerjs-pro/docs-callout";
+import { DOC_CONTENT_INSERT_MENU_ID, DOC_PARAGRAPH_T_EDIT_MENU_ID, DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID, DOC_PARAGRAPH_T_INSERT_MENU_ID, DeleteCurrentParagraphCommand, DeleteLeftCommand, DeleteRightCommand, DocAutoFormatService, DocCanvasPopManagerService, EMPTY_PARAGRAPH_MENU_ID, FLOAT_TEXT_STYLE_MENU_ID, FLOAT_TOOLBAR_MENU_POSITION, IDocClipboardPasteAdapterService, IDocClipboardService, INSERT_BELLOW_MENU_ID, UniverDocsUIPlugin, disableMenuWhenHeaderFooterEditing, hideMenuWhenSelectionInBlockRange } from "@univerjs/docs-ui";
+import { ComponentManager, ContextMenuGroup, ContextMenuPosition, EMOJI_PICKER_COMPONENT, IMenuManagerService, IconManager, MenuItemType, MenuManagerPosition, RibbonInsertGroup, RibbonPosition, ToolbarButton, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { ColorKit, CommandType, DashStyleType, DependentOn, Disposable, DocumentBlockRangeType, ICommandService, IConfigService, IPermissionService, Inject, Injector, LocaleService, Plugin, ThemeService, UniverInstanceType, merge } from "@univerjs/core";
+import { combineLatest, map } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DocSkeletonManagerService, UniverDocsPlugin, canEditDocumentTargets, getDocumentEntityParentPermissionObjectIds, getDocumentEntityPermissionObjectId } from "@univerjs/docs";
+import { CURSOR_TYPE, ComponentExtension, DOCS_EXTENSION_TYPE, Documents, IRenderManagerService, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { CalloutIcon, LineNoneIcon, PaintIcon, TextIcon } from "@univerjs/icons";
+import { useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { documentSkeletonLineIterator } from "@univerjs-pro/docs-column";
+function z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275) {
+  return {
+    id: DocsCalloutInsertCommand.id,
+    type: MenuItemType.BUTTON,
+    icon: "CalloutIcon",
+    title: "docs-callout-ui.menu.callout",
+    tooltip: "docs-callout-ui.menu.callout",
+    hidden$: getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275, UniverInstanceType.UNIVER_DOC),
+    disabled$: disableMenuWhenHeaderFooterEditing(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275)
+  };
+}
+function Qe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277) {
+  return {
+    ...z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277),
+    hidden$: combineLatest([getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277, UniverInstanceType.UNIVER_DOC), hideMenuWhenSelectionInBlockRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277)]).pipe(map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110]) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110))
+  };
+}
+function B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279) {
+  return {
+    id: DocsCalloutInsertBelowCommand.id,
+    type: MenuItemType.BUTTON,
+    icon: "CalloutIcon",
+    title: "docs-callout-ui.menu.callout",
+    hidden$: getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279, UniverInstanceType.UNIVER_DOC),
+    disabled$: disableMenuWhenHeaderFooterEditing(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279)
+  };
+}
+const var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 = {
+    [RibbonInsertGroup.MEDIA]: {
+      [DocsCalloutInsertCommand.id]: {
+        order: 5,
+        menuItemFactory: z
+      }
+    }
+  },
+  et = {
+    [MenuManagerPosition.RIBBON]: {
+      [RibbonPosition.INSERT]: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4
+    },
+    [FLOAT_TOOLBAR_MENU_POSITION]: {
+      [FLOAT_TEXT_STYLE_MENU_ID]: {
+        [DocsCalloutInsertCommand.id]: {
+          order: 11,
+          menuItemFactory: Qe
+        }
+      }
+    }
+  },
+  tt = {
+    ...var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4,
+    [FLOAT_TEXT_STYLE_MENU_ID]: {
+      [DocsCalloutInsertCommand.id]: {
+        order: 11,
+        menuItemFactory: Qe
+      }
+    },
+    [ContextMenuPosition.PARAGRAPH]: {
+      [ContextMenuGroup.LAYOUT]: {
+        [INSERT_BELLOW_MENU_ID]: {
+          [DocsCalloutInsertBelowCommand.id]: {
+            order: 5,
+            menuItemFactory: B
+          }
+        }
+      },
+      [DOC_CONTENT_INSERT_MENU_ID]: {
+        [ContextMenuGroup.LAYOUT]: {
+          [DocsCalloutInsertBelowCommand.id]: {
+            order: 5,
+            menuItemFactory: B
+          }
+        }
+      },
+      [EMPTY_PARAGRAPH_MENU_ID]: {
+        [ContextMenuGroup.LAYOUT]: {
+          [DocsCalloutInsertCommand.id]: {
+            order: 5,
+            menuItemFactory: z
+          }
+        }
+      },
+      [DOC_PARAGRAPH_T_INSERT_MENU_ID]: {
+        quickBottom: {
+          [DocsCalloutInsertCommand.id]: {
+            order: 4,
+            menuItemFactory: z
+          }
+        }
+      },
+      [DOC_PARAGRAPH_T_EDIT_MENU_ID]: {
+        quickBottom: {
+          [DocsCalloutInsertCommand.id]: {
+            order: 5,
+            menuItemFactory: z
+          }
+        }
+      },
+      [DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID]: {
+        quickBottom: {
+          [DocsCalloutInsertBelowCommand.id]: {
+            order: 4,
+            menuItemFactory: B
+          }
+        }
+      }
+    }
+  };
+export { tt as DocsCalloutUIMenuSchema };
+export { et };

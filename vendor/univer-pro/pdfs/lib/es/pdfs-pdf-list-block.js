@@ -1,0 +1,7 @@
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+function Pb(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469479, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469480) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469479.blocks["find"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462121 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462121.id === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469480.blockId);
+}
+export { Pb as findPdfListBlock };

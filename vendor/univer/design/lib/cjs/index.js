@@ -1,0 +1,6842 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+let _univerjs_icons = require("@univerjs/icons");
+let react = require("react");
+let react_jsx_runtime = require("react/jsx-runtime");
+let _radix_ui_react_direction = require("@radix-ui/react-direction");
+let class_variance_authority = require("class-variance-authority");
+let _radix_ui_react_slot = require("@radix-ui/react-slot");
+let _radix_ui_react_dropdown_menu = require("@radix-ui/react-dropdown-menu");
+let _radix_ui_react_dialog = require("@radix-ui/react-dialog");
+let _radix_ui_react_popover = require("@radix-ui/react-popover");
+let cmdk = require("cmdk");
+let react_dom = require("react-dom");
+let _radix_ui_react_hover_card = require("@radix-ui/react-hover-card");
+let sonner = require("sonner");
+let _radix_ui_react_separator = require("@radix-ui/react-separator");
+let react_dom_client = require("react-dom/client");
+
+//#region src/helper/clsx.generated.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/*!
+* MIT License
+*
+* Copyright (c) 2021 Dany Castillo
+*
+* Permission is hereby granted, free of charge, to any person obtaining a copy
+* of this software and associated documentation files (the "Software"), to deal
+* in the Software without restriction, including without limitation the rights
+* to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+* copies of the Software, and to permit persons to whom the Software is
+* furnished to do so, subject to the following conditions:
+*
+* The above copyright notice and this permission notice shall be included in all
+* copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+* IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+* FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+* AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+* LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+* SOFTWARE.
+*/
+const VALIDATOR_NAMES = [
+	"isAny",
+	"isArbitraryImage",
+	"isArbitraryLength",
+	"isArbitraryNumber",
+	"isArbitraryPosition",
+	"isArbitraryShadow",
+	"isArbitrarySize",
+	"isArbitraryValue",
+	"isInteger",
+	"isLength",
+	"isNumber",
+	"isPercent",
+	"isTshirtSize"
+];
+const CLASS_GROUPS = [
+	[[
+		"aspect",
+		"auto square video",
+		128
+	]],
+	[[
+		"",
+		"container",
+		0
+	]],
+	[[
+		"columns",
+		null,
+		4096
+	]],
+	[[
+		"break-after",
+		"auto avoid all avoid-page page left right column",
+		0
+	]],
+	[[
+		"break-before",
+		"auto avoid all avoid-page page left right column",
+		0
+	]],
+	[[
+		"break-inside",
+		"auto avoid avoid-page avoid-column",
+		0
+	]],
+	[[
+		"box-decoration",
+		"slice clone",
+		0
+	]],
+	[[
+		"box",
+		"border content",
+		0
+	]],
+	[[
+		"",
+		"block inline-block inline flex inline-flex table inline-table table-caption table-cell table-column table-column-group table-footer-group table-header-group table-row-group table-row flow-root grid inline-grid contents list-item hidden",
+		0
+	]],
+	[[
+		"float",
+		"right left none start end",
+		0
+	]],
+	[[
+		"clear",
+		"left right both none start end",
+		0
+	]],
+	[[
+		"",
+		"isolate isolation-auto",
+		0
+	]],
+	[[
+		"object",
+		"contain cover fill none scale-down",
+		0
+	]],
+	[[
+		"object",
+		"bottom center left left-bottom left-top right right-bottom right-top top",
+		128
+	]],
+	[[
+		"overflow",
+		"auto hidden clip visible scroll",
+		0
+	]],
+	[[
+		"overflow-x",
+		"auto hidden clip visible scroll",
+		0
+	]],
+	[[
+		"overflow-y",
+		"auto hidden clip visible scroll",
+		0
+	]],
+	[[
+		"overscroll",
+		"auto contain none",
+		0
+	]],
+	[[
+		"overscroll-x",
+		"auto contain none",
+		0
+	]],
+	[[
+		"overscroll-y",
+		"auto contain none",
+		0
+	]],
+	[[
+		"",
+		"static fixed absolute relative sticky",
+		0
+	]],
+	[[
+		"inset",
+		"auto",
+		644
+	]],
+	[[
+		"inset-x",
+		"auto",
+		644
+	]],
+	[[
+		"inset-y",
+		"auto",
+		644
+	]],
+	[[
+		"start",
+		"auto",
+		644
+	]],
+	[[
+		"end",
+		"auto",
+		644
+	]],
+	[[
+		"top",
+		"auto",
+		644
+	]],
+	[[
+		"right",
+		"auto",
+		644
+	]],
+	[[
+		"bottom",
+		"auto",
+		644
+	]],
+	[[
+		"left",
+		"auto",
+		644
+	]],
+	[[
+		"",
+		"visible invisible collapse",
+		0
+	]],
+	[[
+		"z",
+		"auto",
+		384
+	]],
+	[[
+		"basis",
+		"auto",
+		644
+	]],
+	[[
+		"flex",
+		"row row-reverse col col-reverse",
+		0
+	]],
+	[[
+		"flex",
+		"wrap wrap-reverse nowrap",
+		0
+	]],
+	[[
+		"flex",
+		"1 auto initial none",
+		128
+	]],
+	[[
+		"grow",
+		" 0",
+		128
+	]],
+	[[
+		"shrink",
+		" 0",
+		128
+	]],
+	[[
+		"order",
+		"first last none",
+		384
+	]],
+	[[
+		"grid-cols",
+		null,
+		1
+	]],
+	[[
+		"col",
+		"auto",
+		128
+	], [
+		"col-span",
+		"full",
+		384
+	]],
+	[[
+		"col-start",
+		"auto",
+		1152
+	]],
+	[[
+		"col-end",
+		"auto",
+		1152
+	]],
+	[[
+		"grid-rows",
+		null,
+		1
+	]],
+	[[
+		"row",
+		"auto",
+		128
+	], [
+		"row-span",
+		null,
+		384
+	]],
+	[[
+		"row-start",
+		"auto",
+		1152
+	]],
+	[[
+		"row-end",
+		"auto",
+		1152
+	]],
+	[[
+		"grid-flow",
+		"row col dense row-dense col-dense",
+		0
+	]],
+	[[
+		"auto-cols",
+		"auto min max fr",
+		128
+	]],
+	[[
+		"auto-rows",
+		"auto min max fr",
+		128
+	]],
+	[[
+		"gap",
+		null,
+		644
+	]],
+	[[
+		"gap-x",
+		null,
+		644
+	]],
+	[[
+		"gap-y",
+		null,
+		644
+	]],
+	[[
+		"justify",
+		"normal start end center between around evenly stretch",
+		0
+	]],
+	[[
+		"justify-items",
+		"start end center stretch",
+		0
+	]],
+	[[
+		"justify-self",
+		"auto start end center stretch",
+		0
+	]],
+	[[
+		"content",
+		"normal start end center between around evenly stretch baseline",
+		0
+	]],
+	[[
+		"items",
+		"start end center baseline stretch",
+		0
+	]],
+	[[
+		"self",
+		"auto start end center stretch baseline",
+		0
+	]],
+	[[
+		"place-content",
+		"start end center between around evenly stretch baseline",
+		0
+	]],
+	[[
+		"place-items",
+		"start end center baseline stretch",
+		0
+	]],
+	[[
+		"place-self",
+		"auto start end center stretch",
+		0
+	]],
+	[[
+		"p",
+		null,
+		644
+	]],
+	[[
+		"px",
+		null,
+		644
+	]],
+	[[
+		"py",
+		null,
+		644
+	]],
+	[[
+		"ps",
+		null,
+		644
+	]],
+	[[
+		"pe",
+		null,
+		644
+	]],
+	[[
+		"pt",
+		null,
+		644
+	]],
+	[[
+		"pr",
+		null,
+		644
+	]],
+	[[
+		"pb",
+		null,
+		644
+	]],
+	[[
+		"pl",
+		null,
+		644
+	]],
+	[[
+		"m",
+		"auto",
+		644
+	]],
+	[[
+		"mx",
+		"auto",
+		644
+	]],
+	[[
+		"my",
+		"auto",
+		644
+	]],
+	[[
+		"ms",
+		"auto",
+		644
+	]],
+	[[
+		"me",
+		"auto",
+		644
+	]],
+	[[
+		"mt",
+		"auto",
+		644
+	]],
+	[[
+		"mr",
+		"auto",
+		644
+	]],
+	[[
+		"mb",
+		"auto",
+		644
+	]],
+	[[
+		"ml",
+		"auto",
+		644
+	]],
+	[[
+		"space-x",
+		null,
+		644
+	]],
+	[[
+		"",
+		"space-x-reverse",
+		0
+	]],
+	[[
+		"space-y",
+		null,
+		644
+	]],
+	[[
+		"",
+		"space-y-reverse",
+		0
+	]],
+	[[
+		"w",
+		"auto min max fit svw lvw dvw",
+		644
+	]],
+	[[
+		"min-w",
+		"min max fit",
+		644
+	]],
+	[[
+		"max-w",
+		"none full min max fit prose",
+		4740
+	], [
+		"max-w-screen",
+		null,
+		4096
+	]],
+	[[
+		"h",
+		"auto min max fit svh lvh dvh",
+		644
+	]],
+	[[
+		"min-h",
+		"min max fit svh lvh dvh",
+		644
+	]],
+	[[
+		"max-h",
+		"min max fit svh lvh dvh",
+		644
+	]],
+	[[
+		"size",
+		"auto min max fit",
+		644
+	]],
+	[[
+		"text",
+		"base",
+		4100
+	]],
+	[[
+		"",
+		"antialiased subpixel-antialiased",
+		0
+	]],
+	[[
+		"",
+		"italic not-italic",
+		0
+	]],
+	[[
+		"font",
+		"thin extralight light normal medium semibold bold extrabold black",
+		8
+	]],
+	[[
+		"font",
+		null,
+		1
+	]],
+	[[
+		"",
+		"normal-nums",
+		0
+	]],
+	[[
+		"",
+		"ordinal",
+		0
+	]],
+	[[
+		"",
+		"slashed-zero",
+		0
+	]],
+	[[
+		"",
+		"lining-nums oldstyle-nums",
+		0
+	]],
+	[[
+		"",
+		"proportional-nums tabular-nums",
+		0
+	]],
+	[[
+		"",
+		"diagonal-fractions stacked-fractions",
+		0
+	]],
+	[[
+		"tracking",
+		"tighter tight normal wide wider widest",
+		128
+	]],
+	[[
+		"line-clamp",
+		"none",
+		1032
+	]],
+	[[
+		"leading",
+		"none tight snug normal relaxed loose",
+		640
+	]],
+	[[
+		"list-image",
+		"none",
+		128
+	]],
+	[[
+		"list",
+		"none disc decimal",
+		128
+	]],
+	[[
+		"list",
+		"inside outside",
+		0
+	]],
+	[[
+		"placeholder",
+		null,
+		1
+	]],
+	[[
+		"placeholder-opacity",
+		null,
+		1152
+	]],
+	[[
+		"text",
+		"left center right justify start end",
+		0
+	]],
+	[[
+		"text",
+		null,
+		1
+	]],
+	[[
+		"text-opacity",
+		null,
+		1152
+	]],
+	[[
+		"",
+		"underline overline line-through no-underline",
+		0
+	]],
+	[[
+		"decoration",
+		"solid dashed dotted double none wavy",
+		0
+	]],
+	[[
+		"decoration",
+		"auto from-font",
+		516
+	]],
+	[[
+		"underline-offset",
+		"auto",
+		640
+	]],
+	[[
+		"decoration",
+		null,
+		1
+	]],
+	[[
+		"",
+		"uppercase lowercase capitalize normal-case",
+		0
+	]],
+	[[
+		"",
+		"truncate text-ellipsis text-clip",
+		0
+	]],
+	[[
+		"text",
+		"wrap nowrap balance pretty",
+		0
+	]],
+	[[
+		"indent",
+		null,
+		644
+	]],
+	[[
+		"align",
+		"baseline top middle bottom text-top text-bottom sub super",
+		128
+	]],
+	[[
+		"whitespace",
+		"normal nowrap pre pre-line pre-wrap break-spaces",
+		0
+	]],
+	[[
+		"break",
+		"normal words all keep",
+		0
+	]],
+	[[
+		"hyphens",
+		"none manual auto",
+		0
+	]],
+	[[
+		"content",
+		"none",
+		128
+	]],
+	[[
+		"bg",
+		"fixed local scroll",
+		0
+	]],
+	[[
+		"bg-clip",
+		"border padding content text",
+		0
+	]],
+	[[
+		"bg-opacity",
+		null,
+		1152
+	]],
+	[[
+		"bg-origin",
+		"border padding content",
+		0
+	]],
+	[[
+		"bg",
+		"bottom center left left-bottom left-top right right-bottom right-top top",
+		16
+	]],
+	[[
+		"bg",
+		"no-repeat",
+		0
+	], [
+		"bg-repeat",
+		" x y round space",
+		0
+	]],
+	[[
+		"bg",
+		"auto cover contain",
+		64
+	]],
+	[[
+		"bg",
+		"none",
+		2
+	], [
+		"bg-gradient-to",
+		"t tr r br b bl l tl",
+		0
+	]],
+	[[
+		"bg",
+		null,
+		1
+	]],
+	[[
+		"from",
+		null,
+		2052
+	]],
+	[[
+		"via",
+		null,
+		2052
+	]],
+	[[
+		"to",
+		null,
+		2052
+	]],
+	[[
+		"from",
+		null,
+		1
+	]],
+	[[
+		"via",
+		null,
+		1
+	]],
+	[[
+		"to",
+		null,
+		1
+	]],
+	[[
+		"rounded",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-s",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-e",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-t",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-r",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-b",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-l",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-ss",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-se",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-ee",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-es",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-tl",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-tr",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-br",
+		"none  full",
+		4224
+	]],
+	[[
+		"rounded-bl",
+		"none  full",
+		4224
+	]],
+	[[
+		"border",
+		"",
+		516
+	]],
+	[[
+		"border-x",
+		"",
+		516
+	]],
+	[[
+		"border-y",
+		"",
+		516
+	]],
+	[[
+		"border-s",
+		"",
+		516
+	]],
+	[[
+		"border-e",
+		"",
+		516
+	]],
+	[[
+		"border-t",
+		"",
+		516
+	]],
+	[[
+		"border-r",
+		"",
+		516
+	]],
+	[[
+		"border-b",
+		"",
+		516
+	]],
+	[[
+		"border-l",
+		"",
+		516
+	]],
+	[[
+		"border-opacity",
+		null,
+		1152
+	]],
+	[[
+		"border",
+		"solid dashed dotted double none hidden",
+		0
+	]],
+	[[
+		"divide-x",
+		"",
+		516
+	]],
+	[[
+		"",
+		"divide-x-reverse",
+		0
+	]],
+	[[
+		"divide-y",
+		"",
+		516
+	]],
+	[[
+		"",
+		"divide-y-reverse",
+		0
+	]],
+	[[
+		"divide-opacity",
+		null,
+		1152
+	]],
+	[[
+		"divide",
+		"solid dashed dotted double none",
+		0
+	]],
+	[[
+		"border",
+		null,
+		1
+	]],
+	[[
+		"border-x",
+		null,
+		1
+	]],
+	[[
+		"border-y",
+		null,
+		1
+	]],
+	[[
+		"border-s",
+		null,
+		1
+	]],
+	[[
+		"border-e",
+		null,
+		1
+	]],
+	[[
+		"border-t",
+		null,
+		1
+	]],
+	[[
+		"border-r",
+		null,
+		1
+	]],
+	[[
+		"border-b",
+		null,
+		1
+	]],
+	[[
+		"border-l",
+		null,
+		1
+	]],
+	[[
+		"divide",
+		null,
+		1
+	]],
+	[[
+		"outline",
+		" solid dashed dotted double none",
+		0
+	]],
+	[[
+		"outline-offset",
+		null,
+		640
+	]],
+	[[
+		"outline",
+		null,
+		516
+	]],
+	[[
+		"outline",
+		null,
+		1
+	]],
+	[[
+		"ring",
+		"",
+		516
+	]],
+	[[
+		"",
+		"ring-inset",
+		0
+	]],
+	[[
+		"ring",
+		null,
+		1
+	]],
+	[[
+		"ring-opacity",
+		null,
+		1152
+	]],
+	[[
+		"ring-offset",
+		null,
+		516
+	]],
+	[[
+		"ring-offset",
+		null,
+		1
+	]],
+	[[
+		"shadow",
+		" inner none",
+		4128
+	]],
+	[[
+		"shadow",
+		null,
+		1
+	]],
+	[[
+		"opacity",
+		null,
+		1152
+	]],
+	[[
+		"mix-blend",
+		"normal multiply screen overlay darken lighten color-dodge color-burn hard-light soft-light difference exclusion hue saturation color luminosity plus-lighter plus-darker",
+		0
+	]],
+	[[
+		"bg-blend",
+		"normal multiply screen overlay darken lighten color-dodge color-burn hard-light soft-light difference exclusion hue saturation color luminosity",
+		0
+	]],
+	[[
+		"filter",
+		" none",
+		0
+	]],
+	[[
+		"blur",
+		"none ",
+		4224
+	]],
+	[[
+		"brightness",
+		null,
+		1152
+	]],
+	[[
+		"contrast",
+		null,
+		1152
+	]],
+	[[
+		"drop-shadow",
+		" none",
+		4224
+	]],
+	[[
+		"grayscale",
+		" 0",
+		128
+	]],
+	[[
+		"hue-rotate",
+		null,
+		1152
+	]],
+	[[
+		"invert",
+		" 0",
+		128
+	]],
+	[[
+		"saturate",
+		null,
+		1152
+	]],
+	[[
+		"sepia",
+		" 0",
+		128
+	]],
+	[[
+		"backdrop-filter",
+		" none",
+		0
+	]],
+	[[
+		"backdrop-blur",
+		"none ",
+		4224
+	]],
+	[[
+		"backdrop-brightness",
+		null,
+		1152
+	]],
+	[[
+		"backdrop-contrast",
+		null,
+		1152
+	]],
+	[[
+		"backdrop-grayscale",
+		" 0",
+		128
+	]],
+	[[
+		"backdrop-hue-rotate",
+		null,
+		1152
+	]],
+	[[
+		"backdrop-invert",
+		" 0",
+		128
+	]],
+	[[
+		"backdrop-opacity",
+		null,
+		1152
+	]],
+	[[
+		"backdrop-saturate",
+		null,
+		1152
+	]],
+	[[
+		"backdrop-sepia",
+		" 0",
+		128
+	]],
+	[[
+		"border",
+		"collapse separate",
+		0
+	]],
+	[[
+		"border-spacing",
+		null,
+		644
+	]],
+	[[
+		"border-spacing-x",
+		null,
+		644
+	]],
+	[[
+		"border-spacing-y",
+		null,
+		644
+	]],
+	[[
+		"table",
+		"auto fixed",
+		0
+	]],
+	[[
+		"caption",
+		"top bottom",
+		0
+	]],
+	[[
+		"transition",
+		"none all  colors opacity shadow transform",
+		128
+	]],
+	[[
+		"duration",
+		null,
+		1152
+	]],
+	[[
+		"ease",
+		"linear in out in-out",
+		128
+	]],
+	[[
+		"delay",
+		null,
+		1152
+	]],
+	[[
+		"animate",
+		"none spin ping pulse bounce",
+		128
+	]],
+	[[
+		"transform",
+		" gpu none",
+		0
+	]],
+	[[
+		"scale",
+		null,
+		1152
+	]],
+	[[
+		"scale-x",
+		null,
+		1152
+	]],
+	[[
+		"scale-y",
+		null,
+		1152
+	]],
+	[[
+		"rotate",
+		null,
+		384
+	]],
+	[[
+		"translate-x",
+		null,
+		644
+	]],
+	[[
+		"translate-y",
+		null,
+		644
+	]],
+	[[
+		"skew-x",
+		null,
+		1152
+	]],
+	[[
+		"skew-y",
+		null,
+		1152
+	]],
+	[[
+		"origin",
+		"center top top-right right bottom-right bottom bottom-left left top-left",
+		128
+	]],
+	[[
+		"accent",
+		"auto",
+		1
+	]],
+	[[
+		"appearance",
+		"none auto",
+		0
+	]],
+	[[
+		"cursor",
+		"auto default pointer wait text move help not-allowed none context-menu progress cell crosshair vertical-text alias copy no-drop grab grabbing all-scroll col-resize row-resize n-resize e-resize s-resize w-resize ne-resize nw-resize se-resize sw-resize ew-resize ns-resize nesw-resize nwse-resize zoom-in zoom-out",
+		128
+	]],
+	[[
+		"caret",
+		null,
+		1
+	]],
+	[[
+		"pointer-events",
+		"none auto",
+		0
+	]],
+	[[
+		"resize",
+		"none y x ",
+		0
+	]],
+	[[
+		"scroll",
+		"auto smooth",
+		0
+	]],
+	[[
+		"scroll-m",
+		null,
+		644
+	]],
+	[[
+		"scroll-mx",
+		null,
+		644
+	]],
+	[[
+		"scroll-my",
+		null,
+		644
+	]],
+	[[
+		"scroll-ms",
+		null,
+		644
+	]],
+	[[
+		"scroll-me",
+		null,
+		644
+	]],
+	[[
+		"scroll-mt",
+		null,
+		644
+	]],
+	[[
+		"scroll-mr",
+		null,
+		644
+	]],
+	[[
+		"scroll-mb",
+		null,
+		644
+	]],
+	[[
+		"scroll-ml",
+		null,
+		644
+	]],
+	[[
+		"scroll-p",
+		null,
+		644
+	]],
+	[[
+		"scroll-px",
+		null,
+		644
+	]],
+	[[
+		"scroll-py",
+		null,
+		644
+	]],
+	[[
+		"scroll-ps",
+		null,
+		644
+	]],
+	[[
+		"scroll-pe",
+		null,
+		644
+	]],
+	[[
+		"scroll-pt",
+		null,
+		644
+	]],
+	[[
+		"scroll-pr",
+		null,
+		644
+	]],
+	[[
+		"scroll-pb",
+		null,
+		644
+	]],
+	[[
+		"scroll-pl",
+		null,
+		644
+	]],
+	[[
+		"snap",
+		"start end center align-none",
+		0
+	]],
+	[[
+		"snap",
+		"normal always",
+		0
+	]],
+	[[
+		"snap",
+		"none x y both",
+		0
+	]],
+	[[
+		"snap",
+		"mandatory proximity",
+		0
+	]],
+	[[
+		"touch",
+		"auto none manipulation",
+		0
+	]],
+	[[
+		"touch-pan",
+		"x left right",
+		0
+	]],
+	[[
+		"touch-pan",
+		"y up down",
+		0
+	]],
+	[[
+		"",
+		"touch-pinch-zoom",
+		0
+	]],
+	[[
+		"select",
+		"none text all auto",
+		0
+	]],
+	[[
+		"will-change",
+		"auto scroll contents transform",
+		128
+	]],
+	[[
+		"fill",
+		"none",
+		1
+	]],
+	[[
+		"stroke",
+		null,
+		524
+	]],
+	[[
+		"stroke",
+		"none",
+		1
+	]],
+	[[
+		"",
+		"sr-only not-sr-only",
+		0
+	]],
+	[[
+		"forced-color-adjust",
+		"auto none",
+		0
+	]]
+];
+const CLASS_CONFLICTS = {
+	15: [16, 17],
+	18: [19, 20],
+	22: [
+		23,
+		24,
+		25,
+		26,
+		27,
+		28,
+		29,
+		30
+	],
+	23: [28, 30],
+	24: [27, 29],
+	36: [
+		33,
+		37,
+		38
+	],
+	51: [52, 53],
+	63: [
+		64,
+		65,
+		66,
+		67,
+		68,
+		69,
+		70,
+		71
+	],
+	64: [69, 71],
+	65: [68, 70],
+	72: [
+		73,
+		74,
+		75,
+		76,
+		77,
+		78,
+		79,
+		80
+	],
+	73: [78, 80],
+	74: [77, 79],
+	91: [85, 88],
+	92: [105],
+	97: [
+		98,
+		99,
+		100,
+		101,
+		102
+	],
+	98: [97],
+	99: [97],
+	100: [97],
+	101: [97],
+	102: [97],
+	104: [9, 15],
+	143: [
+		144,
+		145,
+		146,
+		147,
+		148,
+		149,
+		150,
+		151,
+		152,
+		153,
+		154,
+		155,
+		156,
+		157
+	],
+	144: [150, 153],
+	145: [151, 152],
+	146: [154, 155],
+	147: [155, 156],
+	148: [156, 157],
+	149: [154, 157],
+	221: [222, 223],
+	158: [
+		161,
+		162,
+		163,
+		164,
+		165,
+		166
+	],
+	159: [164, 166],
+	160: [163, 165],
+	175: [
+		178,
+		179,
+		180,
+		181,
+		182,
+		183
+	],
+	176: [181, 183],
+	177: [180, 182],
+	248: [
+		249,
+		250,
+		251,
+		252,
+		253,
+		254,
+		255,
+		256
+	],
+	249: [254, 256],
+	250: [253, 255],
+	257: [
+		258,
+		259,
+		260,
+		261,
+		262,
+		263,
+		264,
+		265
+	],
+	258: [263, 265],
+	259: [262, 264],
+	270: [
+		271,
+		272,
+		273
+	],
+	271: [270],
+	272: [270],
+	273: [270]
+};
+const POSTFIX_CONFLICTS = { 92: [105] };
+
+//#endregion
+//#region src/helper/clsx.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const arbitraryValue = /^\[(?:([a-z-]+):)?(.+)\]$/i;
+const lengthValue = /\d+(%|px|r?em|[sdl]?v([hwib]|min|max)|pt|pc|in|cm|mm|cap|ch|ex|r?lh|cq(w|h|i|b|min|max))|\b(calc|min|max|clamp)\(.+\)|^0$/;
+const colorValue = /^(rgba?|hsla?|hwb|(ok)?(lab|lch))\(.+\)$/;
+function isNumber(value) {
+	return Boolean(value) && !Number.isNaN(Number(value));
+}
+function isArbitrary(value, labels, test = () => false) {
+	const match = arbitraryValue.exec(value);
+	return !!match && (match[1] ? labels.includes(match[1]) : test(match[2]));
+}
+const validators = {
+	isAny: () => true,
+	isArbitraryImage: (value) => isArbitrary(value, ["image", "url"], (value) => /^(url|image|image-set|cross-fade|element|(repeating-)?(linear|radial|conic)-gradient)\(.+\)$/.test(value)),
+	isArbitraryLength: (value) => isArbitrary(value, ["length"], (value) => lengthValue.test(value) && !colorValue.test(value)),
+	isArbitraryNumber: (value) => isArbitrary(value, ["number"], isNumber),
+	isArbitraryPosition: (value) => isArbitrary(value, ["position"]),
+	isArbitraryShadow: (value) => isArbitrary(value, [], (value) => /^(inset_)?-?((\d+)?\.?(\d+)[a-z]+|0)_-?((\d+)?\.?(\d+)[a-z]+|0)/.test(value)),
+	isArbitrarySize: (value) => isArbitrary(value, [
+		"length",
+		"size",
+		"percentage"
+	]),
+	isArbitraryValue: (value) => arbitraryValue.test(value),
+	isInteger: (value) => Boolean(value) && Number.isInteger(Number(value)),
+	isLength: (value) => isNumber(value) || [
+		"px",
+		"full",
+		"screen"
+	].includes(value) || /^\d+\/\d+$/.test(value),
+	isNumber,
+	isPercent: (value) => value.endsWith("%") && isNumber(value.slice(0, -1)),
+	isTshirtSize: (value) => /^(\d+(\.\d+)?)?(xs|sm|md|lg|xl)$/.test(value)
+};
+const classValidators = VALIDATOR_NAMES.map((name) => validators[name]);
+const classPatterns = /* @__PURE__ */ new Map();
+const classGroups = /* @__PURE__ */ new Map();
+const cache = /* @__PURE__ */ new Map();
+const cacheKeys = cache.keys();
+const tokens = /* @__PURE__ */ new Map();
+const tokenKeys = tokens.keys();
+const plainTokens = [];
+CLASS_GROUPS.forEach((rules, index) => {
+	for (const [prefix, literals, mask] of rules) {
+		if (literals !== null) for (const suffix of literals.split(" ")) classGroups.set(prefix + (prefix && suffix ? "-" : "") + suffix, index + 1);
+		if (mask) {
+			const patterns = classPatterns.get(prefix) ?? [];
+			patterns.push(index + 1, mask);
+			classPatterns.set(prefix, patterns);
+		}
+	}
+});
+function getClassGroup(className) {
+	const positive = className.startsWith("-") ? className.slice(1) : className;
+	if (!positive.startsWith("univer-")) {
+		const property = /^\[([^:]+):.+\]$/.exec(className);
+		return property ? `arbitrary..${property[1]}` : void 0;
+	}
+	const utility = positive.slice(7);
+	const exact = classGroups.get(utility);
+	if (exact !== void 0) return exact;
+	for (let end = utility.lastIndexOf("-"); end > 0; end = utility.lastIndexOf("-", end - 1)) {
+		const rules = classPatterns.get(utility.slice(0, end));
+		if (!rules) continue;
+		const value = utility.slice(end + 1);
+		for (let index = 0; index < rules.length; index += 2) for (let mask = rules[index + 1]; mask; mask &= mask - 1) {
+			const validator = 31 - Math.clz32(mask & -mask);
+			if (classValidators[validator](value)) return rules[index];
+		}
+	}
+}
+function joinClasses(inputs) {
+	let result = "";
+	for (const value of inputs) {
+		if (!value) continue;
+		let joined = "";
+		if (typeof value === "string" || typeof value === "number") joined = String(value);
+		else if (Array.isArray(value)) joined = joinClasses(value);
+		else if (typeof value === "object") {
+			for (const key in value) if (value[key]) result += (result ? " " : "") + key;
+		}
+		if (joined) result += (result ? " " : "") + joined;
+	}
+	return result;
+}
+function parseClassName(original) {
+	const modifiers = [];
+	let sortable = [];
+	let depth = 0;
+	let start = 0;
+	let slash = -1;
+	for (let position = 0; position < original.length; position++) {
+		const character = original[position];
+		if (depth === 0 && character === ":") {
+			const modifier = original.slice(start, position);
+			if (modifier.startsWith("[")) {
+				modifiers.push(...sortable.sort(), modifier);
+				sortable = [];
+			} else sortable.push(modifier);
+			start = position + 1;
+		} else if (depth === 0 && character === "/") slash = position;
+		else if (character === "[") depth++;
+		else if (character === "]") depth--;
+	}
+	const important = original[start] === "!";
+	if (important) start++;
+	let hasPostfix = slash > start;
+	let group = getClassGroup(original.slice(start, hasPostfix ? slash : void 0));
+	if (group === void 0 && hasPostfix) {
+		group = getClassGroup(original.slice(start));
+		hasPostfix = false;
+	}
+	modifiers.push(...sortable.sort());
+	return {
+		group,
+		hasPostfix,
+		scope: `${modifiers.join(":")}|${important ? "!" : ""}`
+	};
+}
+function getClassToken(original) {
+	const cacheable = original.indexOf("[") === -1;
+	if (cacheable) {
+		const cached = tokens.get(original);
+		if (cached !== void 0) return cached;
+	}
+	let group;
+	let scope = "|";
+	let hasPostfix = false;
+	if (original.indexOf(":") === -1 && original.indexOf("/") === -1) {
+		const important = original[0] === "!";
+		group = getClassGroup(important ? original.slice(1) : original);
+		scope = important ? "|!" : "|";
+	} else ({group, scope, hasPostfix} = parseClassName(original));
+	const token = group === void 0 ? null : createClassToken(group, scope, hasPostfix);
+	if (cacheable) {
+		if (tokens.size >= 2048) tokens.delete(tokenKeys.next().value);
+		tokens.set(original, token);
+	}
+	return token;
+}
+function createClassToken(group, scope, hasPostfix) {
+	const plain = scope === "|" || scope === "|!";
+	const offset = scope === "|!" ? CLASS_GROUPS.length : 0;
+	const id = plain && typeof group === "number" ? group + offset : scope + group;
+	const postfix = hasPostfix && typeof group === "number" ? POSTFIX_CONFLICTS[group] : void 0;
+	const cached = typeof id === "number" && !postfix ? plainTokens[id] : void 0;
+	if (cached) return cached;
+	const token = {
+		id,
+		conflicts: typeof group === "number" ? [...CLASS_CONFLICTS[group] ?? [], ...postfix ?? []].map((conflict) => plain ? conflict + offset : scope + conflict) : []
+	};
+	if (typeof id === "number" && !postfix) plainTokens[id] = token;
+	return token;
+}
+/** Joins conditional classes and resolves Tailwind CSS v3 conflicts for the univer- prefix. */
+function clsx(...inputs) {
+	const classList = inputs.length === 1 && typeof inputs[0] === "string" ? inputs[0] : joinClasses(inputs);
+	const cached = cache.get(classList);
+	if (cached !== void 0) return cached;
+	const classes = classList.trim().split(/\s+/);
+	const conflicts = /* @__PURE__ */ new Set();
+	let result = "";
+	for (let index = classes.length - 1; index >= 0; index--) {
+		const original = classes[index];
+		const token = getClassToken(original);
+		if (token) {
+			if (conflicts.has(token.id)) continue;
+			conflicts.add(token.id);
+			for (const conflict of token.conflicts) conflicts.add(conflict);
+		}
+		result = original + (result ? ` ${result}` : "");
+	}
+	if (cache.size >= 1e3) cache.delete(cacheKeys.next().value);
+	cache.set(classList, result);
+	return result;
+}
+
+//#endregion
+//#region src/components/accordion/Accordion.tsx
+function Accordion(props) {
+	const { className, defaultOpenIndex = null, items, onOpenIndexChange } = props;
+	const [innerOpenIndex, setInnerOpenIndex] = (0, react.useState)(defaultOpenIndex);
+	const openIndex = props.openIndex ?? innerOpenIndex;
+	const toggleItem = (index) => {
+		const nextOpenIndex = openIndex === index ? null : index;
+		if (props.openIndex === void 0) setInnerOpenIndex(nextOpenIndex);
+		onOpenIndexChange === null || onOpenIndexChange === void 0 || onOpenIndexChange(nextOpenIndex);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		"data-u-comp": "accordion",
+		className: clsx("univer-divide-x-0 univer-divide-y univer-divide-solid univer-divide-gray-200 dark:!univer-divide-gray-600", className),
+		children: items.map((item, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+			className: "univer-box-border univer-flex univer-w-full univer-cursor-pointer univer-items-center univer-gap-1.5 univer-border-none univer-bg-transparent univer-p-4 univer-text-left univer-text-gray-700 hover:univer-text-gray-900 focus:univer-outline-none dark:!univer-text-gray-200 dark:hover:!univer-text-gray-0",
+			type: "button",
+			onClick: () => toggleItem(index),
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.DownIcon, {
+				"aria-hidden": "true",
+				className: clsx("univer-size-2.5 univer-flex-shrink-0 univer-transition-transform", {
+					"-univer-rotate-90 rtl:univer-rotate-90": openIndex !== index,
+					"univer-rotate-0": openIndex === index
+				})
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-font-medium",
+				children: item.label
+			})]
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: clsx("univer-overflow-hidden univer-transition-[max-height,opacity] univer-duration-500 univer-ease-in-out", {
+				"univer-max-h-screen": openIndex === index,
+				"univer-max-h-0": openIndex !== index
+			}),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-box-border univer-px-4 univer-py-1.5",
+				children: item.children
+			})
+		})] }, item.id ?? index))
+	});
+}
+
+//#endregion
+//#region src/helper/is-browser.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function isBrowser() {
+	return typeof window !== "undefined" && typeof document !== "undefined";
+}
+
+//#endregion
+//#region src/components/config-provider/ConfigProvider.tsx
+const ConfigContext = (0, react.createContext)({ mountContainer: isBrowser() ? document.body : null });
+function ConfigProvider(props) {
+	const { children, locale, mountContainer, direction, disableTooltips, mobile } = props;
+	const parentConfig = (0, react.useContext)(ConfigContext);
+	const resolvedDisableTooltips = disableTooltips ?? parentConfig.disableTooltips;
+	const resolvedMobile = mobile ?? parentConfig.mobile;
+	const value = (0, react.useMemo)(() => {
+		return {
+			locale,
+			direction,
+			mountContainer,
+			disableTooltips: resolvedDisableTooltips,
+			mobile: resolvedMobile
+		};
+	}, [
+		locale,
+		direction,
+		mountContainer,
+		resolvedDisableTooltips,
+		resolvedMobile
+	]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ConfigContext.Provider, {
+		value,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_direction.DirectionProvider, {
+			dir: direction ?? "ltr",
+			children
+		})
+	});
+}
+
+//#endregion
+//#region src/components/action-row/ActionRow.tsx
+function ActionRow({ className, ...props }) {
+	const { mobile } = (0, react.useContext)(ConfigContext);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: clsx(className, mobile && "univer-flex univer-w-full univer-justify-stretch univer-gap-3 [&>button]:!univer-m-0 [&>button]:!univer-h-12 [&>button]:!univer-min-w-0 [&>button]:!univer-flex-1 [&>button]:!univer-rounded-xl"),
+		...props
+	});
+}
+
+//#endregion
+//#region src/components/avatar/Avatar.tsx
+const avatarVariants = (0, class_variance_authority.cva)("univer-relative univer-inline-block univer-overflow-hidden univer-whitespace-nowrap univer-bg-gray-200 univer-text-center univer-align-middle univer-text-gray-0", {
+	variants: {
+		/**
+		* The shape of the avatar
+		* @default 'circle'
+		*/
+		shape: {
+			circle: "univer-rounded-full",
+			square: "univer-rounded"
+		},
+		size: {
+			middle: "univer-size-9 univer-leading-9",
+			small: "univer-size-7 univer-leading-7"
+		}
+	},
+	defaultVariants: {
+		shape: "circle",
+		size: "middle"
+	}
+});
+/**
+* Avatar Component
+*/
+function Avatar(props) {
+	const { children, className, style, title, alt, shape = "circle", size = "middle", src, fit = "fill", onError, onLoad } = props;
+	const sizeStyle = typeof size === "number" ? {
+		width: `${size}px`,
+		height: `${size}px`,
+		lineHeight: `${size}px`
+	} : {};
+	const fitStyle = { objectFit: fit };
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+		className: clsx(avatarVariants({
+			shape,
+			size: typeof size === "number" ? "middle" : size
+		}), { "univer-bg-transparent": src }, className),
+		style: {
+			...sizeStyle,
+			...style,
+			...src && fitStyle
+		},
+		children: [src && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("img", {
+			className: "univer-block univer-size-full",
+			src,
+			title,
+			alt,
+			onError,
+			onLoad
+		}), children]
+	});
+}
+
+//#endregion
+//#region src/components/badge/Badge.tsx
+function Badge(props) {
+	const { className, children, closable = false, onClose } = props;
+	const { locale } = (0, react.useContext)(ConfigContext);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+		"data-u-comp": "badge",
+		className: clsx("univer-box-border univer-inline-flex univer-items-center univer-gap-1 univer-truncate univer-rounded-md univer-border univer-border-solid univer-border-gray-100 univer-bg-gray-100 univer-px-2.5 univer-py-0.5 univer-text-xs univer-font-medium univer-text-gray-900 dark:!univer-border-gray-500 dark:!univer-bg-gray-700 dark:!univer-text-gray-300", className),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: "univer-flex-1 univer-truncate",
+			children
+		}), closable && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+			className: "univer-flex univer-cursor-pointer univer-items-center univer-justify-center univer-border-none univer-p-0 univer-outline-none univer-transition-opacity hover:univer-opacity-70",
+			type: "button",
+			"aria-label": locale === null || locale === void 0 ? void 0 : locale.Accessibility.closeBadge,
+			onClick: onClose,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, { className: "univer-text-current" })
+		})]
+	});
+}
+
+//#endregion
+//#region src/components/button/Button.tsx
+const buttonVariants = (0, class_variance_authority.cva)("univer-box-border univer-inline-flex univer-cursor-pointer univer-select-none univer-items-center univer-justify-center univer-gap-2 univer-whitespace-nowrap univer-rounded-md univer-border univer-border-solid univer-text-sm univer-font-medium univer-transition-colors disabled:univer-pointer-events-none disabled:univer-cursor-not-allowed disabled:univer-opacity-50 [&_svg]:univer-pointer-events-none [&_svg]:univer-size-4 [&_svg]:univer-shrink-0", {
+	variants: {
+		variant: {
+			default: "univer-border-gray-200 univer-bg-gray-0 univer-text-gray-700 hover:univer-bg-gray-100 active:univer-bg-gray-200 dark:!univer-border-gray-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-600 dark:active:!univer-bg-gray-700",
+			primary: "univer-border-primary-600 univer-bg-primary-600 univer-text-gray-0 hover:univer-bg-primary-500 active:univer-bg-primary-700",
+			danger: "univer-border-red-500 univer-bg-red-500 univer-text-gray-0 hover:univer-border-red-400 hover:univer-bg-red-400 active:univer-border-red-600 active:univer-bg-red-600",
+			text: "univer-border-transparent univer-bg-transparent univer-text-gray-900 hover:univer-bg-gray-100 active:univer-bg-gray-200 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700 dark:active:!univer-bg-gray-600",
+			link: "univer-underline-current univer-border-transparent univer-bg-transparent univer-text-primary-600 univer-underline-offset-4 hover:univer-text-primary-500 hover:univer-underline active:univer-text-primary-700",
+			ghost: "univer-border-transparent univer-bg-transparent univer-text-gray-900 hover:univer-bg-gray-100 active:univer-bg-gray-200 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700 dark:active:!univer-bg-gray-600"
+		},
+		size: {
+			icon: "univer-size-8 !univer-p-0",
+			small: "univer-h-6 univer-rounded-md univer-px-1.5 univer-text-xs",
+			middle: "univer-h-8 univer-rounded-lg univer-px-2 univer-text-sm",
+			large: "univer-h-10 univer-rounded-lg univer-px-3 univer-text-sm"
+		}
+	},
+	defaultVariants: {
+		variant: "default",
+		size: "middle"
+	}
+});
+const Button = (0, react.forwardRef)(({ className, variant, size, asChild = false, ...props }, ref) => {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(asChild ? _radix_ui_react_slot.Slot : "button", {
+		className: clsx(buttonVariants({
+			variant,
+			size,
+			className
+		})),
+		ref,
+		"data-u-comp": "button",
+		...props
+	});
+});
+Button.displayName = "Button";
+
+//#endregion
+//#region src/components/button/ButtonGroup.tsx
+const ButtonGroup = ({ className, orientation = "horizontal", children }) => {
+	const { direction } = (0, react.useContext)(ConfigContext);
+	const totalButtons = react.Children.count(children);
+	const isHorizontal = orientation === "horizontal";
+	const isVertical = orientation === "vertical";
+	const isRtl = direction === "rtl";
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: clsx("univer-grid", {
+			"univer-grid-flow-row": isVertical,
+			"univer-w-fit": isVertical
+		}, className),
+		children: react.Children.map(children, (child, index) => {
+			const isFirst = index === 0;
+			const isLast = index === totalButtons - 1;
+			return (0, react.cloneElement)(child, { className: clsx({
+				"!univer-rounded-l-none": isHorizontal && (isRtl ? !isLast : !isFirst),
+				"!univer-rounded-r-none": isHorizontal && (isRtl ? !isFirst : !isLast),
+				"!univer-border-l-0": isHorizontal && !isRtl && !isFirst,
+				"!univer-border-r-0": isHorizontal && isRtl && !isFirst,
+				"!univer-rounded-t-none": isVertical && !isFirst,
+				"!univer-rounded-b-none": isVertical && !isLast,
+				"!univer-border-t-0": isVertical && !isFirst
+			}, child.props.className) });
+		})
+	});
+};
+
+//#endregion
+//#region src/components/button/StateIconButton.tsx
+/** Active object states use the primary theme token in both light and dark themes. */
+function StateIconButton({ active, emphasizeActive = false, className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+		...props,
+		variant: "ghost",
+		size: "icon",
+		className: clsx("univer-size-7 univer-shrink-0 focus-visible:univer-outline focus-visible:univer-outline-2 focus-visible:univer-outline-offset-1 focus-visible:univer-outline-primary-500", active ? "!univer-text-primary-600 dark:!univer-text-primary-400" : "!univer-text-gray-500 hover:!univer-text-gray-900 focus-visible:!univer-text-gray-900 dark:!univer-text-gray-300 dark:hover:!univer-text-gray-100 dark:focus-visible:!univer-text-gray-100", active && emphasizeActive && "!univer-border-primary-300 !univer-bg-primary-50 hover:!univer-bg-primary-100 dark:!univer-border-primary-700 dark:!univer-bg-primary-900 dark:!univer-text-primary-100 dark:hover:!univer-bg-primary-800", className)
+	});
+}
+
+//#endregion
+//#region src/helper/class-utilities.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const scrollbarClassName = "univer-scrollbar-thin univer-scrollbar-track-gray-50 univer-scrollbar-thumb-gray-300 dark:!univer-scrollbar-track-gray-900 dark:!univer-scrollbar-thumb-gray-700";
+const borderBasicClassName = "univer-border-gray-200 dark:!univer-border-gray-600 univer-border-solid";
+const borderClassName = clsx(borderBasicClassName, "univer-border");
+const borderLeftBottomClassName = clsx(borderBasicClassName, "univer-border-l univer-border-b univer-border-t-0 univer-border-r-0");
+const borderLeftClassName = clsx(borderBasicClassName, "univer-border-l univer-border-b-0 univer-border-t-0 univer-border-r-0");
+const borderLeftRTLClassName = clsx(borderBasicClassName, "univer-border-b-0 univer-border-t-0 rtl:univer-border-l-0 rtl:univer-border-r");
+const borderTopClassName = clsx(borderBasicClassName, "univer-border-l-0 univer-border-b-0 univer-border-t univer-border-r-0");
+const borderBottomClassName = clsx(borderBasicClassName, "univer-border-l-0 univer-border-b univer-border-t-0 univer-border-r-0");
+const borderRightClassName = clsx(borderBasicClassName, "univer-border-l-0 univer-border-b-0 univer-border-t-0 univer-border-r");
+const divideYClassName = "univer-divide-gray-200 dark:!univer-divide-gray-600 univer-divide-y univer-divide-x-0 univer-divide-solid";
+const divideXClassName = "univer-divide-gray-200 dark:!univer-divide-gray-600 univer-divide-x univer-divide-y-0 univer-divide-solid";
+const resetButtonClassName = "univer-m-0 univer-flex univer-appearance-none univer-items-center univer-justify-center univer-border-0 univer-bg-transparent univer-p-0 univer-leading-none univer-outline-none univer-cursor-pointer";
+
+//#endregion
+//#region src/components/dropdown-menu/DropdownMenuPrimitive.tsx
+function DropdownMenuPrimitive({ ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.Root, {
+		"data-slot": "dropdown-menu",
+		...props
+	});
+}
+function DropdownMenuPortal({ ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.Portal, {
+		"data-slot": "dropdown-menu-portal",
+		...props
+	});
+}
+function DropdownMenuTrigger({ ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.Trigger, {
+		"data-slot": "dropdown-menu-trigger",
+		...props
+	});
+}
+function DropdownMenuSub({ ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.Sub, {
+		"data-slot": "dropdown-menu-sub",
+		...props
+	});
+}
+function DropdownMenuRadioGroup({ ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.RadioGroup, {
+		"data-slot": "dropdown-menu-radio-group",
+		...props
+	});
+}
+function DropdownMenuSubTrigger({ className, inset, children, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_radix_ui_react_dropdown_menu.SubTrigger, {
+		"data-slot": "dropdown-menu-sub-trigger",
+		"data-inset": inset,
+		className: clsx("univer-flex univer-cursor-default univer-select-none univer-items-center univer-justify-between univer-gap-2 univer-rounded univer-px-2 univer-py-1.5 univer-text-sm univer-outline-none data-[state=open]:univer-bg-gray-100 focus:univer-bg-gray-100 dark:data-[state=open]:!univer-bg-gray-600 dark:focus:!univer-bg-gray-600 [&_svg]:univer-pointer-events-none [&_svg]:univer-size-4 [&_svg]:univer-shrink-0", className),
+		...props,
+		children: [children, /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreRightIcon, { className: "ml-auto" })]
+	});
+}
+function DropdownMenuSubContent({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.SubContent, {
+		"data-slot": "dropdown-menu-sub-content",
+		className: clsx("data-[state=open]:univer-animate-in data-[state=open]:univer-fade-in-0 data-[state=open]:univer-zoom-in-95 data-[state=closed]:univer-animate-out data-[state=closed]:univer-fade-out-0 data-[state=closed]:univer-zoom-out-95 data-[side=bottom]:univer-slide-in-from-top-2 data-[side=left]:univer-slide-in-from-right-2 data-[side=right]:univer-slide-in-from-left-2 data-[side=top]:univer-slide-in-from-bottom-2 univer-z-[1080] univer-box-border univer-max-h-[--radix-popper-available-height] univer-overflow-y-auto univer-rounded-md univer-bg-gray-0 univer-p-1.5 univer-text-gray-900 univer-shadow-md dark:!univer-bg-gray-700 dark:!univer-text-gray-0", borderClassName, scrollbarClassName, className),
+		...props
+	});
+}
+function DropdownMenuContent({ className, sideOffset = 4, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.Portal, { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.Content, {
+		"data-slot": "dropdown-menu-content",
+		sideOffset,
+		className: clsx("data-[state=open]:univer-animate-in data-[state=open]:univer-fade-in-0 data-[state=open]:univer-zoom-in-95 data-[state=closed]:univer-animate-out data-[state=closed]:univer-fade-out-0 data-[state=closed]:univer-zoom-out-95 data-[side=bottom]:univer-slide-in-from-top-2 data-[side=left]:univer-slide-in-from-right-2 data-[side=right]:univer-slide-in-from-left-2 data-[side=top]:univer-slide-in-from-bottom-2 univer-z-[1080] univer-box-border univer-max-h-[--radix-popper-available-height] univer-overflow-y-auto univer-rounded-md univer-bg-gray-0 univer-p-1.5 univer-text-gray-900 univer-shadow-md dark:!univer-bg-gray-700 dark:!univer-text-gray-0", borderClassName, scrollbarClassName, className),
+		...props
+	}) });
+}
+function DropdownMenuItem({ className, inset, variant = "default", ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.Item, {
+		"data-slot": "dropdown-menu-item",
+		"data-inset": inset,
+		"data-variant": variant,
+		className: clsx("univer-relative univer-flex univer-cursor-default univer-select-none univer-items-center univer-gap-2 univer-rounded univer-px-2 univer-py-1.5 univer-text-sm univer-outline-none univer-transition-colors data-[disabled]:univer-pointer-events-none data-[variant=destructive]:univer-text-red-600 data-[disabled]:univer-opacity-50 focus:univer-bg-gray-100 data-[variant=destructive]:focus:univer-bg-red-50 dark:data-[variant=destructive]:!univer-text-red-400 dark:focus:!univer-bg-gray-600 dark:data-[variant=destructive]:focus:!univer-bg-red-900 [&>svg]:univer-size-4 [&>svg]:univer-shrink-0", className),
+		...props
+	});
+}
+function DropdownMenuCheckboxItem({ className, children, hideIndicator, checked, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_radix_ui_react_dropdown_menu.CheckboxItem, {
+		"data-slot": "dropdown-menu-checkbox-item",
+		className: clsx("univer-relative univer-flex univer-cursor-default univer-select-none univer-items-center univer-rounded univer-py-1.5 univer-pr-2 univer-text-sm univer-outline-none univer-transition-colors data-[disabled]:univer-pointer-events-none data-[disabled]:univer-opacity-50 focus:univer-bg-gray-100 dark:focus:!univer-bg-gray-600", {
+			"univer-pl-8": !hideIndicator,
+			"univer-pl-2": hideIndicator
+		}, className),
+		checked,
+		...props,
+		children: [!hideIndicator && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: "univer-absolute univer-left-2 univer-flex univer-size-3.5 univer-items-center univer-justify-center",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.ItemIndicator, { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, { className: "univer-block univer-size-4 univer-fill-current univer-text-primary-600" }) })
+		}), children]
+	});
+}
+function DropdownMenuRadioItem({ className, children, hideIndicator, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_radix_ui_react_dropdown_menu.RadioItem, {
+		"data-slot": "dropdown-menu-radio-item",
+		className: clsx("univer-relative univer-flex univer-cursor-default univer-select-none univer-items-center univer-rounded univer-py-1.5 univer-pr-2 univer-text-sm univer-outline-none univer-transition-colors data-[disabled]:univer-pointer-events-none data-[disabled]:univer-opacity-50 focus:univer-bg-gray-100 dark:focus:!univer-bg-gray-600", {
+			"univer-pl-8": !hideIndicator,
+			"univer-pl-2": hideIndicator
+		}, className),
+		...props,
+		children: [!hideIndicator && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: "univer-absolute univer-left-2 univer-flex univer-size-3.5 univer-items-center univer-justify-center",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.ItemIndicator, { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, { className: "univer-block univer-size-4 univer-fill-current univer-text-primary-600" }) })
+		}), children]
+	});
+}
+function DropdownMenuSeparator({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dropdown_menu.Separator, {
+		className: clsx("-univer-mx-1 univer-my-1 univer-h-px univer-bg-gray-200 dark:!univer-bg-gray-600", className),
+		...props
+	});
+}
+
+//#endregion
+//#region src/components/dialog/DialogPrimitive.tsx
+const Dialog$1 = _radix_ui_react_dialog.Root;
+const DialogTrigger = _radix_ui_react_dialog.Trigger;
+const DialogPortal = _radix_ui_react_dialog.Portal;
+const DialogOverlay = (0, react.forwardRef)(({ className, ...props }, ref) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dialog.Overlay, {
+	ref,
+	className: clsx("data-[state=open]:univer-animate-in data-[state=open]:univer-fade-in-0 data-[state=closed]:univer-animate-out data-[state=closed]:univer-fade-out-0 univer-fixed univer-inset-0 univer-z-[1080] univer-bg-[rgba(0,0,0,0.8)]", className),
+	...props
+}));
+DialogOverlay.displayName = _radix_ui_react_dialog.Overlay.displayName;
+const DialogContent = (0, react.forwardRef)(({ className, children, closable = true, onClickClose, mountContainer, overlayClassName, ...props }, ref) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(DialogPortal, {
+	container: mountContainer ?? void 0,
+	children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DialogOverlay, { className: overlayClassName }), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_radix_ui_react_dialog.Content, {
+		ref,
+		className: clsx("data-[state=open]:univer-animate-in data-[state=open]:univer-fade-in-0 data-[state=open]:univer-zoom-in-95 data-[state=open]:univer-slide-in-from-left-1/2 data-[state=open]:univer-slide-in-from-top-[48%] data-[state=closed]:univer-animate-out data-[state=closed]:univer-fade-out-0 data-[state=closed]:univer-zoom-out-95 data-[state=closed]:univer-slide-out-to-left-1/2 data-[state=closed]:univer-slide-out-to-top-[48%] univer-fixed univer-left-1/2 univer-top-1/2 univer-z-[1080] univer-box-border univer-grid univer-w-full univer-max-w-lg -univer-translate-x-1/2 -univer-translate-y-1/2 univer-gap-4 univer-bg-gray-0 univer-p-4 univer-text-gray-500 univer-shadow-md univer-duration-200 sm:!univer-rounded-lg dark:!univer-bg-gray-700 dark:!univer-text-gray-400", borderClassName, className),
+		...props,
+		children: [children, closable && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_radix_ui_react_dialog.Close, {
+			"data-slot": "close",
+			className: "univer-absolute univer-right-4 univer-top-4 univer-size-6 univer-cursor-pointer univer-rounded-sm univer-border-none univer-bg-transparent univer-p-0 univer-transition-opacity hover:univer-opacity-100 disabled:univer-pointer-events-none rtl:univer-left-4 rtl:univer-right-auto",
+			onClick: onClickClose,
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, { className: "univer-size-4 univer-text-gray-400" }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-sr-only",
+				children: "Close"
+			})]
+		})]
+	})]
+}));
+DialogContent.displayName = _radix_ui_react_dialog.Content.displayName;
+const DialogHeader = ({ className, ...props }) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+	"data-slot": "dialog-header",
+	className: clsx("univer-flex univer-flex-col univer-space-y-1.5 univer-text-center sm:!univer-text-left sm:rtl:!univer-text-right", className),
+	...props
+});
+DialogHeader.displayName = "DialogHeader";
+const DialogFooter = ({ className, ...props }) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+	className: clsx("univer-flex univer-flex-col-reverse sm:!univer-flex-row sm:!univer-justify-end sm:!univer-space-x-2", className),
+	...props
+});
+DialogFooter.displayName = "DialogFooter";
+const DialogTitle = (0, react.forwardRef)(({ className, ...props }, ref) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dialog.Title, {
+	ref,
+	className: clsx("univer-my-0 univer-text-lg univer-font-semibold univer-leading-none univer-tracking-tight univer-text-gray-900 dark:!univer-text-gray-0", className),
+	...props
+}));
+DialogTitle.displayName = _radix_ui_react_dialog.Title.displayName;
+const DialogDescription = (0, react.forwardRef)(({ className, ...props }, ref) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_dialog.Description, {
+	ref,
+	className: clsx("univer-text-sm univer-text-gray-500", className),
+	...props
+}));
+DialogDescription.displayName = _radix_ui_react_dialog.Description.displayName;
+
+//#endregion
+//#region src/components/dropdown/MobileDropdownSurface.tsx
+function MobileDropdownSurface(props) {
+	const { children, content, open, disabled, onOpenChange } = props;
+	const { locale, mountContainer } = (0, react.useContext)(ConfigContext);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(Dialog$1, {
+		open,
+		onOpenChange,
+		modal: true,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DialogTrigger, {
+			asChild: true,
+			disabled,
+			children
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(DialogContent, {
+			mountContainer,
+			overlayClassName: "!univer-z-[1390]",
+			className: "!univer-bottom-0 !univer-left-0 !univer-right-0 !univer-top-auto !univer-z-[1400] !univer-block !univer-max-h-[80dvh] !univer-w-full !univer-max-w-none !univer-translate-x-0 !univer-translate-y-0 !univer-overflow-y-auto !univer-rounded-t-2xl !univer-border-0 !univer-bg-gray-50 !univer-p-4 !univer-pt-14 dark:!univer-bg-gray-900 [&_button[data-slot='close']]:!univer-right-3 [&_button[data-slot='close']]:!univer-top-3 [&_button[data-slot='close']]:!univer-size-10 [&_button]:!univer-min-h-11",
+			style: {
+				position: "fixed",
+				insetInline: 0,
+				top: "auto",
+				bottom: 0,
+				width: "100%",
+				maxWidth: "none",
+				transform: "none"
+			},
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					"aria-hidden": "true",
+					className: "univer-absolute univer-left-1/2 univer-top-3 univer-h-1 univer-w-10 -univer-translate-x-1/2 univer-rounded-full univer-bg-gray-300 dark:!univer-bg-gray-600"
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DialogTitle, {
+					className: "univer-sr-only",
+					children: locale === null || locale === void 0 ? void 0 : locale.Accessibility.menu
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DialogDescription, { className: "univer-hidden" }),
+				content
+			]
+		})]
+	});
+}
+
+//#endregion
+//#region src/components/dropdown-menu/MobileDropdownMenu.tsx
+function MobileDropdownMenu(props) {
+	const { children, items, disabled, open, onOpenChange } = props;
+	function renderMenuItem(item, index) {
+		var _item$options;
+		if (item.type === "separator") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { className: "univer-my-1 univer-h-px univer-bg-gray-200 dark:!univer-bg-gray-700" }, index);
+		if (item.type === "custom") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: item.className,
+			children: item.children
+		}, index);
+		if (item.type === "radio") return item.options.map((option, optionIndex) => {
+			if ("type" in option) return renderMenuItem(option, optionIndex);
+			const { value } = option;
+			if (value === void 0) throw new Error("[DropdownMenu]: `value` is required");
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				disabled: option.disabled,
+				className: mobileRowClassName(value === item.value),
+				onClick: () => {
+					var _item$onSelect;
+					(_item$onSelect = item.onSelect) === null || _item$onSelect === void 0 || _item$onSelect.call(item, value);
+					onOpenChange(false);
+				},
+				children: option.label
+			}, value);
+		});
+		if (item.type === "checkbox") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+			type: "button",
+			disabled: item.disabled,
+			className: clsx(mobileRowClassName(Boolean(item.checked)), item.className),
+			onClick: () => {
+				var _item$onSelect2;
+				(_item$onSelect2 = item.onSelect) === null || _item$onSelect2 === void 0 || _item$onSelect2.call(item, item.value);
+				onOpenChange(false);
+			},
+			children: item.label
+		}, index);
+		if (item.type === "item") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+			type: "button",
+			disabled: item.disabled,
+			className: clsx(mobileRowClassName(false), item.className, { "!univer-text-red-600 dark:!univer-text-red-400": item.variant === "destructive" }),
+			onClick: () => {
+				var _item$onSelect3;
+				(_item$onSelect3 = item.onSelect) === null || _item$onSelect3 === void 0 || _item$onSelect3.call(item, item);
+				onOpenChange(false);
+			},
+			children: item.children
+		}, index);
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-flex univer-flex-col univer-gap-2",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-px-4 univer-py-2 univer-text-sm univer-font-medium univer-text-gray-500",
+				children: item.children
+			}), (_item$options = item.options) === null || _item$options === void 0 ? void 0 : _item$options.map(renderMenuItem)]
+		}, index);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileDropdownSurface, {
+		open,
+		disabled,
+		onOpenChange,
+		content: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-flex univer-flex-col univer-gap-2",
+			children: items.map(renderMenuItem)
+		}),
+		children
+	});
+}
+function mobileRowClassName(active) {
+	return clsx("univer-flex univer-h-12 univer-w-full univer-items-center univer-rounded-xl univer-border-0 univer-px-4 univer-text-left univer-text-base univer-text-gray-900 univer-outline-none active:univer-bg-gray-200 disabled:univer-opacity-40 dark:!univer-text-gray-0 dark:active:!univer-bg-gray-700", active ? "univer-bg-primary-50 dark:!univer-bg-gray-700" : "univer-bg-gray-0 dark:!univer-bg-gray-800");
+}
+
+//#endregion
+//#region src/components/dropdown-menu/DropdownMenu.tsx
+function DropdownMenu(props) {
+	const { children, items, disabled, open: controlledOpen, onOpenChange: controlledOnOpenChange, ...restProps } = props;
+	const [uncontrolledOpen, setUncontrolledOpen] = (0, react.useState)(false);
+	const { mobile } = (0, react.useContext)(ConfigContext);
+	const isControlled = controlledOpen !== void 0;
+	const open = isControlled ? controlledOpen : uncontrolledOpen;
+	function handleChangeOpen(newOpen) {
+		if (disabled) return;
+		if (!isControlled) setUncontrolledOpen(newOpen);
+		controlledOnOpenChange === null || controlledOnOpenChange === void 0 || controlledOnOpenChange(newOpen);
+	}
+	function renderMenuItem(item, index) {
+		const { className, type } = item;
+		if (type === "separator") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuSeparator, { className }, index);
+		else if (type === "custom") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className,
+			children: item.children
+		}, index);
+		else if (type === "radio") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuRadioGroup, {
+			className,
+			value: item.value,
+			onValueChange: item.onSelect,
+			children: item.options.map((option, index) => {
+				if ("type" in option) {
+					if (option.type === "separator") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuSeparator, { className: option.className }, index);
+				} else {
+					if (option.value === void 0) throw new Error("[DropdownMenu]: `value` is required");
+					return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuRadioItem, {
+						value: option.value,
+						disabled: option.disabled,
+						hideIndicator: item.hideIndicator,
+						children: option.label
+					}, option.value);
+				}
+				return null;
+			})
+		}, index);
+		else if (type === "checkbox") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuCheckboxItem, {
+			className,
+			disabled: item.disabled,
+			checked: item.checked,
+			onSelect: () => {
+				var _item$onSelect;
+				(_item$onSelect = item.onSelect) === null || _item$onSelect === void 0 || _item$onSelect.call(item, item.value);
+			},
+			children: item.label
+		}, index);
+		else if (type === "item") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuItem, {
+			className,
+			disabled: item.disabled,
+			variant: item.variant,
+			onSelect: () => {
+				var _item$onSelect2;
+				(_item$onSelect2 = item.onSelect) === null || _item$onSelect2 === void 0 || _item$onSelect2.call(item, item);
+			},
+			children: item.children
+		}, index);
+		else if (type === "subItem") {
+			var _item$options;
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(DropdownMenuSub, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuSubTrigger, { children: item.children }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuPortal, { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuSubContent, {
+				sideOffset: 12,
+				children: (_item$options = item.options) === null || _item$options === void 0 ? void 0 : _item$options.map((subItem, subIndex) => renderMenuItem(subItem, subIndex))
+			}) })] }, index);
+		}
+	}
+	if (mobile) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileDropdownMenu, {
+		open,
+		disabled,
+		items,
+		onOpenChange: handleChangeOpen,
+		children
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(DropdownMenuPrimitive, {
+		modal: false,
+		open,
+		onOpenChange: handleChangeOpen,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuTrigger, {
+			asChild: true,
+			children
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuContent, {
+			className: "univer-text-sm",
+			collisionPadding: {
+				top: 12,
+				bottom: 12
+			},
+			onWheel: (e) => e.stopPropagation(),
+			...restProps,
+			children: items.map((item, index) => renderMenuItem(item, index))
+		})]
+	});
+}
+
+//#endregion
+//#region src/components/dropdown/PopoverPrimitive.tsx
+function PopoverPrimitive({ ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_popover.Root, {
+		"data-slot": "popover",
+		...props
+	});
+}
+function PopoverTrigger({ ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_popover.Trigger, {
+		"data-slot": "popover-trigger",
+		...props
+	});
+}
+function PopoverContent({ className, align = "center", sideOffset = 4, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_popover.Portal, { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_popover.Content, {
+		"data-slot": "popover-content",
+		align,
+		sideOffset,
+		className: clsx("univer-outline-hidden data-[state=open]:univer-animate-in data-[state=open]:univer-fade-in-0 data-[state=open]:univer-zoom-in-95 data-[state=closed]:univer-animate-out data-[state=closed]:univer-fade-out-0 data-[state=closed]:univer-zoom-out-95 data-[side=bottom]:univer-slide-in-from-top-2 data-[side=left]:univer-slide-in-from-right-2 data-[side=right]:univer-slide-in-from-left-2 data-[side=top]:univer-slide-in-from-bottom-2 univer-z-[1080] univer-max-h-[--radix-popper-available-height] univer-overflow-y-auto univer-rounded-md univer-bg-gray-0 univer-text-gray-900 univer-shadow-md data-[state=closed]:univer-pointer-events-none dark:!univer-bg-gray-900 dark:!univer-text-gray-0 dark:focus-visible:!univer-border-gray-600", borderClassName, scrollbarClassName, className),
+		...props
+	}) });
+}
+
+//#endregion
+//#region src/components/dropdown/Dropdown.tsx
+function Dropdown(props) {
+	const { children, overlay, disabled, open: controlledOpen, onOpenChange: controlledOnOpenChange, forceMount, ...restProps } = props;
+	const [uncontrolledOpen, setUncontrolledOpen] = (0, react.useState)(false);
+	const { mobile } = (0, react.useContext)(ConfigContext);
+	const isControlled = controlledOpen !== void 0;
+	const open = isControlled ? controlledOpen : uncontrolledOpen;
+	function handleChangeOpen(newOpen) {
+		if (disabled) return;
+		if (!isControlled) setUncontrolledOpen(newOpen);
+		controlledOnOpenChange === null || controlledOnOpenChange === void 0 || controlledOnOpenChange(newOpen);
+	}
+	if (mobile) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileDropdownSurface, {
+		open,
+		disabled,
+		onOpenChange: handleChangeOpen,
+		content: overlay,
+		children
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(PopoverPrimitive, {
+		open,
+		onOpenChange: handleChangeOpen,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(PopoverTrigger, {
+			asChild: true,
+			children
+		}), (open || forceMount) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(PopoverContent, {
+			forceMount,
+			...restProps,
+			children: overlay
+		})]
+	});
+}
+
+//#endregion
+//#region src/helper/date.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function pad(value, length = 2) {
+	return String(value).padStart(length, "0");
+}
+function formatDateWithPattern(value, pattern) {
+	const date = value ?? /* @__PURE__ */ new Date();
+	if (Number.isNaN(date.getTime())) return "Invalid Date";
+	const tokenMap = {
+		YYYY: String(date.getFullYear()),
+		MM: pad(date.getMonth() + 1),
+		DD: pad(date.getDate()),
+		HH: pad(date.getHours()),
+		mm: pad(date.getMinutes()),
+		ss: pad(date.getSeconds())
+	};
+	return pattern.replace(/YYYY|MM|DD|HH|mm|ss/g, (token) => tokenMap[token] ?? token);
+}
+
+//#endregion
+//#region src/components/time-input/TimeInput.tsx
+function TimeInput(props) {
+	const { className, value, onValueChange } = props;
+	function handleChangeTime(event) {
+		const [hours, minutes, seconds] = event.target.value.split(":").map(Number);
+		const newValue = new Date(value ?? Date.now());
+		newValue.setHours(hours, minutes, seconds, 0);
+		onValueChange === null || onValueChange === void 0 || onValueChange(newValue);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "time-input",
+		className: "univer-relative univer-mx-auto univer-mt-1 univer-w-fit",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ClockIcon, { className: "univer-absolute univer-left-2 univer-top-1/2 -univer-translate-y-1/2 univer-text-gray-600 dark:!univer-text-gray-400" }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+			className: clsx("univer-block univer-h-7 univer-w-fit univer-appearance-none univer-rounded-md univer-bg-transparent univer-pl-6 univer-pr-2 univer-text-center univer-text-gray-800 univer-shadow univer-outline-none univer-transition-all univer-duration-200 focus:univer-border-primary-600 dark:!univer-text-gray-0 dark:focus:!univer-border-primary-500 [&::-webkit-calendar-picker-indicator]:univer-hidden [&::-webkit-calendar-picker-indicator]:univer-appearance-none", borderClassName, className),
+			type: "time",
+			step: "1",
+			value: formatDateWithPattern(value, "HH:mm:ss"),
+			onChange: handleChangeTime
+		})]
+	});
+}
+
+//#endregion
+//#region src/components/virtual-list/VirtualList.tsx
+function VirtualList(props) {
+	const { data, itemKey, children, height, itemHeight, initialScrollIndex = 0, overscan = 2, className, style } = props;
+	const initialScrollTop = height && itemHeight ? initialScrollIndex * itemHeight : 0;
+	const scrollerRef = (0, react.useRef)(null);
+	const [scrollTop, setScrollTop] = (0, react.useState)(initialScrollTop);
+	(0, react.useEffect)(() => {
+		const scroller = scrollerRef.current;
+		if (!scroller || !height || !itemHeight) return;
+		const nextScrollTop = initialScrollIndex * itemHeight;
+		scroller.scrollTop = nextScrollTop;
+		setScrollTop(nextScrollTop);
+	}, [
+		height,
+		initialScrollIndex,
+		itemHeight
+	]);
+	if (!height || !itemHeight || itemHeight <= 0) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className,
+		style,
+		children: data.map((item, index) => {
+			const key = typeof itemKey === "function" ? itemKey(item) : item[itemKey];
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: children(item, index) }, key);
+		})
+	});
+	const start = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
+	const visibleCount = Math.ceil(height / itemHeight) + overscan * 2;
+	const end = Math.min(data.length, start + visibleCount);
+	const offsetY = start * itemHeight;
+	const totalHeight = data.length * itemHeight;
+	const visibleItems = data.slice(start, end);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		ref: scrollerRef,
+		className,
+		style: {
+			...style,
+			height,
+			overflowY: "auto"
+		},
+		onScroll: (e) => setScrollTop(e.currentTarget.scrollTop),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			style: {
+				height: totalHeight,
+				position: "relative"
+			},
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				style: { transform: `translateY(${offsetY}px)` },
+				children: visibleItems.map((item, index) => {
+					const key = typeof itemKey === "function" ? itemKey(item) : item[itemKey];
+					return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: children(item, start + index) }, key);
+				})
+			})
+		})
+	});
+}
+
+//#endregion
+//#region src/components/calendar/Calendar.tsx
+const DEFAULT_YEAR_RANGE = 100;
+const YEAR_ITEM_HEIGHT = 32;
+const YEAR_LIST_HEIGHT = 224;
+function getDaysInMonth(year, month) {
+	return new Date(year, month + 1, 0).getDate();
+}
+function getFirstDayOfWeek(year, month) {
+	return new Date(year, month, 1).getDay();
+}
+function DayButton(props) {
+	const { className, ...restProps } = props;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		className: clsx("univer-size-7 univer-rounded-md univer-border-none univer-bg-transparent univer-p-1 univer-transition-all hover:univer-bg-gray-200 dark:hover:!univer-bg-gray-600", className),
+		type: "button",
+		...restProps
+	});
+}
+function Calendar(props) {
+	const { className, max, min, showSelection = true, showTime = false, value, onValueChange } = props;
+	const { direction = "ltr", locale } = (0, react.useContext)(ConfigContext);
+	const { ariaLabels, year, weekDays, months } = locale === null || locale === void 0 ? void 0 : locale.Calendar;
+	const today = /* @__PURE__ */ new Date();
+	const [currentYear, setCurrentYear] = (0, react.useState)((value ?? today).getFullYear());
+	const [currentMonth, setCurrentMonth] = (0, react.useState)((value ?? today).getMonth());
+	const [yearDropdownOpen, setYearDropdownOpen] = (0, react.useState)(false);
+	function prevMonth() {
+		setCurrentMonth((prev) => {
+			if (prev === 0) {
+				setCurrentYear((y) => y - 1);
+				return 11;
+			}
+			return prev - 1;
+		});
+	}
+	function nextMonth() {
+		setCurrentMonth((prev) => {
+			if (prev === 11) {
+				setCurrentYear((y) => y + 1);
+				return 0;
+			}
+			return prev + 1;
+		});
+	}
+	function handleChangeMonth(month) {
+		setCurrentMonth(Number(month));
+	}
+	function handleChangeYear(year) {
+		setCurrentYear(year);
+		setYearDropdownOpen(false);
+	}
+	const yearOptions = (0, react.useMemo)(() => {
+		const startYear = (min === null || min === void 0 ? void 0 : min.getFullYear()) ?? currentYear - DEFAULT_YEAR_RANGE;
+		const endYear = (max === null || max === void 0 ? void 0 : max.getFullYear()) ?? currentYear + DEFAULT_YEAR_RANGE;
+		return Array.from({ length: Math.max(0, endYear - startYear + 1) }, (_, index) => ({ year: startYear + index }));
+	}, [
+		currentYear,
+		max,
+		min
+	]);
+	const currentYearIndex = Math.max(0, yearOptions.findIndex((item) => item.year === currentYear));
+	const monthMenuItems = (0, react.useMemo)(() => [{
+		type: "radio",
+		value: String(currentMonth),
+		hideIndicator: true,
+		options: months.map((month, index) => ({
+			label: month,
+			value: String(index)
+		})),
+		onSelect: handleChangeMonth
+	}], [currentMonth, months]);
+	const daysInMonth = getDaysInMonth(currentYear, currentMonth);
+	const firstDay = getFirstDayOfWeek(currentYear, currentMonth);
+	const days = (0, react.useMemo)(() => {
+		const daysArray = [];
+		for (let i = 0; i < firstDay; i++) daysArray.push(null);
+		for (let d = 1; d <= daysInMonth; d++) daysArray.push(d);
+		return daysArray;
+	}, [daysInMonth, firstDay]);
+	function isSelected(day) {
+		return showSelection && day && currentYear === (value === null || value === void 0 ? void 0 : value.getFullYear()) && currentMonth === (value === null || value === void 0 ? void 0 : value.getMonth()) && day === (value === null || value === void 0 ? void 0 : value.getDate());
+	}
+	function isToday(day) {
+		return day && currentYear === today.getFullYear() && currentMonth === today.getMonth() && day === today.getDate();
+	}
+	function isDisabled(day) {
+		if (!day) return false;
+		const hours = (value === null || value === void 0 ? void 0 : value.getHours()) ?? today.getHours();
+		const minutes = (value === null || value === void 0 ? void 0 : value.getMinutes()) ?? today.getMinutes();
+		const seconds = (value === null || value === void 0 ? void 0 : value.getSeconds()) ?? today.getSeconds();
+		const milliseconds = (value === null || value === void 0 ? void 0 : value.getMilliseconds()) ?? today.getMilliseconds();
+		const d = new Date(currentYear, currentMonth, day, hours, minutes, seconds, milliseconds);
+		if (min && d < min) return true;
+		if (max && d > max) return true;
+		return false;
+	}
+	function handleChangeDate(day) {
+		if (isDisabled(day)) return;
+		const hours = (value === null || value === void 0 ? void 0 : value.getHours()) ?? today.getHours();
+		const minutes = (value === null || value === void 0 ? void 0 : value.getMinutes()) ?? today.getMinutes();
+		const seconds = (value === null || value === void 0 ? void 0 : value.getSeconds()) ?? today.getSeconds();
+		const milliseconds = (value === null || value === void 0 ? void 0 : value.getMilliseconds()) ?? today.getMilliseconds();
+		const selectedDate = new Date(currentYear, currentMonth, day, hours, minutes, seconds, milliseconds);
+		onValueChange === null || onValueChange === void 0 || onValueChange(selectedDate, "date");
+	}
+	function handleChangeTime(time) {
+		const hours = time.getHours();
+		const minutes = time.getMinutes();
+		const seconds = time.getSeconds();
+		const milliseconds = time.getMilliseconds();
+		const updatedDate = new Date(currentYear, currentMonth, (value === null || value === void 0 ? void 0 : value.getDate()) ?? today.getDate(), hours, minutes, seconds, milliseconds);
+		onValueChange === null || onValueChange === void 0 || onValueChange(updatedDate, "time");
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "calendar",
+		dir: direction,
+		className: clsx("univer-mx-auto univer-max-w-xs univer-select-none univer-rounded univer-bg-gray-0 univer-text-gray-900 dark:!univer-bg-gray-900 dark:!univer-text-gray-0", className),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("nav", {
+				className: "univer-mb-4 univer-flex univer-items-center univer-justify-between",
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DayButton, {
+						className: "univer-text-lg univer-text-gray-500 dark:!univer-text-gray-200",
+						"aria-label": ariaLabels.previousMonth,
+						onClick: prevMonth,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreRightIcon, { className: "univer-rotate-180 rtl:!univer-rotate-0" })
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+						className: "univer-flex univer-items-center univer-gap-0.5 univer-text-sm univer-font-medium",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Dropdown, {
+							align: "center",
+							className: "univer-w-24 univer-p-1.5",
+							open: yearDropdownOpen,
+							overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(VirtualList, {
+								className: "univer-rounded",
+								data: yearOptions,
+								height: YEAR_LIST_HEIGHT,
+								initialScrollIndex: currentYearIndex,
+								itemHeight: YEAR_ITEM_HEIGHT,
+								itemKey: "year",
+								children: (item) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+									className: clsx("univer-flex univer-h-8 univer-w-full univer-items-center univer-justify-center univer-rounded univer-border-none univer-bg-transparent univer-px-2 univer-text-sm univer-text-gray-900 univer-transition-colors hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-600", { "univer-bg-gray-200 dark:!univer-bg-gray-500": item.year === currentYear }),
+									type: "button",
+									onClick: () => handleChangeYear(item.year),
+									children: item.year
+								})
+							}),
+							onOpenChange: setYearDropdownOpen,
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(Button, {
+								variant: "text",
+								type: "button",
+								"aria-label": ariaLabels.selectYear,
+								children: [currentYear, year]
+							})
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenu, {
+							align: "center",
+							className: "univer-max-h-80 univer-min-w-28 univer-overflow-auto",
+							items: monthMenuItems,
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+								variant: "text",
+								type: "button",
+								"aria-label": ariaLabels.selectMonth,
+								children: months[currentMonth]
+							})
+						})]
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DayButton, {
+						className: "univer-text-lg univer-text-gray-500 dark:!univer-text-gray-200",
+						"aria-label": ariaLabels.nextMonth,
+						onClick: nextMonth,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreRightIcon, { className: "rtl:univer-rotate-180" })
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mb-1 univer-grid univer-grid-cols-7 univer-gap-1 univer-text-center univer-text-sm univer-text-gray-500 dark:!univer-text-gray-200",
+				children: weekDays.map((wd) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: wd }, wd))
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-grid univer-grid-cols-7 univer-gap-1 univer-text-center",
+				children: days.map((day, idx) => day ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DayButton, {
+					className: clsx({
+						"!univer-bg-primary-600 univer-font-bold univer-text-gray-0": !isToday(day) && isSelected(day),
+						"dark:!univer-text-gray-0": !isToday(day) && !isSelected(day),
+						"!univer-bg-primary-600 univer-text-gray-0": isToday(day) && isSelected(day),
+						"univer-font-semibold univer-text-primary-600 dark:!univer-text-primary-500": isToday(day) && !isSelected(day),
+						"univer-cursor-not-allowed univer-opacity-40": isDisabled(day),
+						"univer-hover:bg-primary-100 univer-cursor-pointer univer-text-gray-800": !isSelected(day) && !isDisabled(day)
+					}),
+					onClick: () => handleChangeDate(day),
+					disabled: isDisabled(day),
+					children: day
+				}, idx) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {}, idx))
+			}),
+			showTime && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(TimeInput, {
+				value,
+				onValueChange: handleChangeTime
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/components/cascader-list/CascaderList.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function Empty({ emptyText }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+		className: "univer-h-8 univer-px-2 univer-pr-32 univer-text-sm/8 univer-text-gray-600 dark:!univer-text-gray-200",
+		children: emptyText
+	});
+}
+function CascaderList(props) {
+	const { value, options = [], onChange, contentClassName, wrapperClassName } = props;
+	const { locale } = (0, react.useContext)(ConfigContext);
+	const activeOptions = (0, react.useMemo)(() => {
+		const activeOptions = [options];
+		value.forEach((item, index) => {
+			const option = activeOptions[index].find((option) => option.value === item);
+			if (option === null || option === void 0 ? void 0 : option.children) activeOptions.push(option.children);
+		});
+		return activeOptions;
+	}, [value]);
+	function handleChange(index, v) {
+		if (v === value[index]) return;
+		if (value[index + 1]) {
+			const newValue = value.slice(0, index + 1);
+			newValue[index] = v;
+			onChange(newValue);
+			return;
+		}
+		const newValue = [...value];
+		newValue[index] = v;
+		onChange(newValue);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+		"data-u-comp": "cascader-list",
+		className: clsx("univer-overflow-auto-y univer-grid univer-h-full univer-max-h-80 univer-grid-flow-col univer-rounded univer-py-2 univer-text-gray-900 dark:!univer-text-gray-0 [&>ul:not(:last-child)]:univer-border-0 [&>ul:not(:last-child)]:univer-border-r [&>ul:not(:last-child)]:univer-border-solid [&>ul:not(:last-child)]:univer-border-r-gray-200", borderClassName, scrollbarClassName, wrapperClassName),
+		children: [activeOptions.map((options, index) => options.length ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("ul", {
+			className: clsx("univer-m-0 univer-h-full univer-max-h-full univer-list-none univer-overflow-auto univer-px-2", scrollbarClassName, contentClassName),
+			children: options.map((option) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("a", {
+				className: clsx("univer-relative univer-block univer-h-8 univer-cursor-pointer univer-rounded univer-text-sm/8", {
+					"univer-px-7": index > 0,
+					"univer-px-1.5": index === 0,
+					"univer-bg-gray-200 dark:!univer-bg-gray-600": option.value === value[index]
+				}),
+				onClick: () => handleChange(index, option.value),
+				children: [index > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-absolute univer-left-2 univer-flex univer-h-full univer-items-center",
+					children: option.value === value[index] && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, { className: "univer-text-primary-600" })
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: option.label })]
+			}) }, option.value))
+		}, index) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Empty, { emptyText: locale === null || locale === void 0 ? void 0 : locale.CascaderList.empty }, index)), value.length <= 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Empty, { emptyText: locale === null || locale === void 0 ? void 0 : locale.CascaderList.empty })]
+	});
+}
+
+//#endregion
+//#region src/components/checkbox-group/CheckboxGroup.tsx
+/**
+* CheckboxGroup Component
+*/
+function CheckboxGroup(props) {
+	const { children, className, style, value, disabled, direction = "horizontal", onChange } = props;
+	const handleChange = (item) => {
+		if (value.includes(item)) onChange(value.filter((i) => i !== item));
+		else onChange([...value, item]);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: clsx("univer-flex univer-gap-2", { "univer-flex-col": direction === "vertical" }, className),
+		style,
+		children: react.Children.map(children, (child, index) => {
+			if ((0, react.isValidElement)(child)) return (0, react.cloneElement)(child, {
+				key: index,
+				children: child.props.children,
+				checked: child.props.value ? value.includes(child.props.value) : false,
+				disabled: disabled ?? child.props.disabled,
+				onChange: handleChange
+			});
+			return child;
+		})
+	});
+}
+
+//#endregion
+//#region src/components/checkbox/Checkbox.tsx
+/**
+* Checkbox Component
+*/
+function Checkbox(props) {
+	const { children, className, style, checked = false, indeterminate = false, value, disabled = false, onChange, contentClassName } = props;
+	const inputRef = (0, react.useRef)(null);
+	function handleChange(e) {
+		e.stopPropagation();
+		if (!onChange || disabled) return;
+		if (typeof value !== "undefined") onChange === null || onChange === void 0 || onChange(value);
+		else {
+			var _inputRef$current;
+			const checked = (inputRef === null || inputRef === void 0 || (_inputRef$current = inputRef.current) === null || _inputRef$current === void 0 ? void 0 : _inputRef$current.checked) ?? false;
+			onChange === null || onChange === void 0 || onChange(checked);
+		}
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
+		"data-u-comp": "checkbox",
+		className: clsx("univer-box-border univer-inline-flex univer-items-center univer-gap-2 univer-text-sm", {
+			"univer-cursor-pointer univer-text-gray-900 dark:!univer-text-gray-0": !disabled,
+			"univer-text-gray-400": disabled
+		}, className),
+		style,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+			className: "univer-relative univer-block",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+				ref: inputRef,
+				className: "univer-absolute univer-size-0 univer-opacity-0",
+				type: "checkbox",
+				checked,
+				disabled,
+				onChange: handleChange
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+				className: clsx("univer-relative univer-box-border univer-flex univer-size-4 univer-items-center univer-justify-center univer-overflow-hidden univer-rounded univer-border univer-border-solid univer-transition-colors", {
+					"univer-opacity-50": disabled,
+					"univer-border-primary-600 univer-bg-primary-600": checked || indeterminate,
+					"univer-border-gray-300 univer-bg-gray-50 dark:!univer-border-gray-500 dark:!univer-bg-gray-600": !checked && !indeterminate
+				}),
+				children: [checked && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, { className: "univer-absolute univer-left-1/2 univer-top-1/2 univer-block univer-size-3 -univer-translate-x-1/2 -univer-translate-y-1/2 univer-text-gray-0" }), indeterminate && !checked && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: "univer-absolute univer-left-1/2 univer-top-1/2 univer-block univer-h-0.5 univer-w-2.5 -univer-translate-x-1/2 -univer-translate-y-1/2 univer-rounded univer-bg-gray-0" })]
+			})]
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: clsx("univer-select-none", contentClassName),
+			children
+		})]
+	});
+}
+
+//#endregion
+//#region src/components/dialog/MobileDialogContent.tsx
+const MobileDialogContent = (0, react.forwardRef)((props, ref) => {
+	const { className, style, ...rest } = props;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DialogContent, {
+		...rest,
+		ref,
+		className: clsx("!univer-bottom-0 !univer-left-0 !univer-right-0 !univer-top-auto !univer-max-h-[80dvh] !univer-max-w-none !univer-translate-x-0 !univer-translate-y-0 !univer-gap-4 !univer-overflow-y-auto !univer-rounded-t-2xl !univer-p-4 [&_[data-slot='dialog-footer']]:!univer-flex-row [&_[data-slot='dialog-footer']]:!univer-gap-3 [&_[data-slot='dialog-footer']_button]:!univer-h-12 [&_[data-slot='dialog-footer']_button]:!univer-flex-1 [&_button[data-slot='close']]:!univer-right-3 [&_button[data-slot='close']]:!univer-top-3 [&_button[data-slot='close']]:!univer-size-10", className),
+		style: {
+			...style,
+			position: "fixed",
+			insetInline: 0,
+			top: "auto",
+			bottom: 0,
+			width: "100%",
+			maxWidth: "none",
+			margin: 0,
+			transform: "none"
+		}
+	});
+});
+
+//#endregion
+//#region src/components/dialog/Dialog.tsx
+function useDraggable(options = {}) {
+	const getCenteredPosition = (0, react.useCallback)(() => {
+		const { innerWidth, innerHeight } = window;
+		return {
+			x: Math.max(0, (innerWidth - 0) / 2),
+			y: Math.max(0, (innerHeight - 0) / 2)
+		};
+	}, []);
+	const { defaultPosition = getCenteredPosition(), enabled = false } = options;
+	const [position, setPosition] = (0, react.useState)(defaultPosition);
+	const [isDragging, setIsDragging] = (0, react.useState)(false);
+	const elementRef = (0, react.useRef)(null);
+	const startPosRef = (0, react.useRef)({
+		x: 0,
+		y: 0
+	});
+	const startClientRef = (0, react.useRef)({
+		x: 0,
+		y: 0
+	});
+	const initializedRef = (0, react.useRef)(false);
+	(0, react.useEffect)(() => {
+		if (!elementRef.current || initializedRef.current || options.defaultPosition) return;
+		const { width, height } = elementRef.current.getBoundingClientRect();
+		const { innerWidth, innerHeight } = window;
+		const centeredX = Math.max(0, (innerWidth - width) / 2);
+		const centeredY = Math.max(0, (innerHeight - height) / 2);
+		setPosition({
+			x: centeredX,
+			y: centeredY
+		});
+		startPosRef.current = {
+			x: centeredX,
+			y: centeredY
+		};
+		initializedRef.current = true;
+	}, [options.defaultPosition]);
+	const calculateBounds = (0, react.useCallback)((clientX, clientY) => {
+		if (!elementRef.current) return {
+			x: clientX,
+			y: clientY
+		};
+		const rect = elementRef.current.getBoundingClientRect();
+		const { clientWidth, clientHeight } = document.documentElement;
+		let newX = startPosRef.current.x + (clientX - startClientRef.current.x);
+		let newY = startPosRef.current.y + (clientY - startClientRef.current.y);
+		if (newX < 0) newX = 0;
+		if (newY < 0) newY = 0;
+		if (newX + rect.width > clientWidth) newX = clientWidth - rect.width;
+		if (newY + rect.height > clientHeight) newY = clientHeight - rect.height;
+		return {
+			x: newX,
+			y: newY
+		};
+	}, []);
+	const startDrag = (0, react.useCallback)((e) => {
+		if (!enabled) return;
+		e.preventDefault();
+		e.stopPropagation();
+		startPosRef.current = { ...position };
+		startClientRef.current = {
+			x: e.clientX,
+			y: e.clientY
+		};
+		setIsDragging(true);
+		document.body.style.userSelect = "none";
+	}, [enabled, position]);
+	const onDrag = (0, react.useCallback)((e) => {
+		if (!isDragging) return;
+		e.preventDefault();
+		e.stopPropagation();
+		const newPosition = calculateBounds(e.clientX, e.clientY);
+		setPosition(newPosition);
+	}, [isDragging, calculateBounds]);
+	const endDrag = (0, react.useCallback)(() => {
+		setIsDragging(false);
+		document.body.style.userSelect = "";
+	}, []);
+	(0, react.useEffect)(() => {
+		if (enabled) {
+			document.addEventListener("mousemove", onDrag);
+			document.addEventListener("mouseup", endDrag);
+			return () => {
+				document.removeEventListener("mousemove", onDrag);
+				document.removeEventListener("mouseup", endDrag);
+			};
+		}
+	}, [
+		enabled,
+		onDrag,
+		endDrag
+	]);
+	return {
+		position,
+		isDragging,
+		elementRef,
+		setElementRef: (el) => {
+			elementRef.current = el;
+			if (el && !initializedRef.current && !options.defaultPosition) {
+				const { width, height } = el.getBoundingClientRect();
+				const { innerWidth, innerHeight } = window;
+				const centeredX = Math.max(0, (innerWidth - width) / 2);
+				const centeredY = Math.max(0, (innerHeight - height) / 2);
+				setPosition({
+					x: centeredX,
+					y: centeredY
+				});
+				startPosRef.current = {
+					x: centeredX,
+					y: centeredY
+				};
+				initializedRef.current = true;
+			}
+		},
+		handleMouseDown: startDrag
+	};
+}
+function Dialog(props) {
+	const { className, overlayClassName, children, style, open = false, title, width, draggable = false, defaultPosition, footer: propFooter, mask = true, keyboard = true, closable = true, maskClosable = true, showOk, showCancel, onOpenChange, onClose, onOk, onCancel } = props;
+	const { locale, mountContainer, direction, mobile } = (0, react.useContext)(ConfigContext);
+	const { position, isDragging, setElementRef, handleMouseDown } = useDraggable({
+		defaultPosition,
+		enabled: draggable
+	});
+	const footer = propFooter ?? (showOk || showCancel ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-flex univer-justify-end univer-gap-2",
+		children: [showCancel && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+			onClick: onCancel,
+			children: locale === null || locale === void 0 ? void 0 : locale.Confirm.cancel
+		}), showOk && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+			variant: "primary",
+			onClick: onOk,
+			children: locale === null || locale === void 0 ? void 0 : locale.Confirm.confirm
+		})]
+	}) : null);
+	const handleContentRef = (0, react.useCallback)((node) => {
+		if (node && draggable) setElementRef(node);
+	}, [draggable, setElementRef]);
+	const handleOpenChange = (0, react.useCallback)((isOpen) => {
+		if (!mask && !isOpen) return;
+		onOpenChange === null || onOpenChange === void 0 || onOpenChange(isOpen);
+		if (!isOpen) onClose === null || onClose === void 0 || onClose();
+	}, [onClose, onOpenChange]);
+	function handleClickClose() {
+		onOpenChange === null || onOpenChange === void 0 || onOpenChange(false);
+		onClose === null || onClose === void 0 || onClose();
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Dialog$1, {
+		open,
+		onOpenChange: handleOpenChange,
+		modal: mask !== false,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(mobile ? MobileDialogContent : DialogContent, {
+			ref: handleContentRef,
+			className: clsx(className, { "!univer-animate-none": draggable }),
+			style: {
+				...style,
+				width: width ? typeof width === "number" ? `${width}px` : width : void 0,
+				maxWidth: width ? "initial" : void 0,
+				...draggable ? {
+					position: "absolute",
+					margin: 0,
+					left: 0,
+					top: 0,
+					transform: `translate(${position.x}px, ${position.y}px)`,
+					transition: isDragging ? "none" : void 0,
+					cursor: isDragging ? "grabbing" : void 0
+				} : {}
+			},
+			closable,
+			mountContainer,
+			overlayClassName,
+			dir: direction,
+			onClickClose: handleClickClose,
+			onEscapeKeyDown: (e) => {
+				if (keyboard) handleClickClose();
+				e.preventDefault();
+			},
+			onPointerDownOutside: (e) => {
+				if (maskClosable) handleClickClose();
+				e.preventDefault();
+			},
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsxs)(DialogHeader, {
+					className: clsx({ "!univer-hidden": !title }),
+					"data-drag-handle": draggable ? "true" : void 0,
+					style: {
+						cursor: draggable ? "grab" : void 0,
+						userSelect: draggable ? "none" : void 0,
+						touchAction: draggable ? "none" : void 0
+					},
+					onMouseDown: draggable ? handleMouseDown : void 0,
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(DialogTitle, { children: title }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DialogDescription, { className: "univer-hidden" })]
+				}),
+				children,
+				footer && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DialogFooter, { children: footer })
+			]
+		})
+	});
+}
+
+//#endregion
+//#region src/components/color-picker/color-conversion.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const hsvToRgb = (h, s, v) => {
+	h = h % 360;
+	s = s / 100;
+	v = v / 100;
+	const c = v * s;
+	const x = c * (1 - Math.abs(h / 60 % 2 - 1));
+	const m = v - c;
+	let r = 0;
+	let g = 0;
+	let b = 0;
+	if (h >= 0 && h < 60) {
+		r = c;
+		g = x;
+		b = 0;
+	} else if (h >= 60 && h < 120) {
+		r = x;
+		g = c;
+		b = 0;
+	} else if (h >= 120 && h < 180) {
+		r = 0;
+		g = c;
+		b = x;
+	} else if (h >= 180 && h < 240) {
+		r = 0;
+		g = x;
+		b = c;
+	} else if (h >= 240 && h < 300) {
+		r = x;
+		g = 0;
+		b = c;
+	} else if (h >= 300 && h < 360) {
+		r = c;
+		g = 0;
+		b = x;
+	}
+	return [
+		Math.round((r + m) * 255),
+		Math.round((g + m) * 255),
+		Math.round((b + m) * 255)
+	];
+};
+const rgbToHex = (r, g, b) => {
+	const toHex = (n) => n.toString(16).padStart(2, "0");
+	return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+};
+const rgbToHsv = (r, g, b) => {
+	r /= 255;
+	g /= 255;
+	b /= 255;
+	const max = Math.max(r, g, b);
+	const d = max - Math.min(r, g, b);
+	let h = 0;
+	let s = 0;
+	const v = max;
+	if (max !== 0) s = d / max;
+	if (d !== 0) {
+		if (max === r) h = (g - b) / d + (g < b ? 6 : 0);
+		else if (max === g) h = (b - r) / d + 2;
+		else if (max === b) h = (r - g) / d + 4;
+		h *= 60;
+	}
+	return [
+		h,
+		s * 100,
+		v * 100
+	];
+};
+const hexToHsv = (hex) => {
+	if (hex.length === 4) hex = `#${hex.slice(1).split("").map((i) => i + i).join("")}`;
+	const [r, g, b] = hex.match(/\w\w/g).map((x) => Number.parseInt(x, 16));
+	return rgbToHsv(r, g, b);
+};
+const hsvToHex = (h, s, v) => {
+	const [r, g, b] = hsvToRgb(h, s, v);
+	return rgbToHex(r, g, b);
+};
+const hsvToRgba = (h, s, v, a) => {
+	const [r, g, b] = hsvToRgb(h, s, v);
+	return `rgba(${r}, ${g}, ${b}, ${a})`;
+};
+const parseRgba = (rgba) => {
+	const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d*\.?\d+))?\)/);
+	if (!match) throw new Error("Invalid RGBA string");
+	return [
+		Number.parseInt(match[1], 10),
+		Number.parseInt(match[2], 10),
+		Number.parseInt(match[3], 10),
+		match[4] ? Number.parseFloat(match[4]) : 1
+	];
+};
+
+//#endregion
+//#region src/components/color-picker/AlphaSlider.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function AlphaSlider({ hsv, alpha, onChange, onChanged }) {
+	const [isDragging, setIsDragging] = (0, react.useState)(false);
+	const sliderRef = (0, react.useRef)(null);
+	const thumbRef = (0, react.useRef)(null);
+	const alphaRef = (0, react.useRef)(alpha);
+	const calculateAlpha = (0, react.useCallback)((clientX) => {
+		var _thumbRef$current;
+		const slider = sliderRef.current;
+		if (!slider) return;
+		const thumbSize = ((_thumbRef$current = thumbRef.current) === null || _thumbRef$current === void 0 ? void 0 : _thumbRef$current.clientWidth) ?? 0;
+		const rect = slider.getBoundingClientRect();
+		const maxX = rect.width - thumbSize;
+		if (maxX <= 0) {
+			onChange(0);
+			return;
+		}
+		const x = Math.max(0, Math.min(clientX - rect.left, maxX));
+		onChange(Math.round(x / maxX * 100) / 100);
+	}, [onChange]);
+	const handlePointerMove = (0, react.useCallback)((e) => {
+		if (!isDragging) return;
+		calculateAlpha(e.clientX);
+	}, [isDragging, calculateAlpha]);
+	(0, react.useEffect)(() => {
+		alphaRef.current = alpha;
+	}, [alpha]);
+	const handlePointerUp = (0, react.useCallback)(() => {
+		setIsDragging(false);
+		onChanged === null || onChanged === void 0 || onChanged(alphaRef.current);
+	}, [onChanged]);
+	(0, react.useEffect)(() => {
+		if (isDragging) {
+			window.addEventListener("pointermove", handlePointerMove);
+			window.addEventListener("pointerup", handlePointerUp);
+			window.addEventListener("mouseup", handlePointerUp);
+		}
+		return () => {
+			window.removeEventListener("pointermove", handlePointerMove);
+			window.removeEventListener("pointerup", handlePointerUp);
+			window.removeEventListener("mouseup", handlePointerUp);
+		};
+	}, [
+		isDragging,
+		handlePointerMove,
+		handlePointerUp
+	]);
+	const getThumbPosition = () => {
+		var _thumbRef$current2, _sliderRef$current;
+		const safeAlpha = Math.min(Math.max(alpha * 100, 0), 100);
+		const thumbSize = ((_thumbRef$current2 = thumbRef.current) === null || _thumbRef$current2 === void 0 ? void 0 : _thumbRef$current2.clientWidth) ?? 0;
+		const sliderWidth = ((_sliderRef$current = sliderRef.current) === null || _sliderRef$current === void 0 ? void 0 : _sliderRef$current.clientWidth) ?? 0;
+		const thumbOffsetPercent = sliderWidth > 0 ? thumbSize / sliderWidth * 100 : 0;
+		return `${safeAlpha / 100 * (100 - thumbOffsetPercent)}%`;
+	};
+	const color = hsvToRgb(...hsv);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "color-picker-alpha-slider",
+		className: "univer-relative univer-w-full univer-select-none",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-absolute univer-inset-0 univer-rounded-full",
+			style: {
+				backgroundImage: "linear-gradient(45deg, #E3E5EA 25%, transparent 25%), linear-gradient(-45deg, #E3E5EA 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #E3E5EA 75%), linear-gradient(-45deg, transparent 75%, #E3E5EA 75%)",
+				backgroundPosition: "0 0, 0 4px, 4px -4px, -4px 0",
+				backgroundSize: "8px 8px"
+			}
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			ref: sliderRef,
+			"data-u-comp": "color-picker-alpha-slider-track",
+			className: "univer-relative univer-h-2 univer-w-full univer-cursor-pointer univer-rounded-full univer-shadow-inner",
+			style: { background: `linear-gradient(to right, transparent, rgb(${color.join(",")}))` },
+			onPointerDown: (e) => {
+				setIsDragging(true);
+				calculateAlpha(e.clientX);
+			},
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				ref: thumbRef,
+				"data-u-comp": "color-picker-alpha-slider-thumb",
+				className: "univer-absolute univer-top-1/2 univer-box-border univer-size-2 univer-rounded-full univer-bg-transparent univer-shadow-md univer-ring-2 univer-ring-gray-0 univer-transition-transform univer-duration-75 univer-will-change-transform",
+				style: {
+					left: getThumbPosition(),
+					transform: "translateY(-50%)",
+					transition: isDragging ? "none" : "all 0.1s ease-out"
+				}
+			})
+		})]
+	});
+}
+
+//#endregion
+//#region src/components/color-picker/ColorInput.tsx
+function HexInput({ hsv, onChange }) {
+	const [inputValue, setInputValue] = (0, react.useState)("");
+	const hexValue = (0, react.useMemo)(() => hsvToHex(hsv[0], hsv[1], hsv[2]), [hsv]);
+	(0, react.useEffect)(() => {
+		setInputValue(hexValue.replace(/^#/, ""));
+	}, [hexValue]);
+	const isValidHex = (hex) => {
+		return /^[0-9A-Fa-f]{6}$/.test(hex);
+	};
+	const handleChange = (e) => {
+		const newValue = e.target.value.trim();
+		if (newValue.length > 6) return;
+		if (newValue !== "" && !/^[0-9A-Fa-f]*$/.test(newValue)) return;
+		setInputValue(newValue);
+		if (isValidHex(newValue)) {
+			const hsvValue = hexToHsv(newValue);
+			if (hsvValue && onChange) onChange(...hsvValue);
+		}
+	};
+	const handleBlur = () => {
+		if (!isValidHex(inputValue)) setInputValue(hexValue.replace(/^#/, ""));
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+		className: clsx("univer-w-full univer-px-2 !univer-pl-4 univer-uppercase focus:univer-border-primary-500 focus:univer-outline-none rtl:!univer-pl-2 rtl:!univer-pr-4 dark:!univer-text-gray-0", borderClassName),
+		value: inputValue,
+		onChange: handleChange,
+		onBlur: handleBlur,
+		maxLength: 6,
+		spellCheck: false
+	}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+		className: "univer-absolute univer-left-1.5 univer-top-1/2 -univer-translate-y-1/2 univer-text-sm univer-text-gray-400 rtl:univer-left-auto rtl:univer-right-1.5",
+		children: "#"
+	})] });
+}
+function RgbInput({ hsv, alpha, format, onChange }) {
+	const [localValues, setLocalValues] = (0, react.useState)({
+		r: 0,
+		g: 0,
+		b: 0,
+		a: 1
+	});
+	(0, react.useEffect)(() => {
+		const [r, g, b] = hsvToRgb(hsv[0], hsv[1], hsv[2]);
+		setLocalValues({
+			r: Math.round(r),
+			g: Math.round(g),
+			b: Math.round(b),
+			a: alpha ?? 1
+		});
+	}, [hsv, alpha]);
+	const handleChange = (color, value) => {
+		if (color === "a") {
+			if (value !== "" && !/^\d*\.?\d*$/.test(value)) return;
+			const numValue = value === "" ? 0 : Number.parseFloat(value);
+			if (numValue > 1) return;
+			const newValues = {
+				...localValues,
+				a: numValue
+			};
+			setLocalValues(newValues);
+			if (onChange) onChange(hsv[0], hsv[1], hsv[2], numValue);
+			return;
+		}
+		if (value !== "" && !/^\d*$/.test(value)) return;
+		const numValue = value === "" ? 0 : Number.parseInt(value, 10);
+		if (numValue > 255) return;
+		const newValues = {
+			...localValues,
+			[color]: numValue
+		};
+		setLocalValues(newValues);
+		if (onChange) onChange(...rgbToHsv(newValues.r, newValues.g, newValues.b), localValues.a);
+	};
+	const handleBlur = () => {
+		const [r, g, b] = hsvToRgb(hsv[0], hsv[1], hsv[2]);
+		setLocalValues({
+			r: Math.round(r),
+			g: Math.round(g),
+			b: Math.round(b),
+			a: alpha ?? 1
+		});
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-flex univer-items-center univer-gap-2 [&>input]:univer-w-11 [&>input]:univer-border-gray-200 [&>input]:focus:univer-border-primary-500 dark:[&>input]:!univer-border-gray-600 dark:[&>input]:!univer-text-gray-0",
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+				value: localValues.r,
+				onChange: (e) => handleChange("r", e.target.value),
+				onBlur: handleBlur,
+				maxLength: 3
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+				value: localValues.g,
+				onChange: (e) => handleChange("g", e.target.value),
+				onBlur: handleBlur,
+				maxLength: 3
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+				value: localValues.b,
+				onChange: (e) => handleChange("b", e.target.value),
+				onBlur: handleBlur,
+				maxLength: 3
+			}),
+			format === "rgba" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+				value: localValues.a,
+				onChange: (e) => handleChange("a", e.target.value),
+				onBlur: handleBlur,
+				maxLength: 4
+			})
+		]
+	});
+}
+function ColorInput({ hsv, alpha, format, onChange }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "dark:![&_input]:univer-border-gray-600 dark:![&_input]:univer-text-gray-0 univer-flex univer-gap-2 [&_input]:univer-box-border [&_input]:univer-flex [&_input]:univer-h-7 [&_input]:univer-items-center [&_input]:univer-rounded [&_input]:univer-border [&_input]:univer-border-solid [&_input]:univer-border-gray-200 [&_input]:univer-bg-transparent [&_input]:univer-px-1.5 [&_input]:univer-text-sm [&_input]:univer-text-gray-700 [&_input]:univer-outline-none",
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-relative univer-flex univer-flex-1 univer-gap-2",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(HexInput, {
+				hsv,
+				onChange
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RgbInput, {
+				hsv,
+				alpha,
+				format,
+				onChange
+			})]
+		})
+	});
+}
+
+//#endregion
+//#region src/components/color-picker/presets.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const colorPresets = [
+	[
+		"#FFFFFF",
+		"#E1EFFE",
+		"#FDE8E8",
+		"#FEECDC",
+		"#FFF4B9",
+		"#DEF7EC",
+		"#D5F5F6",
+		"#EDEBFE",
+		"#FCE8F3"
+	],
+	[
+		"#CDD0D8",
+		"#A4CAFE",
+		"#F8B4B4",
+		"#FDBA8C",
+		"#FAC815",
+		"#84E1BC",
+		"#7EDCE2",
+		"#CABFFD",
+		"#F8B4D9"
+	],
+	[
+		"#979DAC",
+		"#3F83F8",
+		"#F05252",
+		"#FF5A1F",
+		"#D49D0F",
+		"#0DA471",
+		"#0694A2",
+		"#9061F9",
+		"#E74694"
+	],
+	[
+		"#414657",
+		"#1A56DB",
+		"#C81E1E",
+		"#B43403",
+		"#9A6D15",
+		"#046C4E",
+		"#036672",
+		"#6C2BD9",
+		"#BF125D"
+	],
+	[
+		"#000000",
+		"#233876",
+		"#771D1D",
+		"#8A2C0D",
+		"#634312",
+		"#014737",
+		"#014451",
+		"#4A1D96",
+		"#751A3D"
+	]
+];
+
+//#endregion
+//#region src/components/color-picker/ColorPresets.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function ColorPresets({ hsv, onChange }) {
+	const handleSelectPreset = (0, react.useCallback)((color) => {
+		const [h, s, v] = hexToHsv(color);
+		onChange(h, s, v);
+	}, [onChange]);
+	const currentColor = hsvToHex(hsv[0], hsv[1], hsv[2]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		"data-u-comp": "color-picker-presets",
+		className: "univer-grid univer-content-center univer-gap-2",
+		children: colorPresets.map((row, i) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-grid univer-grid-flow-col univer-items-center univer-justify-between univer-gap-2",
+			children: row.map((color, j) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				className: clsx("univer-box-border univer-size-5 univer-cursor-pointer univer-rounded-full univer-border univer-border-solid univer-border-transparent univer-bg-gray-300 univer-transition-shadow", {
+					"univer-ring-2 univer-ring-offset-2 univer-ring-offset-gray-0 dark:!univer-ring-primary-600 dark:!univer-ring-offset-gray-600": color.toUpperCase() === currentColor.toUpperCase(),
+					"!univer-border-gray-200": i === 0 && j === 0
+				}),
+				style: { backgroundColor: color },
+				onClick: () => handleSelectPreset(color)
+			}, j))
+		}, i))
+	});
+}
+
+//#endregion
+//#region src/components/color-picker/ColorSpectrum.tsx
+function ColorSpectrum({ hsv, onChange, onChanged }) {
+	const canvasRef = (0, react.useRef)(null);
+	const containerRef = (0, react.useRef)(null);
+	const [isDragging, setIsDragging] = (0, react.useState)(false);
+	(0, react.useEffect)(() => {
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		const ctx = canvas.getContext("2d");
+		if (!ctx) return;
+		const gradientS = ctx.createLinearGradient(0, 0, canvas.width, 0);
+		gradientS.addColorStop(0, `hsl(${hsv[0]}, 0%, 50%)`);
+		gradientS.addColorStop(1, `hsl(${hsv[0]}, 100%, 50%)`);
+		ctx.fillStyle = gradientS;
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+		const gradientV = ctx.createLinearGradient(0, 0, 0, canvas.height);
+		gradientV.addColorStop(0, "rgba(255, 255, 255, 0)");
+		gradientV.addColorStop(1, "rgba(0, 0, 0, 1)");
+		ctx.fillStyle = gradientV;
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+	}, [hsv[0]]);
+	const handlePointerEvent = (e) => {
+		e.stopPropagation();
+		const canvas = canvasRef.current;
+		if (!canvas) return;
+		const rect = canvas.getBoundingClientRect();
+		const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+		const y = Math.max(0, Math.min(e.clientY - rect.top, rect.height));
+		const s = x / rect.width * 100;
+		const v = 100 - y / rect.height * 100;
+		onChange(hsv[0], s, v);
+	};
+	const handlePointerUp = (0, react.useCallback)(() => {
+		setIsDragging(false);
+	}, []);
+	function handleChange() {
+		onChanged === null || onChanged === void 0 || onChanged(hsv[0], hsv[1], hsv[2]);
+	}
+	(0, react.useEffect)(() => {
+		var _containerRef$current;
+		(_containerRef$current = containerRef.current) === null || _containerRef$current === void 0 || _containerRef$current.addEventListener("mouseup", handleChange);
+		window.addEventListener("pointerup", handlePointerUp);
+		window.addEventListener("mouseup", handlePointerUp);
+		return () => {
+			var _containerRef$current2;
+			(_containerRef$current2 = containerRef.current) === null || _containerRef$current2 === void 0 || _containerRef$current2.removeEventListener("mouseup", handleChange);
+			window.removeEventListener("pointerup", handlePointerUp);
+			window.removeEventListener("mouseup", handlePointerUp);
+		};
+	}, [hsv]);
+	const getIndicatorStyles = () => {
+		var _containerRef$current3, _containerRef$current4;
+		const halfIndicatorSize = 16 / 2;
+		const w = ((_containerRef$current3 = containerRef.current) === null || _containerRef$current3 === void 0 ? void 0 : _containerRef$current3.clientWidth) ?? 0;
+		const h = ((_containerRef$current4 = containerRef.current) === null || _containerRef$current4 === void 0 ? void 0 : _containerRef$current4.clientHeight) ?? 0;
+		return {
+			transform: `translate(${hsv[1] / 100 * w - halfIndicatorSize}px, ${(100 - hsv[2]) / 100 * h - halfIndicatorSize}px)`,
+			transition: isDragging ? "none" : "transform 0.1s ease-out"
+		};
+	};
+	(0, react.useEffect)(() => {
+		const handlePointerUp = () => {
+			setIsDragging(false);
+		};
+		window.addEventListener("pointerup", handlePointerUp);
+		window.addEventListener("mouseup", handlePointerUp);
+		return () => {
+			window.removeEventListener("pointerup", handlePointerUp);
+			window.removeEventListener("mouseup", handlePointerUp);
+		};
+	}, []);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "color-picker-spectrum",
+		ref: containerRef,
+		className: "univer-relative univer-overflow-hidden",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("canvas", {
+			ref: canvasRef,
+			"data-u-comp": "color-picker-spectrum-canvas",
+			className: "univer-size-full univer-cursor-crosshair univer-rounded",
+			onPointerDown: (e) => {
+				setIsDragging(true);
+				handlePointerEvent(e);
+			},
+			onPointerMove: (e) => isDragging && handlePointerEvent(e)
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-pointer-events-none univer-absolute univer-left-0 univer-top-0 univer-size-4 univer-rounded-full univer-border-2 univer-border-gray-0 univer-shadow-md univer-ring-2 univer-ring-gray-0 univer-will-change-transform",
+			style: getIndicatorStyles()
+		})]
+	});
+}
+
+//#endregion
+//#region src/components/color-picker/HueSlider.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function HueSlider({ hsv, onChange, onChanged }) {
+	const [isDragging, setIsDragging] = (0, react.useState)(false);
+	const sliderRef = (0, react.useRef)(null);
+	const thumbRef = (0, react.useRef)(null);
+	const hsvRef = (0, react.useRef)(hsv);
+	const calculateHue = (0, react.useCallback)((clientX) => {
+		var _thumbRef$current;
+		const slider = sliderRef.current;
+		if (!slider) return;
+		const thumbSize = ((_thumbRef$current = thumbRef.current) === null || _thumbRef$current === void 0 ? void 0 : _thumbRef$current.clientWidth) ?? 0;
+		const rect = slider.getBoundingClientRect();
+		const maxX = rect.width - thumbSize;
+		if (maxX <= 0) {
+			onChange(0, hsv[1], hsv[2]);
+			return;
+		}
+		const x = Math.max(0, Math.min(clientX - rect.left, maxX));
+		onChange(Math.round(x / maxX * 360), hsv[1], hsv[2]);
+	}, [hsv, onChange]);
+	const handlePointerMove = (0, react.useCallback)((e) => {
+		e.stopPropagation();
+		if (!isDragging) return;
+		calculateHue(e.clientX);
+	}, [isDragging, calculateHue]);
+	(0, react.useEffect)(() => {
+		hsvRef.current = hsv;
+	}, [hsv]);
+	const handlePointerUp = (0, react.useCallback)(() => {
+		setIsDragging(false);
+		const [h, s, v] = hsvRef.current;
+		onChanged === null || onChanged === void 0 || onChanged(h, s, v);
+	}, [onChanged]);
+	(0, react.useEffect)(() => {
+		if (isDragging) {
+			window.addEventListener("pointermove", handlePointerMove);
+			window.addEventListener("pointerup", handlePointerUp);
+			window.addEventListener("mouseup", handlePointerUp);
+		}
+		return () => {
+			window.removeEventListener("pointermove", handlePointerMove);
+			window.removeEventListener("pointerup", handlePointerUp);
+			window.removeEventListener("mouseup", handlePointerUp);
+		};
+	}, [
+		isDragging,
+		handlePointerMove,
+		handlePointerUp
+	]);
+	const getThumbPosition = () => {
+		var _thumbRef$current2, _sliderRef$current;
+		const safeHue = Math.min(Math.max(hsv[0], 0), 360);
+		const thumbSize = ((_thumbRef$current2 = thumbRef.current) === null || _thumbRef$current2 === void 0 ? void 0 : _thumbRef$current2.clientWidth) ?? 0;
+		const sliderWidth = ((_sliderRef$current = sliderRef.current) === null || _sliderRef$current === void 0 ? void 0 : _sliderRef$current.clientWidth) ?? 0;
+		const thumbOffsetPercent = sliderWidth > 0 ? thumbSize / sliderWidth * 100 : 0;
+		return `${safeHue / 360 * (100 - thumbOffsetPercent)}%`;
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		"data-u-comp": "color-picker-hue-slider",
+		className: "univer-relative univer-w-full univer-select-none",
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			ref: sliderRef,
+			className: "univer-relative univer-h-2 univer-w-full univer-cursor-pointer univer-rounded-full univer-shadow-inner",
+			style: { background: `linear-gradient(to right,
+                        hsl(0, 100%, 50%),
+                        hsl(60, 100%, 50%),
+                        hsl(120, 100%, 50%),
+                        hsl(180, 100%, 50%),
+                        hsl(240, 100%, 50%),
+                        hsl(300, 100%, 50%),
+                        hsl(360, 100%, 50%))` },
+			onPointerDown: (e) => {
+				setIsDragging(true);
+				calculateHue(e.clientX);
+			},
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				ref: thumbRef,
+				"data-u-comp": "color-picker-hue-slider-thumb",
+				className: "univer-absolute univer-top-1/2 univer-box-border univer-size-2 univer-rounded-full univer-bg-transparent univer-shadow-md univer-ring-2 univer-ring-gray-0 univer-transition-transform univer-duration-75 univer-will-change-transform",
+				style: {
+					left: getThumbPosition(),
+					transform: "translateY(-50%)",
+					transition: isDragging ? "none" : "all 0.1s ease-out"
+				}
+			})
+		})
+	});
+}
+
+//#endregion
+//#region src/components/color-picker/MobileColorPresets.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function MobileColorPresets({ value = "", onSelect }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-grid univer-gap-2",
+		style: { gridTemplateColumns: "repeat(auto-fit, minmax(40px, 1fr))" },
+		children: colorPresets.flat().map((color) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+			type: "button",
+			"aria-label": color,
+			"aria-pressed": color.toUpperCase() === value.toUpperCase(),
+			className: clsx("univer-box-border univer-flex univer-size-10 univer-cursor-pointer univer-items-center univer-justify-center univer-justify-self-center univer-rounded-lg univer-border univer-border-solid univer-border-transparent univer-bg-transparent univer-transition-colors active:univer-bg-gray-100 dark:active:!univer-bg-gray-700", { "univer-ring-2 univer-ring-primary-600 univer-ring-offset-2 univer-ring-offset-gray-0 dark:!univer-ring-primary-400 dark:!univer-ring-offset-gray-800": color.toUpperCase() === value.toUpperCase() }),
+			onClick: () => onSelect(color),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: clsx("univer-aspect-square univer-w-8 univer-shrink-0 univer-rounded-md univer-border univer-border-solid univer-border-transparent", { "!univer-border-gray-200 dark:!univer-border-gray-600": color === "#FFFFFF" }),
+				style: { backgroundColor: color }
+			})
+		}, color))
+	});
+}
+
+//#endregion
+//#region src/components/color-picker/ColorPicker.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const MemoizedColorSpectrum = (0, react.memo)(ColorSpectrum);
+const MemoizedHueSlider = (0, react.memo)(HueSlider);
+const MemoizedAlphaSlider = (0, react.memo)(AlphaSlider);
+const MemoizedColorInput = (0, react.memo)(ColorInput);
+const MemoizedColorPresets = (0, react.memo)(ColorPresets);
+const MemoizedMobileColorPresets = (0, react.memo)(MobileColorPresets);
+function ColorPicker({ format = "hex", value, onChange }) {
+	const { direction, locale, mobile } = (0, react.useContext)(ConfigContext);
+	const [hsv, setHsv] = (0, react.useState)([
+		0,
+		100,
+		100
+	]);
+	const [alpha, setAlpha] = (0, react.useState)(1);
+	const [visible, setVisible] = (0, react.useState)(false);
+	const getRgb = (0, react.useCallback)((h, s, v) => {
+		return hsvToRgb(h, s, v);
+	}, []);
+	(0, react.useEffect)(() => {
+		try {
+			const actualValue = value || (format === "hex" ? "#000000" : "rgba(0, 0, 0, 1)");
+			if (format === "hex") {
+				const [h, s, v] = hexToHsv(actualValue);
+				setHsv([
+					h,
+					s,
+					v
+				]);
+				setAlpha(1);
+			} else if (format === "rgba") {
+				const [r, g, b, a] = parseRgba(actualValue);
+				const [h, s, v] = rgbToHsv(r, g, b);
+				setHsv([
+					h,
+					s,
+					v
+				]);
+				setAlpha(a);
+			}
+		} catch (error) {
+			console.error("Invalid value:", error);
+		}
+	}, [value, format]);
+	if (!isBrowser) return null;
+	function handleColorChange(h, s, v) {
+		setHsv([
+			h,
+			s,
+			v
+		]);
+	}
+	function handleAlphaChange(a) {
+		setAlpha(a);
+	}
+	function handleColorChanged(h, s, v, a = alpha) {
+		if (format === "hex") {
+			const [r, g, b] = getRgb(h, s, v);
+			const hex = rgbToHex(r, g, b);
+			onChange === null || onChange === void 0 || onChange(hex);
+		} else if (format === "rgba") {
+			const [r, g, b] = getRgb(h, s, v);
+			onChange === null || onChange === void 0 || onChange(`rgba(${r}, ${g}, ${b}, ${a})`);
+		}
+	}
+	function handleConfirmCustomColor() {
+		const [h, s, v] = hsv;
+		if (format === "hex") {
+			const hex = hsvToHex(h, s, v);
+			onChange === null || onChange === void 0 || onChange(hex);
+		} else if (format === "rgba") {
+			const [r, g, b] = getRgb(h, s, v);
+			onChange === null || onChange === void 0 || onChange(`rgba(${r}, ${g}, ${b}, ${alpha})`);
+		}
+		setVisible(false);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "color-picker",
+		dir: direction,
+		className: "univer-cursor-default univer-space-y-2 univer-rounded-lg",
+		onClick: (e) => e.stopPropagation(),
+		children: [
+			mobile ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MemoizedMobileColorPresets, {
+				value: hsvToHex(...hsv),
+				onSelect: (color) => {
+					const [h, s, v] = hexToHsv(color);
+					handleColorChange(h, s, v);
+					handleAlphaChange(1);
+					handleColorChanged(h, s, v, 1);
+				}
+			}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MemoizedColorPresets, {
+				hsv,
+				onChange: (h, s, v) => {
+					handleColorChange(h, s, v);
+					handleAlphaChange(1);
+					handleColorChanged(h, s, v, 1);
+				}
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: clsx("univer-flex univer-items-center", mobile ? "univer-h-12" : "univer-h-7"),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					type: "button",
+					className: clsx("univer-cursor-pointer univer-border-0 univer-text-sm univer-text-gray-900 dark:!univer-text-gray-0", mobile ? "univer-h-11 univer-w-full univer-rounded-xl univer-bg-gray-100 univer-font-medium active:univer-bg-gray-200 dark:!univer-bg-gray-800 dark:active:!univer-bg-gray-700" : "univer-bg-transparent univer-p-0 univer-transition-opacity hover:univer-opacity-80"),
+					onClick: () => setVisible(true),
+					children: locale === null || locale === void 0 ? void 0 : locale.ColorPicker.more
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Dialog, {
+				className: "!univer-z-[1090] !univer-w-fit !univer-p-2.5",
+				overlayClassName: "!univer-z-[1090]",
+				closable: false,
+				maskClosable: false,
+				open: visible,
+				onOpenChange: setVisible,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: "univer-grid univer-w-64 univer-gap-2",
+					children: [
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)(MemoizedColorSpectrum, {
+							hsv,
+							onChange: handleColorChange
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: "univer-flex univer-items-center univer-gap-2",
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: "univer-size-6 univer-flex-shrink-0 univer-rounded-sm",
+								style: { backgroundColor: format === "hex" ? hsvToHex(...hsv) : hsvToRgba(...hsv, alpha) }
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								className: "univer-flex-1 univer-space-y-2",
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(MemoizedHueSlider, {
+									hsv,
+									onChange: handleColorChange
+								}), format === "rgba" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MemoizedAlphaSlider, {
+									hsv,
+									alpha,
+									onChange: handleAlphaChange
+								})]
+							})]
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)(MemoizedColorInput, {
+							hsv,
+							alpha,
+							format,
+							onChange: (h, s, v, a) => {
+								handleColorChange(h, s, v);
+								if (a !== void 0) handleAlphaChange(a);
+							}
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("footer", {
+							className: "univer-flex univer-items-center univer-justify-end univer-gap-2",
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+								onClick: () => setVisible(false),
+								children: locale === null || locale === void 0 ? void 0 : locale.ColorPicker.cancel
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+								variant: "primary",
+								onClick: handleConfirmCustomColor,
+								children: locale === null || locale === void 0 ? void 0 : locale.ColorPicker.confirm
+							})]
+						})
+					]
+				})
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/components/color-picker/ColorPickerPanel.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function ColorPickerPanel({ value = "#000000", confirmText, onConfirm }) {
+	const { locale } = (0, react.useContext)(ConfigContext);
+	const [hsv, setHsv] = (0, react.useState)(() => hexToHsv(value));
+	const color = hsvToHex(...hsv);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "color-picker-panel",
+		className: "univer-grid univer-gap-4",
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-h-44 univer-overflow-hidden univer-rounded-lg",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorSpectrum, {
+					hsv,
+					onChange: (h, s, v) => setHsv([
+						h,
+						s,
+						v
+					])
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-items-center univer-gap-3",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-size-10 univer-shrink-0 univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 dark:!univer-border-gray-600",
+					style: { backgroundColor: color }
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-flex-1",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(HueSlider, {
+						hsv,
+						onChange: (h, s, v) => setHsv([
+							h,
+							s,
+							v
+						])
+					})
+				})]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorInput, {
+				hsv,
+				alpha: 1,
+				format: "hex",
+				onChange: (h, s, v) => setHsv([
+					h,
+					s,
+					v
+				])
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+				className: "!univer-h-11 !univer-w-full",
+				variant: "primary",
+				onClick: () => onConfirm === null || onConfirm === void 0 ? void 0 : onConfirm(color),
+				children: confirmText ?? (locale === null || locale === void 0 ? void 0 : locale.ColorPicker.confirm)
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/components/command/Command.tsx
+function Command({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(cmdk.Command, {
+		"data-slot": "command",
+		className: clsx("univer-flex univer-h-full univer-w-full univer-flex-col univer-overflow-hidden univer-rounded-md univer-bg-gray-0 univer-text-gray-900 dark:!univer-bg-gray-700 dark:!univer-text-gray-0", className),
+		...props
+	});
+}
+function CommandInput({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-slot": "command-input-wrapper",
+		className: "univer-flex univer-h-10 univer-items-center univer-gap-2 univer-border-0 univer-border-b univer-border-solid univer-border-gray-200 univer-px-3 dark:!univer-border-gray-600 [&>svg]:univer-size-4 [&>svg]:univer-shrink-0 [&>svg]:univer-text-gray-400",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.SearchIcon, {}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(cmdk.Command.Input, {
+			"data-slot": "command-input",
+			className: clsx("univer-h-10 univer-w-full univer-border-none univer-bg-transparent univer-text-sm univer-outline-none placeholder:univer-text-gray-400", className),
+			...props
+		})]
+	});
+}
+function CommandList({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(cmdk.Command.List, {
+		"data-slot": "command-list",
+		className: clsx("univer-max-h-[300px] univer-overflow-y-auto univer-overflow-x-hidden univer-p-1 [scroll-padding-block:4px]", className),
+		...props
+	});
+}
+function CommandEmpty({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(cmdk.Command.Empty, {
+		"data-slot": "command-empty",
+		className: clsx("univer-py-6 univer-text-center univer-text-sm univer-text-gray-500", className),
+		...props
+	});
+}
+function CommandGroup({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(cmdk.Command.Group, {
+		"data-slot": "command-group",
+		className: clsx("univer-overflow-hidden univer-p-1 [&_[cmdk-group-heading]]:univer-px-2 [&_[cmdk-group-heading]]:univer-py-1.5 [&_[cmdk-group-heading]]:univer-text-xs [&_[cmdk-group-heading]]:univer-font-medium [&_[cmdk-group-heading]]:univer-text-gray-500", className),
+		...props
+	});
+}
+function CommandItem({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(cmdk.Command.Item, {
+		"data-slot": "command-item",
+		className: clsx("univer-relative univer-flex univer-cursor-default univer-select-none univer-items-center univer-gap-2 univer-rounded univer-px-2 univer-py-1.5 univer-text-sm univer-outline-none data-[disabled=true]:univer-pointer-events-none data-[selected=true]:univer-bg-gray-100 data-[disabled=true]:univer-opacity-50 dark:data-[selected=true]:!univer-bg-gray-600", className),
+		...props
+	});
+}
+function CommandSeparator({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(cmdk.Command.Separator, {
+		"data-slot": "command-separator",
+		className: clsx("univer-my-1 univer-h-px univer-bg-gray-200 dark:!univer-bg-gray-600", className),
+		...props
+	});
+}
+function CommandShortcut({ className, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+		"data-slot": "command-shortcut",
+		className: clsx("univer-ml-auto univer-text-xs univer-tracking-widest univer-text-gray-400 rtl:univer-ml-0 rtl:univer-mr-auto", className),
+		...props
+	});
+}
+
+//#endregion
+//#region src/components/confirm/Confirm.tsx
+function Footer(props) {
+	const { locale, cancelText, confirmText, onClose, onConfirm, closable = true } = props;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("footer", {
+		className: "univer-flex univer-items-center univer-justify-end univer-gap-2",
+		children: [closable && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+			onClick: onClose,
+			children: cancelText ?? (locale === null || locale === void 0 ? void 0 : locale.Confirm.cancel)
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+			variant: "primary",
+			onClick: onConfirm,
+			children: confirmText ?? (locale === null || locale === void 0 ? void 0 : locale.Confirm.confirm)
+		})]
+	});
+}
+function Confirm(props) {
+	const { children, visible = false, title, cancelText, confirmText, width, onClose, onConfirm, closable = true } = props;
+	const { locale } = (0, react.useContext)(ConfigContext);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Dialog, {
+		open: visible,
+		title,
+		maskClosable: false,
+		footer: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Footer, {
+			locale,
+			cancelText,
+			confirmText,
+			onClose,
+			onConfirm,
+			closable
+		}),
+		onClose,
+		width,
+		closable,
+		children
+	});
+}
+
+//#endregion
+//#region src/components/date-picker/DatePicker.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function DatePicker(props) {
+	const { value, onValueChange, className } = props;
+	const [open, setOpen] = (0, react.useState)(false);
+	function handleValueChange(date) {
+		onValueChange === null || onValueChange === void 0 || onValueChange(date);
+		setOpen(false);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Dropdown, {
+		align: "start",
+		overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-p-2",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Calendar, {
+				value,
+				onValueChange: handleValueChange
+			})
+		}),
+		open,
+		onOpenChange: setOpen,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+			className: clsx("univer-flex univer-h-8 univer-items-center univer-justify-between univer-gap-2 univer-rounded-md univer-bg-transparent univer-px-2 univer-text-sm univer-text-gray-800 univer-transition-all hover:univer-border-primary-600 dark:!univer-text-gray-0", borderClassName, className),
+			type: "button",
+			children: [formatDateWithPattern(value, "YYYY-MM-DD"), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CalendarIcon, { className: "univer-text-gray-600 dark:!univer-text-gray-400" })]
+		})
+	});
+}
+
+//#endregion
+//#region src/components/date-range-picker/DateRangePicker.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function DateRangePicker(props) {
+	const { value = [/* @__PURE__ */ new Date(), /* @__PURE__ */ new Date()], onValueChange, className } = props;
+	const [open, setOpen] = (0, react.useState)(false);
+	function handleValueChange(date) {
+		let [start, end] = date;
+		if (start > end) [start, end] = [end, start];
+		onValueChange === null || onValueChange === void 0 || onValueChange([start, end]);
+		setOpen(false);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Dropdown, {
+		align: "start",
+		overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-grid univer-grid-cols-2 univer-gap-2 univer-p-2",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Calendar, {
+				value: value[0],
+				max: value[1],
+				onValueChange: (date) => {
+					handleValueChange([date, value[1]]);
+				}
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Calendar, {
+				value: value[1],
+				min: value[0],
+				onValueChange: (date) => {
+					handleValueChange([value[0], date]);
+				}
+			})]
+		}),
+		open,
+		onOpenChange: setOpen,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+			className: clsx("univer-flex univer-h-8 univer-items-center univer-justify-between univer-gap-2 univer-rounded-md univer-bg-transparent univer-px-2 univer-text-sm univer-text-gray-800 univer-transition-all hover:univer-border-primary-600 dark:!univer-text-gray-0", borderClassName, className),
+			type: "button",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+				className: "univer-flex univer-gap-1",
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: formatDateWithPattern(value[0], "YYYY-MM-DD") }),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: "-" }),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: formatDateWithPattern(value[1], "YYYY-MM-DD") })
+				]
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CalendarIcon, { className: "univer-text-gray-600 dark:!univer-text-gray-400" })]
+		})
+	});
+}
+
+//#endregion
+//#region src/components/draggable-list/DraggableList.tsx
+function moveItemByIndex(list, fromIndex, toIndex) {
+	if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || fromIndex >= list.length || toIndex >= list.length) return list;
+	const next = [...list];
+	const [item] = next.splice(fromIndex, 1);
+	next.splice(toIndex, 0, item);
+	return next;
+}
+function DraggableList(props) {
+	const { list, onListChange, idKey, itemRender, className, style, draggableHandle, rowHeight, margin = [0, 0], onDragStart, onDragStop, ...restProps } = props;
+	const [displayList, setDisplayList] = (0, react.useState)(list);
+	const displayListRef = (0, react.useRef)(list);
+	const [draggingId, setDraggingId] = (0, react.useState)(null);
+	const [dragOverId, setDragOverId] = (0, react.useState)(null);
+	const [ghostElement, setGhostElement] = (0, react.useState)(null);
+	const [ghostPosition, setGhostPosition] = (0, react.useState)(null);
+	const [canUsePortal, setCanUsePortal] = (0, react.useState)(false);
+	const pointerIdRef = (0, react.useRef)(null);
+	const dragPointerOffsetRef = (0, react.useRef)({
+		x: 0,
+		y: 0
+	});
+	const dragItemSizeRef = (0, react.useRef)({
+		width: 0,
+		height: 0
+	});
+	const ghostContainerRef = (0, react.useRef)(null);
+	const pressedHandleIdRef = (0, react.useRef)(null);
+	const dragSourceIdRef = (0, react.useRef)(null);
+	const dragStartIndexRef = (0, react.useRef)(-1);
+	const { direction } = (0, react.useContext)(ConfigContext);
+	(0, react.useEffect)(() => {
+		if (!draggingId) {
+			setDisplayList(list);
+			displayListRef.current = list;
+		}
+	}, [draggingId, list]);
+	(0, react.useEffect)(() => {
+		setCanUsePortal(typeof document !== "undefined");
+	}, []);
+	(0, react.useEffect)(() => {
+		const container = ghostContainerRef.current;
+		if (!container) return;
+		container.replaceChildren();
+		if (ghostElement) container.appendChild(ghostElement);
+	}, [ghostElement]);
+	(0, react.useEffect)(() => {
+		if (!draggingId) return;
+		const handlePointerMove = (evt) => {
+			const sourceId = dragSourceIdRef.current;
+			if (!sourceId || pointerIdRef.current !== evt.pointerId) return;
+			setGhostPosition({
+				x: evt.clientX - dragPointerOffsetRef.current.x,
+				y: evt.clientY - dragPointerOffsetRef.current.y
+			});
+			const element = document.elementFromPoint(evt.clientX, evt.clientY);
+			const itemElement = element === null || element === void 0 ? void 0 : element.closest("[data-draggable-list-item-id]");
+			const targetId = itemElement === null || itemElement === void 0 ? void 0 : itemElement.dataset.draggableListItemId;
+			if (!targetId || targetId === sourceId) return;
+			setDragOverId(targetId);
+			setDisplayList((prev) => {
+				const fromIndex = prev.findIndex((it) => getItemId(it) === sourceId);
+				const toIndex = prev.findIndex((it) => getItemId(it) === targetId);
+				if (fromIndex < 0 || toIndex < 0 || fromIndex === toIndex) return prev;
+				const next = moveItemByIndex(prev, fromIndex, toIndex);
+				displayListRef.current = next;
+				return next;
+			});
+		};
+		const handlePointerUp = (evt) => {
+			if (pointerIdRef.current !== evt.pointerId) return;
+			const sourceId = dragSourceIdRef.current;
+			const startIndex = dragStartIndexRef.current;
+			const currentList = displayListRef.current;
+			if (sourceId) {
+				const finalIndex = currentList.findIndex((it) => getItemId(it) === sourceId);
+				onDragStop === null || onDragStop === void 0 || onDragStop(void 0, { y: startIndex }, { y: finalIndex });
+				if (startIndex >= 0) onListChange([...currentList]);
+			}
+			pointerIdRef.current = null;
+			pressedHandleIdRef.current = null;
+			dragSourceIdRef.current = null;
+			dragStartIndexRef.current = -1;
+			setDragOverId(null);
+			setGhostElement(null);
+			setGhostPosition(null);
+			setDraggingId(null);
+		};
+		window.addEventListener("pointermove", handlePointerMove);
+		window.addEventListener("pointerup", handlePointerUp);
+		window.addEventListener("pointercancel", handlePointerUp);
+		return () => {
+			window.removeEventListener("pointermove", handlePointerMove);
+			window.removeEventListener("pointerup", handlePointerUp);
+			window.removeEventListener("pointercancel", handlePointerUp);
+		};
+	}, [
+		draggingId,
+		onDragStop,
+		onListChange
+	]);
+	const gapStyle = (0, react.useMemo)(() => {
+		const [horizontal, vertical] = margin;
+		return {
+			rowGap: `${vertical}px`,
+			paddingLeft: horizontal ? `${horizontal}px` : void 0,
+			paddingRight: horizontal ? `${horizontal}px` : void 0,
+			...style
+		};
+	}, [margin, style]);
+	const getItemId = (item) => String(item[idKey]);
+	const draggingItem = draggingId ? displayList.find((item) => getItemId(item) === draggingId) : null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		...restProps,
+		className: clsx("univer-flex univer-flex-col", draggingId && "univer-cursor-grabbing univer-select-none", className),
+		style: gapStyle,
+		children: displayList.map((item, index) => {
+			const itemId = getItemId(item);
+			const isDraggingItem = draggingId === itemId;
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				"data-draggable-list-item-id": itemId,
+				className: clsx("univer-relative univer-transition-all univer-duration-150", isDraggingItem && "univer-opacity-0", dragOverId === itemId && !isDraggingItem && "univer-bg-primary-50/60 dark:!univer-bg-primary-900/20 univer-rounded univer-border univer-border-primary-200 dark:!univer-border-primary-700"),
+				onPointerDownCapture: (e) => {
+					if (pointerIdRef.current !== null) return;
+					if (!draggableHandle) pressedHandleIdRef.current = itemId;
+					else {
+						const isMatched = !!e.target.closest(draggableHandle);
+						pressedHandleIdRef.current = isMatched ? itemId : null;
+					}
+					if (pressedHandleIdRef.current !== itemId) return;
+					const rect = e.currentTarget.getBoundingClientRect();
+					dragPointerOffsetRef.current = {
+						x: e.clientX - rect.left,
+						y: e.clientY - rect.top
+					};
+					dragItemSizeRef.current = {
+						width: rect.width,
+						height: rect.height
+					};
+					setGhostPosition({
+						x: rect.left,
+						y: rect.top
+					});
+					setGhostElement(e.currentTarget.cloneNode(true));
+					pointerIdRef.current = e.pointerId;
+					dragSourceIdRef.current = itemId;
+					dragStartIndexRef.current = index;
+					setDraggingId(itemId);
+					displayListRef.current = displayList;
+					onDragStart === null || onDragStart === void 0 || onDragStart(void 0, { y: index });
+					e.preventDefault();
+					e.currentTarget.setPointerCapture(e.pointerId);
+				},
+				style: {
+					...rowHeight ? { minHeight: `${rowHeight}px` } : void 0,
+					cursor: draggingId ? "grabbing" : void 0
+				},
+				children: [isDraggingItem && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { className: "univer-bg-primary-50/50 univer-absolute univer-inset-0 univer-rounded univer-border univer-border-dashed univer-border-primary-300" }), itemRender(item, index)]
+			}, itemId);
+		})
+	}), canUsePortal && draggingItem && ghostPosition && (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		dir: direction,
+		className: clsx("univer-pointer-events-none univer-fixed univer-rounded-md univer-border univer-border-gray-200 univer-bg-gray-0 univer-shadow-lg dark:!univer-border-gray-700 dark:!univer-bg-gray-800"),
+		style: {
+			zIndex: 2147483647,
+			left: `${ghostPosition.x}px`,
+			top: `${ghostPosition.y}px`,
+			width: `${dragItemSizeRef.current.width}px`,
+			height: `${dragItemSizeRef.current.height}px`,
+			opacity: .95
+		},
+		children: ghostElement ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { ref: ghostContainerRef }) : itemRender(draggingItem, displayList.findIndex((item) => getItemId(item) === getItemId(draggingItem)))
+	}), document.body)] });
+}
+
+//#endregion
+//#region src/components/form-layout/FormLayout.tsx
+const FormLayoutContext = (0, react.createContext)(false);
+const FormLayout = (props) => {
+	const { label, desc, children, style, className, error, contentStyle, collapsable = false, defaultCollapsed = false } = props;
+	const [collapsed, setCollapsed] = (0, react.useState)(defaultCollapsed);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FormLayoutContext.Provider, {
+		value: true,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			"data-u-comp": "form-layout",
+			className: clsx("univer-mb-3 univer-flex univer-flex-col", className),
+			style,
+			children: [label && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: clsx("univer-mb-2 univer-flex univer-min-h-3.5 univer-items-center univer-text-sm univer-text-gray-900 dark:!univer-text-gray-0", { "univer-cursor-pointer": collapsable }),
+				onClick: () => setCollapsed(!collapsed),
+				children: [label, collapsable && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreUpIcon, { className: clsx("univer-ml-1 univer-transition-transform", { "univer-rotate-180": collapsed }) })]
+			}), collapsed && collapsable ? null : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [desc && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mt-1 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+				children: desc
+			}), children ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: clsx("last:univer-mb-0 [&_[data-u-comp=input]]:univer-w-full [&_[data-u-comp=select]]:univer-w-full", {
+					"[&_[data-u-comp=input]]:univer-border-red-500": error,
+					"[&_[data-u-comp=select]]:univer-border-red-500": error
+				}),
+				style: contentStyle,
+				children: [children, error ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-mt-1 univer-text-xs univer-text-red-500",
+					children: error
+				}) : null]
+			}) : null] })]
+		})
+	});
+};
+/**
+* A dual columns layout component for the form.
+* @param props props of the component
+*/
+const FormDualColumnLayout = (props) => {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-flex univer-justify-between [&_[data-u-comp=form-layout]]:univer-max-w-[calc(50%-8px)] [&_[data-u-comp=form-layout]]:univer-shrink [&_[data-u-comp=form-layout]]:univer-grow",
+		children: props.children
+	});
+};
+
+//#endregion
+//#region src/components/pager/Pager.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function Pager(props) {
+	const { className, value: current = 0, total: count = 0, loop, text: propText, previousButtonAriaLabel, nextButtonAriaLabel, onChange } = props;
+	const { locale } = (0, react.useContext)(ConfigContext);
+	const text = propText ?? `${current}/${count}`;
+	const hasValue = count > 0;
+	const previousButtonDisabled = !loop && current <= 1;
+	const nextButtonDisabled = !loop && current >= count;
+	const onClickLeftArrow = () => {
+		if (current === 1) {
+			if (loop) onChange === null || onChange === void 0 || onChange(count);
+		} else onChange === null || onChange === void 0 || onChange(current - 1);
+	};
+	const onClickRightArrow = () => {
+		if (current === count) {
+			if (loop) onChange === null || onChange === void 0 || onChange(1);
+		} else onChange === null || onChange === void 0 || onChange(current + 1);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		"data-u-comp": "pager",
+		className: clsx("univer-flex univer-flex-shrink-0 univer-items-center univer-text-sm univer-text-gray-700 dark:!univer-text-gray-400", className),
+		children: hasValue ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				"data-u-comp": "pager-left-arrow",
+				className: "univer-inline-flex univer-size-6 univer-cursor-pointer univer-items-center univer-rounded univer-border-none univer-bg-transparent univer-p-0 univer-text-current hover:univer-bg-gray-50 focus-visible:univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-primary-500 disabled:univer-cursor-default disabled:univer-opacity-40 dark:hover:!univer-bg-gray-600",
+				type: "button",
+				"aria-label": previousButtonAriaLabel ?? (locale === null || locale === void 0 ? void 0 : locale.Accessibility.previous) ?? "Previous",
+				disabled: previousButtonDisabled,
+				onClick: onClickLeftArrow,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreLeftIcon, {
+					className: "rtl:univer-rotate-180",
+					"aria-hidden": "true"
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-mx-1",
+				"aria-live": "polite",
+				"aria-atomic": "true",
+				children: text
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				"data-u-comp": "pager-right-arrow",
+				className: "univer-inline-flex univer-size-6 univer-cursor-pointer univer-items-center univer-rounded univer-border-none univer-bg-transparent univer-p-0 univer-text-current hover:univer-bg-gray-50 focus-visible:univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-primary-500 disabled:univer-cursor-default disabled:univer-opacity-40 dark:hover:!univer-bg-gray-600",
+				type: "button",
+				"aria-label": nextButtonAriaLabel ?? (locale === null || locale === void 0 ? void 0 : locale.Accessibility.next) ?? "Next",
+				disabled: nextButtonDisabled,
+				onClick: onClickRightArrow,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreRightIcon, {
+					className: "rtl:univer-rotate-180",
+					"aria-hidden": "true"
+				})
+			})
+		] }) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mx-1",
+			children: text
+		})
+	});
+}
+
+//#endregion
+//#region src/components/gallery/Gallery.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const toolbarButtonClassName = `
+    !univer-border-transparent !univer-bg-transparent !univer-text-gray-300
+    hover:!univer-bg-gray-600 hover:!univer-text-gray-0
+    focus-visible:!univer-outline-none focus-visible:!univer-ring-2 focus-visible:!univer-ring-gray-0
+`;
+const focusableElementSelector = `
+    button:not([disabled]), [href], input:not([disabled]), select:not([disabled]),
+    textarea:not([disabled]), [tabindex]:not([tabindex="-1"])
+`;
+function Gallery(props) {
+	var _locale$Accessibility;
+	const { className, images, open, onOpenChange } = props;
+	const [isVisible, setIsVisible] = (0, react.useState)(Boolean(open));
+	const [activeImageIndex, setActiveImageIndex] = (0, react.useState)(0);
+	const [zoomLevel, setZoomLevel] = (0, react.useState)(1);
+	const { direction, locale } = (0, react.useContext)(ConfigContext);
+	const dialogRef = (0, react.useRef)(null);
+	const closeButtonRef = (0, react.useRef)(null);
+	const previouslyFocusedElementRef = (0, react.useRef)(null);
+	const activeImage = images[activeImageIndex];
+	const hasPagination = images.length > 1;
+	const imageLabel = (locale === null || locale === void 0 || (_locale$Accessibility = locale.Accessibility.image) === null || _locale$Accessibility === void 0 ? void 0 : _locale$Accessibility.replace("{0}", String(activeImageIndex + 1)).replace("{1}", String(images.length))) ?? `Image ${activeImageIndex + 1} of ${images.length}`;
+	(0, react.useEffect)(() => {
+		const timer = setTimeout(() => {
+			var _previouslyFocusedEle;
+			setIsVisible(Boolean(open));
+			if (!open && ((_previouslyFocusedEle = previouslyFocusedElementRef.current) === null || _previouslyFocusedEle === void 0 ? void 0 : _previouslyFocusedEle.isConnected)) previouslyFocusedElementRef.current.focus();
+			if (!open) previouslyFocusedElementRef.current = null;
+		}, open ? 0 : 150);
+		return () => clearTimeout(timer);
+	}, [open]);
+	(0, react.useEffect)(() => {
+		var _closeButtonRef$curre;
+		if (!open) return;
+		previouslyFocusedElementRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		(_closeButtonRef$curre = closeButtonRef.current) === null || _closeButtonRef$curre === void 0 || _closeButtonRef$curre.focus();
+	}, [open]);
+	(0, react.useEffect)(() => {
+		if (!open && !isVisible) return;
+		const handler = (event) => {
+			if (event.key === "Escape" && open) {
+				event.preventDefault();
+				event.stopPropagation();
+				onOpenChange === null || onOpenChange === void 0 || onOpenChange(false);
+				return;
+			}
+			if (event.key !== "Tab" || !dialogRef.current) return;
+			const focusableElements = Array.from(dialogRef.current.querySelectorAll(focusableElementSelector));
+			if (focusableElements.length === 0) {
+				event.preventDefault();
+				dialogRef.current.focus();
+				return;
+			}
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
+			const activeElement = document.activeElement;
+			if (event.shiftKey && (activeElement === firstElement || !dialogRef.current.contains(activeElement))) {
+				event.preventDefault();
+				lastElement.focus();
+			} else if (!event.shiftKey && (activeElement === lastElement || !dialogRef.current.contains(activeElement))) {
+				event.preventDefault();
+				firstElement.focus();
+			}
+		};
+		window.addEventListener("keydown", handler);
+		return () => window.removeEventListener("keydown", handler);
+	}, [
+		isVisible,
+		onOpenChange,
+		open
+	]);
+	(0, react.useEffect)(() => {
+		return () => {
+			var _previouslyFocusedEle2;
+			if ((_previouslyFocusedEle2 = previouslyFocusedElementRef.current) === null || _previouslyFocusedEle2 === void 0 ? void 0 : _previouslyFocusedEle2.isConnected) previouslyFocusedElementRef.current.focus();
+		};
+	}, []);
+	(0, react.useEffect)(() => {
+		if (!open) return;
+		const handleWheel = (e) => {
+			e.preventDefault();
+			const step = -e.deltaY * .001;
+			setZoomLevel((prev) => Math.min(Math.max(.5, prev + step), 2));
+		};
+		window.addEventListener("wheel", handleWheel, { passive: false });
+		return () => {
+			window.removeEventListener("wheel", handleWheel);
+		};
+	}, [open]);
+	if (!open && !isVisible) return null;
+	function handleToggleZoom(ratio) {
+		if (ratio === "reset") {
+			setZoomLevel(1);
+			return;
+		}
+		setZoomLevel((previousZoomLevel) => Math.min(Math.max(.5, previousZoomLevel + ratio), 2));
+	}
+	function handleClose() {
+		onOpenChange === null || onOpenChange === void 0 || onOpenChange(false);
+	}
+	return (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "gallery",
+		dir: direction,
+		role: "dialog",
+		"aria-modal": "true",
+		"aria-label": (locale === null || locale === void 0 ? void 0 : locale.Accessibility.imageGallery) ?? "Image gallery",
+		tabIndex: -1,
+		ref: dialogRef,
+		className: clsx("univer-fixed univer-inset-0 univer-z-[1080] univer-flex univer-h-screen univer-w-screen univer-select-none univer-items-center univer-justify-center", {
+			"univer-animate-in univer-fade-in": open,
+			"univer-animate-out univer-fade-out": !open
+		}, className),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-absolute univer-inset-0 univer-size-full univer-bg-gray-900 univer-opacity-80",
+				"aria-hidden": "true",
+				onClick: handleClose
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+				ref: closeButtonRef,
+				"data-u-comp": "gallery-close",
+				type: "button",
+				variant: "ghost",
+				size: "icon",
+				"aria-label": (locale === null || locale === void 0 ? void 0 : locale.Accessibility.close) ?? "Close",
+				className: "univer-absolute univer-right-4 univer-top-4 univer-z-10 univer-size-10 univer-rounded-full !univer-border-gray-500 !univer-bg-gray-800 !univer-text-gray-0 hover:!univer-bg-gray-700 focus-visible:!univer-outline-none focus-visible:!univer-ring-2 focus-visible:!univer-ring-gray-0 rtl:univer-left-4 rtl:univer-right-auto",
+				onClick: handleClose,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, { "aria-hidden": "true" })
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-relative univer-flex univer-w-fit univer-items-center univer-justify-center",
+				children: activeImage && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("img", {
+					className: "univer-h-full univer-w-full univer-object-contain univer-transition-transform univer-duration-300 univer-ease-out",
+					style: { transform: `scale(${zoomLevel})` },
+					src: activeImage,
+					alt: imageLabel,
+					draggable: false
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-sr-only",
+				"aria-live": "polite",
+				"aria-atomic": "true",
+				children: imageLabel
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("footer", {
+				className: "univer-absolute univer-bottom-6 univer-left-1/2 univer-flex -univer-translate-x-1/2 univer-items-center univer-gap-3 univer-rounded-full univer-bg-gray-800 univer-px-6 univer-py-3 univer-text-gray-400 rtl:univer-flex-row-reverse",
+				children: [
+					hasPagination && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Pager, {
+						className: "!univer-text-gray-400 [&_[data-u-comp=pager-left-arrow]:hover]:!univer-bg-gray-600 [&_[data-u-comp=pager-right-arrow]:hover]:!univer-bg-gray-600",
+						value: activeImageIndex + 1,
+						total: images.length,
+						previousButtonAriaLabel: (locale === null || locale === void 0 ? void 0 : locale.Accessibility.previous) ?? "Previous",
+						nextButtonAriaLabel: (locale === null || locale === void 0 ? void 0 : locale.Accessibility.next) ?? "Next",
+						onChange: (value) => setActiveImageIndex(value - 1)
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+						type: "button",
+						variant: "ghost",
+						size: "icon",
+						"aria-label": (locale === null || locale === void 0 ? void 0 : locale.Accessibility.zoomIn) ?? "Zoom in",
+						className: toolbarButtonClassName,
+						disabled: zoomLevel >= 2,
+						onClick: () => handleToggleZoom(.25),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ZoomInIcon, { "aria-hidden": "true" })
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+						type: "button",
+						variant: "ghost",
+						size: "icon",
+						"aria-label": (locale === null || locale === void 0 ? void 0 : locale.Accessibility.zoomOut) ?? "Zoom out",
+						className: toolbarButtonClassName,
+						disabled: zoomLevel <= .5,
+						onClick: () => handleToggleZoom(-.25),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ZoomOutIcon, { "aria-hidden": "true" })
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+						type: "button",
+						variant: "ghost",
+						size: "icon",
+						"aria-label": (locale === null || locale === void 0 ? void 0 : locale.Accessibility.resetZoom) ?? "Reset zoom",
+						className: toolbarButtonClassName,
+						disabled: zoomLevel === 1,
+						onClick: () => handleToggleZoom("reset"),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.OneToOneIcon, { "aria-hidden": "true" })
+					})
+				]
+			})
+		]
+	}), document.body);
+}
+
+//#endregion
+//#region src/components/input/Input.tsx
+const inputVariants = (0, class_variance_authority.cva)("univer-box-border univer-w-full univer-rounded-md univer-bg-gray-0 univer-text-gray-900 univer-transition-colors univer-duration-200 placeholder:univer-text-gray-400 focus:univer-border-primary-600 focus:univer-outline-none focus:univer-ring-2 focus:univer-ring-primary-50 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 dark:focus:!univer-ring-primary-900", {
+	variants: { size: {
+		mini: "univer-h-7 univer-px-1.5 univer-text-sm",
+		small: "univer-h-8 univer-px-2 univer-text-sm",
+		middle: "univer-h-10 univer-px-3 univer-text-base",
+		large: "univer-h-12 univer-px-4 univer-text-lg"
+	} },
+	defaultVariants: { size: "small" }
+});
+const Input = (0, react.forwardRef)(({ autoFocus = false, className, style, type = "text", placeholder, value, size = "small", allowClear = false, disabled = false, onClick, onKeyDown, onChange, onFocus, onBlur, slot, inputClass, inputStyle, ...props }, ref) => {
+	const { direction } = (0, react.useContext)(ConfigContext);
+	const handleClear = (e) => {
+		e.stopPropagation();
+		onChange === null || onChange === void 0 || onChange("");
+	};
+	const handleChange = (e) => {
+		onChange === null || onChange === void 0 || onChange(e.target.value);
+	};
+	const hasSlotContent = (0, react.useMemo)(() => {
+		return allowClear && value && !disabled || slot;
+	}, [
+		allowClear,
+		disabled,
+		slot,
+		value
+	]);
+	const [paddingRight, setPaddingRight] = (0, react.useState)(0);
+	const slotRef = (0, react.useRef)(null);
+	(0, react.useEffect)(() => {
+		let observer = null;
+		if (slot && slotRef.current) {
+			observer = new MutationObserver(() => {
+				if (slotRef.current) setPaddingRight(slotRef.current.offsetWidth + 8);
+			});
+			observer.observe(slotRef.current, {
+				childList: true,
+				subtree: true
+			});
+			setPaddingRight(slotRef.current.offsetWidth + 8);
+		}
+		return () => observer === null || observer === void 0 ? void 0 : observer.disconnect();
+	}, [slotRef.current]);
+	(0, react.useEffect)(() => {
+		if (allowClear && !(slot && slotRef.current)) setPaddingRight(26);
+	}, []);
+	const mergedInputStyle = direction === "rtl" && paddingRight === 0 ? inputStyle : direction === "rtl" ? {
+		...inputStyle,
+		paddingLeft: paddingRight
+	} : {
+		...inputStyle,
+		paddingRight
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "input",
+		className: clsx("univer-relative univer-inline-flex univer-w-full univer-items-center univer-rounded-md", disabled && "univer-cursor-not-allowed", className),
+		style,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+			ref,
+			type,
+			className: clsx(inputVariants({ size }), borderClassName, disabled && "univer-cursor-not-allowed univer-bg-gray-50 univer-text-gray-400 dark:!univer-text-gray-500", allowClear && !slot && (direction === "rtl" ? "univer-pl-8" : "univer-pr-8"), inputClass),
+			placeholder,
+			value,
+			disabled,
+			autoFocus,
+			onClick,
+			onKeyDown,
+			onChange: handleChange,
+			onFocus,
+			onBlur,
+			style: mergedInputStyle,
+			...props
+		}), hasSlotContent && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: clsx("univer-absolute univer-flex univer-items-center univer-gap-1 univer-rounded-full", direction === "rtl" ? "univer-left-2" : "univer-right-2"),
+			ref: slotRef,
+			children: [slot, allowClear && value && !disabled && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				onClick: handleClear,
+				className: "univer-flex univer-size-4 univer-cursor-pointer univer-items-center univer-rounded-full univer-border-none univer-bg-transparent univer-p-1 univer-text-gray-400 univer-transition-colors univer-duration-200 hover:univer-text-gray-500 focus:univer-outline-none",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, { className: "univer-size-3" })
+			})]
+		})]
+	});
+});
+
+//#endregion
+//#region src/components/input-number/InputNumber.tsx
+const InputNumber = (0, react.forwardRef)(({ value, defaultValue, size = "small", min = Number.MIN_SAFE_INTEGER, max = Number.MAX_SAFE_INTEGER, step = 1, precision, formatter, parser, controls = true, className, inputClassName, controlsClassName, disabled, onChange, onKeyDown, onPressEnter, onFocus, onBlur, allowEmpty = false, allowClear = false }, ref) => {
+	const { locale } = (0, react.useContext)(ConfigContext);
+	const [internalValue, setInternalValue] = (0, react.useState)(value !== void 0 ? value : defaultValue !== void 0 ? defaultValue : null);
+	const lastValidValueRef = (0, react.useRef)(internalValue);
+	const [inputValue, setInputValue] = (0, react.useState)(() => formatValue(internalValue));
+	const inputRef = (0, react.useRef)(null);
+	const longPressTimerRef = (0, react.useRef)(null);
+	const longPressIntervalRef = (0, react.useRef)(null);
+	const mergedRef = (node) => {
+		if (ref) if (typeof ref === "function") ref(node);
+		else ref.current = node;
+		inputRef.current = node;
+	};
+	(0, react.useEffect)(() => {
+		if (value !== void 0 && value !== internalValue) {
+			setInternalValue(value);
+			lastValidValueRef.current = value;
+			setInputValue(formatValue(value));
+		}
+	}, [value]);
+	(0, react.useEffect)(() => {
+		if (internalValue !== null) lastValidValueRef.current = internalValue;
+	}, [internalValue]);
+	(0, react.useEffect)(() => {
+		return () => {
+			if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
+			if (longPressIntervalRef.current) clearInterval(longPressIntervalRef.current);
+		};
+	}, []);
+	function formatValue(val) {
+		if (val === null || val === void 0) return "";
+		let formattedValue = val;
+		if (precision !== void 0) formattedValue = Number(val).toFixed(precision);
+		if (formatter) return formatter(formattedValue);
+		return String(formattedValue);
+	}
+	function parseNumberValue(val) {
+		if (!val) return null;
+		let parsedValue = val;
+		if (parser) parsedValue = parser(val);
+		try {
+			const parts = parsedValue.replace(/[^\d.-]/g, "").split(".");
+			const firstPart = parts[0];
+			const secondPart = parts.length > 1 ? parts.slice(1).join("") : "";
+			const normalizedValue = firstPart + (secondPart ? `.${secondPart}` : "");
+			const num = Number(normalizedValue);
+			if (Number.isNaN(num)) return null;
+			let result;
+			if (precision !== void 0) {
+				const factor = 10 ** precision;
+				const roundedNum = Math.round(num * factor) / factor;
+				if (roundedNum.toString().includes("e")) result = Number.parseFloat(roundedNum.toFixed(precision));
+				else result = roundedNum;
+			} else if (num.toString().includes("e")) result = Number.parseFloat(num.toFixed(16).replace(/\.?0+$/, ""));
+			else result = num;
+			return result;
+		} catch (e) {
+			return null;
+		}
+	}
+	function clampValue(val) {
+		if (val === null) return null;
+		if (max !== void 0 && val > max) return max;
+		if (min !== void 0 && val < min) return min;
+		return val;
+	}
+	function handleInputChange(value) {
+		if (allowEmpty && value === "") {
+			setInputValue(value);
+			setInternalValue(null);
+			onChange === null || onChange === void 0 || onChange(null);
+			return;
+		}
+		const parsedNumber = parseNumberValue(value);
+		const parsedValue = clampValue(parsedNumber);
+		setInputValue(parsedNumber !== null && parsedValue !== parsedNumber ? formatValue(parsedValue) : value);
+		setInternalValue(parsedValue);
+		onChange === null || onChange === void 0 || onChange(parsedValue);
+	}
+	function handleBlur(e) {
+		if (internalValue === null) {
+			if (inputValue === "" && allowEmpty) {
+				if (onChange) onChange(null);
+			} else {
+				const valueToRestore = lastValidValueRef.current;
+				setInternalValue(valueToRestore);
+				setInputValue(formatValue(valueToRestore));
+				if (onChange) onChange(valueToRestore);
+			}
+			onBlur === null || onBlur === void 0 || onBlur(e);
+			return;
+		}
+		let valueInRange = internalValue;
+		if (max !== void 0 && valueInRange > max) valueInRange = max;
+		if (min !== void 0 && valueInRange < min) valueInRange = min;
+		if (valueInRange !== internalValue) {
+			setInternalValue(valueInRange);
+			setInputValue(formatValue(valueInRange));
+			onChange === null || onChange === void 0 || onChange(valueInRange);
+		} else setInputValue(formatValue(internalValue));
+		onBlur === null || onBlur === void 0 || onBlur(e);
+	}
+	function handleStep(isUp) {
+		if (disabled) return;
+		const stepValue = isUp ? step : -step;
+		let currentValue;
+		if (internalValue !== null) currentValue = internalValue;
+		else if (lastValidValueRef.current !== null) currentValue = lastValidValueRef.current;
+		else currentValue = min > 0 ? min : 0;
+		let newValue = currentValue + stepValue;
+		if (max !== void 0 && newValue > max) newValue = max;
+		if (min !== void 0 && newValue < min) newValue = min;
+		if (newValue === currentValue) return;
+		setInternalValue(newValue);
+		lastValidValueRef.current = newValue;
+		setInputValue(formatValue(newValue));
+		onChange === null || onChange === void 0 || onChange(newValue);
+	}
+	function handleKeyDown(e) {
+		if (disabled) return;
+		onKeyDown === null || onKeyDown === void 0 || onKeyDown(e);
+		if (e.key === "ArrowUp") {
+			e.preventDefault();
+			handleStep(true);
+		} else if (e.key === "ArrowDown") {
+			e.preventDefault();
+			handleStep(false);
+		} else if (e.key === "Enter") onPressEnter === null || onPressEnter === void 0 || onPressEnter(e);
+	}
+	function handleClick(isUp) {
+		var _inputRef$current;
+		if (disabled) return;
+		handleStep(isUp);
+		(_inputRef$current = inputRef.current) === null || _inputRef$current === void 0 || _inputRef$current.focus();
+	}
+	const incrementDisabled = disabled || max !== void 0 && internalValue !== null && internalValue >= max;
+	const decrementDisabled = disabled || min !== void 0 && internalValue !== null && internalValue <= min;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: clsx("univer-inline-block", className),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-relative univer-w-full",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Input, {
+				ref: mergedRef,
+				className: clsx("univer-box-border", inputClassName),
+				size,
+				value: inputValue,
+				allowClear,
+				disabled,
+				onChange: handleInputChange,
+				onFocus,
+				onBlur: handleBlur,
+				onKeyDown: handleKeyDown
+			}), controls && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: clsx("univer-absolute univer-right-px univer-top-px univer-flex univer-h-[calc(100%-2px)] univer-flex-col univer-overflow-hidden univer-rounded-r-md before:univer-absolute before:univer-top-1/2 before:univer-block before:univer-h-px before:univer-w-full before:-univer-translate-y-1/2 before:univer-bg-gray-200 before:univer-content-[\"\"] rtl:univer-left-px rtl:univer-right-auto rtl:univer-rounded-l-md rtl:univer-rounded-r-none dark:before:!univer-bg-gray-600", borderLeftClassName, borderLeftRTLClassName, controlsClassName),
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: clsx("univer-box-border univer-flex univer-h-1/2 univer-w-5 univer-cursor-pointer univer-items-center univer-justify-center univer-border-none univer-bg-transparent univer-p-0 univer-transition-colors hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-600", incrementDisabled && "univer-cursor-not-allowed univer-opacity-60"),
+					role: "button",
+					"aria-label": locale === null || locale === void 0 ? void 0 : locale.Accessibility.increment,
+					"aria-disabled": incrementDisabled,
+					tabIndex: -1,
+					onMouseDown: (e) => e.preventDefault(),
+					onClick: () => {
+						if (incrementDisabled) return;
+						handleClick(true);
+					},
+					children: "+"
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: clsx("univer-box-border univer-flex univer-h-1/2 univer-w-5 univer-cursor-pointer univer-items-center univer-justify-center univer-border-none univer-bg-transparent univer-p-0 univer-transition-colors hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-600", decrementDisabled && "univer-cursor-not-allowed univer-opacity-60"),
+					role: "button",
+					"aria-label": locale === null || locale === void 0 ? void 0 : locale.Accessibility.decrement,
+					"aria-disabled": decrementDisabled,
+					tabIndex: -1,
+					onMouseDown: (e) => e.preventDefault(),
+					onClick: () => {
+						if (decrementDisabled) return;
+						handleClick(false);
+					},
+					children: "-"
+				})]
+			})]
+		})
+	});
+});
+
+//#endregion
+//#region src/components/segmented/Segmented.tsx
+const SEGMENTED_PADDING = 4;
+function Segmented({ items, value, defaultValue, onChange, className = "" }) {
+	const { direction } = (0, react.useContext)(ConfigContext);
+	const [selectedItem, setSelectedItem] = (0, react.useState)(value !== void 0 ? value : defaultValue || items[0].value);
+	const [slideStyle, setSlideStyle] = (0, react.useState)({});
+	const itemRefs = (0, react.useRef)(/* @__PURE__ */ new Map());
+	const containerRef = (0, react.useRef)(null);
+	(0, react.useEffect)(() => {
+		if (value !== void 0 && value !== selectedItem) setSelectedItem(value);
+	}, [value]);
+	const updateSliderPosition = (newValue, oldValue) => {
+		const newItemElement = itemRefs.current.get(newValue);
+		const oldItemElement = oldValue ? itemRefs.current.get(oldValue) : null;
+		if (newItemElement && containerRef.current) {
+			const containerRect = containerRef.current.getBoundingClientRect();
+			const newRect = newItemElement.getBoundingClientRect();
+			const newLeft = newRect.left - containerRect.left - SEGMENTED_PADDING;
+			if (oldItemElement) {
+				const oldLeft = oldItemElement.getBoundingClientRect().left - containerRect.left - SEGMENTED_PADDING;
+				setSlideStyle({
+					"--slide-from": `${oldLeft}px`,
+					"--slide-to": `${newLeft}px`,
+					left: `${SEGMENTED_PADDING}px`,
+					width: `${newRect.width}px`,
+					transform: `translateX(${newLeft}px)`
+				});
+			} else setSlideStyle({
+				left: `${SEGMENTED_PADDING}px`,
+				width: `${newRect.width}px`,
+				transform: `translateX(${newLeft}px)`
+			});
+		}
+	};
+	(0, react.useEffect)(() => {
+		updateSliderPosition(selectedItem);
+	}, [direction, selectedItem]);
+	const handleClick = (itemValue) => {
+		const oldValue = selectedItem;
+		setSelectedItem(itemValue);
+		onChange === null || onChange === void 0 || onChange(itemValue);
+		updateSliderPosition(itemValue, oldValue);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "segmented",
+		dir: direction,
+		ref: containerRef,
+		className: clsx("univer-relative univer-box-border univer-flex univer-min-w-0 univer-gap-1 univer-rounded-lg univer-bg-gray-100 univer-p-1 dark:!univer-bg-gray-800", className),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-animate-univer-slide univer-absolute univer-h-6 univer-rounded-md univer-bg-gray-0 univer-shadow-sm univer-transition-all univer-duration-200 dark:!univer-bg-gray-700 dark:!univer-text-gray-400",
+			style: slideStyle
+		}), items.map((item) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+			ref: (el) => {
+				if (el) itemRefs.current.set(item.value, el);
+			},
+			className: clsx("univer-relative univer-box-border univer-min-w-0 univer-flex-1 univer-cursor-pointer univer-truncate univer-border-none univer-bg-transparent univer-px-3 univer-py-1 univer-text-xs univer-font-medium univer-transition-colors", {
+				"univer-text-gray-900 dark:!univer-text-gray-0": selectedItem === item.value,
+				"univer-text-gray-500 hover:univer-text-gray-900 dark:hover:!univer-text-gray-0": selectedItem !== item.value
+			}),
+			type: "button",
+			onClick: () => handleClick(item.value),
+			children: item.label
+		}, String(item.value)))]
+	});
+}
+
+//#endregion
+//#region src/components/tooltip/Tooltip.tsx
+function Tooltip(props) {
+	const { children, className, asChild = true, title, placement = "bottom", showIfEllipsis = false, visible: controlledVisible, onVisibleChange } = props;
+	const { direction, disableTooltips } = (0, react.useContext)(ConfigContext);
+	const [uncontrolledVisible, setUncontrolledVisible] = (0, react.useState)(false);
+	const isControlled = controlledVisible !== void 0;
+	const visible = !disableTooltips && (isControlled ? controlledVisible : uncontrolledVisible);
+	const triggerRef = (0, react.useRef)(null);
+	const tooltipRef = (0, react.useRef)(null);
+	const arrowRef = (0, react.useRef)(null);
+	const [coords, setCoords] = (0, react.useState)(null);
+	const [currentPlacement, setCurrentPlacement] = (0, react.useState)(placement);
+	function isContentOverflowing(element) {
+		return Math.abs(element.scrollWidth - element.clientWidth) > 1;
+	}
+	function showTooltip() {
+		if (disableTooltips) return;
+		if (isControlled) onVisibleChange === null || onVisibleChange === void 0 || onVisibleChange(true);
+		else setUncontrolledVisible(true);
+	}
+	function hideTooltip() {
+		if (disableTooltips) return;
+		if (isControlled) onVisibleChange === null || onVisibleChange === void 0 || onVisibleChange(false);
+		else setUncontrolledVisible(false);
+	}
+	(0, react.useLayoutEffect)(() => {
+		if (!visible) return;
+		const trigger = triggerRef.current;
+		const tip = tooltipRef.current;
+		if (!trigger || !tip) return;
+		const triggerRect = trigger.getBoundingClientRect();
+		const tipRect = tip.getBoundingClientRect();
+		const offset = 8;
+		const viewportWidth = window.innerWidth;
+		const viewportHeight = window.innerHeight;
+		const placements = [
+			placement,
+			"bottom",
+			"top",
+			"right",
+			"left"
+		];
+		let chosen = placement;
+		let top = 0;
+		let left = 0;
+		const computeFor = (p) => {
+			let t = 0;
+			let l = 0;
+			if (p === "bottom") {
+				t = triggerRect.bottom + offset;
+				l = triggerRect.left + triggerRect.width / 2 - tipRect.width / 2;
+			} else if (p === "top") {
+				t = triggerRect.top - tipRect.height - offset;
+				l = triggerRect.left + triggerRect.width / 2 - tipRect.width / 2;
+			} else if (p === "left") {
+				t = triggerRect.top + triggerRect.height / 2 - tipRect.height / 2;
+				l = triggerRect.left - tipRect.width - offset;
+			} else {
+				t = triggerRect.top + triggerRect.height / 2 - tipRect.height / 2;
+				l = triggerRect.right + offset;
+			}
+			return {
+				t,
+				l
+			};
+		};
+		for (const p of placements) {
+			const { t, l } = computeFor(p);
+			const fitsHorizontally = l >= 0 && l + tipRect.width <= viewportWidth;
+			const fitsVertically = t >= 0 && t + tipRect.height <= viewportHeight;
+			if (fitsHorizontally && fitsVertically) {
+				chosen = p;
+				top = t;
+				left = l;
+				break;
+			}
+		}
+		if (!top && !left) {
+			const c = computeFor(placement);
+			top = Math.min(Math.max(0, c.t), viewportHeight - tipRect.height);
+			left = Math.min(Math.max(0, c.l), viewportWidth - tipRect.width);
+		}
+		setCurrentPlacement(chosen);
+		setCoords({
+			top: Math.round(top + window.scrollY),
+			left: Math.round(left + window.scrollX)
+		});
+	}, [visible, placement]);
+	(0, react.useEffect)(() => {
+		if (!visible) return;
+		const handler = () => {
+			if (!triggerRef.current || !tooltipRef.current) return;
+			const triggerRect = triggerRef.current.getBoundingClientRect();
+			const tipRect = tooltipRef.current.getBoundingClientRect();
+			const offset = 8;
+			let top = 0;
+			let left = 0;
+			if (currentPlacement === "bottom") {
+				top = triggerRect.bottom + offset;
+				left = triggerRect.left + triggerRect.width / 2 - tipRect.width / 2;
+			} else if (currentPlacement === "top") {
+				top = triggerRect.top - tipRect.height - offset;
+				left = triggerRect.left + triggerRect.width / 2 - tipRect.width / 2;
+			} else if (currentPlacement === "left") {
+				top = triggerRect.top + triggerRect.height / 2 - tipRect.height / 2;
+				left = triggerRect.left - tipRect.width - offset;
+			} else {
+				top = triggerRect.top + triggerRect.height / 2 - tipRect.height / 2;
+				left = triggerRect.right + offset;
+			}
+			setCoords({
+				top: Math.round(top + window.scrollY),
+				left: Math.round(left + window.scrollX)
+			});
+		};
+		window.addEventListener("scroll", handler, true);
+		window.addEventListener("resize", handler);
+		return () => {
+			window.removeEventListener("scroll", handler, true);
+			window.removeEventListener("resize", handler);
+		};
+	}, [visible, currentPlacement]);
+	const commonProps = {
+		ref: (node) => triggerRef.current = node,
+		onMouseEnter: () => {
+			if (showIfEllipsis && triggerRef.current) {
+				if (!isContentOverflowing(triggerRef.current)) return;
+			}
+			showTooltip();
+		},
+		onMouseLeave: () => hideTooltip(),
+		onFocus: () => showTooltip(),
+		onBlur: () => hideTooltip()
+	};
+	const triggerElement = asChild ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+		...commonProps,
+		className: "univer-inline-flex univer-max-w-full univer-items-center univer-truncate",
+		children
+	}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		type: "button",
+		...commonProps,
+		children
+	});
+	let tooltipNode = null;
+	if (typeof document !== "undefined" && visible && title && document.body) tooltipNode = (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		ref: tooltipRef,
+		dir: direction,
+		role: "tooltip",
+		className: clsx("univer-animate-in univer-fade-in-0 univer-zoom-in-95 univer-pointer-events-auto univer-absolute univer-z-[1081] univer-box-border univer-w-fit univer-max-w-sm univer-text-balance univer-rounded-lg univer-bg-gray-700 univer-px-2.5 univer-py-2 univer-text-xs univer-font-medium univer-text-gray-0 univer-shadow-lg univer-drop-shadow-sm dark:!univer-bg-gray-100 dark:!univer-text-gray-900", className),
+		style: {
+			top: (coords === null || coords === void 0 ? void 0 : coords.top) ?? -9999,
+			left: (coords === null || coords === void 0 ? void 0 : coords.left) ?? -9999
+		},
+		onMouseEnter: () => showTooltip(),
+		onMouseLeave: () => hideTooltip(),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-break-words",
+			children: title
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			ref: arrowRef,
+			className: "univer-absolute univer-size-2.5 univer-rotate-45 univer-rounded-sm univer-bg-gray-700 dark:!univer-bg-gray-100",
+			style: {
+				...currentPlacement === "bottom" && {
+					top: -5,
+					left: "50%",
+					transform: "translateX(-50%) rotate(45deg)"
+				},
+				...currentPlacement === "top" && {
+					bottom: -5,
+					left: "50%",
+					transform: "translateX(-50%) rotate(45deg)"
+				},
+				...currentPlacement === "left" && {
+					right: -5,
+					top: "50%",
+					transform: "translateY(-50%) rotate(45deg)"
+				},
+				...currentPlacement === "right" && {
+					left: -5,
+					top: "50%",
+					transform: "translateY(-50%) rotate(45deg)"
+				}
+			}
+		})]
+	}), document.body);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [triggerElement, tooltipNode] });
+}
+
+//#endregion
+//#region src/components/gradient-color-picker/GradientColorPicker.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const DEFAULT_VALUE = {
+	type: "linear",
+	stops: [{
+		color: "#ffffff",
+		offset: 0
+	}, {
+		color: "#000000",
+		offset: 100
+	}],
+	angle: 0
+};
+function clamp(value, min, max) {
+	return Math.max(min, Math.min(max, value));
+}
+function getStopOpacity(stop) {
+	return clamp((stop === null || stop === void 0 ? void 0 : stop.opacity) ?? 1, 0, 1);
+}
+function getColorWithOpacity(color, opacity) {
+	if (opacity >= 1) return color;
+	const value = color.trim();
+	if (/^#[0-9a-f]{3}$/i.test(value)) {
+		const [, r, g, b] = value;
+		return `rgba(${Number.parseInt(r + r, 16)}, ${Number.parseInt(g + g, 16)}, ${Number.parseInt(b + b, 16)}, ${opacity})`;
+	}
+	if (/^#[0-9a-f]{6}$/i.test(value)) return `rgba(${Number.parseInt(value.slice(1, 3), 16)}, ${Number.parseInt(value.slice(3, 5), 16)}, ${Number.parseInt(value.slice(5, 7), 16)}, ${opacity})`;
+	const rgba = /^rgba?\(([^)]+)\)$/i.exec(value);
+	if (rgba) {
+		const parts = rgba[1].split(",").map((part) => part.trim());
+		const baseAlpha = parts[3] === void 0 ? 1 : Number.parseFloat(parts[3]);
+		const alpha = Number.isFinite(baseAlpha) ? clamp(baseAlpha * opacity, 0, 1) : opacity;
+		return `rgba(${parts[0]}, ${parts[1]}, ${parts[2]}, ${alpha})`;
+	}
+	return color;
+}
+function getStopColor(stop) {
+	return getColorWithOpacity(stop.color, getStopOpacity(stop));
+}
+function getGradientAngle(value) {
+	return value.angle ?? DEFAULT_VALUE.angle ?? 0;
+}
+function getCssLinearGradientAngle(value) {
+	return (getGradientAngle(value) + 90) % 360;
+}
+function GradientColorPicker(props) {
+	var _draftValue$stops$sel, _draftValue$stops$sel2;
+	const { className, compact = false, value = DEFAULT_VALUE, onChange } = props;
+	const { locale } = (0, react.useContext)(ConfigContext);
+	const [draftValue, setDraftValue] = (0, react.useState)(value);
+	const [selectedIndex, setSelectedIndex] = (0, react.useState)(0);
+	const barRef = (0, react.useRef)(null);
+	const valueRef = (0, react.useRef)(value);
+	const cleanupRef = (0, react.useRef)(null);
+	(0, react.useEffect)(() => {
+		valueRef.current = draftValue;
+	}, [draftValue]);
+	(0, react.useEffect)(() => {
+		setDraftValue(value);
+	}, [value]);
+	const emitChange = (nextValue) => {
+		valueRef.current = nextValue;
+		setDraftValue(nextValue);
+		onChange === null || onChange === void 0 || onChange(nextValue);
+	};
+	(0, react.useEffect)(() => {
+		setSelectedIndex((prev) => {
+			if (prev >= draftValue.stops.length) return Math.max(0, draftValue.stops.length - 1);
+			return prev;
+		});
+	}, [draftValue.stops.length]);
+	(0, react.useEffect)(() => {
+		return () => {
+			var _cleanupRef$current;
+			(_cleanupRef$current = cleanupRef.current) === null || _cleanupRef$current === void 0 || _cleanupRef$current.call(cleanupRef);
+		};
+	}, []);
+	const stops = (0, react.useMemo)(() => {
+		return [...draftValue.stops].sort((a, b) => a.offset - b.offset);
+	}, [draftValue.stops]);
+	const handleTypeChange = (type) => {
+		emitChange({
+			...valueRef.current,
+			type
+		});
+	};
+	const handleAngleChange = (angle) => {
+		emitChange({
+			...valueRef.current,
+			angle: angle ?? 0
+		});
+	};
+	const handleStopColorChange = (color) => {
+		const newStops = [...valueRef.current.stops];
+		newStops[selectedIndex] = {
+			...newStops[selectedIndex],
+			color
+		};
+		emitChange({
+			...valueRef.current,
+			stops: newStops
+		});
+	};
+	const handleStopOffsetChange = (offset) => {
+		if (offset === null) return;
+		const newStops = [...valueRef.current.stops];
+		newStops[selectedIndex] = {
+			...newStops[selectedIndex],
+			offset
+		};
+		emitChange({
+			...valueRef.current,
+			stops: newStops
+		});
+	};
+	const handleStopTransparencyChange = (transparency) => {
+		const nextTransparency = clamp(transparency ?? 0, 0, 100);
+		const newStops = [...valueRef.current.stops];
+		newStops[selectedIndex] = {
+			...newStops[selectedIndex],
+			opacity: (100 - nextTransparency) / 100
+		};
+		emitChange({
+			...valueRef.current,
+			stops: newStops
+		});
+	};
+	const handleAddStop = (e) => {
+		if (!barRef.current) return;
+		const rect = barRef.current.getBoundingClientRect();
+		const offset = Math.round((e.clientX - rect.left) / rect.width * 100);
+		const leftStop = [...stops].reverse().find((s) => s.offset <= offset) || stops[0];
+		const newStop = {
+			color: leftStop.color,
+			offset,
+			opacity: getStopOpacity(leftStop)
+		};
+		const newStops = [...valueRef.current.stops, newStop];
+		emitChange({
+			...valueRef.current,
+			stops: newStops
+		});
+		setSelectedIndex(newStops.length - 1);
+	};
+	const handleRemoveStop = () => {
+		if (draftValue.stops.length <= 2) return;
+		const newStops = valueRef.current.stops.filter((_, i) => i !== selectedIndex);
+		emitChange({
+			...valueRef.current,
+			stops: newStops
+		});
+		setSelectedIndex(0);
+	};
+	const gradientPreview = (0, react.useMemo)(() => {
+		return `linear-gradient(to right, ${stops.map((s) => `${getStopColor(s)} ${s.offset}%`).join(", ")})`;
+	}, [stops]);
+	const mainPreview = (0, react.useMemo)(() => {
+		const stopsStr = stops.map((s) => `${getStopColor(s)} ${s.offset}%`).join(", ");
+		switch (draftValue.type) {
+			case "linear": return `linear-gradient(${getCssLinearGradientAngle(draftValue)}deg, ${stopsStr})`;
+			case "radial": return `radial-gradient(circle, ${stopsStr})`;
+			case "angular": return `conic-gradient(from ${getGradientAngle(draftValue)}deg, ${stopsStr})`;
+			case "diamond": return `radial-gradient(circle, ${stopsStr})`;
+			default: return `linear-gradient(${getCssLinearGradientAngle(draftValue)}deg, ${stopsStr})`;
+		}
+	}, [draftValue, stops]);
+	const showAngleEditor = draftValue.type === "linear" || draftValue.type === "angular";
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: clsx(compact ? "univer-flex univer-w-full univer-min-w-0 univer-flex-col univer-gap-3 univer-rounded-md univer-bg-transparent univer-p-0 dark:!univer-bg-transparent" : "univer-flex univer-w-full univer-min-w-0 univer-max-w-80 univer-flex-col univer-gap-4 univer-rounded-lg univer-bg-gray-0 univer-p-4 univer-shadow-lg dark:!univer-bg-gray-800", className),
+		onClick: (e) => e.stopPropagation(),
+		onPointerDown: (e) => e.stopPropagation(),
+		children: [
+			compact ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-flex univer-min-w-0 univer-items-center univer-gap-4 univer-border-b univer-border-gray-100 dark:!univer-border-gray-700",
+				children: [
+					{
+						label: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.linear,
+						value: "linear"
+					},
+					{
+						label: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.radial,
+						value: "radial"
+					},
+					{
+						label: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.angular,
+						value: "angular"
+					},
+					{
+						label: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.diamond,
+						value: "diamond"
+					}
+				].map((item) => {
+					const selected = draftValue.type === item.value;
+					return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+						type: "button",
+						className: clsx("univer-relative univer-min-w-0 univer-flex-1 univer-cursor-pointer univer-truncate univer-border-none univer-bg-transparent univer-px-0 univer-pb-2 univer-pt-0 univer-text-xs univer-transition-colors", selected ? "univer-font-medium univer-text-primary-600 dark:!univer-text-primary-300" : "univer-text-gray-500 hover:univer-text-gray-900 dark:hover:!univer-text-gray-0"),
+						onClick: () => handleTypeChange(item.value),
+						children: [item.label, selected && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: "univer-absolute univer-inset-x-2 -univer-bottom-px univer-h-0.5 univer-rounded-full univer-bg-primary-600 dark:!univer-bg-primary-300" })]
+					}, item.value);
+				})
+			}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Segmented, {
+				className: "univer-w-full univer-min-w-0 univer-gap-1 univer-overflow-hidden",
+				items: [
+					{
+						label: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.linear,
+						value: "linear"
+					},
+					{
+						label: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.radial,
+						value: "radial"
+					},
+					{
+						label: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.angular,
+						value: "angular"
+					},
+					{
+						label: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.diamond,
+						value: "diamond"
+					}
+				],
+				value: draftValue.type,
+				onChange: (v) => handleTypeChange(v)
+			}),
+			showAngleEditor && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				"data-u-comp": "gradient-color-picker-angle",
+				className: "univer-flex univer-items-center univer-justify-between univer-gap-3",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-text-xs univer-text-gray-500",
+					children: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.angle
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InputNumber, {
+					className: "univer-w-24",
+					value: getGradientAngle(draftValue),
+					min: 0,
+					max: 360,
+					onChange: handleAngleChange
+				})]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				"data-u-comp": "gradient-color-picker-preview",
+				className: clsx("univer-w-full univer-rounded-md univer-border univer-border-gray-200 dark:!univer-border-gray-600", compact ? "univer-h-20" : "univer-h-32"),
+				style: { background: mainPreview }
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: clsx("univer-relative univer-h-6", compact ? "univer-mt-1" : "univer-mt-4"),
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					ref: barRef,
+					"data-u-comp": "gradient-color-picker-bar",
+					className: "univer-absolute univer-inset-x-0 univer-top-1/2 univer-h-2 -univer-translate-y-1/2 univer-cursor-crosshair univer-rounded-full",
+					style: { background: gradientPreview },
+					onClick: handleAddStop
+				}), draftValue.stops.map((stop, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					"data-u-comp": "gradient-color-picker-stop",
+					"data-selected": selectedIndex === index,
+					className: clsx("univer-absolute univer-top-1/2 univer-size-4 -univer-translate-x-1/2 -univer-translate-y-1/2 univer-cursor-pointer univer-rounded-full univer-border-2 univer-border-gray-0 univer-shadow-md", selectedIndex === index ? "univer-z-10 univer-ring-2 univer-ring-primary-500" : "univer-z-0"),
+					style: {
+						left: `${stop.offset}%`,
+						backgroundColor: getStopColor(stop)
+					},
+					onClick: (e) => {
+						e.stopPropagation();
+						setSelectedIndex(index);
+					},
+					onPointerDown: (e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						const startX = e.clientX;
+						const startOffset = stop.offset;
+						setSelectedIndex(index);
+						const handlePointerMove = (moveEvent) => {
+							if (!barRef.current) return;
+							moveEvent.preventDefault();
+							const rect = barRef.current.getBoundingClientRect();
+							const deltaOffset = (moveEvent.clientX - startX) / rect.width * 100;
+							const newOffset = Math.max(0, Math.min(100, Math.round(startOffset + deltaOffset)));
+							const newStops = [...valueRef.current.stops];
+							newStops[index] = {
+								...newStops[index],
+								offset: newOffset
+							};
+							emitChange({
+								...valueRef.current,
+								stops: newStops
+							});
+						};
+						const handlePointerUp = () => {
+							window.removeEventListener("pointermove", handlePointerMove);
+							window.removeEventListener("pointerup", handlePointerUp);
+							cleanupRef.current = null;
+						};
+						cleanupRef.current = handlePointerUp;
+						window.addEventListener("pointermove", handlePointerMove);
+						window.addEventListener("pointerup", handlePointerUp);
+					}
+				}, index))]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-items-end univer-gap-2",
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: "univer-flex-1",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: "univer-mb-0.5 univer-text-xs univer-text-gray-500",
+							children: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.offset
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InputNumber, {
+							value: (_draftValue$stops$sel = draftValue.stops[selectedIndex]) === null || _draftValue$stops$sel === void 0 ? void 0 : _draftValue$stops$sel.offset,
+							min: 0,
+							max: 100,
+							onChange: handleStopOffsetChange
+						})]
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: "univer-flex-1",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: "univer-mb-0.5 univer-text-xs univer-text-gray-500",
+							children: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.transparency
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InputNumber, {
+							value: Math.round((1 - getStopOpacity(draftValue.stops[selectedIndex])) * 100),
+							min: 0,
+							max: 100,
+							step: 10,
+							formatter: (v) => `${v}%`,
+							parser: (v) => (v === null || v === void 0 ? void 0 : v.replace(/%/g, "")) || "",
+							onChange: handleStopTransparencyChange
+						})]
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-flex univer-gap-1",
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Tooltip, {
+							title: locale === null || locale === void 0 ? void 0 : locale.GradientColorPicker.delete,
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Button, {
+								"data-u-comp": "gradient-color-picker-delete",
+								variant: "danger",
+								onClick: handleRemoveStop,
+								disabled: draftValue.stops.length <= 2,
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.DeleteIcon, {})
+							})
+						})
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: clsx("univer-border-t univer-border-gray-100 dark:!univer-border-gray-700", compact ? "univer-pt-3" : "univer-pt-4"),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorPicker, {
+					value: (_draftValue$stops$sel2 = draftValue.stops[selectedIndex]) === null || _draftValue$stops$sel2 === void 0 ? void 0 : _draftValue$stops$sel2.color,
+					onChange: handleStopColorChange
+				})
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/components/hover-card/HoverCardPrimitive.tsx
+const HoverCardPrimitive = _radix_ui_react_hover_card.Root;
+const HoverCardPortal = _radix_ui_react_hover_card.Portal;
+const HoverCardTrigger = _radix_ui_react_hover_card.Trigger;
+const HoverCardContent = (0, react.forwardRef)(({ className, align = "center", sideOffset = 4, ...props }, ref) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_hover_card.Content, {
+	ref,
+	align,
+	sideOffset,
+	className: clsx("data-[state=open]:univer-animate-in data-[state=open]:univer-fade-in-0 data-[state=open]:univer-zoom-in-95 data-[state=closed]:univer-animate-out data-[state=closed]:univer-fade-out-0 data-[state=closed]:univer-zoom-out-95 data-[side=bottom]:univer-slide-in-from-top-2 data-[side=left]:univer-slide-in-from-right-2 data-[side=right]:univer-slide-in-from-left-2 data-[side=top]:univer-slide-in-from-bottom-2 univer-z-[1080] univer-w-64 univer-origin-[--radix-hover-card-content-transform-origin] univer-rounded-md univer-bg-gray-0 univer-text-gray-900 univer-shadow-md univer-outline-none dark:!univer-bg-gray-900 dark:!univer-text-gray-0", borderClassName, className),
+	...props
+}));
+HoverCardContent.displayName = _radix_ui_react_hover_card.Content.displayName;
+
+//#endregion
+//#region src/components/hover-card/HoverCard.tsx
+function HoverCard(props) {
+	const { children, overlay, disabled, openDelay = 200, open: controlledOpen, onOpenChange: controlledOnOpenChange, ...restProps } = props;
+	const [uncontrolledOpen, setUncontrolledOpen] = (0, react.useState)(false);
+	const isControlled = controlledOpen !== void 0;
+	const open = isControlled ? controlledOpen : uncontrolledOpen;
+	function handleChangeOpen(newOpen) {
+		if (disabled) return;
+		if (!isControlled) setUncontrolledOpen(newOpen);
+		controlledOnOpenChange === null || controlledOnOpenChange === void 0 || controlledOnOpenChange(newOpen);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(HoverCardPrimitive, {
+		open,
+		onOpenChange: handleChangeOpen,
+		openDelay,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(HoverCardTrigger, {
+			asChild: true,
+			children
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(HoverCardPortal, { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(HoverCardContent, {
+			...restProps,
+			children: overlay
+		}) })]
+	});
+}
+
+//#endregion
+//#region src/components/kbd/Kbd.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function KBD(props) {
+	const { keyboard, className } = props;
+	const keys = keyboard.split("+");
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+		className: clsx("univer-inline-block univer-h-6 univer-select-none univer-whitespace-nowrap univer-rounded-md univer-bg-gray-50 univer-px-2 univer-font-mono univer-text-xs/6 univer-font-medium univer-text-gray-700 dark:!univer-bg-gray-700 dark:!univer-text-gray-0", borderClassName, className),
+		children: keys.map((text, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("kbd", {
+			className: "univer-inline-block univer-h-full",
+			children: text
+		}), index < keys.length - 1 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: "univer-inline-block univer-h-full univer-px-1",
+			children: "+"
+		})] }, index))
+	});
+}
+
+//#endregion
+//#region src/components/message/Message.tsx
+let MessageType = /* @__PURE__ */ function(MessageType) {
+	MessageType["Success"] = "success";
+	MessageType["Info"] = "info";
+	MessageType["Warning"] = "warning";
+	MessageType["Error"] = "error";
+	MessageType["Loading"] = "loading";
+	return MessageType;
+}({});
+const MESSAGE_TOASTER_ID = "univer-message-toaster";
+const DEFAULT_MESSAGE_DURATION = 3e3;
+const activeMessageIds = /* @__PURE__ */ new Set();
+const loadingIcon = /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.LoadingMultiIcon, { className: "univer-animate-spin univer-text-violet-500" });
+let messageCount = 0;
+const iconMap = {
+	["success"]: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.SuccessIcon, { className: "univer-text-green-500" }),
+	["info"]: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.InfoIcon, { className: "univer-text-sky-500 dark:!univer-text-sky-400" }),
+	["warning"]: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.WarningIcon, { className: "univer-text-amber-500" }),
+	["error"]: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ErrorIcon, { className: "univer-text-red-500" }),
+	["loading"]: loadingIcon
+};
+const typeClassMap = {
+	["success"]: "[&_[data-icon]]:univer-text-green-500",
+	["info"]: "[&_[data-icon]]:univer-text-sky-500",
+	["warning"]: "[&_[data-icon]]:univer-text-amber-500",
+	["error"]: "[&_[data-icon]]:univer-text-red-500",
+	["loading"]: "[&_[data-icon]]:univer-text-violet-500"
+};
+const resolveToastMethod = (type) => {
+	switch (type) {
+		case "success": return sonner.toast.success;
+		case "warning": return sonner.toast.warning;
+		case "error": return sonner.toast.error;
+		case "loading": return sonner.toast.loading;
+		default: return sonner.toast.info;
+	}
+};
+const createMessageId = () => {
+	const id = `univer-message-${messageCount}`;
+	messageCount += 1;
+	return id;
+};
+const Messager = ({ className, ...props }) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(sonner.Toaster, {
+	id: MESSAGE_TOASTER_ID,
+	position: "top-center",
+	visibleToasts: 4,
+	closeButton: false,
+	expand: false,
+	icons: { loading: loadingIcon },
+	offset: { top: 16 },
+	className: clsx("[&_[data-sonner-toast]]:univer-bg-gray-0/95 dark:[&_[data-sonner-toast]]:!univer-bg-gray-800/95 [&_[data-sonner-toast]]:univer-rounded-2xl [&_[data-sonner-toast]]:univer-border [&_[data-sonner-toast]]:univer-border-solid [&_[data-sonner-toast]]:univer-border-gray-200 [&_[data-sonner-toast]]:univer-shadow-[0_16px_40px_-20px_rgba(15,23,42,0.55)] [&_[data-sonner-toast]]:univer-backdrop-blur-sm dark:[&_[data-sonner-toast]]:!univer-border-gray-600", className),
+	toastOptions: {
+		duration: DEFAULT_MESSAGE_DURATION,
+		classNames: {
+			toast: `
+                  univer-group univer-min-h-0 univer-min-w-[320px] univer-max-w-[520px] univer-px-3.5 univer-py-3
+                  univer-font-sans univer-transition-all univer-duration-300
+                `,
+			title: `
+                  univer-m-0 univer-font-sans univer-text-sm univer-font-medium univer-leading-5 univer-text-gray-700
+                  dark:!univer-text-gray-100
+                `,
+			content: "univer-gap-2.5",
+			icon: "[&>svg]:univer-block [&>svg]:univer-size-4",
+			success: typeClassMap["success"],
+			info: typeClassMap["info"],
+			warning: typeClassMap["warning"],
+			error: typeClassMap["error"],
+			loading: typeClassMap["loading"]
+		}
+	},
+	...props
+});
+const message = ({ content, duration, id, onClose, type = "info" }) => {
+	const messageId = id ?? createMessageId();
+	const method = resolveToastMethod(type);
+	let closed = false;
+	const handleClose = () => {
+		if (closed) return;
+		closed = true;
+		activeMessageIds.delete(messageId);
+		onClose === null || onClose === void 0 || onClose();
+	};
+	method(content, {
+		id: messageId,
+		toasterId: MESSAGE_TOASTER_ID,
+		duration: duration ?? DEFAULT_MESSAGE_DURATION,
+		icon: type === "loading" ? void 0 : iconMap[type],
+		onDismiss: handleClose,
+		onAutoClose: handleClose
+	});
+	activeMessageIds.add(messageId);
+	return messageId;
+};
+const removeMessage = (id) => {
+	if (typeof id !== "undefined") {
+		sonner.toast.dismiss(id);
+		activeMessageIds.delete(id);
+		return;
+	}
+	activeMessageIds.forEach((messageId) => {
+		sonner.toast.dismiss(messageId);
+	});
+	activeMessageIds.clear();
+};
+
+//#endregion
+//#region src/components/mobile-action-row/MobileActionRow.tsx
+function MobileActionRow(props) {
+	const { title, icon, value, valueType = "color", trailing, bordered, variant = "surface", className, type = "button", ...buttonProps } = props;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+		type,
+		className: clsx(resetButtonClassName, "univer-flex univer-min-h-12 univer-w-full univer-items-center univer-gap-3 univer-rounded-xl univer-px-4 univer-text-left univer-text-base univer-font-medium univer-text-gray-900 disabled:univer-opacity-40 dark:!univer-text-gray-100 [&>svg]:univer-size-5", {
+			"univer-bg-gray-0 active:univer-bg-gray-100 dark:!univer-bg-gray-800 dark:active:!univer-bg-gray-700": variant === "surface",
+			"univer-bg-gray-100 active:univer-bg-gray-200 dark:!univer-bg-gray-800 dark:active:!univer-bg-gray-700": variant === "subtle"
+		}, bordered && borderBottomClassName, className),
+		...buttonProps,
+		children: [
+			icon,
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-flex-1",
+				children: title
+			}),
+			value && valueType === "color" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-size-6 univer-rounded-md univer-border univer-border-solid univer-border-gray-200 dark:!univer-border-gray-600",
+				style: { backgroundColor: value }
+			}),
+			value && valueType === "text" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-max-w-32 univer-truncate univer-text-sm univer-font-normal univer-text-gray-500 dark:!univer-text-gray-400",
+				children: value
+			}),
+			trailing
+		]
+	});
+}
+
+//#endregion
+//#region src/components/panel/Panel.tsx
+function Panel(props) {
+	const { children, className, style } = props;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		"data-u-comp": "panel",
+		className: clsx("univer-flex univer-flex-col univer-gap-5 univer-py-2", className),
+		style,
+		children
+	});
+}
+function PanelSection(props) {
+	const { title, children, className, defaultExpanded = true, collapsible = true } = props;
+	const [expanded, setExpanded] = (0, react.useState)(defaultExpanded);
+	const contentId = (0, react.useId)();
+	const headerId = (0, react.useId)();
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "panel-section",
+		className: clsx("univer-flex univer-flex-col", className),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+			id: headerId,
+			type: "button",
+			"aria-expanded": expanded,
+			"aria-controls": contentId,
+			disabled: !collapsible,
+			className: clsx("univer-box-border univer-flex univer-w-full univer-items-center univer-gap-1.5 univer-border-none univer-bg-transparent univer-p-0 univer-pb-2.5 univer-text-left univer-text-sm univer-font-medium univer-text-gray-700 dark:!univer-text-gray-200", {
+				"univer-cursor-pointer": collapsible,
+				"univer-cursor-default": !collapsible
+			}),
+			onClick: () => collapsible && setExpanded((v) => !v),
+			children: [collapsible && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.DownIcon, {
+				"aria-hidden": "true",
+				className: clsx("univer-size-2.5 univer-flex-shrink-0 univer-transition-transform", {
+					"-univer-rotate-90 rtl:univer-rotate-90": !expanded,
+					"univer-rotate-0": expanded
+				})
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: title })]
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			id: contentId,
+			role: "region",
+			"aria-labelledby": headerId,
+			className: clsx("univer-overflow-hidden univer-transition-[max-height,opacity] univer-duration-300 univer-ease-in-out", {
+				"univer-max-h-[1000px] univer-opacity-100": expanded,
+				"univer-max-h-0 univer-opacity-0": !expanded
+			}),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-box-border univer-flex univer-flex-col univer-gap-3 univer-py-1",
+				children
+			})
+		})]
+	});
+}
+function PanelField(props) {
+	const { label, children, className, required, error } = props;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "panel-field",
+		className: clsx("univer-flex univer-flex-col univer-gap-1.5", className),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-items-center univer-gap-1",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-text-xs univer-text-gray-600 dark:!univer-text-gray-300",
+					children: label
+				}), required && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-text-xs univer-text-red-500",
+					children: "*"
+				})]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-w-full",
+				children
+			}),
+			error && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-text-xs univer-text-red-500",
+				children: error
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/components/popup/Popup.tsx
+const POPUP_POINTER_OFFSET = 2;
+const DEFAULT_POPUP_OFFSET = [0, 0];
+const HIDDEN_POPUP_OFFSET = [-9999, -9999];
+function Popup(props) {
+	const { children, visible = false, offset = DEFAULT_POPUP_OFFSET, overflowVisible = false, placementY = "below" } = props;
+	const nodeRef = (0, react.useRef)(null);
+	const [realOffset, setRealOffset] = (0, react.useState)(HIDDEN_POPUP_OFFSET);
+	const { mountContainer, direction } = (0, react.useContext)(ConfigContext);
+	const calculateOffset = () => {
+		const element = nodeRef.current;
+		if (!element) return null;
+		const [left, top] = offset;
+		const { clientWidth, clientHeight } = element;
+		const { innerWidth, innerHeight } = window;
+		const maxX = Math.max(0, innerWidth - clientWidth - POPUP_POINTER_OFFSET);
+		const maxY = Math.max(0, innerHeight - clientHeight - POPUP_POINTER_OFFSET);
+		const x = Math.min(Math.max(left, 0), maxX);
+		const topWithPlacement = placementY === "above" ? top - clientHeight : top;
+		return [x, Math.min(Math.max(topWithPlacement, 0), maxY)];
+	};
+	(0, react.useLayoutEffect)(() => {
+		if (!visible) {
+			setRealOffset(HIDDEN_POPUP_OFFSET);
+			return;
+		}
+		const nextOffset = calculateOffset();
+		if (nextOffset) setRealOffset(nextOffset);
+	}, [
+		offset,
+		placementY,
+		visible
+	]);
+	(0, react.useEffect)(() => {
+		if (!visible) return;
+		const handleResize = () => {
+			const nextOffset = calculateOffset();
+			if (nextOffset) setRealOffset(nextOffset);
+		};
+		window.addEventListener("resize", handleResize);
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, [
+		offset,
+		placementY,
+		visible
+	]);
+	function preventDefault(event) {
+		event.preventDefault();
+	}
+	return (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+		ref: nodeRef,
+		dir: direction,
+		className: clsx("univer-popup univer-fixed univer-z-[1070] univer-origin-top-left univer-overflow-hidden univer-rounded-md univer-shadow univer-transition-[transform,opacity] univer-duration-150", visible ? "univer-[transition-timing-function:cubic-bezier(0.08,0.82,0.17,1)] univer-scale-y-100 univer-opacity-100" : "univer-[transition-timing-function:cubic-bezier(0.6,0.04,0.98,0.34)] univer-scale-y-0 univer-opacity-0"),
+		style: {
+			left: realOffset[0] + POPUP_POINTER_OFFSET,
+			top: realOffset[1] + POPUP_POINTER_OFFSET,
+			overflow: overflowVisible ? "visible" : void 0
+		},
+		onContextMenu: preventDefault,
+		children
+	}), mountContainer);
+}
+
+//#endregion
+//#region src/components/radio-group/RadioGroup.tsx
+/**
+* RadioGroup Component
+*/
+function RadioGroup(props) {
+	const { children, className, style, value, disabled = false, direction = "horizontal", onChange } = props;
+	const handleChange = (value) => {
+		onChange(value);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: clsx("univer-flex univer-gap-2", { "univer-flex-col": direction === "vertical" }, className),
+		style,
+		children: react.Children.map(children, (child, index) => {
+			if ((0, react.isValidElement)(child)) return (0, react.cloneElement)(child, {
+				key: index,
+				children: child.props.children,
+				value: child.props.value,
+				checked: value === child.props.value,
+				disabled: disabled ?? child.props.disabled,
+				onChange: handleChange
+			});
+			return child;
+		})
+	});
+}
+
+//#endregion
+//#region src/components/radio/Radio.tsx
+/**
+* Radio Component
+*/
+function Radio(props) {
+	const { children, checked, value, disabled = false, onChange } = props;
+	const inputRef = (0, react.useRef)(null);
+	function handleChange(e) {
+		e.stopPropagation();
+		if (!onChange || disabled) return;
+		if (typeof value !== "undefined") onChange && onChange(value);
+		else {
+			const checked = inputRef.current.checked;
+			onChange && onChange(checked);
+		}
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
+		"data-u-comp": "radio",
+		className: clsx("univer-box-border univer-inline-flex univer-items-center univer-gap-2 univer-text-sm", {
+			"univer-cursor-pointer univer-text-gray-900 dark:!univer-text-gray-0": !disabled,
+			"univer-text-gray-400": disabled
+		}),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+			className: "univer-relative univer-block",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+				ref: inputRef,
+				className: "univer-absolute univer-size-0 univer-opacity-0",
+				type: "radio",
+				checked,
+				disabled,
+				onChange: handleChange
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: clsx("univer-relative univer-box-border univer-flex univer-size-4 univer-items-center univer-justify-center univer-overflow-hidden univer-rounded-full univer-border univer-border-solid univer-transition-colors", {
+					"univer-opacity-50": disabled,
+					"univer-border-primary-600 univer-bg-primary-600 dark:!univer-bg-primary-600": checked,
+					"univer-border-gray-300 univer-bg-gray-50 dark:!univer-border-gray-500 dark:!univer-bg-gray-600": !checked
+				}),
+				children: checked && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: "univer-absolute univer-left-1/2 univer-top-1/2 univer-block univer-size-2 -univer-translate-x-1/2 -univer-translate-y-1/2 univer-rounded-full univer-bg-gray-0" })
+			})]
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children })]
+	});
+}
+
+//#endregion
+//#region src/components/select-list/SelectList.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function SelectList(props) {
+	const { value: _value, options = [], hideCheckMark = false, onChange, multiple, className, optionClassName } = props;
+	const value = Array.isArray(_value) ? _value : [_value];
+	function handleSelect(newValue) {
+		const index = value.indexOf(newValue);
+		if (!multiple) if (index > -1) onChange(void 0);
+		else onChange(newValue);
+		else if (index > -1) onChange(value.filter((i) => i === newValue));
+		else onChange([...value, newValue]);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("ul", {
+		className: clsx("univer-m-0 univer-grid univer-max-h-80 univer-list-none univer-gap-1 univer-overflow-y-auto univer-rounded univer-p-1.5", borderClassName, scrollbarClassName, className),
+		children: options.map((option, index) => {
+			const checked = value.indexOf(option.value) > -1;
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("a", {
+				className: clsx("univer-relative univer-block univer-cursor-pointer univer-select-none univer-rounded univer-py-1.5 univer-pl-8 univer-pr-2 univer-text-sm univer-text-gray-900 univer-transition-colors hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-600", optionClassName, { "univer-bg-gray-200 dark:!univer-bg-gray-500": checked }),
+				onClick: () => handleSelect(option.value),
+				children: [!hideCheckMark && checked && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, { className: "univer-absolute univer-left-0 univer-top-1/2 -univer-translate-y-1/2 univer-pl-2 univer-text-primary-600" }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					style: { color: option.color },
+					children: option.label
+				})]
+			}) }, index);
+		})
+	});
+}
+
+//#endregion
+//#region src/components/select/Select.tsx
+const selectClassName = clsx("univer-box-border univer-inline-flex univer-h-8 univer-min-w-36 univer-items-center univer-justify-between univer-gap-2 univer-rounded-lg univer-bg-gray-0 univer-px-2.5 univer-transition-colors univer-duration-200 dark:!univer-bg-gray-700 dark:!univer-text-gray-0", borderClassName);
+function Select(props) {
+	const { className, value, disabled = false, options = [], borderless = false, side, avoidCollisions, onChange } = props;
+	const [open, setOpen] = (0, react.useState)(false);
+	function handleOpenChange(open) {
+		setOpen(open);
+	}
+	const items = (0, react.useMemo)(() => {
+		const selectOptions = [];
+		for (const option of options) if (option.options) {
+			option.options.forEach((opt) => {
+				selectOptions.push({
+					label: opt.label,
+					value: opt.value,
+					disabled: opt.disabled
+				});
+			});
+			selectOptions.push({ type: "separator" });
+		} else selectOptions.push({
+			label: option.label,
+			value: option.value,
+			disabled: option.disabled
+		});
+		return [{
+			type: "radio",
+			value,
+			hideIndicator: true,
+			options: selectOptions,
+			onSelect: (item) => {
+				onChange(item);
+			}
+		}];
+	}, [options]);
+	const displayValue = (0, react.useMemo)(() => {
+		let label = null;
+		for (const option of options) if (option.options) {
+			for (const opt of option.options) if (opt.value === value) {
+				label = opt.label;
+				break;
+			}
+		} else if (option.value === value) {
+			label = option.label;
+			break;
+		}
+		return label || value;
+	}, [options, value]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenu, {
+		className: "univer-max-h-80 univer-w-[--radix-popper-anchor-width] univer-min-w-36 univer-overflow-auto",
+		align: "start",
+		open,
+		items,
+		disabled,
+		side,
+		avoidCollisions,
+		onOpenChange: handleOpenChange,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			"data-u-comp": "select",
+			className: clsx(selectClassName, {
+				"univer-border-primary-600 univer-outline-none univer-ring-2 univer-ring-primary-50 dark:!univer-ring-primary-900": open && !borderless,
+				"univer-border-transparent univer-bg-transparent hover:univer-border-transparent": borderless,
+				"univer-cursor-not-allowed": disabled,
+				"hover:univer-border-primary-600": !disabled && !borderless,
+				"univer-cursor-pointer": !disabled && !open
+			}, className),
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-flex-1 univer-truncate univer-text-sm univer-text-gray-500 dark:!univer-text-gray-0",
+				children: displayValue
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, { className: "univer-flex-shrink-0 dark:!univer-text-gray-0" })]
+		})
+	});
+}
+
+//#endregion
+//#region src/components/select/MultipleSelect.tsx
+function MultipleSelect(props) {
+	const { className, value = [], disabled = false, options = [], borderless = false, onChange } = props;
+	const [open, setOpen] = (0, react.useState)(false);
+	function handleOpenChange(open) {
+		setOpen(open);
+	}
+	const items = (0, react.useMemo)(() => {
+		return options.map((option) => {
+			return {
+				type: "checkbox",
+				value: option.value,
+				label: option.label,
+				disabled: option.disabled,
+				checked: value.includes(option.value),
+				onSelect: (item) => {
+					const newValue = value.includes(item) ? value.filter((v) => v !== item) : [...value, item];
+					onChange(newValue);
+				}
+			};
+		});
+	}, [
+		onChange,
+		options,
+		value
+	]);
+	function handleClose(item) {
+		const newValue = value.filter((v) => v !== item);
+		onChange(newValue);
+	}
+	const displayValue = (0, react.useMemo)(() => {
+		return options.filter((option) => value.includes(option.value)).map((option, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Badge, {
+			className: "univer-max-w-32",
+			closable: true,
+			onClose: () => handleClose(option.value),
+			children: option.label
+		}, index));
+	}, [options, value]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenu, {
+		className: "univer-w-[--radix-popper-anchor-width] univer-min-w-36",
+		align: "start",
+		open,
+		items,
+		disabled,
+		onOpenChange: handleOpenChange,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			"data-u-comp": "multiple-select",
+			className: clsx(selectClassName, {
+				"univer-border-primary-600 univer-outline-none univer-ring-2 univer-ring-primary-50 dark:!univer-ring-primary-900": open && !borderless,
+				"univer-border-transparent univer-bg-transparent hover:univer-border-transparent": borderless,
+				"univer-cursor-not-allowed": disabled,
+				"hover:univer-border-primary-600": !disabled && !borderless,
+				"univer-cursor-pointer": !disabled && !open
+			}, className),
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-box-border univer-flex univer-w-[calc(100%-16px)] univer-gap-2 univer-pr-2",
+				children: displayValue
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, { className: "univer-flex-shrink-0 dark:!univer-text-gray-0" })]
+		})
+	});
+}
+
+//#endregion
+//#region src/components/separator/Separator.tsx
+function Separator({ className, orientation = "horizontal", decorative = true, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_radix_ui_react_separator.Root, {
+		"data-u-comp": "separator",
+		"data-slot": "separator-root",
+		decorative,
+		orientation,
+		className: clsx("univer-shrink-0 univer-bg-gray-200 data-[orientation=horizontal]:univer-h-px data-[orientation=vertical]:univer-h-full data-[orientation=horizontal]:univer-w-full data-[orientation=vertical]:univer-w-px dark:!univer-bg-gray-600", className),
+		...props
+	});
+}
+
+//#endregion
+//#region src/components/switch/Switch.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const Switch = (props) => {
+	const { defaultChecked = false, onChange } = props;
+	const [checked, setChecked] = (0, react.useState)(defaultChecked);
+	const handleChange = () => {
+		setChecked(!checked);
+		onChange === null || onChange === void 0 || onChange(!checked);
+	};
+	(0, react.useEffect)(() => {
+		setChecked(defaultChecked);
+	}, [defaultChecked]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-h-4",
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("label", {
+			className: "univer-relative univer-inline-block univer-h-4 univer-w-7",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+				className: "univer-size-0 univer-opacity-0",
+				type: "checkbox",
+				checked,
+				onChange: handleChange
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: clsx("univer-absolute univer-inset-0 univer-cursor-pointer univer-rounded-2xl univer-transition-colors univer-duration-200", {
+					"univer-bg-primary-600": checked,
+					"univer-bg-gray-200 dark:!univer-bg-gray-600": !checked
+				}),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: clsx("univer-absolute univer-bottom-0.5 univer-left-0.5 univer-size-3 univer-rounded-full univer-bg-gray-0 univer-transition-transform univer-duration-200", { "univer-translate-x-3": checked }) })
+			})]
+		})
+	});
+};
+
+//#endregion
+//#region src/components/textarea/Textarea.tsx
+const Textarea = (0, react.forwardRef)((props, ref) => {
+	const textareaRef = (0, react.useRef)(null);
+	const lastSizeRef = (0, react.useRef)({
+		width: 0,
+		height: 0
+	});
+	const { className, onResize, onValueChange, ...restProps } = props;
+	(0, react.useImperativeHandle)(ref, () => textareaRef.current, []);
+	(0, react.useLayoutEffect)(() => {
+		const textarea = textareaRef.current;
+		if (textarea && onResize) {
+			const resizeObserver = new ResizeObserver((entries) => {
+				const { width, height } = entries[0].target.getBoundingClientRect();
+				if (width === 0 || height === 0) return;
+				if (lastSizeRef.current.width !== width || lastSizeRef.current.height !== height) {
+					lastSizeRef.current = {
+						width,
+						height
+					};
+					onResize(width, height);
+				}
+			});
+			resizeObserver.observe(textarea);
+			return () => {
+				resizeObserver.unobserve(textarea);
+				resizeObserver.disconnect();
+			};
+		}
+	}, [onResize]);
+	function handleChange(event) {
+		const value = event.target.value;
+		onValueChange === null || onValueChange === void 0 || onValueChange(value);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("textarea", {
+		ref: textareaRef,
+		"data-u-comp": "textarea",
+		"data-slot": "textarea",
+		className: clsx("univer-box-border univer-flex univer-w-full univer-resize univer-rounded-md univer-bg-transparent univer-p-2 univer-text-base univer-text-gray-900 univer-outline-none univer-transition-[color,box-shadow] placeholder:univer-text-gray-200 disabled:univer-cursor-not-allowed disabled:univer-opacity-50 dark:!univer-text-gray-0", borderClassName, scrollbarClassName, className),
+		onChange: handleChange,
+		...restProps
+	});
+});
+
+//#endregion
+//#region src/components/toaster/Toaster.tsx
+function Toaster({ visibleToasts, ...props }) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(sonner.Toaster, {
+		className: "dark:![&_[data-description]]:univer-text-gray-200 [&_[data-description]]:univer-text-sm [&_[data-description]]:univer-text-gray-600 [&_[data-icon]>svg]:univer-relative [&_[data-icon]>svg]:univer-top-1 [&_[data-icon]]:univer-self-baseline [&_[data-sonner-toast]]:univer-shadow-md [&_[data-title]]:univer-text-sm [&_[data-title]]:univer-text-gray-900",
+		toastOptions: { classNames: {
+			content: "univer-leading-normal",
+			success: "[&_[data-icon]]:univer-text-green-500",
+			info: "[&_[data-icon]]:univer-text-primary-600",
+			error: "[&_[data-icon]]:univer-text-red-500",
+			warning: "[&_[data-icon]]:univer-text-yellow-500"
+		} },
+		visibleToasts: visibleToasts ?? 5,
+		...props
+	});
+}
+
+//#endregion
+//#region src/components/tree/util.ts
+const findNodePathFromTree = (tree, key) => {
+	const result = [];
+	const recursive = (node) => {
+		var _node$children;
+		result.push(node.key);
+		if (key === node.key) return true;
+		if ((_node$children = node.children) === null || _node$children === void 0 ? void 0 : _node$children.length) {
+			if (node.children.some(recursive)) return true;
+		}
+		result.pop();
+	};
+	tree.some(recursive);
+	return result;
+};
+const createCacheWithFindNodePathFromTree = (tree, defaultCache) => {
+	const cache = defaultCache ?? /* @__PURE__ */ new Map();
+	let cacheTree = tree;
+	return {
+		findNodePathFromTreeWithCache: (key) => {
+			const cacheValue = cache.get(key);
+			if (cacheValue) return cacheValue;
+			const path = findNodePathFromTree(cacheTree, key);
+			path.map((k, index, arr) => {
+				const result = [];
+				for (let i = 0; i <= index; i++) result.push(arr[i]);
+				return result;
+			}).reverse().forEach((list) => {
+				const key = list[list.length - 1];
+				cache.set(key, list);
+			});
+			return path;
+		},
+		reset: (newTree) => {
+			cache.clear();
+			if (newTree) cacheTree = newTree;
+		}
+	};
+};
+const findSubTreeFromPath = (tree, path) => {
+	if (!path.length) return tree;
+	return path.reduce((list, key) => {
+		const item = list.find((node) => node.key === key);
+		return (item === null || item === void 0 ? void 0 : item.children) || [];
+	}, tree);
+};
+const findNodeFromPath = (tree, _path) => {
+	const path = _path.slice(0);
+	const key = path.pop();
+	return findSubTreeFromPath(tree, path).find((node) => node.key === key);
+};
+const mergeTreeSelected = (treeData, treeSelected, path) => {
+	const set = new Set(treeSelected);
+	const key = path[path.length - 1];
+	const subTree = findSubTreeFromPath(treeData, path);
+	if (!set.has(key)) {
+		const addRecursive = (node) => {
+			set.add(node.key);
+			if (node.children) node.children.forEach((n) => addRecursive(n));
+		};
+		path.forEach((k) => set.add(k));
+		if (subTree.length) subTree.forEach(addRecursive);
+	} else {
+		if (subTree.length) {
+			const deleteRecursive = (node) => {
+				set.delete(node.key);
+				if (node.children) node.children.forEach((n) => deleteRecursive(n));
+			};
+			subTree.forEach(deleteRecursive);
+		}
+		path.map((k, index, arr) => {
+			const result = [];
+			for (let i = 0; i <= index; i++) result.push(arr[i]);
+			return result;
+		}).reverse().some((path) => {
+			const list = findSubTreeFromPath(treeData, path);
+			const key = path[path.length - 1];
+			if (list.every((e) => !set.has(e.key))) set.delete(key);
+			else return true;
+			return false;
+		});
+	}
+	return [...set];
+};
+const isIntermediated = (treeSelected, node) => {
+	const list = node.children || [];
+	const checkIsSelected = (node) => {
+		var _node$children2;
+		if ((_node$children2 = node.children) === null || _node$children2 === void 0 ? void 0 : _node$children2.length) {
+			if (node.children.every(checkIsSelected)) return true;
+			return false;
+		}
+		return treeSelected.has(node.key);
+	};
+	if (list.length) return list.some((node) => !checkIsSelected(node));
+	return false;
+};
+const filterLeafNode = (tree, keyList) => {
+	const result = [];
+	const find = createCacheWithFindNodePathFromTree(tree);
+	keyList.forEach((key) => {
+		const path = find.findNodePathFromTreeWithCache(key);
+		const node = findNodeFromPath(tree, path);
+		if (node) {
+			var _node$children3;
+			if (!((_node$children3 = node.children) === null || _node$children3 === void 0 ? void 0 : _node$children3.length)) result.push(node);
+		}
+	});
+	return result;
+};
+
+//#endregion
+//#region src/components/tree/Tree.tsx
+let TreeSelectionMode = /* @__PURE__ */ function(TreeSelectionMode) {
+	TreeSelectionMode[TreeSelectionMode["ONLY_LEAF_NODE"] = 0] = "ONLY_LEAF_NODE";
+	TreeSelectionMode[TreeSelectionMode["ALL"] = 1] = "ALL";
+	return TreeSelectionMode;
+}({});
+function flattenTree(items, expandedKeys, level = 1) {
+	const flatItems = [];
+	items.forEach((item) => {
+		flatItems.push({
+			...item,
+			level
+		});
+		if (item.children && expandedKeys.has(item.key)) flatItems.push(...flattenTree(item.children, expandedKeys, level + 1));
+	});
+	return flatItems;
+}
+/**
+* Tree Component
+*/
+function Tree(props) {
+	const { data = [], defaultCache, style, defaultExpandAll = false, selectionMode = 1, valueGroup = [], onChange, onExpend, height = 200, itemHeight = 32, attachRender } = props;
+	const [update, forceUpdate] = (0, react.useState)({});
+	const expandKeySet = (0, react.useMemo)(() => {
+		return /* @__PURE__ */ new Set();
+	}, []);
+	const findNode = (0, react.useMemo)(() => createCacheWithFindNodePathFromTree(data, defaultCache), [data, defaultCache]);
+	const selectedNodeKeySet = (0, react.useMemo)(() => {
+		const set = /* @__PURE__ */ new Set();
+		valueGroup.forEach((key) => {
+			findNode.findNodePathFromTreeWithCache(key).forEach((k) => set.add(k));
+		});
+		return set;
+	}, [valueGroup, findNode]);
+	(0, react.useEffect)(() => {
+		function walkData(item) {
+			var _item$children;
+			expandKeySet.add(item.key);
+			(_item$children = item.children) === null || _item$children === void 0 || _item$children.forEach(walkData);
+		}
+		if (defaultExpandAll) data.forEach(walkData);
+		forceUpdate({});
+	}, [defaultExpandAll, data]);
+	const flatData = (0, react.useMemo)(() => flattenTree(data, expandKeySet), [
+		data,
+		update,
+		expandKeySet
+	]);
+	function handleExpendItem(treeItem) {
+		var _treeItem$children;
+		if ((_treeItem$children = treeItem.children) === null || _treeItem$children === void 0 ? void 0 : _treeItem$children.length) {
+			if (expandKeySet.has(treeItem.key)) expandKeySet.delete(treeItem.key);
+			else expandKeySet.add(treeItem.key);
+			forceUpdate({});
+		}
+		if (selectionMode === 0) {
+			if (treeItem.children) return;
+		}
+		onExpend === null || onExpend === void 0 || onExpend(treeItem.key);
+	}
+	function renderTreeItem(treeItem) {
+		const { title, key, level = 0 } = treeItem;
+		const treeNodeClassName = props.treeNodeClassName;
+		const expended = expandKeySet.has(key);
+		const selected = selectedNodeKeySet.has(key);
+		const intermediated = isIntermediated(selectedNodeKeySet, treeItem);
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: clsx("univer-relative univer-text-[13px]", treeNodeClassName),
+			style: { paddingLeft: `${level * 20}px` },
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-relative univer-my-1 univer-flex univer-w-full univer-items-center",
+				children: [
+					treeItem.children && treeItem.children.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: clsx("univer-absolute univer-left-[-16px] univer-top-1/2 univer-flex univer--translate-y-1/2 univer-items-center univer-justify-center univer-text-[8px]", { "univer-rotate-[-90deg]": !expended }),
+						onClick: (e) => {
+							e.stopPropagation();
+							handleExpendItem(treeItem);
+						},
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.DownIcon, {})
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Checkbox, {
+						checked: selected && !intermediated,
+						indeterminate: selected && intermediated,
+						onChange: () => {
+							onChange === null || onChange === void 0 || onChange(treeItem);
+						}
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-mx-1 univer-flex univer-h-full univer-shrink univer-items-center univer-overflow-hidden univer-text-ellipsis univer-whitespace-nowrap",
+						onClick: (e) => {
+							e.stopPropagation();
+							handleExpendItem(treeItem);
+						},
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Tooltip, {
+							className: "univer-block",
+							showIfEllipsis: true,
+							placement: "top",
+							title,
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								className: "univer-block",
+								children: title
+							})
+						})
+					}),
+					attachRender && attachRender(treeItem)
+				]
+			})
+		}, key);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+		className: "univer-relative univer-select-none univer-text-gray-900 dark:!univer-text-gray-0",
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-m-0 univer-h-full univer-list-none univer-p-0",
+			style,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(VirtualList, {
+				data: flatData,
+				itemKey: (item) => item.key,
+				height,
+				itemHeight,
+				children: (item) => renderTreeItem(item)
+			})
+		})
+	});
+}
+
+//#endregion
+//#region src/helper/react-dom.ts
+const rootMap = /* @__PURE__ */ new WeakMap();
+function render(node, container) {
+	let root = rootMap.get(container);
+	if (!root) {
+		root = (0, react_dom_client.createRoot)(container);
+		rootMap.set(container, root);
+	}
+	root.render(node);
+}
+function unmount(container) {
+	const root = rootMap.get(container);
+	if (root) {
+		root.unmount();
+		rootMap.delete(container);
+	}
+}
+
+//#endregion
+exports.Accordion = Accordion;
+exports.ActionRow = ActionRow;
+exports.Avatar = Avatar;
+exports.Badge = Badge;
+exports.Button = Button;
+exports.ButtonGroup = ButtonGroup;
+exports.Calendar = Calendar;
+exports.CascaderList = CascaderList;
+exports.Checkbox = Checkbox;
+exports.CheckboxGroup = CheckboxGroup;
+exports.ColorPicker = ColorPicker;
+exports.ColorPickerPanel = ColorPickerPanel;
+exports.ColorPresets = ColorPresets;
+exports.Command = Command;
+exports.CommandEmpty = CommandEmpty;
+exports.CommandGroup = CommandGroup;
+exports.CommandInput = CommandInput;
+exports.CommandItem = CommandItem;
+exports.CommandList = CommandList;
+exports.CommandSeparator = CommandSeparator;
+exports.CommandShortcut = CommandShortcut;
+exports.ConfigContext = ConfigContext;
+exports.ConfigProvider = ConfigProvider;
+exports.Confirm = Confirm;
+exports.DatePicker = DatePicker;
+exports.DateRangePicker = DateRangePicker;
+exports.Dialog = Dialog;
+exports.DraggableList = DraggableList;
+exports.Dropdown = Dropdown;
+exports.DropdownMenu = DropdownMenu;
+exports.FormDualColumnLayout = FormDualColumnLayout;
+exports.FormLayout = FormLayout;
+exports.Gallery = Gallery;
+exports.GradientColorPicker = GradientColorPicker;
+exports.HoverCard = HoverCard;
+exports.Input = Input;
+exports.InputNumber = InputNumber;
+exports.KBD = KBD;
+exports.MessageType = MessageType;
+exports.Messager = Messager;
+exports.MobileActionRow = MobileActionRow;
+exports.MobileColorPresets = MobileColorPresets;
+exports.MultipleSelect = MultipleSelect;
+exports.Pager = Pager;
+exports.Panel = Panel;
+exports.PanelField = PanelField;
+exports.PanelSection = PanelSection;
+exports.Popup = Popup;
+exports.Radio = Radio;
+exports.RadioGroup = RadioGroup;
+exports.Segmented = Segmented;
+exports.Select = Select;
+exports.SelectList = SelectList;
+exports.Separator = Separator;
+exports.StateIconButton = StateIconButton;
+exports.Switch = Switch;
+exports.Textarea = Textarea;
+exports.TimeInput = TimeInput;
+exports.Toaster = Toaster;
+exports.Tooltip = Tooltip;
+exports.Tree = Tree;
+exports.TreeSelectionMode = TreeSelectionMode;
+exports.borderBottomClassName = borderBottomClassName;
+exports.borderClassName = borderClassName;
+exports.borderLeftBottomClassName = borderLeftBottomClassName;
+exports.borderLeftClassName = borderLeftClassName;
+exports.borderRightClassName = borderRightClassName;
+exports.borderTopClassName = borderTopClassName;
+exports.clsx = clsx;
+Object.defineProperty(exports, 'cva', {
+  enumerable: true,
+  get: function () {
+    return class_variance_authority.cva;
+  }
+});
+exports.divideXClassName = divideXClassName;
+exports.divideYClassName = divideYClassName;
+exports.filterLeafNode = filterLeafNode;
+exports.findNodePathFromTree = findNodePathFromTree;
+exports.findSubTreeFromPath = findSubTreeFromPath;
+exports.isBrowser = isBrowser;
+exports.mergeTreeSelected = mergeTreeSelected;
+exports.message = message;
+exports.removeMessage = removeMessage;
+exports.render = render;
+exports.resetButtonClassName = resetButtonClassName;
+exports.scrollbarClassName = scrollbarClassName;
+exports.selectClassName = selectClassName;
+exports.toast = sonner.toast;
+exports.unmount = unmount;

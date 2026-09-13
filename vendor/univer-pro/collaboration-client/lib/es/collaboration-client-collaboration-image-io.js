@@ -1,0 +1,105 @@
+import { CollaborationEvent, CompressMutationService, EmptyMutationInfo, ISnapshotServerService, ITransformService, RevisionService, SnapshotService, UniverCollaborationPlugin, b64DecodeUnicode, isTransformChangesetsSuccess, isTransformMutationsWithChangesetFailure, isTransformMutationsWithChangesetSuccess, mapDocumentTypeToUniverInstanceType, parseChangesetToProtocol, parseProtocolChangeset, textEncoder, uuidv4 } from "@univerjs-pro/collaboration";
+import { CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, IContextService, IImageIoService, ILogService, IMentionIOService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, ImageUploadStatusType, Inject, Injector, JSONX, LocalUndoRedoService, LocaleService, MentionType, Optional, Plugin, Quantity, Rectangle, RxDisposable, Tools, UniverInstanceType, UserManagerService, Workbook, createIdentifier, generateRandomId, isInternalEditorID, merge, mergeOverrideWithDependencies, registerDependencies, resolveWithBasePath, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { DocStateChangeManagerService, RichTextEditingMutation } from "@univerjs/docs";
+import { InsertSheetMutation, SetSelectionsOperation, SheetPermissionInitController, SheetsSelectionsService, WorkbookEditablePermission } from "@univerjs/sheets";
+import { BehaviorSubject, ReplaySubject, Subject, concatMap, firstValueFrom, map, merge as mergeLocal, of, shareReplay, take, takeUntil } from "rxjs";
+import { CmdRspCode, CombCmd, ErrorCode, FileSource, UnitAction, UnitObject } from "@univerjs/protocol";
+import { ITelemetryService } from "@univerjs/telemetry";
+import { delay, filter, map as mapLocal, take as takeLocal, takeUntil as takeUntilLocal } from "rxjs/operators";
+import { AddSlidePageMutation, EnsureSlideMasterPageMutation, MoveSlidePageMutation, RemoveSlidePageMutation } from "@univerjs-pro/slides";
+import { HTTPRequest, HTTPService, ISocketService, MergeInterceptorFactory, ThresholdInterceptorFactory, UniverNetworkPlugin } from "@univerjs/network";
+import { UniverLicensePlugin, getGlobalObject } from "@univerjs-pro/license";
+import { cbc } from "@noble/ciphers/aes.js";
+import { concatBytes, randomBytes, utf8ToBytes } from "@noble/ciphers/utils.js";
+import { DRAWING_IMAGE_ALLOW_IMAGE_LIST, getDrawingImageAllowSize } from "@univerjs/drawing";
+import { z } from "./internal-glue.js";
+import { R } from "./collaboration-client-plugin-config-key.js";
+let Xn = class {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461524, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461525, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461526) {
+    this._httpService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461524, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461525, this._univerInstanceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461526, z(this, "_waitCount", 0), z(this, "_change$", new Subject()), z(this, "change$", this._change$), z(this, "_imageSourceCache", new Map());
+  }
+  setWaitCount(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461530) {
+    this._waitCount = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461530, this._change$["next"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461530);
+  }
+  getImageSourceCache(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461532, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533) {
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533 === ImageSourceType.BASE64) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394 = new Image();
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394.src = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461532, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394;
+    }
+    return this._imageSourceCache["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461532);
+  }
+  addImageSourceCache(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461536, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461537, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461538) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461537 !== ImageSourceType.BASE64 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461538 != null && this._imageSourceCache["set"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461536, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461538);
+  }
+  async getImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461542) {
+    try {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395 = this._replaceFileID(this._getSignURL(), "" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461542),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396 = (await this._httpService["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395)).body;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396.error && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396.error["code"] === ErrorCode.OK) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4683 = resolveWithBasePath(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396.url, this._getDownloadEndpointURL());
+        return Promise.resolve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4683);
+      }
+      return Promise.reject(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396.error);
+    } catch (var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC522) {
+      return Promise.reject(var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC522);
+    }
+  }
+  async saveImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461544) {
+    let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB34 = "";
+    if (!DRAWING_IMAGE_ALLOW_IMAGE_LIST.includes(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461544.type)) return this._decreaseWaiting(), Promise.reject(Error(ImageUploadStatusType.ERROR_IMAGE_TYPE));
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461544.size > getDrawingImageAllowSize()) return this._decreaseWaiting(), Promise.reject(Error(ImageUploadStatusType.ERROR_EXCEED_SIZE));
+    try {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397 = new FormData();
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397.append("file", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461544);
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 = this._univerInstanceService["getFocusedUnit"](),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.getUnitId();
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399) throw Error("unitId is not found");
+      let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB5 = this._getUploadFileURL() + "?size=" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461544.size["toString"]() + "&source=" + FileSource.UnitEmbedded + "&assign=" + encodeURIComponent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8 = {
+          body: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397
+        },
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46400 = (await this._httpService["post"](var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB5, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8)).body;
+      if (typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46400.FileId != "string") return this._decreaseWaiting(), Promise.reject(Error(ImageUploadStatusType.ERROR_IMAGE));
+      var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB34 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46400.FileId;
+    } catch {
+      return this._decreaseWaiting(), Promise.reject(Error(ImageUploadStatusType.ERROR_IMAGE));
+    }
+    return new Promise((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402) => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403 = new FileReader();
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403.readAsDataURL(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461544), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403.onload = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684 => {
+        var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685;
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684.target) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4685.result;
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686 == null) {
+          this._decreaseWaiting(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402(Error(ImageUploadStatusType.ERROR_IMAGE));
+          return;
+        }
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401({
+          imageId: generateRandomId(6),
+          imageSourceType: ImageSourceType.UUID,
+          source: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB34,
+          base64Cache: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686,
+          status: ImageUploadStatusType.SUCCUSS
+        }), this._decreaseWaiting();
+      };
+    });
+  }
+  _getUploadFileURL() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461546 = this._configService["getConfig"](R);
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461546 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461546.uploadFileServerUrl) ?? "/universer-api/stream/file/upload";
+  }
+  _getSignURL() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461548 = this._configService["getConfig"](R);
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461548 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461548.signUrlServerUrl) ?? "/universer-api/file/{fileID}/sign-url";
+  }
+  _getDownloadEndpointURL() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461550 = this._configService["getConfig"](R);
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461550 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461550.downloadEndpointUrl) ?? location.origin;
+  }
+  _replaceFileID(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461552, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461553) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461552.replace("{fileID}", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461553);
+  }
+  _decreaseWaiting() {
+    --this._waitCount, this._change$["next"](this._waitCount);
+  }
+};
+export { Xn as CollaborationImageIoService };

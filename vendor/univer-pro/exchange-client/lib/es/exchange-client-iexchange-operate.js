@@ -1,0 +1,19 @@
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DependentOn, Disposable, IConfigService, ILogService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, UniverInstanceType, createIdentifier, merge, registerDependencies, resolveWithBasePath, toDisposable, touchDependencies } from "@univerjs/core";
+import { HTTPEventType, HTTPResponseError, HTTPService, UniverNetworkPlugin } from "@univerjs/network";
+import { ClockIcon, CloseIcon, DirectExportIcon, DocsMultiIcon, ErrorIcon, ExportIcon, FolderIcon, LoadingMultiIcon, ShareRangeIcon, SheetsMultiIcon, SlidesMultiIcon, SuccessIcon } from "@univerjs/icons";
+import { BuiltInUIPart, ComponentManager, IMessageService, IUIPartsService, IconManager, connectInjector, useDependency, useObservable } from "@univerjs/ui";
+import { Button, MessageType, Radio, Select, Tooltip, clsx, scrollbarClassName } from "@univerjs/design";
+import { useRef, useState } from "react";
+import { ErrorCode, FileSource } from "@univerjs/protocol";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { BehaviorSubject, Subject } from "rxjs";
+import { ISnapshotServerService, SnapshotService, b64EncodeUnicode, textDecoder, textEncoder } from "@univerjs-pro/collaboration";
+import { deflateSync } from "fflate";
+const st = {
+    done: 0,
+    count: 0
+  },
+  X = createIdentifier("univer-pro.exchange-client.operate.service");
+export { X as IExchangeOperateService };
+export { st };

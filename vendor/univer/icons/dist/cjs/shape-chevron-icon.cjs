@@ -1,0 +1,37 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-chevron-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M2.75 3H11.6L17.65 10L11.6 17H2.75L9.15 10L2.75 3Z",
+			"strokeLinejoin": "round",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeChevronIcon = (0, react.forwardRef)(function ShapeChevronIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-chevron-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeChevronIcon.displayName = "ShapeChevronIcon";
+//#endregion
+exports.ShapeChevronIcon = ShapeChevronIcon;
+exports.default = ShapeChevronIcon;

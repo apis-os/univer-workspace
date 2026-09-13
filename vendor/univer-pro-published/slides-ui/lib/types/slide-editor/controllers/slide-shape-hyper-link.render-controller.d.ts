@@ -1,0 +1,36 @@
+import type { UnitModel } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { ShapeTextHyperLinkPopupService } from '@univerjs-pro/shape-editor-ui';
+import { ICommandService, IPermissionService, RxDisposable } from '@univerjs/core';
+import { ICanvasPopupService } from '@univerjs/ui';
+import { SlideCanvasPopManagerService } from '../../services/slide-canvas-pop-manager.service';
+import { SlideHitTestService } from '../../services/slide-hit-test.service';
+import { SlideTextEditingService } from '../services/slide-text-editing.service';
+export declare class SlideShapeHyperLinkRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _commandService;
+    private readonly _hitTestService;
+    private readonly _slideCanvasPopupManagerService;
+    private readonly _hyperLinkPopupService;
+    private readonly _slideTextEditingService;
+    private readonly _canvasPopupService;
+    private readonly _permissionService;
+    private _activeLinkKey;
+    private _ownsPointerCursor;
+    private _hidePopupTimer;
+    private readonly _wiredObjects;
+    constructor(_renderContext: IRenderContext<UnitModel>, _commandService: ICommandService, _hitTestService: SlideHitTestService, _slideCanvasPopupManagerService: SlideCanvasPopManagerService, _hyperLinkPopupService: ShapeTextHyperLinkPopupService, _slideTextEditingService: SlideTextEditingService, _canvasPopupService: ICanvasPopupService, _permissionService: IPermissionService);
+    private _init;
+    dispose(): void;
+    private _handlePointerMove;
+    private _handlePointerDown;
+    private _wireObjectPointerDown;
+    private _resolveHyperLink;
+    private _getSceneObject;
+    private _toScenePoint;
+    private _setPointerCursor;
+    private _restoreCursor;
+    private _scheduleHidePopup;
+    private _cancelHidePopup;
+    private _clearInteraction;
+}

@@ -1,0 +1,82 @@
+import { AnalyzeBoardRenderedLayoutCommand as var_core_value_sigC9E0, BoardInteractionMode as var_core_value_sig76BA, CaptureBoardScreenshotCommand as var_core_value_sigFBFA, FindBoardElementsByTextOperation as var_core_value_sigF602, FocusBoardElementOperation as var_core_value_sig1BBD, GetBoardElementViewportPointOperation as var_core_value_sigF704, GetBoardInteractionModeOperation as var_core_value_sig2BCF, GetBoardObjectListPanelOpenOperation as var_core_value_sig0D69, GetBoardSettingsOperation as var_core_value_sig480E, SetBoardInteractionModeOperation as var_core_value_sig26DB, SetBoardObjectListPanelOpenOperation as var_core_value_sigF0F9, SetBoardSettingsOperation as var_core_value_sig1A0F } from "@univerjs-pro/boards-ui";
+import { FBoard as var_core_value_sigFBA4 } from "@univerjs-pro/boards/facade";
+import { FEnum as var_core_value_sig4383 } from "@univerjs/core/facade";
+var m = class extends var_core_value_sigFBA4 {
+  analyzeRenderedLayout(var_core_value_sig7524) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigC9E0.id, {
+      unitId: this.id,
+      subUnitId: this._boardModel["getActivePageId"](),
+      focusPadding: var_core_value_sig7524
+    });
+  }
+  getScreenshot(var_core_value_sig2AD8) {
+    return this._commandService["executeCommand"](var_core_value_sigFBFA.id, {
+      ...var_core_value_sig2AD8,
+      unitId: this.id,
+      subUnitId: this._boardModel["getActivePageId"]()
+    });
+  }
+};
+var_core_value_sigFBA4.extend(m);
+var h = class extends var_core_value_sig4383 {
+  get BoardInteractionMode() {
+    return var_core_value_sig76BA;
+  }
+};
+var_core_value_sig4383.extend(h);
+var g = class extends var_core_value_sigFBA4 {
+  getInteractionMode() {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig2BCF.id, {
+      unitId: this.id
+    });
+  }
+  setInteractionMode(var_core_value_sig2AD0) {
+    return this._commandService["executeCommand"](var_core_value_sig26DB.id, {
+      unitId: this.id,
+      mode: var_core_value_sig2AD0
+    });
+  }
+  getSettings() {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig480E.id, {
+      unitId: this.id
+    });
+  }
+  setSettings(var_core_value_sig3EEE) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig1A0F.id, {
+      unitId: this.id,
+      settings: var_core_value_sig3EEE
+    });
+  }
+  getObjectListPanelOpen() {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig0D69.id, {
+      unitId: this.id
+    });
+  }
+  setObjectListPanelOpen(var_core_value_sigBC46) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigF0F9.id, {
+      unitId: this.id,
+      open: var_core_value_sigBC46
+    });
+  }
+  findElementsByText(var_core_value_sig3D7D) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigF602.id, {
+      unitId: this.id,
+      query: var_core_value_sig3D7D
+    });
+  }
+  focusElement(var_core_value_sig27E5, var_core_value_sig8061) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig1BBD.id, {
+      unitId: this.id,
+      elementId: var_core_value_sig27E5,
+      viewportPoint: var_core_value_sig8061
+    });
+  }
+  getElementViewportPoint(var_core_value_sig4D4C) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigF704.id, {
+      unitId: this.id,
+      elementId: var_core_value_sig4D4C
+    });
+  }
+};
+var_core_value_sigFBA4.extend(g);
+export {};

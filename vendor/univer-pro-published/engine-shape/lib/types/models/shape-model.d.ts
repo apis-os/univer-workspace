@@ -1,0 +1,139 @@
+import type { IBoundRectNoAngle } from '@univerjs/engine-render';
+import type { IGdContext, IPresetShapeConfig, IShapeAdjustItemResolved, IShapeContextOptions, IShapeData, IShapeJSONData, IShapeModel, IShapePoint, IShapePointWithAdjName, IShapeRect, IShapeRelation, IShapeRelationItem, IShapeRenderParameters, IShapeTextData } from '../shape-type';
+import { BasicShapeEnum, ShapeTypeEnum } from '../shape-enum';
+export declare function deepMerge<T extends object>(target: T, ...sources: Partial<T>[]): T;
+export declare class BasicShapeModel implements IShapeModel {
+    protected _shapeType: ShapeTypeEnum;
+    private readonly _id;
+    private _name?;
+    protected _shapeData: IShapeData;
+    /**
+     * this property is only used for LineShapeRenderModel to indicate whether to render line points for routing
+     */
+    private _isRenderLinePointsMode;
+    private _context;
+    private _renderModel;
+    private _adjustNameMap;
+    constructor(shapeType: ShapeTypeEnum, id: string, shapeData?: IShapeData, name?: string);
+    changeShapeType(shapeType: ShapeTypeEnum, shapeData?: IShapeData): void;
+    getShapeType(): ShapeTypeEnum;
+    getShapeRelation(): IShapeRelation | undefined;
+    getBasicShapeType(): BasicShapeEnum;
+    getId(): string;
+    getName(): string | undefined;
+    setName(name?: string): void;
+    /**
+     * get shape text data
+     * @returns The shape text data
+     */
+    getShapeTextData(): IShapeTextData;
+    /**
+     * set shape text data
+     * @param shapeText The shape text data
+     */
+    setShapeTextData(shapeText: IShapeTextData): void;
+    /**
+     * get shape text rect, the shape text rect is defined in shape preset config, if not exist, return the whole shape rect, we will add padding in render model
+     * @param rect The drawing rect, define the position and size of the shape
+     * @returns {IShapeRect} The shape text rect, the position is relative to the shape rect
+     */
+    getShapeTextRect(rect: IShapeRect): IShapeRect;
+    setShapeType(shapeType: ShapeTypeEnum): void;
+    getShapeData(): IShapeData;
+    setShapeData(shapeData: IShapeData, merge?: boolean): void;
+    getPresetShapeConfig(): IPresetShapeConfig;
+    getAdjustNames(): string[];
+    /**
+     * Only for connector shape, get the start connection info
+     * @returns {IShapeRelationItem | undefined} The start connection info
+     */
+    getStartConnectInfo(): IShapeRelationItem | undefined;
+    /**
+     * Only for connector shape, get the end connection info
+     * @returns {IShapeRelationItem | undefined} The end connection info
+     */
+    getEndConnectInfo(): IShapeRelationItem | undefined;
+    getConnectorLinePoints(): IShapePoint[];
+    /**
+     * Get all connection sites (cxnLst) for this shape.
+     * Connection sites are the points where connectors can attach to the shape.
+     * @returns Array of connection site points with their index and resolved coordinates
+     */
+    getConnectionSiteList(): Array<{
+        x: number;
+        y: number;
+        index: number;
+        ang: number;
+    }>;
+    getAdjustInfoByName(adjName: string): IShapeAdjustItemResolved | undefined;
+    getAdjustInfo(index: number): IShapeAdjustItemResolved | undefined;
+    private _getAdjustIndexByName;
+    private _getAdjustNames;
+    private _getAdjScope;
+    private _setAdjustValue;
+    clearAdjustValue(): void;
+    cloneShapeDataForShapeType(shapeType: ShapeTypeEnum): IShapeData;
+    cloneSnapshot(): IShapeJSONData;
+    cloneSnapshotForShapeType(shapeType: ShapeTypeEnum): IShapeJSONData;
+    /**
+     * et adjust value by adj name
+     * @param {string} adjName The name of adj point
+     * @param {number} value The set val of adj point
+     * @returns {number} The actual set val of adj point, it will consider about max min value
+     */
+    setAdjustValueByName(adjName: string, value: number): number;
+    /**
+     * Get adjust value by adj name
+     * @param {string} adjName  The name of adj point
+     * @returns  {number | undefined} The val of adj point, if the shape has no such adj point, return undefined.
+     */
+    getAdjustValueByName(adjName: string): number | undefined;
+    updateContext(options: IShapeContextOptions): void;
+    getGdRecord(): Partial<IGdContext>;
+    updateLinePoints(points: IShapePoint[]): void;
+    get isRenderLinePointsMode(): boolean;
+    removeLinePoints(): void;
+    /**
+     * Check if this is a line shape.
+     * @returns true if this is a line shape (connector, line, etc.)
+     */
+    isLineShape(): boolean;
+    /**
+     * Test if a point hits the line shape.
+     * This method should only be called for line shapes.
+     * It checks if the point is within the hit tolerance of any line segment or curve.
+     *
+     * @param pointX The x-coordinate of the point to test (in local coordinates, centered)
+     * @param pointY The y-coordinate of the point to test (in local coordinates, centered)
+     * @param width The width of the shape
+     * @param height The height of the shape
+     * @param tolerance The hit tolerance in pixels (default: 8)
+     * @returns true if the point hits the line shape
+     */
+    isHitLine(pointX: number, pointY: number, width: number, height: number, tolerance?: number): boolean;
+    render(canvasContext: CanvasRenderingContext2D, rect: IShapeRect, renderOption: IShapeRenderParameters): void;
+    getDrawingEffectBounds(rect: IShapeRect): IBoundRectNoAngle | undefined;
+    /**
+     * Build the shape outline path on the canvas context and clip.
+     * This only builds paths and clips — no fill or stroke is applied.
+     * Coordinate system: (0,0) is at the top-left of the rect.
+     * @returns The actual bounding rect of the clip region, or false if no clip was built
+     */
+    buildClipPath(canvasContext: CanvasRenderingContext2D, rect: IShapeRect): IShapeRect | false;
+    getDrawingPoints(): IShapePointWithAdjName[];
+    calcAdjValues(rect: IShapeRect, point: IShapePoint, info: IShapeAdjustItemResolved, _isFlipH: boolean, _isFlipV: boolean): Record<string, number>;
+    private _getAdjustRefs;
+    private _seedAngleAdjustValue;
+    private _evaluateAdjustPosition;
+    private _calcAdjustDerivative;
+    private _solveAdjustDelta;
+    private _clamp;
+    dispose(): void;
+    private _getSnapshotAdjustValues;
+    private _cloneShapeDataWithSnapshotAdjustValues;
+    toJSON(): IShapeJSONData;
+    fromJSON(json: IShapeJSONData): void;
+    private _createRenderModel;
+    private _renderSmartArtPresentationShapes;
+    private _getSmartArtDrawingBounds;
+}

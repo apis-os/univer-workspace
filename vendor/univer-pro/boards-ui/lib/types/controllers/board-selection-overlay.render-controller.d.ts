@@ -1,0 +1,32 @@
+import type { UnitModel } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { IBoardElementService } from '@univerjs-pro/boards';
+import { IConfigService, IUniverInstanceService, RxDisposable, ThemeService } from '@univerjs/core';
+import { IBoardElementStateService } from '../services/board-element-state.service';
+import { BoardSelectionOverlayService } from '../services/board-selection-overlay.service';
+import { BoardTextEditingService } from '../services/board-text-editing.service';
+import { IBoardUIStateService } from '../services/board-ui-state.service';
+export declare class BoardSelectionOverlayRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _instanceSrv;
+    private readonly _boardElementService;
+    private readonly _elementStateService;
+    private readonly _selectionOverlayService;
+    private readonly _uiStateService;
+    private readonly _configService;
+    private readonly _boardTextEditingService;
+    private readonly _themeService;
+    private _areTransformGuidesDisabled;
+    private _transformGuideCandidates;
+    private _marqueeObject;
+    private _dimensionsObject;
+    private _guideObject;
+    private _transformGuideLines;
+    constructor(_renderContext: IRenderContext<UnitModel>, _instanceSrv: IUniverInstanceService, _boardElementService: IBoardElementService, _elementStateService: IBoardElementStateService, _selectionOverlayService: BoardSelectionOverlayService, _uiStateService: IBoardUIStateService, _configService: IConfigService, _boardTextEditingService: BoardTextEditingService, _themeService: ThemeService);
+    private _init;
+    private _subscribeToTransformer;
+    private _subscribeToTransformGuideModifier;
+    private _sync;
+    private _syncTransformGuides;
+    private _syncGuideObject;
+}

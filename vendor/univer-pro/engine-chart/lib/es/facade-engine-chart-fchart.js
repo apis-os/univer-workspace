@@ -1,0 +1,148 @@
+import { AREA_CHART_TYPES, AreaLineStyle, ChartAggregationTarget, ChartAllSeriesStyleTarget, ChartAppearanceTarget, ChartAxisName, ChartAxisPointerTarget, ChartAxisTarget, ChartAxisTickPosition, ChartBuilder, ChartChordFocusMode, ChartChordLabelPosition, ChartChordRibbonColorMode, ChartGaugeMode, ChartGaugePointerShape, ChartMarkLineLabelPosition, ChartSemanticAxis, ChartSeriesAxis, ChartSeriesClearTarget, ChartSeriesTypeString, ChartSunburstLabelPosition, ChartThemeService, ChartTrendlineType, ChartTypeString, ChartVisualMapType, ChartWaterfallPointRole, ChartWaterfallStyleTarget, DetachedChartBuilderAdapter, InvalidValueType, LabelAlignEnum, LegendPositionEnum, LinePointShape, PieLabelPosition, PieSecondaryPlotType, RadarShape, RelationChartLayoutEnum, SelectModeEnum, SeriesLabelPosition, TitlePositionEnum, TreemapParentLabelLayout, WaterfallStackTypeEnum, WordCloudShapeEnum, clearAggregation, clearAllSeriesOverrides, clearAllSeriesStyle, clearAppearance, clearAreaLineStyle, clearAxisPointer, clearAxisTitle, clearBar, clearBubbleMapping, clearCandlestickFields, clearCategoryField, clearCellLabel, clearCumulativeLineStyle, clearDojiStyle, clearDoughnutHole, clearFallingStyle, clearHistogramField, clearHistogramOverflowThreshold, clearHistogramUnderflowThreshold, clearLegend, clearLineStyle, clearMarkLines, clearMaskImage, clearPalette, clearParetoBarStyle, clearPieComposite, clearPieLabel, clearRelationForce, clearRightYAxis, clearRisingStyle, clearSeries, clearSliceBorderColor, clearSliceStyle, clearSubtitle, clearTheme, clearTitle, clearTrendlines, clearValueFields, clearValueRange, clearValueUnit, clearWaterfallConnector, clearWaterfallStyle, clearXAxis, clearYAxis, removeTrendline, resetAutoGradientFill, resetCandleWidth, resetChordEmphasis, resetChordLabel, resetChordLayout, resetChordNode, resetChordRibbon, resetCircularLabelRotation, resetCombinationSeriesAxis, resetCombinationSeriesType, resetEmphasisEnabled, resetExplosion, resetFunnelGap, resetGaugeAnchor, resetGaugeAngles, resetGaugeAxisLabel, resetGaugeAxisLine, resetGaugeAxisTick, resetGaugeDetail, resetGaugeMode, resetGaugePointer, resetGaugeProgress, resetGaugeRanges, resetGaugeScale, resetGaugeSplitLine, resetGaugeTitle, resetHalfPie, resetHistogramBinGap, resetHistogramBinning, resetIncludeZeroValues, resetInvalidValueStrategy, resetLabelLineVisible, resetPaddingAngleEnabled, resetRadarFill, resetRadarShape, resetRelationLayout, resetRelationNodeShape, resetRosePie, resetSunburstCenterLabel, resetSunburstLabel, resetTreemapLabel, resetTreemapParentLabelLayout, resetUseAbsoluteValue, resetUseDateAxis, resetUseSubtotal, resetUseValueAsSymbolSize, resetValueScale, resetVisualMapType, resetWaterfallStackType, resetWordCloudRepeat, resetWordCloudShape, setAggregation, setAllSeriesStyle, setAppearance, setAreaLineStyle, setAutoGradientFill, setAxisPointer, setAxisTitle, setBar, setBubbleMapping, setCandleWidth, setCandlestickFields, setCategoryField, setCellLabel, setChordEmphasis, setChordLabel, setChordLayout, setChordMapping, setChordNode, setChordRibbon, setCircularLabelRotation, setCombinationSeriesAxis, setCombinationSeriesType, setCumulativeLineStyle, setDojiStyle, setDoughnutHole, setEmphasisEnabled, setExplosion, setFallingStyle, setFunnelGap, setGaugeAnchor, setGaugeAngles, setGaugeAxisLabel, setGaugeAxisLine, setGaugeAxisTick, setGaugeDetail, setGaugeMode, setGaugePointer, setGaugeProgress, setGaugeRanges, setGaugeScale, setGaugeSplitLine, setGaugeTicks, setGaugeTitle, setGaugeValueField, setHalfPie, setHistogramBinCount, setHistogramBinGap, setHistogramBinWidth, setHistogramField, setHistogramOverflowThreshold, setHistogramUnderflowThreshold, setIncludeZeroValues, setInvalidValueStrategy, setLabelLineVisible, setLegend, setLineStyle, setMarkLines, setMaskImage, setPaddingAngleEnabled, setPalette, setParetoBarStyle, setPieComposite, setPieLabel, setRadarFill, setRadarShape, setRelationForce, setRelationLayout, setRelationNodeShape, setRightYAxis, setRisingStyle, setRosePie, setSeries, setSliceBorderColor, setSliceStyle, setSubtitle, setSunburstCenterLabel, setSunburstHierarchyFields, setSunburstLabel, setSunburstValueField, setTheme, setTitle, setTreemapHierarchyFields, setTreemapLabel, setTreemapParentLabelLayout, setTreemapValueField, setTrendline, setUseAbsoluteValue, setUseDateAxis, setUseSubtotal, setUseValueAsSymbolSize, setValueFields, setValueRange, setValueScale, setValueUnit, setVisualMapType, setWaterfallConnector, setWaterfallPointRoles, setWaterfallStackType, setWaterfallStyle, setWordCloudRepeat, setWordCloudShape, setXAxis, setYAxis, toChartCreateConfig, toChartCreateConfigSnapshot } from "@univerjs-pro/engine-chart";
+import { ArrangeTypeEnum, Tools, generateRandomId } from "@univerjs/core";
+import { FBase, FEnum, FUniver } from "@univerjs/core/facade";
+import { R, z } from "./facade-internal-core-endo.js";
+var Ci = class extends FBase {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46326, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327) {
+    super(), this._id = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324, this._createAdapter = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325, this._createBuilder = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46326, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327;
+  }
+  getId() {
+    return this._id;
+  }
+  getType() {
+    return this._createAdapter().getInfo().config["type"];
+  }
+  getInfo() {
+    return Tools.deepClone(this._createAdapter().getInfo());
+  }
+  toBuilder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46332) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46333 = this._createAdapter(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46334 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46333.describe(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46335 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46332 ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46334.type;
+    return this._createBuilder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46333.getInfo(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46334, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46335);
+  }
+  async update(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46340) {
+    return await this._createAdapter().update(Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46340)), this;
+  }
+  setType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46342) {
+    return this._commit({
+      type: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46342
+    });
+  }
+  setTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344) {
+    return this._apply(setTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46344));
+  }
+  clearTitle() {
+    return this._apply(clearTitle());
+  }
+  setSubtitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346) {
+    return this._apply(setSubtitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346));
+  }
+  clearSubtitle() {
+    return this._apply(clearSubtitle());
+  }
+  setLegend(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46348) {
+    return this._apply(setLegend(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46348));
+  }
+  clearLegend() {
+    return this._apply(clearLegend());
+  }
+  setTheme(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350) {
+    return this._apply(setTheme(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350));
+  }
+  clearTheme() {
+    return this._apply(clearTheme());
+  }
+  setPalette(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46352) {
+    return this._apply(setPalette(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46352));
+  }
+  clearPalette() {
+    return this._apply(clearPalette());
+  }
+  setAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46354) {
+    return this._apply(setAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46354));
+  }
+  clearAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356) {
+    return this._apply(clearAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356));
+  }
+  setAutoGradientFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46358) {
+    return this._apply(setAutoGradientFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46358));
+  }
+  resetAutoGradientFill() {
+    return this._apply(resetAutoGradientFill());
+  }
+  setInvalidValueStrategy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46360) {
+    return this._apply(setInvalidValueStrategy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46360));
+  }
+  resetInvalidValueStrategy() {
+    return this._apply(resetInvalidValueStrategy());
+  }
+  setCategoryField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46362) {
+    return this._apply(setCategoryField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46362));
+  }
+  setCategoryFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364) {
+    return this._commit(R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364));
+  }
+  clearCategoryFields() {
+    return this._commit(z());
+  }
+  setMultiLevelCategoryAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366) {
+    return this._commit({
+      mapping: {
+        multiLevelCategoryAxis: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366
+      }
+    });
+  }
+  clearCategoryField() {
+    return this._apply(clearCategoryField());
+  }
+  setValueFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46368) {
+    return this._apply(setValueFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46368));
+  }
+  clearValueFields() {
+    return this._apply(clearValueFields());
+  }
+  setAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46370) {
+    return this._apply(setAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46370));
+  }
+  clearAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46372) {
+    return this._apply(clearAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46372));
+  }
+  async setDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46374) {
+    return await this._createAdapter().setDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46374), this;
+  }
+  setAbsolutePosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46376, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377) {
+    return this._createAdapter().setAbsolutePosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46376, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46377), this;
+  }
+  setSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46380, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46381) {
+    return this._createAdapter().setSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46380, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46381), this;
+  }
+  bringToFront() {
+    return this._arrange(ArrangeTypeEnum.front);
+  }
+  bringForward() {
+    return this._arrange(ArrangeTypeEnum.forward);
+  }
+  sendBackward() {
+    return this._arrange(ArrangeTypeEnum.backward);
+  }
+  sendToBack() {
+    return this._arrange(ArrangeTypeEnum.back);
+  }
+  setZOrder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46384) {
+    return this._createAdapter().setZOrder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46384), this;
+  }
+  async remove() {
+    return this._createAdapter().remove();
+  }
+  _arrange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46386) {
+    return this._createAdapter().arrange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46386), this;
+  }
+  _apply(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388) {
+    return this._commit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388.patch);
+  }
+  _commit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390) {
+    return this._createAdapter().commit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390), this;
+  }
+};
+export { Ci as FChart };

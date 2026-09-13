@@ -1,0 +1,148 @@
+const e = {
+  "slides-chart-ui": {
+    border: "Bordure",
+    common: {
+      insertChartFailed: "Échec de l'insertion du graphique",
+      inlineData: "Données\x20en\x20ligne",
+      cancel: "Annuler",
+      insert: "Insérer",
+      editData: "Modifier les données",
+      editChart: "Éditeur de graphique",
+      tableDataEmpty: "Les données du tableau sont vides",
+      duplicate: "Dupliquer",
+      apply: "Appliquer",
+      data: "Données",
+      series: "Série",
+      horizontalAxis: "Axe horizontal",
+      verticalAxis: "Axe vertical",
+      setup: "Configurer",
+      customize: "Personnaliser",
+      switchRowColumn: "Basculer vers ligne/colonne",
+      chartAndAxisTitles: "Titres\x20du\x20graphique\x20et\x20des\x20axes",
+      chartStyle: "Style de graphique",
+      heatmap: "Carte\x20thermique",
+      legend: "Légende",
+      rightVerticalAxis: "Axe vertical droit",
+      trendline: "Courbe de tendance",
+      category: "Catégorie",
+      label: "Étiquette",
+      value: "Valeur",
+      valueField: "Champ de valeur",
+      chartType: "Type de graphique",
+    },
+    editor: { defaultColor: "Couleur par défaut" },
+    chartTypes: {
+      line: "Graphique en ligne",
+      column: "Graphique en colonnes",
+      columnStacked: "Empiler\x20·\x20Graphique\x20en\x20colonnes",
+      columnPercentStacked: "Pourcentage empilé · Graphique en colonnes",
+      bar: "Graphique\x20en\x20barres",
+      barStacked: "Graphique\x20en\x20barres\x20empilées",
+      barPercentStacked: "Graphique en barres empilées en pourcentage",
+      pie: "Graphique\x20en\x20camembert",
+      donut: "Graphique en beignet",
+      pieOfPie: "Graphique secteurs de secteur",
+      barOfPie: "Graphique barres de secteur",
+      area: "Graphique en aires",
+      areaStacked: "Graphique\x20en\x20aires\x20empilées",
+      areaPercentStacked: "Graphique en aires empilées en pourcentage",
+      radar: "Graphique\x20radar",
+      scatter: "Graphique de dispersion",
+      combination: "Graphique combiné",
+      wordCloud: "Graphique en nuage de mots",
+      funnel: "Graphique en entonnoir",
+      bubble: "Graphique en bulles",
+      relation: "Graphique\x20de\x20relation",
+      waterfall: "Graphique en cascade",
+      pareto: "Graphique de Pareto",
+      sankey: "Graphique de Sankey",
+      heatmap: "Carte thermique",
+      boxplot: "Boîte à moustaches",
+      candlestick: "Graphique\x20en\x20chandeliers",
+      histogram: "Histogramme",
+      treemap: "Carte\x20proportionnelle",
+      sunburst: "Diagramme en rayons de soleil",
+      gauge: "Graphique de jauge",
+      chord: "Diagramme\x20de\x20cordes",
+    },
+    section: {
+      candlestick: "Graphique\x20en\x20chandeliers",
+      chord: "Tableau d'accords",
+      funnel: "Graphique en entonnoir",
+      gauge: "Tableau de jauge",
+      gridlinesAndTicks: "Lignes\x20de\x20grille\x20et\x20graduations",
+      histogram: "Graphique\x20histogramme",
+      indicatorLine: "Ligne indicatrice",
+      lineAndArea: "Graphique en ligne / Graphique en aires",
+      paretoBar: "Série de Diagramme en Barres",
+      paretoLine: "Série du Pourcentage Cumulé",
+      pie: "Graphique\x20en\x20camembert",
+      radar: "Graphique\x20radar",
+      relation: "Graphique\x20de\x20relation",
+      sunburst: "Tableau des rayons de soleil",
+      treemap: "Graphique arborescent",
+      waterfall: "Graphique\x20en\x20cascade",
+      wordCloud: "Nuage de mots",
+    },
+    candlestick: {
+      columnsError:
+        "Les\x20données\x20du\x20graphique\x20en\x20chandeliers\x20nécessitent\x20les\x20colonnes\x20Catégorie,\x20Ouverture,\x20Plus\x20haut,\x20Plus\x20bas\x20et\x20Clôture.",
+      close: "Clôture",
+      high: "Plus haut",
+      low: "Plus bas",
+      open: "Ouverture",
+      series: "Série OHLC",
+    },
+    chord: {
+      source: "Source",
+      target: "Cible",
+      emptyDiagnostic:
+        "Le diagramme de cordes nécessite au moins une relation de poids positif entre deux nœuds distincts.",
+      mappingDiagnostic:
+        "Le diagramme de cordes nécessite des champs Source et Cible distincts et, éventuellement, un champ Valeur différent.",
+      configDiagnostic:
+        "La configuration du diagramme de cordes n’est pas valide. Vérifiez les angles, les rayons, l’opacité et les tailles.",
+      count: "Nombre\x20de\x20relations",
+      associatedValue: "Valeur associée",
+    },
+    sunburst: {
+      hierarchy: "Hiérarchie",
+      ownValue: "Valeur propre",
+      children: "Éléments enfants",
+      diagnostic:
+        "Le graphique en rayons de soleil nécessite au moins un champ hiérarchique et un champ de valeur numérique.",
+    },
+    histogram: { frequency: "Fréquence" },
+    pie: { aggregateOther: "Autre", aggregateMembers: "Éléments" },
+    treemap: {
+      hierarchy: "Champs de hiérarchie",
+      ownValue: "Valeur propre",
+      children: "Éléments enfants",
+      diagnostic:
+        "La carte arborescente nécessite au moins un champ hiérarchique et un champ de valeur numérique.",
+    },
+    gauge: {
+      emptyDiagnostic:
+        "Le graphique de jauge nécessite au moins une valeur numérique finie.",
+      mappingDiagnostic:
+        "Le\x20graphique\x20de\x20jauge\x20nécessite\x20un\x20champ\x20d’étiquette\x20et\x20exactement\x20un\x20champ\x20de\x20valeur.",
+      configDiagnostic:
+        "La\x20configuration\x20du\x20graphique\x20de\x20jauge\x20n’est\x20pas\x20valide.\x20Vérifiez\x20l’échelle,\x20les\x20plages,\x20les\x20proportions\x20et\x20les\x20tailles.",
+    },
+    chartField: {
+      missingCategoryFields:
+        "Ce graphique nécessite davantage de champs d’étiquette.",
+      missingSeriesFields:
+        "Ce graphique nécessite davantage de champs de valeurs numériques.",
+      invalidFieldIndex:
+        "Un champ de graphique sélectionné n’est plus disponible.",
+      invalidValueFieldType:
+        "Le champ de valeurs sélectionné ne contient pas de données numériques.",
+      invalidDataStructure:
+        "Les champs sélectionnés ne forment pas une structure de données valide pour ce graphique.",
+      unsupportedChartType:
+        "Ce type de graphique ne dispose d’aucune règle d’utilisation des champs.",
+    },
+  },
+};
+module.exports = e;

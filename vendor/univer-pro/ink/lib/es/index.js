@@ -1,0 +1,14 @@
+export { IInkHostAdapterService } from "./ink-iink-host-adapter.js";
+export { UniverInkPlugin } from "./ink-plugin.js";
+export { buildInkCustomShapePayload } from "./ink-custom-shape.js";
+export { convertBrushModelToPenModel } from "./ink-convert-brush-model-to-pen-model.js";
+export { cycleInkPenAnchorPointType } from "./ink-cycle-ink-pen-anchor-point-type.js";
+export { deleteInkPenAnchor } from "./ink-pen-anchor.js";
+export { findClosestInkPenHandle } from "./ink-closest-ink-pen-handle.js";
+export { findClosestInkPenSegment } from "./ink-closest-ink-pen-segment.js";
+export { getInkModelBounds } from "./ink-model-bounds.js";
+export { getInkPenPreviewModel } from "./ink-pen-preview-model.js";
+export { insertInkPenAnchorAt } from "./ink-insert-ink-pen-anchor-at.js";
+export { isInkPenHandleVisible } from "./ink-pen-handle-visible.js";
+export { moveInkPenAnchorPoint } from "./ink-pen-anchor-point.js";
+export { setInkPenAnchorPointType } from "./ink-pen-anchor-point-type.js";

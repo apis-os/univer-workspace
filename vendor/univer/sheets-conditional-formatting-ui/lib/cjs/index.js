@@ -1,0 +1,5148 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+let _univerjs_core = require("@univerjs/core");
+let _univerjs_sheets = require("@univerjs/sheets");
+let _univerjs_sheets_conditional_formatting = require("@univerjs/sheets-conditional-formatting");
+let _univerjs_ui = require("@univerjs/ui");
+let _univerjs_sheets_ui = require("@univerjs/sheets-ui");
+let rxjs = require("rxjs");
+let rxjs_operators = require("rxjs/operators");
+let _univerjs_engine_render = require("@univerjs/engine-render");
+let _univerjs_sheets_formula = require("@univerjs/sheets-formula");
+let _univerjs_icons = require("@univerjs/icons");
+let react = require("react");
+let _univerjs_design = require("@univerjs/design");
+let _univerjs_engine_formula = require("@univerjs/engine-formula");
+let _univerjs_sheets_formula_ui = require("@univerjs/sheets-formula-ui");
+let react_jsx_runtime = require("react/jsx-runtime");
+
+//#region src/commands/commands/add-average-cf.command.ts
+const AddAverageCfCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-average-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, operator } = params;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(accessor.get(_univerjs_core.IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.average,
+				operator,
+				style
+			}
+		};
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-color-scale-cf.command.ts
+const AddColorScaleConditionalRuleCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-color-scale-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, config, stopIfTrue } = params;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(accessor.get(_univerjs_core.IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.colorScale,
+				config
+			}
+		};
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-data-bar-cf.command.ts
+const AddDataBarConditionalRuleCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-data-bar-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { min, max, nativeColor, positiveColor, isGradient, stopIfTrue, isShowValue } = params;
+		const ranges = params.ranges ?? accessor.get(_univerjs_sheets.SheetsSelectionsService).getCurrentSelections().map((selection) => selection.range);
+		if (!ranges.length) return false;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(accessor.get(_univerjs_core.IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.dataBar,
+				isShowValue,
+				config: {
+					min,
+					max,
+					nativeColor,
+					positiveColor,
+					isGradient
+				}
+			}
+		};
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-duplicate-values-cf.command.ts
+const AddDuplicateValuesCfCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-duplicate-values-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue } = params;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(accessor.get(_univerjs_core.IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.duplicateValues,
+				style
+			}
+		};
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-icon-set-cf.command.ts
+const AddIconSetConditionalRuleCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-icon-set-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const ranges = params.ranges ?? accessor.get(_univerjs_sheets.SheetsSelectionsService).getCurrentSelections().map((selection) => selection.range);
+		if (!ranges.length) return false;
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(accessor.get(_univerjs_core.IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel).createCfId(unitId, subUnitId),
+			stopIfTrue: !!params.stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.iconSet,
+				config: params.config,
+				isShowValue: params.isShowValue
+			}
+		};
+		return accessor.get(_univerjs_core.ICommandService).executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-number-cf.command.ts
+const AddNumberCfCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-number-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, operator, value } = params;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(accessor.get(_univerjs_core.IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const cfId = conditionalFormattingRuleModel.createCfId(unitId, subUnitId);
+		let rule;
+		if ([_univerjs_sheets_conditional_formatting.CFNumberOperator.between, _univerjs_sheets_conditional_formatting.CFNumberOperator.notBetween].includes(operator)) {
+			const _value = value;
+			if (_value.length !== 2 || !Array.isArray(_value)) return false;
+			rule = {
+				ranges,
+				cfId,
+				stopIfTrue: !!stopIfTrue,
+				rule: {
+					type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+					subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.number,
+					operator,
+					style,
+					value: _value
+				}
+			};
+		} else {
+			const _value = value;
+			if (typeof _value !== "number") return false;
+			rule = {
+				ranges,
+				cfId,
+				stopIfTrue: !!stopIfTrue,
+				rule: {
+					type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+					subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.number,
+					operator,
+					style,
+					value: _value
+				}
+			};
+		}
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-rank-cf.command.ts
+const AddRankCfCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-rank-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, isPercent, isBottom, value } = params;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(univerInstanceService);
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.rank,
+				isPercent,
+				isBottom,
+				style,
+				value
+			}
+		};
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-text-cf.command.ts
+const AddTextCfCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-text-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, operator, value } = params;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(accessor.get(_univerjs_core.IUniverInstanceService));
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.text,
+				operator,
+				style,
+				value
+			}
+		};
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-time-period-cf.command.ts
+const AddTimePeriodCfCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-time-period-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue, operator } = params;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(univerInstanceService);
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.timePeriod,
+				operator,
+				style
+			}
+		};
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region src/commands/commands/add-unique-values-cf.command.ts
+const AddUniqueValuesCfCommand = {
+	type: _univerjs_core.CommandType.COMMAND,
+	id: "sheet.command.add-uniqueValues-conditional-rule",
+	handler(accessor, params) {
+		if (!params) return false;
+		const { ranges, style, stopIfTrue } = params;
+		const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+		const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(univerInstanceService);
+		if (!target) return false;
+		const { unitId, subUnitId } = target;
+		const rule = {
+			ranges,
+			cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+			stopIfTrue: !!stopIfTrue,
+			rule: {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.uniqueValues,
+				style
+			}
+		};
+		return commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id, {
+			unitId,
+			subUnitId,
+			rule
+		});
+	}
+};
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/cf.panel.controller.ts
+const CF_PANEL_KEY$1 = "sheet.conditional.formatting.panel";
+let ConditionalFormattingPanelController = class ConditionalFormattingPanelController extends _univerjs_core.Disposable {
+	constructor(_univerInstanceService, _sidebarService, _localeService) {
+		super();
+		this._univerInstanceService = _univerInstanceService;
+		this._sidebarService = _sidebarService;
+		this._localeService = _localeService;
+		_defineProperty(this, "_sidebarDisposable", null);
+		this.disposeWithMe(this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET).subscribe((sheet) => {
+			var _this$_sidebarDisposa;
+			if (!sheet) (_this$_sidebarDisposa = this._sidebarDisposable) === null || _this$_sidebarDisposa === void 0 || _this$_sidebarDisposa.dispose();
+		}));
+		this.disposeWithMe(this._sidebarService.sidebarOptions$.subscribe((info) => {
+			if (info.id === CF_PANEL_KEY$1) {
+				if (!info.visible) setTimeout(() => {
+					this._sidebarService.sidebarOptions$.next({ visible: false });
+				});
+			}
+		}));
+	}
+	openPanel(rule) {
+		const props = {
+			id: CF_PANEL_KEY$1,
+			header: { title: this._localeService.t("sheets-conditional-formatting-ui.title") },
+			children: {
+				label: CF_PANEL_KEY$1,
+				rule,
+				key: (0, _univerjs_core.generateRandomId)(4)
+			},
+			onClose: () => this._sidebarDisposable = null
+		};
+		this._sidebarDisposable = this._sidebarService.open(props);
+	}
+};
+ConditionalFormattingPanelController = __decorate([
+	__decorateParam(0, _univerjs_core.IUniverInstanceService),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_ui.ISidebarService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService))
+], ConditionalFormattingPanelController);
+
+//#endregion
+//#region src/commands/operations/open-conditional-formatting-panel.ts
+const OpenConditionalFormattingOperator = {
+	id: "sheet.operation.open.conditional.formatting.panel",
+	type: _univerjs_core.CommandType.OPERATION,
+	handler: (accessor, params) => {
+		var _selectionManagerServ;
+		const conditionalFormattingMenuController = accessor.get(ConditionalFormattingPanelController);
+		const selectionManagerService = accessor.get(_univerjs_sheets.SheetsSelectionsService);
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const ranges = ((_selectionManagerServ = selectionManagerService.getCurrentSelections()) === null || _selectionManagerServ === void 0 ? void 0 : _selectionManagerServ.map((s) => s.range)) || [];
+		switch (params.value) {
+			case 3:
+				conditionalFormattingMenuController.openPanel({
+					...(0, _univerjs_sheets_conditional_formatting.createDefaultRule)(),
+					ranges
+				});
+				break;
+			case 4: {
+				const rule = {
+					..._univerjs_sheets_conditional_formatting.createDefaultRule,
+					ranges,
+					rule: {
+						type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+						subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.rank
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 5: {
+				const rule = {
+					..._univerjs_sheets_conditional_formatting.createDefaultRule,
+					ranges,
+					rule: {
+						type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+						subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.formula,
+						value: "="
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 6: {
+				const rule = {
+					..._univerjs_sheets_conditional_formatting.createDefaultRule,
+					ranges,
+					rule: {
+						type: _univerjs_sheets_conditional_formatting.CFRuleType.colorScale,
+						config: []
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 7: {
+				const rule = {
+					..._univerjs_sheets_conditional_formatting.createDefaultRule,
+					ranges,
+					rule: {
+						type: _univerjs_sheets_conditional_formatting.CFRuleType.dataBar,
+						isShowValue: true
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 8: {
+				const rule = {
+					..._univerjs_sheets_conditional_formatting.createDefaultRule,
+					ranges,
+					rule: {
+						type: _univerjs_sheets_conditional_formatting.CFRuleType.iconSet,
+						config: [],
+						isShowValue: true
+					}
+				};
+				conditionalFormattingMenuController.openPanel(rule);
+				break;
+			}
+			case 2:
+				conditionalFormattingMenuController.openPanel();
+				break;
+			case 1:
+				conditionalFormattingMenuController.openPanel({
+					...(0, _univerjs_sheets_conditional_formatting.createDefaultRule)(),
+					ranges
+				});
+				break;
+			case 9:
+				commandService.executeCommand(_univerjs_sheets_conditional_formatting.ClearRangeCfCommand.id, { ranges });
+				break;
+			case 10:
+				commandService.executeCommand(_univerjs_sheets_conditional_formatting.ClearWorksheetCfCommand.id);
+				break;
+		}
+		return true;
+	}
+};
+
+//#endregion
+//#region src/controllers/cf.clear.controller.ts
+let ConditionalFormattingClearController = class ConditionalFormattingClearController extends _univerjs_core.Disposable {
+	constructor(_injector, _univerInstanceService, _sheetInterceptorService, _selectionManagerService, _conditionalFormattingRangeIndexModel) {
+		super();
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._selectionManagerService = _selectionManagerService;
+		this._conditionalFormattingRangeIndexModel = _conditionalFormattingRangeIndexModel;
+		this._init();
+	}
+	_init() {
+		this.disposeWithMe(this._sheetInterceptorService.interceptCommand({ getMutations: (commandInfo) => {
+			const redos = [];
+			const undos = [];
+			const defaultV = {
+				redos,
+				undos
+			};
+			if ([_univerjs_sheets.ClearSelectionFormatCommand.id, _univerjs_sheets.ClearSelectionAllCommand.id].includes(commandInfo.id)) {
+				var _this$_selectionManag;
+				const ranges = (_this$_selectionManag = this._selectionManagerService.getCurrentSelections()) === null || _this$_selectionManag === void 0 ? void 0 : _this$_selectionManag.map((s) => s.range);
+				if (!ranges) return defaultV;
+				const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+				const worksheet = workbook.getActiveSheet();
+				if (!worksheet) return defaultV;
+				const unitId = workbook.getUnitId();
+				const subUnitId = worksheet.getSheetId();
+				const allRules = this._conditionalFormattingRangeIndexModel.getRulesByRanges(unitId, subUnitId, ranges);
+				if (!allRules || !allRules.length) return defaultV;
+				const { redos: interceptRedos, undos: interceptUndos } = generateClearCfMutations(this._injector, allRules, ranges, unitId, subUnitId);
+				redos.push(...interceptRedos);
+				undos.push(...interceptUndos);
+			}
+			return defaultV;
+		} }));
+		this.disposeWithMe(this._sheetInterceptorService.interceptRanges({ getMutations: ({ unitId, subUnitId, ranges }) => {
+			const redos = [];
+			const undos = [];
+			const emptyInterceptorArr = {
+				redos,
+				undos
+			};
+			if (!ranges || !ranges.length) return emptyInterceptorArr;
+			const allRules = this._conditionalFormattingRangeIndexModel.getRulesByRanges(unitId, subUnitId, ranges);
+			if (!allRules || !allRules.length) return emptyInterceptorArr;
+			const { redos: interceptRedos, undos: interceptUndos } = generateClearCfMutations(this._injector, allRules, ranges, unitId, subUnitId);
+			redos.push(...interceptRedos);
+			undos.push(...interceptUndos);
+			return emptyInterceptorArr;
+		} }));
+	}
+};
+ConditionalFormattingClearController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.IUniverInstanceService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetInterceptorService)),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetsSelectionsService)),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRangeIndexModel))
+], ConditionalFormattingClearController);
+function generateClearCfMutations(injector, allRules, ranges, unitId, subUnitId) {
+	const redos = [];
+	const undos = [];
+	const rangeTransformService = injector.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRangeTransformService);
+	allRules.forEach((rule) => {
+		const mergeRanges = rangeTransformService.subtractRanges(rule.ranges, ranges);
+		if (mergeRanges.length) {
+			const redo = {
+				id: _univerjs_sheets_conditional_formatting.SetConditionalRuleMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					rule: {
+						...rule,
+						ranges: mergeRanges
+					}
+				}
+			};
+			const undo = (0, _univerjs_sheets_conditional_formatting.setConditionalRuleMutationUndoFactory)(injector, redo.params);
+			redos.push(redo);
+			undos.push(...undo);
+		} else {
+			const redo = {
+				id: _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					cfId: rule.cfId
+				}
+			};
+			const undo = (0, _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutationUndoFactory)(injector, redo.params);
+			redos.push(redo);
+			undos.push(...undo);
+		}
+	});
+	return {
+		redos,
+		undos
+	};
+}
+
+//#endregion
+//#region src/menu/manage-rule.ts
+const commandList = [
+	_univerjs_sheets.SetWorksheetActiveOperation.id,
+	_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id,
+	_univerjs_sheets_conditional_formatting.SetConditionalRuleMutation.id,
+	_univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutation.id,
+	_univerjs_sheets_conditional_formatting.MoveConditionalRuleMutation.id
+];
+const commonSelections = [
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.highlightCell",
+			selectable: false
+		},
+		value: 3
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.panel.rankAndAverage",
+			selectable: false
+		},
+		value: 4
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.formula",
+			selectable: false
+		},
+		value: 5
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.colorScale",
+			selectable: false
+		},
+		value: 6
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.dataBar",
+			selectable: false
+		},
+		value: 7
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.ruleType.iconSet",
+			selectable: false
+		},
+		value: 8
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.menu.manageConditionalFormatting",
+			selectable: false
+		},
+		value: 2
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.menu.createConditionalFormatting",
+			selectable: false
+		},
+		value: 1
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.menu.clearRangeRules",
+			selectable: false
+		},
+		value: 9,
+		disabled: false
+	},
+	{
+		label: {
+			name: "sheets-conditional-formatting-ui.menu.clearWorkSheetRules",
+			selectable: false
+		},
+		value: 10
+	}
+];
+function FactoryManageConditionalFormattingRule(accessor) {
+	const selectionManagerService = accessor.get(_univerjs_sheets.SheetsSelectionsService);
+	const commandService = accessor.get(_univerjs_core.ICommandService);
+	const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+	const conditionalFormattingRuleModel = accessor.get(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+	const clearRangeEnable$ = new rxjs.Observable((subscriber) => (0, rxjs.merge)(selectionManagerService.selectionMoveEnd$, selectionManagerService.selectionSet$, new rxjs.Observable((commandSubscribe) => {
+		const disposable = commandService.onCommandExecuted((commandInfo) => {
+			var _univerInstanceServic;
+			const { id, params } = commandInfo;
+			const unitId = (_univerInstanceServic = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET)) === null || _univerInstanceServic === void 0 ? void 0 : _univerInstanceServic.getUnitId();
+			if (commandList.includes(id) && params.unitId === unitId) commandSubscribe.next(null);
+		});
+		return () => disposable.dispose();
+	})).pipe((0, rxjs_operators.debounceTime)(16)).subscribe(() => {
+		var _selectionManagerServ;
+		const ranges = ((_selectionManagerServ = selectionManagerService.getCurrentSelections()) === null || _selectionManagerServ === void 0 ? void 0 : _selectionManagerServ.map((selection) => selection.range)) || [];
+		const workbook = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return;
+		const worksheet = workbook.getActiveSheet();
+		if (!worksheet) return;
+		const hasPermission = (conditionalFormattingRuleModel.getSubunitRules(workbook.getUnitId(), worksheet.getSheetId()) || []).filter((rule) => rule.ranges.some((ruleRange) => ranges.some((range) => _univerjs_core.Rectangle.intersects(range, ruleRange)))).map((rule) => rule.ranges).every((ranges) => {
+			return (0, _univerjs_sheets.checkRangesEditablePermission)(accessor, workbook.getUnitId(), worksheet.getSheetId(), ranges);
+		});
+		subscriber.next(hasPermission);
+	}));
+	const clearSheetEnable$ = new rxjs.Observable((subscriber) => new rxjs.Observable((commandSubscribe) => {
+		const disposable = commandService.onCommandExecuted((commandInfo) => {
+			var _univerInstanceServic2;
+			const { id, params } = commandInfo;
+			const unitId = (_univerInstanceServic2 = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET)) === null || _univerInstanceServic2 === void 0 ? void 0 : _univerInstanceServic2.getUnitId();
+			if (commandList.includes(id) && params.unitId === unitId) commandSubscribe.next(null);
+		});
+		return () => disposable.dispose();
+	}).pipe((0, rxjs_operators.debounceTime)(16)).subscribe(() => {
+		const workbook = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return;
+		const worksheet = workbook.getActiveSheet();
+		if (!worksheet) return;
+		const allRule = conditionalFormattingRuleModel.getSubunitRules(workbook.getUnitId(), worksheet.getSheetId()) || [];
+		if (!allRule.length) {
+			subscriber.next(false);
+			return false;
+		}
+		const hasPermission = allRule.map((rule) => rule.ranges).every((ranges) => {
+			return (0, _univerjs_sheets.checkRangesEditablePermission)(accessor, workbook.getUnitId(), worksheet.getSheetId(), ranges);
+		});
+		subscriber.next(hasPermission);
+	}));
+	const selections$ = new rxjs.Observable((subscriber) => {
+		const clearRangeSubscription = clearRangeEnable$.subscribe((v) => {
+			const item = commonSelections.find((item) => item.value === 9);
+			if (item) {
+				item.disabled = !v;
+				subscriber.next(commonSelections);
+			}
+		});
+		const clearSheetSubscription = clearSheetEnable$.subscribe((v) => {
+			const item = commonSelections.find((item) => item.value === 10);
+			if (item) {
+				item.disabled = !v;
+				subscriber.next(commonSelections);
+			}
+		});
+		subscriber.next(commonSelections);
+		return () => {
+			clearRangeSubscription.unsubscribe();
+			clearSheetSubscription.unsubscribe();
+		};
+	});
+	return {
+		id: OpenConditionalFormattingOperator.id,
+		type: _univerjs_ui.MenuItemType.SELECTOR,
+		icon: "ConditionsDoubleIcon",
+		tooltip: "sheets-conditional-formatting-ui.title",
+		selections: selections$,
+		hidden$: (0, _univerjs_ui.getMenuHiddenObservable)(accessor, _univerjs_core.UniverInstanceType.UNIVER_SHEET),
+		disabled$: (0, _univerjs_sheets_ui.getCurrentRangeDisable$)(accessor, {
+			workbookTypes: [_univerjs_sheets.WorkbookEditablePermission],
+			worksheetTypes: [_univerjs_sheets.WorksheetSetCellStylePermission, _univerjs_sheets.WorksheetEditPermission],
+			rangeTypes: [_univerjs_sheets.RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+
+//#endregion
+//#region src/menu/quick-insert.menu.ts
+const DATA_BAR_PARAMS = {
+	min: { type: _univerjs_sheets_conditional_formatting.CFValueType.min },
+	max: { type: _univerjs_sheets_conditional_formatting.CFValueType.max },
+	nativeColor: _univerjs_sheets_conditional_formatting.defaultDataBarNativeColor,
+	positiveColor: _univerjs_sheets_conditional_formatting.defaultDataBarPositiveColor,
+	isGradient: false,
+	isShowValue: true
+};
+function createIconSetParams(iconType) {
+	return {
+		config: [
+			{
+				iconType,
+				iconId: "0",
+				operator: _univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThanOrEqual,
+				value: {
+					type: _univerjs_sheets_conditional_formatting.CFValueType.percent,
+					value: 67
+				}
+			},
+			{
+				iconType,
+				iconId: "1",
+				operator: _univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThanOrEqual,
+				value: {
+					type: _univerjs_sheets_conditional_formatting.CFValueType.percent,
+					value: 33
+				}
+			},
+			{
+				iconType,
+				iconId: "2",
+				operator: _univerjs_sheets_conditional_formatting.CFNumberOperator.lessThanOrEqual,
+				value: {
+					type: _univerjs_sheets_conditional_formatting.CFValueType.percent,
+					value: Number.MAX_SAFE_INTEGER
+				}
+			}
+		],
+		isShowValue: true
+	};
+}
+function getQuickConditionalFormattingMenuState(accessor) {
+	return {
+		hidden$: (0, _univerjs_ui.getMenuHiddenObservable)(accessor, _univerjs_core.UniverInstanceType.UNIVER_SHEET),
+		disabled$: (0, _univerjs_sheets_ui.getCurrentRangeDisable$)(accessor, {
+			workbookTypes: [_univerjs_sheets.WorkbookEditablePermission],
+			worksheetTypes: [_univerjs_sheets.WorksheetSetCellStylePermission, _univerjs_sheets.WorksheetEditPermission],
+			rangeTypes: [_univerjs_sheets.RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function quickDataBarMenuFactory(accessor) {
+	return {
+		id: AddDataBarConditionalRuleCommand.id,
+		type: _univerjs_ui.MenuItemType.BUTTON_SELECTOR,
+		icon: "DataBarIcon",
+		tooltip: "sheets-conditional-formatting-ui.ruleType.dataBar",
+		params: DATA_BAR_PARAMS,
+		selectionsCommandId: AddDataBarConditionalRuleCommand.id,
+		selections: [
+			{
+				label: "sheets-conditional-formatting-ui.ruleType.dataBar",
+				value: _univerjs_sheets_conditional_formatting.CFRuleType.dataBar,
+				params: DATA_BAR_PARAMS
+			},
+			{
+				id: OpenConditionalFormattingOperator.id,
+				label: "sheets-conditional-formatting-ui.menu.createConditionalFormatting",
+				value: 7,
+				params: { value: 7 }
+			},
+			{
+				id: _univerjs_sheets_conditional_formatting.ClearRangeCfCommand.id,
+				label: "sheets-conditional-formatting-ui.menu.clearRangeRules",
+				value: _univerjs_sheets_conditional_formatting.CFRuleType.dataBar,
+				params: { types: [_univerjs_sheets_conditional_formatting.CFRuleType.dataBar] }
+			}
+		],
+		...getQuickConditionalFormattingMenuState(accessor)
+	};
+}
+function quickIconSetMenuFactory(accessor) {
+	const ratingParams = createIconSetParams(_univerjs_sheets_conditional_formatting.IIconSetType.threeStars);
+	return {
+		id: AddIconSetConditionalRuleCommand.id,
+		type: _univerjs_ui.MenuItemType.BUTTON_SELECTOR,
+		icon: "RatingIcon",
+		tooltip: "sheets-conditional-formatting-ui.ruleType.iconSet",
+		params: ratingParams,
+		selectionsCommandId: AddIconSetConditionalRuleCommand.id,
+		selections: [
+			{
+				label: "sheets-conditional-formatting-ui.iconSet.rank",
+				value: _univerjs_sheets_conditional_formatting.IIconSetType.threeStars,
+				params: ratingParams
+			},
+			{
+				label: "sheets-conditional-formatting-ui.iconSet.shape",
+				value: _univerjs_sheets_conditional_formatting.IIconSetType.threeTrafficLights1,
+				params: createIconSetParams(_univerjs_sheets_conditional_formatting.IIconSetType.threeTrafficLights1)
+			},
+			{
+				label: "sheets-conditional-formatting-ui.iconSet.direction",
+				value: _univerjs_sheets_conditional_formatting.IIconSetType.threeArrows,
+				params: createIconSetParams(_univerjs_sheets_conditional_formatting.IIconSetType.threeArrows)
+			},
+			{
+				id: OpenConditionalFormattingOperator.id,
+				label: "sheets-conditional-formatting-ui.menu.createConditionalFormatting",
+				value: 8,
+				params: { value: 8 }
+			},
+			{
+				id: _univerjs_sheets_conditional_formatting.ClearRangeCfCommand.id,
+				label: "sheets-conditional-formatting-ui.menu.clearRangeRules",
+				value: _univerjs_sheets_conditional_formatting.CFRuleType.iconSet,
+				params: { types: [_univerjs_sheets_conditional_formatting.CFRuleType.iconSet] }
+			}
+		],
+		...getQuickConditionalFormattingMenuState(accessor)
+	};
+}
+
+//#endregion
+//#region src/menu/schema.ts
+const menuSchema = {
+	[_univerjs_ui.RibbonInsertGroup.CELL]: {
+		[AddDataBarConditionalRuleCommand.id]: {
+			order: 3,
+			menuItemFactory: quickDataBarMenuFactory
+		},
+		[AddIconSetConditionalRuleCommand.id]: {
+			order: 4,
+			menuItemFactory: quickIconSetMenuFactory
+		}
+	},
+	[_univerjs_ui.RibbonDataGroup.RULES]: { [OpenConditionalFormattingOperator.id]: {
+		order: 1,
+		gridLayout: {
+			row: 2,
+			column: 1,
+			showLabel: true
+		},
+		menuItemFactory: FactoryManageConditionalFormattingRule
+	} }
+};
+
+//#endregion
+//#region package.json
+var name = "@univerjs/sheets-conditional-formatting-ui";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/config/config.ts
+const SHEETS_CONDITIONAL_FORMATTING_UI_PLUGIN_CONFIG_KEY = "sheets-conditional-formatting-ui.config";
+const configSymbol = Symbol(SHEETS_CONDITIONAL_FORMATTING_UI_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/controllers/cf-formula-ref-range.controller.ts
+let ConditionalFormattingFormulaRefRangeController = class ConditionalFormattingFormulaRefRangeController extends _univerjs_core.Disposable {
+	constructor(_conditionalFormattingRuleModel, _formulaRefRangeService, _injector) {
+		super();
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._formulaRefRangeService = _formulaRefRangeService;
+		this._injector = _injector;
+		_defineProperty(this, "_disposableMap", /* @__PURE__ */ new Map());
+		this._initRefRange();
+	}
+	_getIdWithUnitId(unitID, subUnitId, cfId) {
+		return `${unitID}_${subUnitId}_${cfId}`;
+	}
+	_getRuleFormulas(rule) {
+		const formulas = [];
+		const ruleConfig = rule.rule;
+		switch (ruleConfig.type) {
+			case _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell:
+				if (ruleConfig.subType === _univerjs_sheets_conditional_formatting.CFSubRuleType.formula) formulas.push(ruleConfig.value);
+				break;
+			case _univerjs_sheets_conditional_formatting.CFRuleType.dataBar: {
+				const dataBar = ruleConfig;
+				if (dataBar.config.min.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) formulas.push(dataBar.config.min.value);
+				if (dataBar.config.max.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) formulas.push(dataBar.config.max.value);
+				break;
+			}
+			case _univerjs_sheets_conditional_formatting.CFRuleType.colorScale:
+				ruleConfig.config.forEach((item) => {
+					if (item.value.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) formulas.push(item.value.value);
+				});
+				break;
+			case _univerjs_sheets_conditional_formatting.CFRuleType.iconSet:
+				ruleConfig.config.forEach((item) => {
+					if (item.value.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) formulas.push(item.value.value);
+				});
+				break;
+		}
+		return formulas;
+	}
+	_updateRuleFormulas(rule, formulas) {
+		const newRule = _univerjs_core.Tools.deepClone(rule);
+		const ruleConfig = newRule.rule;
+		let formulaIndex = 0;
+		switch (ruleConfig.type) {
+			case _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell:
+				if (ruleConfig.subType === _univerjs_sheets_conditional_formatting.CFSubRuleType.formula) ruleConfig.value = formulas[formulaIndex++];
+				break;
+			case _univerjs_sheets_conditional_formatting.CFRuleType.dataBar: {
+				const dataBar = ruleConfig;
+				if (dataBar.config.min.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) dataBar.config.min.value = formulas[formulaIndex++];
+				if (dataBar.config.max.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) dataBar.config.max.value = formulas[formulaIndex++];
+				break;
+			}
+			case _univerjs_sheets_conditional_formatting.CFRuleType.colorScale:
+				ruleConfig.config.forEach((item) => {
+					if (item.value.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) item.value.value = formulas[formulaIndex++];
+				});
+				break;
+			case _univerjs_sheets_conditional_formatting.CFRuleType.iconSet:
+				ruleConfig.config.forEach((item) => {
+					if (item.value.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) item.value.value = formulas[formulaIndex++];
+				});
+				break;
+		}
+		return newRule;
+	}
+	register(unitId, subUnitId, rule) {
+		const oldRanges = rule.ranges;
+		const oldFormulas = this._getRuleFormulas(rule);
+		const disposable = this._formulaRefRangeService.registerRangeFormula(unitId, subUnitId, oldRanges, oldFormulas, (res) => {
+			if (res.length === 0) return {
+				undos: [{
+					id: _univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id,
+					params: {
+						unitId,
+						subUnitId,
+						rule
+					}
+				}],
+				redos: [{
+					id: _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutation.id,
+					params: {
+						unitId,
+						subUnitId,
+						cfId: rule.cfId
+					}
+				}]
+			};
+			const redos = [];
+			const undos = [];
+			const first = res[0];
+			const firstRule = this._updateRuleFormulas(rule, first.formulas);
+			firstRule.ranges = first.ranges;
+			redos.push({
+				id: _univerjs_sheets_conditional_formatting.SetConditionalRuleMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					cfId: rule.cfId,
+					rule: firstRule
+				}
+			});
+			undos.push(...(0, _univerjs_sheets_conditional_formatting.setConditionalRuleMutationUndoFactory)(this._injector, {
+				unitId,
+				subUnitId,
+				cfId: rule.cfId,
+				rule: firstRule
+			}));
+			for (let i = 1; i < res.length; i++) {
+				const item = res[i];
+				const newCfId = (0, _univerjs_sheets_conditional_formatting.createCfId)();
+				const newRule = this._updateRuleFormulas(rule, item.formulas);
+				newRule.cfId = newCfId;
+				newRule.ranges = item.ranges;
+				redos.push({
+					id: _univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id,
+					params: {
+						unitId,
+						subUnitId,
+						rule: newRule
+					}
+				});
+				undos.push((0, _univerjs_sheets_conditional_formatting.AddConditionalRuleMutationUndoFactory)(this._injector, {
+					unitId,
+					subUnitId,
+					rule: newRule
+				}));
+			}
+			return {
+				undos,
+				redos
+			};
+		});
+		const id = this._getIdWithUnitId(unitId, subUnitId, rule.cfId);
+		this._disposableMap.set(id, disposable);
+	}
+	_initRefRange() {
+		const allRules = this._conditionalFormattingRuleModel.getAll();
+		for (const [unitId, subUnitMap] of allRules) for (const [subUnitId, rules] of subUnitMap) for (const rule of rules) this.register(unitId, subUnitId, rule);
+		this.disposeWithMe(this._conditionalFormattingRuleModel.$ruleChange.subscribe((option) => {
+			const { unitId, subUnitId, rule } = option;
+			switch (option.type) {
+				case "add":
+					this.register(unitId, subUnitId, rule);
+					break;
+				case "delete": {
+					const id = this._getIdWithUnitId(unitId, subUnitId, rule.cfId);
+					const disposable = this._disposableMap.get(id);
+					if (disposable) {
+						disposable.dispose();
+						this._disposableMap.delete(id);
+					}
+					break;
+				}
+				case "set": {
+					const id = this._getIdWithUnitId(unitId, subUnitId, rule.cfId);
+					const disposable = this._disposableMap.get(id);
+					if (disposable) {
+						disposable.dispose();
+						this._disposableMap.delete(id);
+					}
+					this.register(unitId, subUnitId, rule);
+					break;
+				}
+			}
+		}));
+		this.disposeWithMe((0, _univerjs_core.toDisposable)(() => {
+			this._disposableMap.forEach((item) => {
+				item.dispose();
+			});
+			this._disposableMap.clear();
+		}));
+	}
+};
+ConditionalFormattingFormulaRefRangeController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets_formula.FormulaRefRangeService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.Injector))
+], ConditionalFormattingFormulaRefRangeController);
+
+//#endregion
+//#region src/controllers/cf.copy-paste.controller.ts
+const specialPastes = [
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_FORMAT,
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.DEFAULT_PASTE,
+	_univerjs_sheets_ui.PREDEFINED_HOOK_NAME_PASTE.SPECIAL_PASTE_BESIDES_BORDER
+];
+let ConditionalFormattingCopyPasteController = class ConditionalFormattingCopyPasteController extends _univerjs_core.Disposable {
+	constructor(_sheetClipboardService, _conditionalFormattingRuleModel, _injector, _univerInstanceService, _conditionalFormattingRangeTransformService) {
+		super();
+		this._sheetClipboardService = _sheetClipboardService;
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		this._conditionalFormattingRangeTransformService = _conditionalFormattingRangeTransformService;
+		_defineProperty(this, "_copyInfo", void 0);
+		this._initClipboardHook();
+	}
+	_initClipboardHook() {
+		this.disposeWithMe(this._sheetClipboardService.addClipboardHook({
+			id: _univerjs_sheets_conditional_formatting.SHEET_CONDITIONAL_FORMATTING_PLUGIN,
+			onBeforeCopy: (unitId, subUnitId, range) => this._collectConditionalRule(unitId, subUnitId, range),
+			onPasteCells: (pasteFrom, pasteTo, _data, payload) => {
+				if (!pasteFrom || !this._copyInfo || !specialPastes.includes(payload.pasteType)) return {
+					redos: [],
+					undos: []
+				};
+				return this._generateConditionalFormattingMutations(pasteFrom, pasteTo, payload);
+			}
+		}));
+	}
+	_collectConditionalRule(unitId, subUnitId, range) {
+		var _this$_conditionalFor;
+		const rules = /* @__PURE__ */ new Map();
+		const cfMap = {};
+		this._copyInfo = {
+			rules,
+			info: {
+				unitId,
+				subUnitId,
+				cfMap
+			}
+		};
+		const discreteRange = this._injector.invoke((accessor) => {
+			return (0, _univerjs_sheets.rangeToDiscreteRange)(range, accessor, unitId, subUnitId);
+		});
+		if (!discreteRange) return;
+		const { projectRange } = (0, _univerjs_sheets_ui.virtualizeDiscreteRanges)([discreteRange]);
+		(_this$_conditionalFor = this._conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId)) === null || _this$_conditionalFor === void 0 || _this$_conditionalFor.forEach((rule) => {
+			const projectedRanges = rule.ranges.flatMap((ruleRange) => {
+				const projected = projectRange(ruleRange);
+				return projected ? [projected] : [];
+			});
+			if (projectedRanges.length) {
+				rules.set(rule.cfId, projectedRanges.length > 1 ? _univerjs_core.Rectangle.mergeRanges(projectedRanges) : projectedRanges);
+				cfMap[rule.cfId] = {
+					rule: rule.rule,
+					stopIfTrue: rule.stopIfTrue
+				};
+			}
+		});
+	}
+	_generateConditionalFormattingMutations(pasteFrom, pasteTo, payload) {
+		var _this$_conditionalFor2;
+		const copyInfo = this._copyInfo;
+		if (!copyInfo) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId: copyUnitId, subUnitId: copySubUnitId, range: copyRange } = pasteFrom;
+		const { unitId: pastedUnitId, subUnitId: pastedSubUnitId, range: pastedRange } = pasteTo;
+		const { copyType = _univerjs_sheets_ui.COPY_TYPE.COPY } = payload;
+		if (!(0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+			unitId: pastedUnitId,
+			subUnitId: pastedSubUnitId
+		})) return {
+			redos: [],
+			undos: []
+		};
+		if (copyType === _univerjs_sheets_ui.COPY_TYPE.CUT && pastedUnitId === copyUnitId && pastedSubUnitId === copySubUnitId) {
+			this._copyInfo = null;
+			return {
+				redos: [],
+				undos: []
+			};
+		}
+		const sourceVirtualization = (0, _univerjs_sheets_ui.virtualizeDiscreteRanges)([copyRange]);
+		const sourceVirtualRange = sourceVirtualization.ranges[0];
+		const targetVirtualization = (0, _univerjs_sheets_ui.virtualizeDiscreteRanges)([pastedRange]);
+		const targetVirtualRange = targetVirtualization.ranges[0];
+		const repeatRange = (0, _univerjs_sheets_ui.getRepeatRange)(sourceVirtualRange, targetVirtualRange, true);
+		const targetRanges = targetVirtualization.mapRange(targetVirtualRange);
+		const isSameSheet = pastedUnitId === copyUnitId && pastedSubUnitId === copySubUnitId;
+		const effectedConditionalFormattingRuleRanges = /* @__PURE__ */ new Map();
+		const getEffectKey = (unitId, subUnitId, cfId) => JSON.stringify([
+			unitId,
+			subUnitId,
+			cfId
+		]);
+		(_this$_conditionalFor2 = this._conditionalFormattingRuleModel.getSubunitRules(pastedUnitId, pastedSubUnitId)) === null || _this$_conditionalFor2 === void 0 || _this$_conditionalFor2.forEach((rule) => {
+			if (!_univerjs_core.Rectangle.doAnyRangesIntersect(rule.ranges, targetRanges)) return;
+			effectedConditionalFormattingRuleRanges.set(getEffectKey(pastedUnitId, pastedSubUnitId, rule.cfId), {
+				cfId: rule.cfId,
+				unitId: pastedUnitId,
+				subUnitId: pastedSubUnitId,
+				ranges: rule.ranges,
+				add: [],
+				remove: targetRanges
+			});
+		});
+		if (copyType === _univerjs_sheets_ui.COPY_TYPE.CUT && (pastedUnitId !== copyUnitId || pastedSubUnitId !== copySubUnitId)) {
+			const sourceRanges = sourceVirtualization.mapRange(sourceVirtualRange);
+			copyInfo.rules.forEach((_ranges, cfId) => {
+				const rule = this._conditionalFormattingRuleModel.getRule(copyUnitId, copySubUnitId, cfId);
+				if (!rule) return;
+				effectedConditionalFormattingRuleRanges.set(getEffectKey(copyUnitId, copySubUnitId, cfId), {
+					cfId,
+					unitId: copyUnitId,
+					subUnitId: copySubUnitId,
+					ranges: rule.ranges,
+					add: [],
+					remove: sourceRanges
+				});
+			});
+		}
+		const { rules, info } = copyInfo;
+		const waitAddRule = /* @__PURE__ */ new Map();
+		const cacheCfIdMap = {};
+		const getCurrentSheetCfRule = (copyRangeCfId) => {
+			const oldRule = info === null || info === void 0 ? void 0 : info.cfMap[copyRangeCfId];
+			if (isSameSheet) {
+				const rule = this._conditionalFormattingRuleModel.getRule(pastedUnitId, pastedSubUnitId, copyRangeCfId);
+				if (rule) {
+					cacheCfIdMap[copyRangeCfId] = rule;
+					return rule;
+				}
+			}
+			const rule = {
+				rule: oldRule.rule,
+				cfId: this._conditionalFormattingRuleModel.createCfId(pastedUnitId, pastedSubUnitId),
+				ranges: [],
+				stopIfTrue: oldRule.stopIfTrue
+			};
+			cacheCfIdMap[copyRangeCfId] = rule;
+			waitAddRule.set(rule.cfId, rule);
+			return rule;
+		};
+		const sourceRuleEntries = Array.from(rules.entries());
+		if (!isSameSheet) sourceRuleEntries.reverse();
+		sourceRuleEntries.forEach(([cfId, sourceRanges]) => {
+			const rule = cacheCfIdMap[cfId] || getCurrentSheetCfRule(cfId);
+			const effectKey = getEffectKey(pastedUnitId, pastedSubUnitId, rule.cfId);
+			if (!effectedConditionalFormattingRuleRanges.has(effectKey)) effectedConditionalFormattingRuleRanges.set(effectKey, {
+				cfId: rule.cfId,
+				unitId: pastedUnitId,
+				subUnitId: pastedSubUnitId,
+				ranges: rule.ranges,
+				add: [],
+				remove: []
+			});
+			effectedConditionalFormattingRuleRanges.get(effectKey).add.push(...repeatRange.flatMap((item) => sourceRanges.flatMap((sourceRange) => targetVirtualization.mapRange(_univerjs_core.Rectangle.getPositionRange(sourceRange, item.startRange)))));
+		});
+		const redos = [];
+		const undos = [];
+		for (const effect of effectedConditionalFormattingRuleRanges.values()) {
+			const { cfId, unitId, subUnitId, ranges: sourceRanges, add, remove } = effect;
+			const ranges = this._conditionalFormattingRangeTransformService.applyRangeDelta(sourceRanges, remove, add);
+			if (!ranges.length) {
+				const deleteParams = {
+					unitId,
+					subUnitId,
+					cfId
+				};
+				redos.push({
+					id: _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutation.id,
+					params: deleteParams
+				});
+				undos.push(...(0, _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutationUndoFactory)(this._injector, deleteParams));
+				continue;
+			}
+			const waitAdd = waitAddRule.get(cfId);
+			if (waitAdd) {
+				const addParams = {
+					unitId: pastedUnitId,
+					subUnitId: pastedSubUnitId,
+					rule: {
+						...waitAdd,
+						ranges
+					}
+				};
+				redos.push({
+					id: _univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id,
+					params: addParams
+				});
+				undos.push((0, _univerjs_sheets_conditional_formatting.AddConditionalRuleMutationUndoFactory)(this._injector, addParams));
+			} else {
+				const rule = this._conditionalFormattingRuleModel.getRule(unitId, subUnitId, cfId);
+				if (!rule) continue;
+				const setParams = {
+					unitId,
+					subUnitId,
+					rule: {
+						...rule,
+						ranges
+					}
+				};
+				redos.push({
+					id: _univerjs_sheets_conditional_formatting.SetConditionalRuleMutation.id,
+					params: setParams
+				});
+				undos.push(...(0, _univerjs_sheets_conditional_formatting.setConditionalRuleMutationUndoFactory)(this._injector, setParams));
+			}
+		}
+		return {
+			redos,
+			undos
+		};
+	}
+};
+ConditionalFormattingCopyPasteController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.ISheetClipboardService)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_core.IUniverInstanceService)),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRangeTransformService))
+], ConditionalFormattingCopyPasteController);
+
+//#endregion
+//#region src/controllers/cf.i18n.controller.ts
+let ConditionalFormattingI18nController = class ConditionalFormattingI18nController extends _univerjs_core.Disposable {
+	constructor(_localeService) {
+		super();
+		this._localeService = _localeService;
+		_defineProperty(this, "_initLocal", () => {});
+		_defineProperty(this, "_findReplaceIndex", (text) => {
+			const reg = /\{([^}]+)?\}/g;
+			const result = [];
+			let currentValue = reg.exec(text);
+			while (currentValue) {
+				result.push({
+					startIndex: currentValue.index,
+					key: Number(currentValue[1]),
+					endIndex: currentValue.index + currentValue[0].length - 1
+				});
+				currentValue = reg.exec(text);
+			}
+			return result;
+		});
+		this._initLocal();
+	}
+	tWithReactNode(key, ...args) {
+		const locale = this._localeService.getLocales();
+		const keys = key.split(".");
+		const resolvedValue = locale && this._localeService.resolveKeyPath(locale, keys);
+		if (typeof resolvedValue === "string") {
+			const result = [];
+			this._findReplaceIndex(resolvedValue).forEach((item, index, list) => {
+				const preItem = list[index - 1] || {
+					startIndex: 0,
+					endIndex: -1
+				};
+				if (preItem.endIndex + 1 < item.startIndex) {
+					const text = resolvedValue.slice(preItem.endIndex + 1, item.startIndex);
+					text && result.push(text);
+				}
+				args[item.key] && result.push(args[item.key]);
+				if (index === list.length - 1) {
+					const text = resolvedValue.slice(item.endIndex + 1);
+					text && result.push(text);
+				}
+			});
+			return result;
+		}
+		return [];
+	}
+};
+ConditionalFormattingI18nController = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService))], ConditionalFormattingI18nController);
+
+//#endregion
+//#region src/controllers/cf.permission.controller.ts
+let ConditionalFormattingPermissionController = class ConditionalFormattingPermissionController extends _univerjs_core.Disposable {
+	constructor(_localeService, _commandService, _sheetPermissionCheckController) {
+		super();
+		this._localeService = _localeService;
+		this._commandService = _commandService;
+		this._sheetPermissionCheckController = _sheetPermissionCheckController;
+		this._commandExecutedListener();
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._commandService.beforeCommandExecuted((command) => {
+			if (command.id === _univerjs_sheets_conditional_formatting.AddCfCommand.id) {
+				const { unitId, subUnitId, rule: { ranges } } = command.params;
+				if (!this._sheetPermissionCheckController.permissionCheckWithRanges({
+					workbookTypes: [_univerjs_sheets.WorkbookEditablePermission],
+					rangeTypes: [_univerjs_sheets.RangeProtectionPermissionEditPoint],
+					worksheetTypes: [_univerjs_sheets.WorksheetEditPermission, _univerjs_sheets.WorksheetSetCellStylePermission]
+				}, ranges, unitId, subUnitId)) this._sheetPermissionCheckController.blockExecuteWithoutPermission(this._localeService.t("sheets-conditional-formatting-ui.permission.dialog.setStyleErr"));
+			}
+		}));
+	}
+};
+ConditionalFormattingPermissionController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService)),
+	__decorateParam(1, _univerjs_core.ICommandService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetPermissionCheckController))
+], ConditionalFormattingPermissionController);
+
+//#endregion
+//#region src/controllers/cf.render.controller.ts
+let SheetsCfRenderController = class SheetsCfRenderController extends _univerjs_core.Disposable {
+	constructor(_sheetInterceptorService, _conditionalFormattingService, _univerInstanceService, _renderManagerService, _conditionalFormattingViewModel, _conditionalFormattingRuleModel, _conditionalFormattingRangeIndexModel) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._conditionalFormattingService = _conditionalFormattingService;
+		this._univerInstanceService = _univerInstanceService;
+		this._renderManagerService = _renderManagerService;
+		this._conditionalFormattingViewModel = _conditionalFormattingViewModel;
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._conditionalFormattingRangeIndexModel = _conditionalFormattingRangeIndexModel;
+		_defineProperty(this, "_ruleChangeCacheMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_boundRenderExtensions", /* @__PURE__ */ new Map());
+		this._initViewModelInterceptor();
+		this._initRenderRangeResolvers();
+		this._initSkeleton();
+		queueMicrotask(() => this._markActiveSheetRulesDirty());
+		this.disposeWithMe(() => {
+			this._ruleChangeCacheMap.clear();
+			this._boundRenderExtensions.forEach((extensions) => {
+				extensions.forEach((extension) => extension.setRenderRangeResolver(null));
+			});
+			this._boundRenderExtensions.clear();
+		});
+	}
+	_initRenderRangeResolvers() {
+		const dataBarResolver = this._createRenderRangeResolver(_univerjs_sheets_conditional_formatting.CFRuleType.dataBar);
+		const iconResolver = this._createRenderRangeResolver(_univerjs_sheets_conditional_formatting.CFRuleType.iconSet);
+		const bind = (unitId) => {
+			var _this$_renderManagerS;
+			this._unbindRenderRangeResolvers(unitId);
+			const mainComponent = (_this$_renderManagerS = this._renderManagerService.getRenderUnitById(unitId)) === null || _this$_renderManagerS === void 0 ? void 0 : _this$_renderManagerS.mainComponent;
+			if (!mainComponent || !("getExtensionByKey" in mainComponent)) return;
+			const extensions = /* @__PURE__ */ new Set();
+			const dataBar = mainComponent.getExtensionByKey(_univerjs_sheets_conditional_formatting.dataBarUKey);
+			if (dataBar instanceof _univerjs_sheets_conditional_formatting.DataBar) {
+				dataBar.setRenderRangeResolver(dataBarResolver);
+				extensions.add(dataBar);
+			}
+			const icon = mainComponent.getExtensionByKey(_univerjs_sheets_conditional_formatting.IconUKey);
+			if (icon instanceof _univerjs_sheets_conditional_formatting.ConditionalFormattingIcon) {
+				icon.setRenderRangeResolver(iconResolver);
+				extensions.add(icon);
+			}
+			if (extensions.size) this._boundRenderExtensions.set(unitId, extensions);
+		};
+		this._renderManagerService.getAllRenderersOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).forEach((render) => bind(render.unitId));
+		this.disposeWithMe(this._renderManagerService.created$.subscribe((render) => {
+			if (render.type === _univerjs_core.UniverInstanceType.UNIVER_SHEET) bind(render.unitId);
+		}));
+		this.disposeWithMe(this._renderManagerService.disposed$.subscribe((unitId) => this._unbindRenderRangeResolvers(unitId)));
+	}
+	_createRenderRangeResolver(ruleType) {
+		return (unitId, subUnitId, ranges) => {
+			const intersections = [];
+			const indexedRules = this._conditionalFormattingRangeIndexModel.getRulesByRanges(unitId, subUnitId, ranges).filter((rule) => rule.rule.type === ruleType);
+			const matchingRules = indexedRules.length ? indexedRules : (this._conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId) ?? []).filter((rule) => rule.rule.type === ruleType);
+			ranges.forEach((range) => {
+				matchingRules.forEach((rule) => {
+					rule.ranges.forEach((ruleRange) => {
+						const intersection = (0, _univerjs_core.getIntersectRange)(range, ruleRange);
+						if (intersection) intersections.push(intersection);
+					});
+				});
+			});
+			return intersections.length > 1 ? _univerjs_core.Rectangle.mergeRanges(intersections) : intersections;
+		};
+	}
+	_unbindRenderRangeResolvers(unitId) {
+		const extensions = this._boundRenderExtensions.get(unitId);
+		extensions === null || extensions === void 0 || extensions.forEach((extension) => extension.setRenderRangeResolver(null));
+		this._boundRenderExtensions.delete(unitId);
+	}
+	_collectDirtyRanges(items, unitId, subUnitId) {
+		const ranges = [];
+		items.forEach((item) => {
+			var _rule$ranges;
+			if (item.unitId !== unitId || item.subUnitId !== subUnitId) return;
+			const rule = item.rule ?? (item.cfId ? this._conditionalFormattingRuleModel.getRule(unitId, subUnitId, item.cfId) : null);
+			if (rule === null || rule === void 0 || (_rule$ranges = rule.ranges) === null || _rule$ranges === void 0 ? void 0 : _rule$ranges.length) ranges.push(...rule.ranges);
+		});
+		return ranges;
+	}
+	_intersectDirtyRangesWithRenderedRange(ranges, renderedRange) {
+		if (!renderedRange || renderedRange.startRow < 0 || renderedRange.startColumn < 0) return [];
+		return ranges.map((range) => ({
+			startRow: Math.max(range.startRow, renderedRange.startRow),
+			endRow: Math.min(range.endRow, renderedRange.endRow),
+			startColumn: Math.max(range.startColumn, renderedRange.startColumn),
+			endColumn: Math.min(range.endColumn, renderedRange.endColumn)
+		})).filter((range) => range.startRow <= range.endRow && range.startColumn <= range.endColumn);
+	}
+	_markDirtySkeleton(items) {
+		var _render$mainComponent;
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook === null || workbook === void 0 ? void 0 : workbook.getActiveSheet();
+		if (!workbook || !worksheet) return;
+		const unitId = workbook.getUnitId();
+		const subUnitId = worksheet.getSheetId();
+		const render = this._renderManagerService.getRenderUnitById(unitId);
+		const skeletonManagerService = render === null || render === void 0 ? void 0 : render.with(_univerjs_sheets_ui.SheetSkeletonManagerService);
+		const currentSkeleton = skeletonManagerService === null || skeletonManagerService === void 0 ? void 0 : skeletonManagerService.getCurrentSkeleton();
+		const dirtyRanges = this._intersectDirtyRangesWithRenderedRange(this._collectDirtyRanges(items, unitId, subUnitId), currentSkeleton === null || currentSkeleton === void 0 ? void 0 : currentSkeleton.rowColumnSegment);
+		if (dirtyRanges.length) currentSkeleton === null || currentSkeleton === void 0 || currentSkeleton.resetRangeCache(dirtyRanges);
+		skeletonManagerService === null || skeletonManagerService === void 0 || skeletonManagerService.reCalculate();
+		render === null || render === void 0 || (_render$mainComponent = render.mainComponent) === null || _render$mainComponent === void 0 || _render$mainComponent.makeDirty();
+	}
+	_markActiveSheetRulesDirty() {
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook === null || workbook === void 0 ? void 0 : workbook.getActiveSheet();
+		if (!workbook || !worksheet) return;
+		const unitId = workbook.getUnitId();
+		const subUnitId = worksheet.getSheetId();
+		const rules = this._conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId) ?? [];
+		if (!rules.length) return;
+		this._markDirtySkeleton(rules.map((rule) => ({
+			rule,
+			subUnitId,
+			unitId
+		})));
+	}
+	_initSkeleton() {
+		this.disposeWithMe((0, rxjs.merge)(this._conditionalFormattingRuleModel.$ruleChange, this._conditionalFormattingViewModel.markDirty$).pipe((0, rxjs_operators.bufferTime)(16), (0, rxjs_operators.filter)((v) => !!v.length), (0, rxjs_operators.filter)((v) => {
+			const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+			if (!workbook) return false;
+			const worksheet = workbook.getActiveSheet();
+			if (!worksheet) return false;
+			return v.some((item) => item.unitId === workbook.getUnitId() && item.subUnitId === worksheet.getSheetId());
+		})).subscribe((items) => this._markDirtySkeleton(items)));
+	}
+	_initViewModelInterceptor() {
+		this.disposeWithMe(this._sheetInterceptorService.intercept(_univerjs_sheets.INTERCEPTOR_POINT.CELL_CONTENT, {
+			effect: _univerjs_core.InterceptorEffectEnum.Style,
+			handler: (cell, context, next) => {
+				const result = this._conditionalFormattingService.composeStyle(context.unitId, context.subUnitId, context.row, context.col);
+				if (!result) return next(cell);
+				const styleMap = context.workbook.getStyles();
+				const defaultStyle = (typeof (cell === null || cell === void 0 ? void 0 : cell.s) === "string" ? styleMap.get(cell === null || cell === void 0 ? void 0 : cell.s) : cell === null || cell === void 0 ? void 0 : cell.s) || {};
+				const cloneCell = cell === context.rawData ? { ...context.rawData } : cell;
+				if (result.style) {
+					const activeStyle = {
+						...defaultStyle,
+						...result.style
+					};
+					Object.assign(cloneCell, { s: activeStyle });
+				}
+				if (!cloneCell.fontRenderExtension) {
+					cloneCell.fontRenderExtension = {};
+					if (result.isShowValue !== void 0) cloneCell.fontRenderExtension.isSkip = !result.isShowValue;
+				}
+				if (result.dataBar) cloneCell.dataBar = result.dataBar;
+				if (result.iconSet) {
+					cloneCell.iconSet = result.iconSet;
+					cloneCell.fontRenderExtension.leftOffset = _univerjs_sheets_conditional_formatting.DEFAULT_PADDING + _univerjs_sheets_conditional_formatting.DEFAULT_WIDTH;
+				}
+				return next(cloneCell);
+			},
+			priority: 10
+		}));
+	}
+};
+SheetsCfRenderController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetInterceptorService)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.IUniverInstanceService)),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_engine_render.IRenderManagerService)),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingViewModel)),
+	__decorateParam(5, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel)),
+	__decorateParam(6, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRangeIndexModel))
+], SheetsCfRenderController);
+
+//#endregion
+//#region src/views/ColorPicker.tsx
+const ColorPicker = (props) => {
+	const { color, onChange, disable = false, Icon = _univerjs_icons.PaintBucketDoubleIcon, className } = props;
+	const colorKit = (0, react.useMemo)(() => new _univerjs_core.ColorKit(color), [color]);
+	const renderIcon = () => {
+		const iconProps = {
+			className: (0, _univerjs_design.clsx)("univer-fill-primary-600", disable && className),
+			extend: { colorChannel1: colorKit.isValid ? color : "" }
+		};
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Icon, { ...iconProps });
+	};
+	return !disable ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dropdown, {
+		overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-rounded-lg univer-p-4",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.ColorPicker, {
+				value: color,
+				onChange
+			})
+		}),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: (0, _univerjs_design.clsx)("univer-flex univer-cursor-pointer univer-items-center univer-rounded univer-p-1 hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700", className),
+			children: renderIcon()
+		})
+	}) : renderIcon();
+};
+
+//#endregion
+//#region src/views/Preview.tsx
+function Preview(props) {
+	const { rule } = props;
+	const colorList = (0, react.useMemo)(() => {
+		if ((rule === null || rule === void 0 ? void 0 : rule.type) === _univerjs_sheets_conditional_formatting.CFRuleType.colorScale) {
+			const config = rule.config.map((c, index) => ({
+				color: new _univerjs_core.ColorKit(c.color),
+				value: index
+			}));
+			const maxValue = config.length - 1;
+			return new Array(5).fill("").map((_v, index, arr) => index * maxValue / (arr.length - 1)).map((value) => (0, _univerjs_sheets_conditional_formatting.getColorScaleFromValue)(config, value));
+		}
+		return null;
+	}, [rule]);
+	const iconSet = (0, react.useMemo)(() => {
+		if ((rule === null || rule === void 0 ? void 0 : rule.type) === _univerjs_sheets_conditional_formatting.CFRuleType.iconSet) return rule.config.map((item) => {
+			const iconList = _univerjs_sheets_conditional_formatting.iconMap[item.iconType];
+			return iconList && iconList[Number(item.iconId)];
+		});
+	}, [rule]);
+	if (!rule) return null;
+	const previewClassName = "univer-pointer-events-none univer-flex univer-h-5 univer-min-w-[72px] univer-items-center univer-justify-center univer-text-xs";
+	switch (rule.type) {
+		case _univerjs_sheets_conditional_formatting.CFRuleType.dataBar: {
+			const { isGradient } = rule.config;
+			const positiveColor = isGradient ? `linear-gradient(to right, ${rule.config.positiveColor || _univerjs_sheets_conditional_formatting.defaultDataBarPositiveColor}, rgb(255 255 255))` : rule.config.positiveColor;
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: previewClassName,
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-h-full univer-w-1/2 univer-border univer-border-solid",
+					style: {
+						background: isGradient ? `linear-gradient(to right,  rgb(255 255 255),${rule.config.nativeColor || _univerjs_sheets_conditional_formatting.defaultDataBarNativeColor})` : rule.config.nativeColor,
+						borderColor: rule.config.nativeColor ?? _univerjs_sheets_conditional_formatting.defaultDataBarNativeColor
+					}
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-h-full univer-w-1/2 univer-border univer-border-solid",
+					style: {
+						background: positiveColor,
+						borderColor: rule.config.positiveColor ?? _univerjs_sheets_conditional_formatting.defaultDataBarPositiveColor
+					}
+				})]
+			});
+		}
+		case _univerjs_sheets_conditional_formatting.CFRuleType.colorScale: return colorList && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: previewClassName,
+			children: colorList.map((item, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-h-full",
+				style: {
+					width: `${100 / colorList.length}%`,
+					background: item
+				}
+			}, index))
+		});
+		case _univerjs_sheets_conditional_formatting.CFRuleType.iconSet: return iconSet && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: previewClassName,
+			children: iconSet.map((base64, index) => base64 ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("img", {
+				className: "univer-h-full",
+				src: base64,
+				draggable: false
+			}, index) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.SlashDoubleIcon, {}, index))
+		});
+		case _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell: {
+			const { ul, st, it, bl, bg, cl } = rule.style;
+			const isUnderline = (ul === null || ul === void 0 ? void 0 : ul.s) === _univerjs_core.BooleanNumber.TRUE;
+			const isStrikethrough = (st === null || st === void 0 ? void 0 : st.s) === _univerjs_core.BooleanNumber.TRUE;
+			const isItalic = it === _univerjs_core.BooleanNumber.TRUE;
+			const isBold = bl === _univerjs_core.BooleanNumber.TRUE;
+			const bgColor = (bg === null || bg === void 0 ? void 0 : bg.rgb) ?? _univerjs_sheets_conditional_formatting.DEFAULT_BG_COLOR;
+			const fontColor = (cl === null || cl === void 0 ? void 0 : cl.rgb) ?? _univerjs_sheets_conditional_formatting.DEFAULT_FONT_COLOR;
+			const style = {
+				textDecoration: `${isUnderline ? "underline" : ""} ${isStrikethrough ? "line-through" : ""}`.replace(/^ /, "") ?? void 0,
+				backgroundColor: bgColor,
+				color: fontColor
+			};
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: (0, _univerjs_design.clsx)(previewClassName, {
+					"univer-font-bold": isBold,
+					"univer-italic": isItalic
+				}),
+				style,
+				children: "123"
+			});
+		}
+	}
+}
+
+//#endregion
+//#region src/views/panel/rule-edit/styles.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const previewClassName = (0, _univerjs_design.clsx)("univer-mt-5 univer-px-1 univer-py-2 univer-rounded", _univerjs_design.borderClassName);
+
+//#endregion
+//#region src/views/panel/rule-edit/ColorScale.tsx
+const createOptionItem$2 = (text) => ({
+	label: `sheets-conditional-formatting-ui.valueType.${text}`,
+	value: text
+});
+const TextInput$1 = (props) => {
+	var _getActiveSheet;
+	const { type, className, onChange, value } = props;
+	const univerInstanceService = (0, _univerjs_ui.useDependency)(_univerjs_core.IUniverInstanceService);
+	const unitId = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getUnitId();
+	const subUnitId = (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+	const formulaInitValue = (0, react.useMemo)(() => {
+		return String(value).startsWith("=") ? String(value) : "=";
+	}, [value]);
+	const config = (0, react.useMemo)(() => {
+		if ([
+			_univerjs_sheets_conditional_formatting.CFValueType.max,
+			_univerjs_sheets_conditional_formatting.CFValueType.min,
+			"none"
+		].includes(type)) return { disabled: true };
+		if ([_univerjs_sheets_conditional_formatting.CFValueType.percent, _univerjs_sheets_conditional_formatting.CFValueType.percentile].includes(type)) return {
+			min: 0,
+			max: 100
+		};
+		return {
+			min: Number.MIN_SAFE_INTEGER,
+			max: Number.MAX_SAFE_INTEGER
+		};
+	}, [type]);
+	const formulaEditorRef = (0, react.useRef)(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = (0, react.useState)(false);
+	(0, _univerjs_ui.useSidebarClick)((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	if (type === _univerjs_sheets_conditional_formatting.CFValueType.formula) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-w-full",
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_sheets_formula_ui.FormulaEditor, {
+			ref: formulaEditorRef,
+			className: (0, _univerjs_design.clsx)("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", _univerjs_design.borderClassName),
+			initValue: formulaInitValue,
+			unitId,
+			subUnitId,
+			isFocus: isFocusFormulaEditor,
+			onChange: (v = "") => {
+				onChange(v || "");
+			},
+			onFocus: () => setIsFocusFormulaEditor(true)
+		})
+	});
+	else return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.InputNumber, {
+		className,
+		value: Number(props.value) || 0,
+		onChange: (v) => props.onChange(v || 0),
+		...config
+	});
+};
+const ColorScaleStyleEditor = (props) => {
+	var _props$rule;
+	const { interceptorManager } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === _univerjs_sheets_conditional_formatting.CFRuleType.colorScale ? props.rule : void 0;
+	const commonOptionDefinitions = [
+		createOptionItem$2(_univerjs_sheets_conditional_formatting.CFValueType.num),
+		createOptionItem$2(_univerjs_sheets_conditional_formatting.CFValueType.percent),
+		createOptionItem$2(_univerjs_sheets_conditional_formatting.CFValueType.percentile),
+		createOptionItem$2(_univerjs_sheets_conditional_formatting.CFValueType.formula)
+	];
+	const minOptions = [createOptionItem$2(_univerjs_sheets_conditional_formatting.CFValueType.min), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const medianOptions = [createOptionItem$2("none"), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const maxOptions = [createOptionItem$2(_univerjs_sheets_conditional_formatting.CFValueType.max), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const [minType, setMinType] = (0, react.useState)(() => {
+		var _rule$config$;
+		const defaultV = _univerjs_sheets_conditional_formatting.CFValueType.min;
+		if (!rule) return defaultV;
+		return ((_rule$config$ = rule.config[0]) === null || _rule$config$ === void 0 ? void 0 : _rule$config$.value.type) || defaultV;
+	});
+	const [medianType, setMedianType] = (0, react.useState)(() => {
+		var _rule$config$2;
+		const defaultV = "none";
+		if (!rule) return defaultV;
+		if (rule.config.length !== 3) return defaultV;
+		return ((_rule$config$2 = rule.config[1]) === null || _rule$config$2 === void 0 ? void 0 : _rule$config$2.value.type) || defaultV;
+	});
+	const [maxType, setMaxType] = (0, react.useState)(() => {
+		var _rule$config;
+		const defaultV = _univerjs_sheets_conditional_formatting.CFValueType.max;
+		if (!rule) return defaultV;
+		return ((_rule$config = rule.config[rule.config.length - 1]) === null || _rule$config === void 0 ? void 0 : _rule$config.value.type) || defaultV;
+	});
+	const [minValue, setMinValue] = (0, react.useState)(() => {
+		const defaultV = 10;
+		if (!rule) return defaultV;
+		const valueConfig = rule.config[0];
+		return (valueConfig === null || valueConfig === void 0 ? void 0 : valueConfig.value.value) === void 0 ? defaultV : valueConfig === null || valueConfig === void 0 ? void 0 : valueConfig.value.value;
+	});
+	const [medianValue, setMedianValue] = (0, react.useState)(() => {
+		var _rule$config$3;
+		const defaultV = 50;
+		if (!rule) return defaultV;
+		if (rule.config.length !== 3) return defaultV;
+		const v = (_rule$config$3 = rule.config[1]) === null || _rule$config$3 === void 0 ? void 0 : _rule$config$3.value.value;
+		return v === void 0 ? defaultV : v;
+	});
+	const [maxValue, setMaxValue] = (0, react.useState)(() => {
+		var _rule$config2;
+		const defaultV = 90;
+		if (!rule) return defaultV;
+		const v = (_rule$config2 = rule.config[rule.config.length - 1]) === null || _rule$config2 === void 0 ? void 0 : _rule$config2.value.value;
+		return v === void 0 ? defaultV : v;
+	});
+	const [minColor, setMinColor] = (0, react.useState)(() => {
+		var _rule$config$4;
+		const defaultV = "#d0d9fb";
+		if (!rule) return defaultV;
+		return ((_rule$config$4 = rule.config[0]) === null || _rule$config$4 === void 0 ? void 0 : _rule$config$4.color) || defaultV;
+	});
+	const [medianColor, setMedianColor] = (0, react.useState)(() => {
+		var _rule$config$5;
+		const defaultV = "#7790f3";
+		if (!rule) return defaultV;
+		if (rule.config.length !== 3) return defaultV;
+		return ((_rule$config$5 = rule.config[1]) === null || _rule$config$5 === void 0 ? void 0 : _rule$config$5.color) || defaultV;
+	});
+	const [maxColor, setMaxColor] = (0, react.useState)(() => {
+		var _rule$config3;
+		const defaultV = "#2e55ef";
+		if (!rule) return defaultV;
+		return ((_rule$config3 = rule.config[rule.config.length - 1]) === null || _rule$config3 === void 0 ? void 0 : _rule$config3.color) || defaultV;
+	});
+	const getResult = (0, react.useMemo)(() => (option) => {
+		const { minType, medianType, maxType, minValue, medianValue, maxValue, minColor, medianColor, maxColor } = option;
+		const list = [];
+		list.push({
+			color: minColor,
+			value: {
+				type: minType,
+				value: minValue
+			}
+		});
+		medianType !== "none" && list.push({
+			color: medianColor,
+			value: {
+				type: medianType,
+				value: medianValue
+			}
+		});
+		list.push({
+			color: maxColor,
+			value: {
+				type: maxType,
+				value: maxValue
+			}
+		});
+		return {
+			config: list.map((item, index) => ({
+				...item,
+				index
+			})),
+			type: _univerjs_sheets_conditional_formatting.CFRuleType.colorScale
+		};
+	}, []);
+	(0, react.useEffect)(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({
+				minType,
+				medianType,
+				maxType,
+				minValue,
+				medianValue,
+				maxValue,
+				minColor,
+				medianColor,
+				maxColor
+			});
+		} });
+	}, [
+		getResult,
+		minType,
+		medianType,
+		maxType,
+		minValue,
+		medianValue,
+		maxValue,
+		minColor,
+		medianColor,
+		maxColor,
+		interceptorManager
+	]);
+	const handleChange = (option) => {
+		props.onChange(getResult(option));
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: previewClassName,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Preview, { rule: getResult({
+				minType,
+				medianType,
+				maxType,
+				minValue,
+				medianValue,
+				maxValue,
+				minColor,
+				medianColor,
+				maxColor
+			}) })
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-3 univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.valueType.min")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-mt-3 univer-flex univer-h-8 univer-items-center univer-gap-2",
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+					className: "univer-flex-shrink-0",
+					options: minOptions,
+					value: minType,
+					onChange: (v) => {
+						setMinType(v);
+						const value = (0, _univerjs_sheets_conditional_formatting.createDefaultValueByValueType)(v, 10);
+						setMinValue(value);
+						handleChange({
+							minType: v,
+							medianType,
+							maxType,
+							minValue: value,
+							medianValue,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(TextInput$1, {
+					id: "min",
+					value: minValue,
+					type: minType,
+					onChange: (v) => {
+						setMinValue(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue: v,
+							medianValue,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorPicker, {
+					color: minColor,
+					onChange: (v) => {
+						setMinColor(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue,
+							maxValue,
+							minColor: v,
+							medianColor,
+							maxColor
+						});
+					}
+				})
+			]
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-3 univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.medianValue")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-mt-3 univer-flex univer-h-8 univer-items-center univer-gap-2",
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+					className: "univer-flex-shrink-0",
+					options: medianOptions,
+					value: medianType,
+					onChange: (v) => {
+						setMedianType(v);
+						const value = (0, _univerjs_sheets_conditional_formatting.createDefaultValueByValueType)(v, 50);
+						setMedianValue(value);
+						handleChange({
+							minType,
+							medianType: v,
+							maxType,
+							minValue,
+							medianValue: value,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(TextInput$1, {
+					id: "median",
+					value: medianValue,
+					type: medianType,
+					onChange: (v) => {
+						setMedianValue(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue: v,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				medianType !== "none" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorPicker, {
+					color: medianColor,
+					onChange: (v) => {
+						setMedianColor(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue,
+							maxValue,
+							minColor,
+							medianColor: v,
+							maxColor
+						});
+					}
+				}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					"aria-hidden": true,
+					className: "univer-size-6 univer-flex-shrink-0"
+				})
+			]
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-3 univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.valueType.max")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-mt-3 univer-flex univer-h-8 univer-items-center univer-gap-2",
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+					className: "univer-flex-shrink-0",
+					options: maxOptions,
+					value: maxType,
+					onChange: (v) => {
+						setMaxType(v);
+						const value = (0, _univerjs_sheets_conditional_formatting.createDefaultValueByValueType)(v, 90);
+						setMaxValue(value);
+						handleChange({
+							minType,
+							medianType,
+							maxType: v,
+							minValue,
+							medianValue,
+							maxValue: value,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(TextInput$1, {
+					id: "max",
+					value: maxValue,
+					type: maxType,
+					onChange: (v) => {
+						setMaxValue(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue,
+							maxValue: v,
+							minColor,
+							medianColor,
+							maxColor
+						});
+					}
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorPicker, {
+					color: maxColor,
+					onChange: (v) => {
+						setMaxColor(v);
+						handleChange({
+							minType,
+							medianType,
+							maxType,
+							minValue,
+							medianValue,
+							maxValue,
+							minColor,
+							medianColor,
+							maxColor: v
+						});
+					}
+				})
+			]
+		})
+	] });
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/DataBar.tsx
+const createOptionItem$1 = (text) => ({
+	label: `sheets-conditional-formatting-ui.valueType.${text}`,
+	value: text
+});
+const InputText = (props) => {
+	var _getActiveSheet;
+	const { onChange, className, value, type, id, disabled = false } = props;
+	const univerInstanceService = (0, _univerjs_ui.useDependency)(_univerjs_core.IUniverInstanceService);
+	const unitId = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getUnitId();
+	const subUnitId = (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+	const formulaEditorRef = (0, react.useRef)(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = (0, react.useState)(false);
+	(0, _univerjs_ui.useSidebarClick)((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	const _value = (0, react.useRef)(value);
+	const config = (0, react.useMemo)(() => {
+		if ([_univerjs_sheets_conditional_formatting.CFValueType.percentile, _univerjs_sheets_conditional_formatting.CFValueType.percent].includes(type)) return {
+			max: 100,
+			min: 0
+		};
+		return {
+			min: Number.MIN_SAFE_INTEGER,
+			max: Number.MAX_SAFE_INTEGER
+		};
+	}, [type]);
+	if (type === _univerjs_sheets_conditional_formatting.CFValueType.formula) {
+		const v = String(_value.current).startsWith("=") ? String(_value.current) || "" : "=";
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-w-full",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_sheets_formula_ui.FormulaEditor, {
+				ref: formulaEditorRef,
+				className: (0, _univerjs_design.clsx)("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", _univerjs_design.borderClassName),
+				initValue: v,
+				unitId,
+				subUnitId,
+				isFocus: isFocusFormulaEditor,
+				onChange: (v = "") => {
+					onChange(v || "");
+				},
+				onFocus: () => setIsFocusFormulaEditor(true)
+			})
+		});
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.InputNumber, {
+		className,
+		value: Number(value) || 0,
+		disabled,
+		onChange: (v) => {
+			onChange(v || 0);
+		},
+		...config
+	});
+};
+const DataBarStyleEditor = (props) => {
+	var _props$rule;
+	const { interceptorManager } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === _univerjs_sheets_conditional_formatting.CFRuleType.dataBar ? props.rule : void 0;
+	const [isGradient, setIsGradient] = (0, react.useState)(() => {
+		var _rule$config;
+		const defaultV = "0";
+		if (!rule) return defaultV;
+		return ((_rule$config = rule.config) === null || _rule$config === void 0 ? void 0 : _rule$config.isGradient) ? "1" : "0";
+	});
+	const [positiveColor, setPositiveColor] = (0, react.useState)(() => {
+		var _rule$config2;
+		if (!rule) return _univerjs_sheets_conditional_formatting.defaultDataBarPositiveColor;
+		return ((_rule$config2 = rule.config) === null || _rule$config2 === void 0 ? void 0 : _rule$config2.positiveColor) || _univerjs_sheets_conditional_formatting.defaultDataBarPositiveColor;
+	});
+	const [nativeColor, setNativeColor] = (0, react.useState)(() => {
+		var _rule$config3;
+		if (!rule) return _univerjs_sheets_conditional_formatting.defaultDataBarNativeColor;
+		return ((_rule$config3 = rule.config) === null || _rule$config3 === void 0 ? void 0 : _rule$config3.nativeColor) || _univerjs_sheets_conditional_formatting.defaultDataBarNativeColor;
+	});
+	const commonOptionDefinitions = [
+		createOptionItem$1(_univerjs_sheets_conditional_formatting.CFValueType.num),
+		createOptionItem$1(_univerjs_sheets_conditional_formatting.CFValueType.percent),
+		createOptionItem$1(_univerjs_sheets_conditional_formatting.CFValueType.percentile),
+		createOptionItem$1(_univerjs_sheets_conditional_formatting.CFValueType.formula)
+	];
+	const minOptions = [createOptionItem$1(_univerjs_sheets_conditional_formatting.CFValueType.min), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const maxOptions = [createOptionItem$1(_univerjs_sheets_conditional_formatting.CFValueType.max), ...commonOptionDefinitions].map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	}));
+	const [minValueType, setMinValueType] = (0, react.useState)(() => {
+		var _rule$config4;
+		const defaultV = minOptions[0].value;
+		if (!rule) return defaultV;
+		return ((_rule$config4 = rule.config) === null || _rule$config4 === void 0 ? void 0 : _rule$config4.min.type) || defaultV;
+	});
+	const [maxValueType, setMaxValueType] = (0, react.useState)(() => {
+		var _rule$config5;
+		const defaultV = maxOptions[0].value;
+		if (!rule) return defaultV;
+		return ((_rule$config5 = rule.config) === null || _rule$config5 === void 0 ? void 0 : _rule$config5.max.type) || defaultV;
+	});
+	const [minValue, setMinValue] = (0, react.useState)(() => {
+		var _rule$config6;
+		const defaultV = 0;
+		if (!rule) return defaultV;
+		const value = ((_rule$config6 = rule.config) === null || _rule$config6 === void 0 ? void 0 : _rule$config6.min) || {};
+		if (value.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) return value.value || "=";
+		return value.value || defaultV;
+	});
+	const [maxValue, setMaxValue] = (0, react.useState)(() => {
+		var _rule$config7;
+		const defaultV = 100;
+		if (!rule) return defaultV;
+		const value = ((_rule$config7 = rule.config) === null || _rule$config7 === void 0 ? void 0 : _rule$config7.max) || {};
+		if (value.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) return value.value || "=";
+		return value.value === void 0 ? defaultV : value.value;
+	});
+	const [isShowValue, setIsShowValue] = (0, react.useState)(() => {
+		const defaultV = true;
+		if (!rule) return defaultV;
+		return rule.isShowValue === void 0 ? defaultV : !!rule.isShowValue;
+	});
+	const getResult = (option) => {
+		return {
+			config: {
+				min: {
+					type: option.minValueType,
+					value: option.minValue
+				},
+				max: {
+					type: option.maxValueType,
+					value: option.maxValue
+				},
+				isGradient: option.isGradient === "1",
+				positiveColor: option.positiveColor || _univerjs_sheets_conditional_formatting.defaultDataBarPositiveColor,
+				nativeColor: option.nativeColor || _univerjs_sheets_conditional_formatting.defaultDataBarNativeColor
+			},
+			type: _univerjs_sheets_conditional_formatting.CFRuleType.dataBar,
+			isShowValue: option.isShowValue
+		};
+	};
+	(0, react.useEffect)(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({
+				isGradient,
+				minValue,
+				minValueType,
+				maxValue,
+				maxValueType,
+				positiveColor,
+				nativeColor,
+				isShowValue
+			});
+		} });
+	}, [
+		isGradient,
+		minValue,
+		minValueType,
+		maxValue,
+		maxValueType,
+		positiveColor,
+		nativeColor,
+		interceptorManager,
+		isShowValue
+	]);
+	const handleChange = (option) => {
+		props.onChange(getResult(option));
+	};
+	const handlePositiveColorChange = (color) => {
+		setPositiveColor(color);
+		handleChange({
+			isGradient,
+			minValue,
+			minValueType,
+			maxValue,
+			maxValueType,
+			positiveColor: color,
+			nativeColor,
+			isShowValue
+		});
+	};
+	const handleNativeColorChange = (color) => {
+		setNativeColor(color);
+		handleChange({
+			isGradient,
+			minValue,
+			minValueType,
+			maxValue,
+			maxValueType,
+			positiveColor,
+			nativeColor: color,
+			isShowValue
+		});
+	};
+	const isShowInput = (type) => {
+		return commonOptionDefinitions.map((item) => item.value).includes(type);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: previewClassName,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Preview, { rule: getResult({
+				isGradient,
+				minValue,
+				minValueType,
+				maxValue,
+				maxValueType,
+				positiveColor,
+				nativeColor,
+				isShowValue
+			}) })
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.fillType")
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-mt-3 univer-flex univer-items-center univer-gap-3",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.RadioGroup, {
+				value: isGradient,
+				onChange: (v) => {
+					setIsGradient(v);
+					handleChange({
+						isGradient: v,
+						minValue,
+						minValueType,
+						maxValue,
+						maxValueType,
+						positiveColor,
+						nativeColor,
+						isShowValue
+					});
+				},
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Radio, {
+					value: "0",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: "univer-text-xs",
+						children: localeService.t("sheets-conditional-formatting-ui.panel.pureColor")
+					})
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Radio, {
+					value: "1",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: "univer-text-xs",
+						children: localeService.t("sheets-conditional-formatting-ui.panel.gradient")
+					})
+				})]
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-items-center univer-text-xs",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Checkbox, {
+					checked: !isShowValue,
+					onChange: (v) => {
+						setIsShowValue(!v);
+						handleChange({
+							isGradient: v,
+							minValue,
+							minValueType,
+							maxValue,
+							maxValueType,
+							positiveColor,
+							nativeColor,
+							isShowValue: !v
+						});
+					}
+				}), localeService.t("sheets-conditional-formatting-ui.panel.onlyShowDataBar")]
+			})]
+		})] }),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.colorSet")
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-mt-3 univer-flex univer-items-center univer-gap-2",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-items-center",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-text-xs",
+					children: localeService.t("sheets-conditional-formatting-ui.panel.native")
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorPicker, {
+					color: nativeColor,
+					onChange: handleNativeColorChange
+				})]
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-items-center univer-gap-3",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-text-xs",
+					children: localeService.t("sheets-conditional-formatting-ui.panel.positive")
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorPicker, {
+					color: positiveColor,
+					onChange: handlePositiveColorChange
+				})]
+			})]
+		})] }),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+				children: localeService.t("sheets-conditional-formatting-ui.valueType.min")
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-mt-3 univer-flex univer-items-center univer-gap-2",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+					className: "univer-w-1/2 univer-flex-shrink-0",
+					options: minOptions,
+					value: minValueType,
+					onChange: (v) => {
+						setMinValueType(v);
+						const value = (0, _univerjs_sheets_conditional_formatting.createDefaultValueByValueType)(v, 10);
+						setMinValue(value);
+						handleChange({
+							isGradient,
+							minValue: value,
+							minValueType: v,
+							maxValue,
+							maxValueType,
+							positiveColor,
+							nativeColor,
+							isShowValue
+						});
+					}
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InputText, {
+					id: "min",
+					disabled: !isShowInput(minValueType),
+					type: minValueType,
+					value: minValue,
+					onChange: (v) => {
+						setMinValue(v || 0);
+						handleChange({
+							isGradient,
+							minValue: v || 0,
+							minValueType,
+							maxValue,
+							maxValueType,
+							positiveColor,
+							nativeColor,
+							isShowValue
+						});
+					}
+				})]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+				children: localeService.t("sheets-conditional-formatting-ui.valueType.max")
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-mt-3 univer-flex univer-items-center univer-gap-2",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+					className: "univer-w-1/2 univer-flex-shrink-0",
+					options: maxOptions,
+					value: maxValueType,
+					onChange: (v) => {
+						setMaxValueType(v);
+						const value = (0, _univerjs_sheets_conditional_formatting.createDefaultValueByValueType)(v, 90);
+						setMaxValue(value);
+						handleChange({
+							isGradient,
+							minValue,
+							minValueType,
+							maxValue: value,
+							maxValueType: v,
+							positiveColor,
+							nativeColor,
+							isShowValue
+						});
+					}
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(InputText, {
+					disabled: !isShowInput(maxValueType),
+					id: "max",
+					type: maxValueType,
+					value: maxValue,
+					onChange: (v) => {
+						setMaxValue(v || 0);
+						handleChange({
+							isGradient,
+							minValue,
+							minValueType,
+							maxValue: v || 0,
+							maxValueType,
+							positiveColor,
+							nativeColor,
+							isShowValue
+						});
+					}
+				})]
+			})
+		] })
+	] });
+};
+
+//#endregion
+//#region src/views/ConditionalStyleEditor.tsx
+const getAnotherBooleanNumber = (v) => {
+	return [_univerjs_core.BooleanNumber.FALSE, void 0].includes(v) ? _univerjs_core.BooleanNumber.TRUE : _univerjs_core.BooleanNumber.FALSE;
+};
+const getBooleanFromNumber = (v) => v !== _univerjs_core.BooleanNumber.FALSE;
+const ConditionalStyleEditor = (props) => {
+	const { style, onChange, className } = props;
+	const [isBold, setIsBold] = (0, react.useState)(() => {
+		if (!(style === null || style === void 0 ? void 0 : style.bl)) return;
+		return style.bl;
+	});
+	const [isItalic, setIsItalic] = (0, react.useState)(() => {
+		if (!(style === null || style === void 0 ? void 0 : style.it)) return;
+		return style.it;
+	});
+	const [isUnderline, setIsUnderline] = (0, react.useState)(() => {
+		if (!(style === null || style === void 0 ? void 0 : style.ul)) return;
+		return style.ul.s;
+	});
+	const [isStrikethrough, setIsStrikethrough] = (0, react.useState)(() => {
+		if (!(style === null || style === void 0 ? void 0 : style.st)) return;
+		return style.st.s;
+	});
+	const [fontColor, setFontColor] = (0, react.useState)(() => {
+		var _style$cl;
+		const defaultV = "#2f56ef";
+		if (!(style === null || style === void 0 || (_style$cl = style.cl) === null || _style$cl === void 0 ? void 0 : _style$cl.rgb)) return defaultV;
+		return style.cl.rgb;
+	});
+	const [bgColor, setBgColor] = (0, react.useState)(() => {
+		var _style$bg;
+		const defaultV = "#e8ecfc";
+		if (!(style === null || style === void 0 || (_style$bg = style.bg) === null || _style$bg === void 0 ? void 0 : _style$bg.rgb)) return defaultV;
+		return style.bg.rgb;
+	});
+	(0, react.useEffect)(() => {
+		const resultStyle = {
+			bl: isBold,
+			it: isItalic
+		};
+		if (fontColor !== void 0) resultStyle.cl = { rgb: fontColor };
+		if (bgColor !== void 0) resultStyle.bg = { rgb: bgColor };
+		if (isStrikethrough !== void 0) resultStyle.st = { s: isStrikethrough };
+		if (isUnderline !== void 0) resultStyle.ul = { s: isUnderline };
+		onChange((0, _univerjs_sheets_conditional_formatting.removeUndefinedAttr)(resultStyle));
+	}, [
+		isBold,
+		isItalic,
+		isUnderline,
+		isStrikethrough,
+		fontColor,
+		bgColor
+	]);
+	const buttonItemClassName = "univer-flex univer-cursor-pointer univer-items-center univer-rounded univer-px-1";
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: (0, _univerjs_design.clsx)("univer-my-2.5 univer-flex univer-justify-between", className),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: (0, _univerjs_design.clsx)(buttonItemClassName, { "univer-bg-gray-100 dark:!univer-bg-gray-700": getBooleanFromNumber(isBold || _univerjs_core.BooleanNumber.FALSE) }),
+				onClick: () => setIsBold(getAnotherBooleanNumber(isBold)),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.BoldIcon, {})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: (0, _univerjs_design.clsx)(buttonItemClassName, { "univer-bg-gray-100 dark:!univer-bg-gray-700": getBooleanFromNumber(isItalic || _univerjs_core.BooleanNumber.FALSE) }),
+				onClick: () => setIsItalic(getAnotherBooleanNumber(isItalic)),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ItalicIcon, {})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: (0, _univerjs_design.clsx)(buttonItemClassName, { "univer-bg-gray-100 dark:!univer-bg-gray-700": getBooleanFromNumber(isUnderline || _univerjs_core.BooleanNumber.FALSE) }),
+				onClick: () => setIsUnderline(getAnotherBooleanNumber(isUnderline)),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.UnderlineIcon, {})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: (0, _univerjs_design.clsx)(buttonItemClassName, { "univer-bg-gray-100 dark:!univer-bg-gray-700": getBooleanFromNumber(isStrikethrough || _univerjs_core.BooleanNumber.FALSE) }),
+				onClick: () => setIsStrikethrough(getAnotherBooleanNumber(isStrikethrough)),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.StrikethroughIcon, {})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorPicker, {
+				color: fontColor,
+				onChange: setFontColor,
+				Icon: _univerjs_icons.FontColorDoubleIcon
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ColorPicker, {
+				color: bgColor,
+				onChange: setBgColor
+			})
+		]
+	});
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/Formula.tsx
+const FormulaStyleEditor = (props) => {
+	var _props$rule;
+	const { onChange, interceptorManager } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const lexerTreeBuilder = (0, _univerjs_ui.useDependency)(_univerjs_engine_formula.LexerTreeBuilder);
+	const workbook = (0, _univerjs_ui.useDependency)(_univerjs_core.IUniverInstanceService).getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+	const worksheet = workbook.getActiveSheet();
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell ? props.rule : void 0;
+	const divEleRef = (0, react.useRef)(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = (0, react.useState)(false);
+	const formulaEditorRef = (0, react.useRef)(null);
+	const [style, setStyle] = (0, react.useState)({});
+	const [formula, setFormula] = (0, react.useState)(() => {
+		if ((rule === null || rule === void 0 ? void 0 : rule.subType) === _univerjs_sheets_conditional_formatting.CFSubRuleType.formula) return rule.value;
+		return "=";
+	});
+	const [formulaError, setFormulaError] = (0, react.useState)(void 0);
+	const getResult = (config) => {
+		return {
+			style: config.style,
+			value: formula,
+			type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+			subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.formula
+		};
+	};
+	(0, react.useEffect)(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({
+				style,
+				formula
+			});
+		} });
+	}, [
+		style,
+		formula,
+		interceptorManager
+	]);
+	(0, react.useEffect)(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().beforeSubmit, { handler: (v, _c, next) => {
+			const isFormulaValid = formula.length > 1 && formula.startsWith(_univerjs_engine_formula.operatorToken.EQUALS) && lexerTreeBuilder.checkIfAddBracket(formula) === 0;
+			if (formulaError || !isFormulaValid) {
+				setFormulaError(localeService.t("sheets-conditional-formatting-ui.errorMessage.formulaError"));
+				return false;
+			}
+			return next(v);
+		} });
+	}, [
+		formulaError,
+		formula,
+		interceptorManager,
+		lexerTreeBuilder,
+		localeService
+	]);
+	const _onChange = (config) => {
+		onChange(getResult(config));
+	};
+	(0, _univerjs_ui.useSidebarClick)((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		ref: divEleRef,
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+				children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mt-3",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_sheets_formula_ui.FormulaEditor, {
+					ref: formulaEditorRef,
+					className: (0, _univerjs_design.clsx)("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", _univerjs_design.borderClassName),
+					errorText: formulaError,
+					isFocus: isFocusFormulaEditor,
+					initValue: formula,
+					unitId: workbook.getUnitId(),
+					subUnitId: worksheet === null || worksheet === void 0 ? void 0 : worksheet.getSheetId(),
+					onFocus: () => {
+						setIsFocusFormulaEditor(true);
+					},
+					onChange: (formula) => {
+						setFormula(formula);
+						_onChange({
+							style,
+							formula
+						});
+					},
+					onVerify: (result, formula) => {
+						if (!result || formula.length === 1) setFormulaError(localeService.t("sheets-conditional-formatting-ui.errorMessage.formulaError"));
+						else setFormulaError(void 0);
+					}
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: previewClassName,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Preview, { rule: getResult({
+					style,
+					formula
+				}) })
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ConditionalStyleEditor, {
+				style: rule === null || rule === void 0 ? void 0 : rule.style,
+				className: "univer-mt-3",
+				onChange: (v) => {
+					setStyle(v);
+					_onChange({
+						style: v,
+						formula
+					});
+				}
+			})
+		]
+	});
+};
+
+//#endregion
+//#region src/views/wrapper-error/WrapperError.tsx
+const WrapperError = (props) => {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [props.children, props.errorText && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-mt-1 univer-text-xs univer-text-red-500",
+		children: props.errorText
+	})] });
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/HighlightCell.tsx
+const textOperators = new Set(Object.values(_univerjs_sheets_conditional_formatting.CFTextOperator));
+const numberOperators = new Set(Object.values(_univerjs_sheets_conditional_formatting.CFNumberOperator));
+const timePeriodOperators = new Set(Object.values(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator));
+const isTextOperator = (value) => typeof value === "string" && textOperators.has(value);
+const isNumberOperator = (value) => typeof value === "string" && numberOperators.has(value);
+const isTimePeriodOperator = (value) => typeof value === "string" && timePeriodOperators.has(value);
+const createOptionItem = (text) => ({
+	label: `sheets-conditional-formatting-ui.operator.${text}`,
+	value: text
+});
+function HighlightCellInput(props) {
+	const { type, operator, onChange, value, interceptorManager } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const [inputNumberValue, setInputNumberValue] = (0, react.useState)(() => typeof value === "number" ? value : 0);
+	const [numberError, setNumberError] = (0, react.useState)("");
+	const [inputTextValue, setInputTextValue] = (0, react.useState)(() => typeof value === "string" ? value : "");
+	const [textError, setTextError] = (0, react.useState)("");
+	const [inputNumberMin, setInputNumberMin] = (0, react.useState)(() => Array.isArray(value) ? value[0] === void 0 ? 0 : value[0] : 0);
+	const [numberMinError, setNumberMinError] = (0, react.useState)("");
+	const [inputNumberMax, setInputNumberMax] = (0, react.useState)(() => Array.isArray(value) ? value[1] === void 0 ? 100 : value[1] : 100);
+	const [numberMaxError, setNumberMaxError] = (0, react.useState)("");
+	(0, react.useEffect)(() => {
+		switch (type) {
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.text:
+				if ([
+					_univerjs_sheets_conditional_formatting.CFTextOperator.beginsWith,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.endsWith,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.containsText,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.notContainsText,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.equal,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.notEqual
+				].includes(operator)) onChange(inputTextValue);
+				break;
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.number:
+				if ([
+					_univerjs_sheets_conditional_formatting.CFNumberOperator.equal,
+					_univerjs_sheets_conditional_formatting.CFNumberOperator.notEqual,
+					_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThan,
+					_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThanOrEqual,
+					_univerjs_sheets_conditional_formatting.CFNumberOperator.lessThan,
+					_univerjs_sheets_conditional_formatting.CFNumberOperator.lessThanOrEqual
+				].includes(operator)) onChange(inputNumberValue);
+				if ([_univerjs_sheets_conditional_formatting.CFNumberOperator.between, _univerjs_sheets_conditional_formatting.CFNumberOperator.notBetween].includes(operator)) onChange([inputNumberMin, inputNumberMax]);
+				break;
+		}
+	}, [type]);
+	(0, react.useEffect)(() => {
+		const dispose = interceptorManager.intercept(interceptorManager.getInterceptPoints().beforeSubmit, { handler: (v, _c, next) => {
+			switch (type) {
+				case _univerjs_sheets_conditional_formatting.CFSubRuleType.text: if ([
+					_univerjs_sheets_conditional_formatting.CFTextOperator.beginsWith,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.containsText,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.endsWith,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.notEqual,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.notContainsText,
+					_univerjs_sheets_conditional_formatting.CFTextOperator.equal
+				].includes(operator)) {
+					if (!inputTextValue) {
+						setTextError(localeService.t("sheets-conditional-formatting-ui.errorMessage.notBlank"));
+						return false;
+					}
+					return next(v);
+				}
+			}
+			return next(v);
+		} });
+		return () => {
+			dispose();
+		};
+	}, [
+		type,
+		inputNumberValue,
+		inputTextValue,
+		operator
+	]);
+	switch (type) {
+		case _univerjs_sheets_conditional_formatting.CFSubRuleType.text:
+			if ([
+				_univerjs_sheets_conditional_formatting.CFTextOperator.beginsWith,
+				_univerjs_sheets_conditional_formatting.CFTextOperator.endsWith,
+				_univerjs_sheets_conditional_formatting.CFTextOperator.containsText,
+				_univerjs_sheets_conditional_formatting.CFTextOperator.notContainsText,
+				_univerjs_sheets_conditional_formatting.CFTextOperator.equal,
+				_univerjs_sheets_conditional_formatting.CFTextOperator.notEqual
+			].includes(operator)) {
+				const _onChange = (value) => {
+					setInputTextValue(value);
+					onChange(value);
+				};
+				return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-mt-3",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(WrapperError, {
+						errorText: textError,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Input, {
+							value: inputTextValue,
+							onChange: (v) => {
+								setTextError("");
+								_onChange(v);
+							}
+						})
+					})
+				});
+			}
+			break;
+		case _univerjs_sheets_conditional_formatting.CFSubRuleType.number:
+			if ([
+				_univerjs_sheets_conditional_formatting.CFNumberOperator.equal,
+				_univerjs_sheets_conditional_formatting.CFNumberOperator.notEqual,
+				_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThan,
+				_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThanOrEqual,
+				_univerjs_sheets_conditional_formatting.CFNumberOperator.lessThan,
+				_univerjs_sheets_conditional_formatting.CFNumberOperator.lessThanOrEqual
+			].includes(operator)) {
+				const _onChange = (value) => {
+					setInputNumberValue(value || 0);
+					onChange(value || 0);
+					setNumberError("");
+				};
+				return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-mt-3",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(WrapperError, {
+						errorText: numberError,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.InputNumber, {
+							className: "univer-w-full",
+							min: Number.MIN_SAFE_INTEGER,
+							max: Number.MAX_SAFE_INTEGER,
+							value: inputNumberValue,
+							onChange: _onChange
+						})
+					})
+				});
+			}
+			if ([_univerjs_sheets_conditional_formatting.CFNumberOperator.between, _univerjs_sheets_conditional_formatting.CFNumberOperator.notBetween].includes(operator)) {
+				const onChangeMin = (_value) => {
+					setInputNumberMin(_value || 0);
+					onChange([_value || 0, inputNumberMax]);
+					setNumberMinError("");
+				};
+				const onChangeMax = (_value) => {
+					setInputNumberMax(_value || 0);
+					onChange([inputNumberMin, _value || 0]);
+					setNumberMaxError("");
+				};
+				return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: "univer-mt-3 univer-flex univer-items-center",
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(WrapperError, {
+						errorText: numberMinError,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.InputNumber, {
+							min: Number.MIN_SAFE_INTEGER,
+							max: Number.MAX_SAFE_INTEGER,
+							value: inputNumberMin,
+							onChange: onChangeMin
+						})
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(WrapperError, {
+						errorText: numberMaxError,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.InputNumber, {
+							className: "univer-ml-3",
+							min: Number.MIN_SAFE_INTEGER,
+							max: Number.MAX_SAFE_INTEGER,
+							value: inputNumberMax,
+							onChange: onChangeMax
+						})
+					})]
+				});
+			}
+	}
+	return null;
+}
+const getOperatorOptions = (type) => {
+	switch (type) {
+		case _univerjs_sheets_conditional_formatting.CFSubRuleType.text: return [
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.containsText),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.notContainsText),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.beginsWith),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.endsWith),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.equal),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.notEqual),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.containsBlanks),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.notContainsBlanks),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.containsErrors),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTextOperator.notContainsErrors)
+		];
+		case _univerjs_sheets_conditional_formatting.CFSubRuleType.number: return [
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFNumberOperator.between),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFNumberOperator.notBetween),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFNumberOperator.equal),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFNumberOperator.notEqual),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThan),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThanOrEqual),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFNumberOperator.lessThan),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFNumberOperator.lessThanOrEqual)
+		];
+		case _univerjs_sheets_conditional_formatting.CFSubRuleType.timePeriod: return [
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.yesterday),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.today),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.tomorrow),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.last7Days),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.lastWeek),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.thisWeek),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.nextWeek),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.lastMonth),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.thisMonth),
+			createOptionItem(_univerjs_sheets_conditional_formatting.CFTimePeriodOperator.nextMonth)
+		];
+		default: return [];
+	}
+};
+const HighlightCellStyleEditor = (props) => {
+	var _props$rule;
+	const { interceptorManager, onChange } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell ? props.rule : void 0;
+	const [subType, setSubType] = (0, react.useState)(() => {
+		const defaultV = _univerjs_sheets_conditional_formatting.CFSubRuleType.text;
+		if (!rule) return defaultV;
+		return rule.subType || defaultV;
+	});
+	const typeOptions = [
+		{
+			value: _univerjs_sheets_conditional_formatting.CFSubRuleType.text,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.text")
+		},
+		{
+			value: _univerjs_sheets_conditional_formatting.CFSubRuleType.number,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.number")
+		},
+		{
+			value: _univerjs_sheets_conditional_formatting.CFSubRuleType.timePeriod,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.timePeriod")
+		},
+		{
+			value: _univerjs_sheets_conditional_formatting.CFSubRuleType.duplicateValues,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.duplicateValues")
+		},
+		{
+			value: _univerjs_sheets_conditional_formatting.CFSubRuleType.uniqueValues,
+			label: localeService.t("sheets-conditional-formatting-ui.subRuleType.uniqueValues")
+		}
+	];
+	const operatorOptions = (0, react.useMemo)(() => getOperatorOptions(subType).map((option) => ({
+		...option,
+		label: localeService.t(option.label)
+	})), [localeService, subType]);
+	const [operator, setOperator] = (0, react.useState)(() => {
+		var _operatorOptions$;
+		const defaultV = (_operatorOptions$ = operatorOptions[0]) === null || _operatorOptions$ === void 0 ? void 0 : _operatorOptions$.value;
+		if (!rule) return defaultV;
+		return "operator" in rule ? rule.operator : defaultV;
+	});
+	const [value, setValue] = (0, react.useState)(() => {
+		const defaultV = "";
+		if (!rule) return defaultV;
+		if ("value" in rule && rule.value !== void 0) return rule.value;
+		return "operator" in rule ? (0, _univerjs_sheets_conditional_formatting.createDefaultValue)(rule.subType, rule.operator) : defaultV;
+	});
+	const [style, setStyle] = (0, react.useState)({});
+	const getResult = (0, react.useMemo)(() => (option) => {
+		const nextSubType = option.subType ?? subType;
+		const nextOperator = option.operator ?? operator;
+		const nextValue = option.value ?? value;
+		const nextStyle = option.style ?? style;
+		switch (nextSubType) {
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.duplicateValues: return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.duplicateValues,
+				style: nextStyle
+			};
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.uniqueValues: return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.uniqueValues,
+				style: nextStyle
+			};
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.text: return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.text,
+				operator: isTextOperator(nextOperator) ? nextOperator : _univerjs_sheets_conditional_formatting.CFTextOperator.containsText,
+				style: nextStyle,
+				value: typeof nextValue === "string" ? nextValue : void 0
+			};
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.timePeriod: return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.timePeriod,
+				operator: isTimePeriodOperator(nextOperator) ? nextOperator : _univerjs_sheets_conditional_formatting.CFTimePeriodOperator.today,
+				style: nextStyle
+			};
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.number: {
+				const numberOperator = isNumberOperator(nextOperator) ? nextOperator : _univerjs_sheets_conditional_formatting.CFNumberOperator.equal;
+				if (numberOperator === _univerjs_sheets_conditional_formatting.CFNumberOperator.between || numberOperator === _univerjs_sheets_conditional_formatting.CFNumberOperator.notBetween) {
+					const range = Array.isArray(nextValue) ? nextValue : [0, 100];
+					return {
+						type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+						subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.number,
+						operator: numberOperator,
+						style: nextStyle,
+						value: range
+					};
+				}
+				return {
+					type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+					subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.number,
+					operator: numberOperator,
+					style: nextStyle,
+					value: typeof nextValue === "number" ? nextValue : void 0
+				};
+			}
+		}
+	}, [
+		subType,
+		operator,
+		value,
+		style
+	]);
+	(0, react.useEffect)(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({});
+		} });
+	}, [getResult, interceptorManager]);
+	(0, react.useEffect)(() => {
+		if (!typeOptions.some((item) => item.value === subType)) setSubType(typeOptions[0].value);
+	}, [typeOptions]);
+	const onTypeChange = (v) => {
+		var _typeOptions$find, _operatorList$;
+		const _subType = (_typeOptions$find = typeOptions.find((item) => item.value === v)) === null || _typeOptions$find === void 0 ? void 0 : _typeOptions$find.value;
+		if (!_subType) return;
+		const _operator = (_operatorList$ = getOperatorOptions(_subType).map((option) => ({
+			...option,
+			label: localeService.t(option.label)
+		}))[0]) === null || _operatorList$ === void 0 ? void 0 : _operatorList$.value;
+		setSubType(_subType);
+		setOperator(_operator);
+		_operator && setValue((0, _univerjs_sheets_conditional_formatting.createDefaultValue)(_subType, _operator));
+		onChange(getResult({
+			subType: _subType,
+			operator: _operator
+		}));
+	};
+	const onOperatorChange = (v) => {
+		var _operatorOptions$find;
+		const _operator = (_operatorOptions$find = operatorOptions.find((item) => item.value === v)) === null || _operatorOptions$find === void 0 ? void 0 : _operatorOptions$find.value;
+		if (!_operator) return;
+		setOperator(_operator);
+		onChange(getResult({ operator: _operator }));
+	};
+	const onInputChange = (value) => {
+		setValue(value);
+		onChange(getResult({ value }));
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-flex univer-justify-between univer-gap-4",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+				className: "univer-mt-3 univer-w-full",
+				onChange: onTypeChange,
+				value: subType,
+				options: typeOptions
+			}), (operatorOptions === null || operatorOptions === void 0 ? void 0 : operatorOptions.length) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+				className: "univer-mt-3 univer-w-full",
+				onChange: onOperatorChange,
+				value: operator || "",
+				options: operatorOptions
+			})]
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)(HighlightCellInput, {
+			value,
+			interceptorManager,
+			type: subType,
+			operator,
+			rule,
+			onChange: onInputChange
+		}, `${subType}_${operator}`),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: previewClassName,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Preview, { rule: getResult({}) })
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ConditionalStyleEditor, {
+			style: rule === null || rule === void 0 ? void 0 : rule.style,
+			className: "univer-ml-1",
+			onChange: (v) => {
+				setStyle(v);
+				onChange(getResult({ style: v }));
+			}
+		})
+	] });
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/IconSet.tsx
+const getIcon = (iconType, iconId) => {
+	return (_univerjs_sheets_conditional_formatting.iconMap[iconType] || [])[Number(iconId)] || "";
+};
+const TextInput = (props) => {
+	var _getActiveSheet;
+	const { error, type, onChange } = props;
+	const univerInstanceService = (0, _univerjs_ui.useDependency)(_univerjs_core.IUniverInstanceService);
+	const unitId = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getUnitId();
+	const subUnitId = (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+	const formulaEditorRef = (0, react.useRef)(null);
+	const [isFocusFormulaEditor, setIsFocusFormulaEditor] = (0, react.useState)(false);
+	(0, _univerjs_ui.useSidebarClick)((e) => {
+		var _formulaEditorRef$cur;
+		(_formulaEditorRef$cur = formulaEditorRef.current) !== null && _formulaEditorRef$cur !== void 0 && _formulaEditorRef$cur.isClickOutSide(e) && setIsFocusFormulaEditor(false);
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-relative",
+		children: type !== _univerjs_sheets_conditional_formatting.CFValueType.formula ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.InputNumber, {
+			className: (0, _univerjs_design.clsx)({ "univer-border-red-500": error }),
+			value: Number(props.value) || 0,
+			onChange: (v) => onChange(v ?? 0)
+		}), error && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-absolute univer-text-xs univer-text-red-500",
+			children: error
+		})] }) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-w-full",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_sheets_formula_ui.FormulaEditor, {
+				ref: formulaEditorRef,
+				className: (0, _univerjs_design.clsx)("univer-box-border univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-rounded-lg univer-bg-gray-0 univer-pt-2 univer-transition-colors hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0 [&>div:first-child]:univer-px-2.5 [&>div]:univer-h-5 [&>div]:univer-ring-transparent", _univerjs_design.borderClassName),
+				initValue: String(props.value),
+				unitId,
+				subUnitId,
+				isFocus: isFocusFormulaEditor,
+				onChange: (v = "") => {
+					onChange(v || "");
+				},
+				onFocus: () => setIsFocusFormulaEditor(true)
+			})
+		})
+	});
+};
+const createDefaultConfigItem = (iconType, index, list) => ({
+	operator: _univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThan,
+	value: {
+		type: _univerjs_sheets_conditional_formatting.CFValueType.num,
+		value: (list.length - 1 - index) * 10
+	},
+	iconType,
+	iconId: String(index)
+});
+const IconGroupList = (props) => {
+	const { iconType, onClick } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const direction = (0, _univerjs_ui.useObservable)(localeService.direction$, localeService.getDirection());
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		dir: direction,
+		className: "univer-w-80",
+		children: _univerjs_sheets_conditional_formatting.iconGroup.map((group) => {
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-mb-4 last:univer-mb-0",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-mb-2 univer-px-1 univer-text-xs univer-font-medium univer-text-gray-500 dark:!univer-text-gray-400",
+					children: localeService.t(group.title)
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					dir: direction,
+					"data-u-comp": "cf-icon-set-group-grid",
+					className: "univer-grid univer-grid-cols-2 univer-gap-1",
+					children: group.group.map((groupItem, groupItemIndex) => {
+						const selected = groupItem.name === iconType;
+						return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+							type: "button",
+							"aria-label": `${localeService.t(group.title)} ${groupItemIndex + 1}`,
+							"aria-pressed": selected,
+							className: (0, _univerjs_design.clsx)("univer-flex univer-h-8 univer-w-full univer-cursor-pointer univer-items-center univer-justify-start univer-rounded-md univer-border-0 univer-bg-transparent univer-px-2 univer-outline-none univer-transition-colors focus-visible:univer-ring-2 focus-visible:univer-ring-primary-600", selected ? "univer-bg-primary-50 univer-ring-1 univer-ring-primary-600 dark:!univer-bg-primary-900" : "hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700"),
+							onClick: () => {
+								onClick(groupItem.name);
+							},
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+								dir: direction,
+								className: "univer-flex univer-items-center univer-gap-0.5",
+								children: groupItem.list.map((base64, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("img", {
+									alt: "",
+									className: "univer-size-5",
+									src: base64,
+									draggable: false
+								}, index))
+							})
+						}, groupItem.name);
+					})
+				})]
+			}, group.title);
+		})
+	});
+};
+const IconItemList = (props) => {
+	const { onClick } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const direction = (0, _univerjs_ui.useObservable)(localeService.direction$, localeService.getDirection());
+	const list = (0, react.useMemo)(() => {
+		const result = [];
+		for (const key in _univerjs_sheets_conditional_formatting.iconMap) {
+			const iconType = key;
+			_univerjs_sheets_conditional_formatting.iconMap[iconType].forEach((base64, index) => {
+				result.push({
+					iconType,
+					base64,
+					iconId: String(index)
+				});
+			});
+		}
+		return result;
+	}, []);
+	const handleClick = (item) => {
+		onClick(item.iconType, item.iconId);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		dir: direction,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			"data-u-comp": "cf-icon-set-no-icon-option",
+			className: "univer-mb-2.5 univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm",
+			onClick: () => handleClick({
+				iconType: _univerjs_sheets_conditional_formatting.IIconSetType.empty,
+				iconId: "",
+				base64: ""
+			}),
+			children: localeService.t("sheets-conditional-formatting-ui.iconSet.noCellIcon")
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-flex univer-w-64 univer-flex-wrap univer-gap-2",
+			children: list.map((item) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mb-2 univer-flex univer-cursor-pointer univer-items-center univer-justify-center univer-rounded hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("img", {
+					className: "univer-size-5",
+					src: item.base64,
+					draggable: false,
+					onClick: () => handleClick(item)
+				})
+			}, `${item.iconType}_${item.iconId}`))
+		})]
+	});
+};
+const IconSetRuleEdit = (props) => {
+	const { onChange, configList, errorMap = {} } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const options = [{
+		label: localeService.t(`sheets-conditional-formatting-ui.symbol.${_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThan}`),
+		value: _univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThan
+	}, {
+		label: localeService.t(`sheets-conditional-formatting-ui.symbol.${_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThanOrEqual}`),
+		value: _univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThanOrEqual
+	}];
+	const valueTypeOptions = [
+		{
+			label: localeService.t(`sheets-conditional-formatting-ui.valueType.${_univerjs_sheets_conditional_formatting.CFValueType.num}`),
+			value: _univerjs_sheets_conditional_formatting.CFValueType.num
+		},
+		{
+			label: localeService.t(`sheets-conditional-formatting-ui.valueType.${_univerjs_sheets_conditional_formatting.CFValueType.percent}`),
+			value: _univerjs_sheets_conditional_formatting.CFValueType.percent
+		},
+		{
+			label: localeService.t(`sheets-conditional-formatting-ui.valueType.${_univerjs_sheets_conditional_formatting.CFValueType.percentile}`),
+			value: _univerjs_sheets_conditional_formatting.CFValueType.percentile
+		},
+		{
+			label: localeService.t(`sheets-conditional-formatting-ui.valueType.${_univerjs_sheets_conditional_formatting.CFValueType.formula}`),
+			value: _univerjs_sheets_conditional_formatting.CFValueType.formula
+		}
+	];
+	const handleValueValueChange = (v, index) => {
+		onChange([
+			String(index),
+			"value",
+			"value"
+		], v);
+	};
+	const handleOperatorChange = (operator, index) => {
+		onChange([String(index), "operator"], operator);
+		const defaultValue = (0, _univerjs_sheets_conditional_formatting.createDefaultValue)(_univerjs_sheets_conditional_formatting.CFSubRuleType.number, operator);
+		handleValueValueChange(defaultValue, index);
+	};
+	const handleValueTypeChange = (v, index) => {
+		onChange([
+			String(index),
+			"value",
+			"type"
+		], v);
+		const item = configList[index];
+		const defaultValue = (0, _univerjs_sheets_conditional_formatting.createDefaultValue)(_univerjs_sheets_conditional_formatting.CFSubRuleType.number, item.operator);
+		handleValueValueChange(defaultValue, index);
+	};
+	return (0, react.useMemo)(() => {
+		return configList.map((item, index) => {
+			const error = errorMap[index];
+			const icon = getIcon(item.iconType, item.iconId);
+			const isEnd = index === configList.length - 1;
+			const isFirst = index === 0;
+			const preItem = configList[index - 1];
+			const lessThanText = (preItem === null || preItem === void 0 ? void 0 : preItem.value.type) === _univerjs_sheets_conditional_formatting.CFValueType.formula ? localeService.t("sheets-conditional-formatting-ui.valueType.formula") : preItem === null || preItem === void 0 ? void 0 : preItem.value.value;
+			const handleIconClick = (iconType, iconId) => {
+				const value = {
+					...item,
+					iconId,
+					iconType
+				};
+				onChange([String(index)], value);
+			};
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: index ? "univer-mt-6" : "univer-mt-3",
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: "univer-mt-3 univer-flex univer-items-center univer-justify-between univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: "univer-w-[45%]",
+							children: [localeService.t("sheets-conditional-formatting-ui.iconSet.icon"), index + 1]
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: "univer-w-[45%]",
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [!isFirst && !isEnd && localeService.t("sheets-conditional-formatting-ui.iconSet.rule"), !isFirst && !isEnd && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+								className: "univer-font-medium univer-text-gray-600 dark:!univer-text-gray-200",
+								children: [
+									localeService.t("sheets-conditional-formatting-ui.iconSet.when"),
+									" ",
+									localeService.t(`sheets-conditional-formatting-ui.symbol.${(0, _univerjs_sheets_conditional_formatting.getOppositeOperator)(preItem.operator)}`),
+									lessThanText,
+									isEnd ? "" : ` ${localeService.t("sheets-conditional-formatting-ui.iconSet.and")} `
+								]
+							})] })
+						})]
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						"data-u-comp": "cf-icon-set-rule-grid",
+						className: "univer-mt-3 univer-grid univer-grid-cols-2 univer-gap-4 rtl:univer-grid-flow-dense",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: "univer-flex univer-items-center",
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dropdown, {
+								overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+									className: "univer-rounded-lg univer-p-4",
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(IconItemList, {
+										onClick: handleIconClick,
+										iconId: item.iconId,
+										iconType: item.iconType
+									})
+								}),
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: (0, _univerjs_design.clsx)("univer-box-border univer-flex univer-h-8 univer-w-full univer-items-center univer-justify-between univer-rounded-md univer-bg-gray-0 univer-px-4 univer-py-2 univer-text-xs univer-text-gray-600 univer-transition-all hover:univer-border-primary-600 dark:!univer-text-gray-200", _univerjs_design.borderClassName),
+									children: [icon ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("img", {
+										src: icon,
+										className: "univer-size-4",
+										draggable: false
+									}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.SlashDoubleIcon, {}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, {})]
+								})
+							})
+						}), !isEnd ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+							options,
+							value: item.operator,
+							onChange: (v) => {
+								handleOperatorChange(v, index);
+							}
+						}) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: "univer-mt-0 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+							children: [localeService.t("sheets-conditional-formatting-ui.iconSet.rule"), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+								className: "univer-font-medium",
+								children: [
+									localeService.t("sheets-conditional-formatting-ui.iconSet.when"),
+									" ",
+									localeService.t(`sheets-conditional-formatting-ui.symbol.${(0, _univerjs_sheets_conditional_formatting.getOppositeOperator)(preItem.operator)}`),
+									lessThanText,
+									isEnd ? "" : ` ${localeService.t("sheets-conditional-formatting-ui.iconSet.and")} `
+								]
+							})]
+						})]
+					}),
+					!isEnd ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: "univer-mt-3 univer-grid univer-grid-cols-2 univer-gap-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: localeService.t("sheets-conditional-formatting-ui.iconSet.type") }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: localeService.t("sheets-conditional-formatting-ui.iconSet.value") })]
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: "univer-mt-3 univer-grid univer-grid-cols-2 univer-gap-4",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+							options: valueTypeOptions,
+							value: item.value.type,
+							onChange: (v) => {
+								handleValueTypeChange(v, index);
+							}
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(TextInput, {
+							id: index,
+							type: item.value.type,
+							error,
+							value: item.value.value || "",
+							onChange: (v) => {
+								handleValueValueChange(v, index);
+							}
+						})]
+					})] }) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {})
+				]
+			}, index);
+		});
+	}, [configList, errorMap]);
+};
+const IconSet = (props) => {
+	var _props$rule;
+	const { interceptorManager } = props;
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === _univerjs_sheets_conditional_formatting.CFRuleType.iconSet ? props.rule : void 0;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const direction = (0, _univerjs_ui.useObservable)(localeService.direction$, localeService.getDirection());
+	const [errorMap, setErrorMap] = (0, react.useState)({});
+	const [currentIconType, setCurrentIconType] = (0, react.useState)(() => {
+		const defaultV = Object.keys(_univerjs_sheets_conditional_formatting.iconMap)[0];
+		if (rule && rule.config.length) {
+			const type = rule.config[0].iconType;
+			if (!rule.config.some((item) => item.iconType !== type)) return type;
+		}
+		return defaultV;
+	});
+	const [configList, setConfigList] = (0, react.useState)(() => {
+		if (rule && rule.config.length) return _univerjs_core.Tools.deepClone(rule === null || rule === void 0 ? void 0 : rule.config);
+		const list = _univerjs_sheets_conditional_formatting.iconMap[currentIconType] || [];
+		return new Array(list.length).fill("").map((_e, index, list) => {
+			if (index === list.length - 1) return {
+				operator: _univerjs_sheets_conditional_formatting.CFNumberOperator.lessThanOrEqual,
+				value: {
+					type: _univerjs_sheets_conditional_formatting.CFValueType.num,
+					value: Number.MAX_SAFE_INTEGER
+				},
+				iconType: currentIconType,
+				iconId: String(index)
+			};
+			return createDefaultConfigItem(currentIconType, index, list);
+		});
+	});
+	const [isShowValue, setIsShowValue] = (0, react.useState)(() => {
+		if (!rule) return true;
+		return !!rule.isShowValue;
+	});
+	const previewIcon = (0, react.useMemo)(() => {
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			"data-u-comp": "cf-icon-set-preview",
+			className: "univer-flex univer-items-center rtl:univer-flex-row-reverse",
+			children: configList.map((item) => {
+				return getIcon(item.iconType, item.iconId);
+			}).map((icon, index) => icon ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("img", {
+				className: "univer-size-5",
+				src: icon
+			}, index) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.SlashDoubleIcon, { className: "univer-size-5" }, index))
+		});
+	}, [configList]);
+	const checkResult = (_configList) => {
+		if (_configList.reduce((pre, cur, index) => {
+			if (pre.preType && !pre.result || _configList.length - 1 === index) return pre;
+			if (cur.value.type === _univerjs_sheets_conditional_formatting.CFValueType.formula) return {
+				preType: _univerjs_sheets_conditional_formatting.CFValueType.formula,
+				result: false
+			};
+			if (pre.preType) return {
+				result: pre.preType === cur.value.type,
+				preType: cur.value.type
+			};
+			else return {
+				result: true,
+				preType: cur.value.type
+			};
+		}, {
+			result: true,
+			preType: ""
+		}).result && [
+			_univerjs_sheets_conditional_formatting.CFValueType.num,
+			_univerjs_sheets_conditional_formatting.CFValueType.percent,
+			_univerjs_sheets_conditional_formatting.CFValueType.percentile
+		].includes(_configList[0].value.type)) {
+			const result = {};
+			_configList.forEach((item, index, arr) => {
+				if (index - 1 < 0 || index === arr.length - 1) return;
+				const preItem = _configList[index - 1];
+				const preOperator = (0, _univerjs_sheets_conditional_formatting.getOppositeOperator)(preItem.operator);
+				if (!(0, _univerjs_sheets_conditional_formatting.compareWithNumber)({
+					operator: preOperator,
+					value: preItem.value.value
+				}, item.value.value)) result[index] = `${localeService.t(`sheets-conditional-formatting-ui.form.${preOperator}`, String(preItem.value.value))} `;
+			});
+			return result;
+		}
+		return {};
+	};
+	const handleChange = (keys, v) => {
+		if ((0, _univerjs_core.get)(configList, keys) !== v) {
+			(0, _univerjs_core.set)(configList, keys, v);
+			setConfigList([...configList]);
+			setErrorMap(checkResult(configList));
+		}
+	};
+	const handleClickIconList = (iconType) => {
+		setCurrentIconType(iconType);
+		const list = _univerjs_sheets_conditional_formatting.iconMap[iconType] || [];
+		const config = new Array(list.length).fill("").map((_e, index, list) => createDefaultConfigItem(iconType, index, list));
+		setConfigList(config);
+		setErrorMap(checkResult(config));
+	};
+	(0, react.useEffect)(() => {
+		const dispose = interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.iconSet,
+				isShowValue,
+				config: configList
+			};
+		} });
+		return () => {
+			dispose();
+		};
+	}, [
+		isShowValue,
+		configList,
+		interceptorManager
+	]);
+	(0, react.useEffect)(() => {
+		const dispose = interceptorManager.intercept(interceptorManager.getInterceptPoints().beforeSubmit, { handler() {
+			const currentErrorMap = checkResult(configList);
+			setErrorMap(currentErrorMap);
+			return Object.keys(currentErrorMap).length === 0;
+		} });
+		return () => {
+			dispose();
+		};
+	}, [
+		isShowValue,
+		configList,
+		interceptorManager,
+		errorMap
+	]);
+	const reverseIcon = () => {
+		const iconList = configList.map((item) => ({ ...item }));
+		configList.forEach((item, index) => {
+			const mirrorIndex = configList.length - 1 - index;
+			const newIcon = iconList[mirrorIndex];
+			item.iconId = newIcon.iconId;
+			item.iconType = newIcon.iconType;
+		});
+		setConfigList([...configList]);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "cf-icon-set-editor",
+		dir: direction,
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mt-4 univer-text-sm univer-text-gray-600",
+				children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mt-3",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dropdown, {
+					overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						dir: direction,
+						className: "univer-rounded-lg univer-p-3",
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(IconGroupList, {
+							iconType: currentIconType,
+							onClick: handleClickIconList
+						})
+					}),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: (0, _univerjs_design.clsx)("univer-box-border univer-flex univer-h-8 univer-w-full univer-items-center univer-justify-between univer-rounded-md univer-bg-gray-0 univer-px-4 univer-py-2 univer-text-xs univer-text-gray-600 univer-transition-all hover:univer-border-primary-600", _univerjs_design.borderClassName),
+						children: [previewIcon, /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, {})]
+					})
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-mt-3 univer-flex univer-items-center univer-gap-2 univer-text-xs rtl:univer-flex-row-reverse rtl:univer-justify-end",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					"data-u-comp": "cf-icon-set-option-row",
+					className: "univer-flex univer-items-center univer-text-xs",
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Checkbox, { onChange: reverseIcon }), localeService.t("sheets-conditional-formatting-ui.iconSet.reverseIconOrder")]
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					"data-u-comp": "cf-icon-set-option-row",
+					className: "univer-flex univer-items-center univer-text-xs",
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Checkbox, {
+						checked: !isShowValue,
+						onChange: (v) => {
+							setIsShowValue(!v);
+						}
+					}), localeService.t("sheets-conditional-formatting-ui.iconSet.onlyShowIcon")]
+				})]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(IconSetRuleEdit, {
+				errorMap,
+				onChange: handleChange,
+				configList
+			})
+		]
+	});
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/Rank.tsx
+const RankStyleEditor = (props) => {
+	var _props$rule;
+	const { onChange, interceptorManager } = props;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const rule = ((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.type) === _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell ? props.rule : void 0;
+	const options = [
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.isNotBottom"),
+			value: "isNotBottom"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.isBottom"),
+			value: "isBottom"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.greaterThanAverage"),
+			value: "greaterThanAverage"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.lessThanAverage"),
+			value: "lessThanAverage"
+		}
+	];
+	const [type, setType] = (0, react.useState)(() => {
+		const defaultV = options[0].value;
+		const type = rule === null || rule === void 0 ? void 0 : rule.type;
+		if (!rule) return defaultV;
+		switch (type) {
+			case _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell: switch (rule.subType) {
+				case _univerjs_sheets_conditional_formatting.CFSubRuleType.average:
+					if ([_univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThan, _univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThanOrEqual].includes(rule.operator)) return "greaterThanAverage";
+					if ([_univerjs_sheets_conditional_formatting.CFNumberOperator.lessThan, _univerjs_sheets_conditional_formatting.CFNumberOperator.lessThanOrEqual].includes(rule.operator)) return "lessThanAverage";
+					return defaultV;
+				case _univerjs_sheets_conditional_formatting.CFSubRuleType.rank: if (rule.isBottom) return "isBottom";
+				else return "isNotBottom";
+			}
+		}
+		return defaultV;
+	});
+	const [value, setValue] = (0, react.useState)(() => {
+		const defaultV = 10;
+		const type = rule === null || rule === void 0 ? void 0 : rule.type;
+		if (!rule) return defaultV;
+		switch (type) {
+			case _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell: switch (rule.subType) {
+				case _univerjs_sheets_conditional_formatting.CFSubRuleType.rank: return rule.value || defaultV;
+			}
+		}
+		return defaultV;
+	});
+	const [isPercent, setIsPercent] = (0, react.useState)(() => {
+		const defaultV = false;
+		const type = rule === null || rule === void 0 ? void 0 : rule.type;
+		if (!rule) return defaultV;
+		switch (type) {
+			case _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell: switch (rule.subType) {
+				case _univerjs_sheets_conditional_formatting.CFSubRuleType.rank: return rule.isPercent || defaultV;
+			}
+		}
+		return defaultV;
+	});
+	const [style, setStyle] = (0, react.useState)({});
+	const getResult = (config) => {
+		const { type, isPercent, value, style } = config;
+		switch (type) {
+			case "isNotBottom": return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.rank,
+				isPercent,
+				isBottom: false,
+				value,
+				style
+			};
+			case "isBottom": return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.rank,
+				isPercent,
+				isBottom: true,
+				value,
+				style
+			};
+			case "greaterThanAverage": return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.average,
+				operator: _univerjs_sheets_conditional_formatting.CFNumberOperator.greaterThan,
+				style
+			};
+			case "lessThanAverage": return {
+				type: _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell,
+				subType: _univerjs_sheets_conditional_formatting.CFSubRuleType.average,
+				operator: _univerjs_sheets_conditional_formatting.CFNumberOperator.lessThan,
+				style
+			};
+		}
+	};
+	(0, react.useEffect)(() => {
+		return interceptorManager.intercept(interceptorManager.getInterceptPoints().submit, { handler() {
+			return getResult({
+				type,
+				isPercent,
+				value,
+				style
+			});
+		} });
+	}, [
+		type,
+		isPercent,
+		value,
+		style,
+		interceptorManager
+	]);
+	const _onChange = (config) => {
+		onChange(getResult(config));
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleRule")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+			className: "univer-mt-3 univer-w-full",
+			value: type,
+			options,
+			onChange: (v) => {
+				var _options$find;
+				const nextType = (_options$find = options.find((option) => option.value === v)) === null || _options$find === void 0 ? void 0 : _options$find.value;
+				if (nextType) {
+					setType(nextType);
+					_onChange({
+						type: nextType,
+						isPercent,
+						value,
+						style
+					});
+				}
+			}
+		}),
+		["isNotBottom", "isBottom"].includes(type) && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-mt-3 univer-flex univer-items-center univer-gap-2",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.InputNumber, {
+				min: 1,
+				max: 1e3,
+				value,
+				onChange: (v) => {
+					const value = v || 0;
+					setValue(value);
+					_onChange({
+						type,
+						isPercent,
+						value,
+						style
+					});
+				}
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-items-center univer-text-xs",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Checkbox, {
+					checked: isPercent,
+					onChange: (v) => {
+						setIsPercent(!!v);
+						_onChange({
+							type,
+							isPercent: !!v,
+							value,
+							style
+						});
+					}
+				}), localeService.t("sheets-conditional-formatting-ui.valueType.percent")]
+			})]
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: previewClassName,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Preview, { rule: getResult({
+				type,
+				isPercent,
+				value,
+				style
+			}) })
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ConditionalStyleEditor, {
+			style: rule === null || rule === void 0 ? void 0 : rule.style,
+			className: "univer-mt-3",
+			onChange: (v) => {
+				setStyle(v);
+				_onChange({
+					type,
+					isPercent,
+					value,
+					style: v
+				});
+			}
+		})
+	] });
+};
+
+//#endregion
+//#region src/views/panel/rule-edit/type.ts
+const beforeSubmit = (0, _univerjs_core.createInterceptorKey)("beforeSubmit");
+const submit = (0, _univerjs_core.createInterceptorKey)("submit");
+
+//#endregion
+//#region src/views/panel/RuleEdit.tsx
+const getUnitId = (univerInstanceService) => univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getUnitId();
+const getSubUnitId = (univerInstanceService) => {
+	var _getActiveSheet;
+	return (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+};
+const RuleEdit = (props) => {
+	var _props$rule, _props$rule5;
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const commandService = (0, _univerjs_ui.useDependency)(_univerjs_core.ICommandService);
+	const univerInstanceService = (0, _univerjs_ui.useDependency)(_univerjs_core.IUniverInstanceService);
+	const conditionalFormattingRuleModel = (0, _univerjs_ui.useDependency)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+	const selectionManagerService = (0, _univerjs_ui.useDependency)(_univerjs_sheets.SheetsSelectionsService);
+	const unitId = getUnitId(univerInstanceService);
+	const subUnitId = getSubUnitId(univerInstanceService);
+	const [errorText, setErrorText] = (0, react.useState)(void 0);
+	const rangeResult = (0, react.useRef)(((_props$rule = props.rule) === null || _props$rule === void 0 ? void 0 : _props$rule.ranges) ?? []);
+	const rangeSelectorTouched = (0, react.useRef)(false);
+	const rangeString = (0, react.useMemo)(() => {
+		var _props$rule2;
+		let ranges = (_props$rule2 = props.rule) === null || _props$rule2 === void 0 ? void 0 : _props$rule2.ranges;
+		if (!(ranges === null || ranges === void 0 ? void 0 : ranges.length)) {
+			var _selectionManagerServ;
+			ranges = ((_selectionManagerServ = selectionManagerService.getCurrentSelections()) === null || _selectionManagerServ === void 0 ? void 0 : _selectionManagerServ.map((s) => s.range)) ?? [];
+		}
+		rangeResult.current = ranges;
+		if (!(ranges === null || ranges === void 0 ? void 0 : ranges.length)) return "";
+		return ranges.map((range) => {
+			const v = (0, _univerjs_engine_formula.serializeRange)(range);
+			return v === "NaN" ? "" : v;
+		}).filter((r) => !!r).join(",");
+	}, [props.rule]);
+	const options = [
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.highlightCell"),
+			value: "1"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.panel.rankAndAverage"),
+			value: "2"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.dataBar"),
+			value: "3"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.colorScale"),
+			value: "4"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.formula"),
+			value: "5"
+		},
+		{
+			label: localeService.t("sheets-conditional-formatting-ui.ruleType.iconSet"),
+			value: "6"
+		}
+	];
+	const [ruleType, setRuleType] = (0, react.useState)(() => {
+		var _props$rule3;
+		const type = (_props$rule3 = props.rule) === null || _props$rule3 === void 0 ? void 0 : _props$rule3.rule.type;
+		const defaultType = options[0].value;
+		if (!type) return defaultType;
+		switch (type) {
+			case _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell:
+				var _props$rule4;
+				switch ((_props$rule4 = props.rule) === null || _props$rule4 === void 0 ? void 0 : _props$rule4.rule.subType) {
+					case _univerjs_sheets_conditional_formatting.CFSubRuleType.number:
+					case _univerjs_sheets_conditional_formatting.CFSubRuleType.text:
+					case _univerjs_sheets_conditional_formatting.CFSubRuleType.duplicateValues:
+					case _univerjs_sheets_conditional_formatting.CFSubRuleType.uniqueValues:
+					case _univerjs_sheets_conditional_formatting.CFSubRuleType.timePeriod: return "1";
+					case _univerjs_sheets_conditional_formatting.CFSubRuleType.average:
+					case _univerjs_sheets_conditional_formatting.CFSubRuleType.rank: return "2";
+					case _univerjs_sheets_conditional_formatting.CFSubRuleType.formula: return "5";
+				}
+				break;
+			case _univerjs_sheets_conditional_formatting.CFRuleType.dataBar: return "3";
+			case _univerjs_sheets_conditional_formatting.CFRuleType.colorScale: return "4";
+			case _univerjs_sheets_conditional_formatting.CFRuleType.iconSet: return "6";
+		}
+		return defaultType;
+	});
+	const result = (0, react.useRef)(void 0);
+	const interceptorManager = (0, react.useMemo)(() => {
+		return new _univerjs_core.InterceptorManager({
+			beforeSubmit,
+			submit
+		});
+	}, []);
+	const StyleEditor = (0, react.useMemo)(() => {
+		switch (ruleType) {
+			case "1": return HighlightCellStyleEditor;
+			case "2": return RankStyleEditor;
+			case "3": return DataBarStyleEditor;
+			case "4": return ColorScaleStyleEditor;
+			case "5": return FormulaStyleEditor;
+			case "6": return IconSet;
+			default: return HighlightCellStyleEditor;
+		}
+	}, [ruleType]);
+	(0, react.useEffect)(() => {
+		const disposable = commandService.onCommandExecuted((commandInfo) => {
+			if (commandInfo.id === _univerjs_sheets.RemoveSheetMutation.id) {
+				const params = commandInfo.params;
+				if (params.subUnitId === subUnitId && params.unitId === unitId) props.onCancel();
+			}
+			if (commandInfo.id === _univerjs_sheets.SetWorksheetActiveOperation.id) props.onCancel();
+		});
+		return () => disposable.dispose();
+	}, []);
+	const onStyleChange = (config) => {
+		result.current = config;
+	};
+	const onRangeSelectorChange = (rangeString) => {
+		if (!rangeSelectorTouched.current && rangeString.length < 1 && rangeResult.current.length > 0) return;
+		rangeSelectorTouched.current = true;
+		const result = rangeString.split(",").filter((e) => !!e).map(_univerjs_engine_formula.deserializeRangeWithSheet).map((item) => item.range);
+		rangeResult.current = result;
+	};
+	const handleSubmit = () => {
+		const getRanges = () => {
+			const worksheet = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getActiveSheet();
+			if (!worksheet) throw new Error("No active sheet found");
+			return rangeResult.current.map((range) => (0, _univerjs_sheets.setEndForRange)(range, worksheet.getRowCount(), worksheet.getColumnCount())).filter((range) => !(Number.isNaN(range.startRow) || Number.isNaN(range.startColumn)));
+		};
+		const ranges = getRanges();
+		if (ranges.length < 1) {
+			setErrorText(localeService.t("sheets-conditional-formatting-ui.errorMessage.rangeError"));
+			return;
+		}
+		if (interceptorManager.fetchThroughInterceptors(interceptorManager.getInterceptPoints().beforeSubmit)(true, null)) {
+			const result = interceptorManager.fetchThroughInterceptors(interceptorManager.getInterceptPoints().submit)(null, null);
+			if (result) {
+				const unitId = getUnitId(univerInstanceService);
+				const subUnitId = getSubUnitId(univerInstanceService);
+				if (!unitId || !subUnitId) throw new Error("No active sheet found");
+				let rule = {};
+				if (props.rule && props.rule.cfId) {
+					rule = {
+						...props.rule,
+						ranges,
+						rule: result
+					};
+					commandService.executeCommand(_univerjs_sheets_conditional_formatting.SetCfCommand.id, {
+						unitId,
+						subUnitId,
+						rule
+					});
+					props.onCancel();
+				} else {
+					rule = {
+						cfId: conditionalFormattingRuleModel.createCfId(unitId, subUnitId),
+						ranges,
+						rule: result,
+						stopIfTrue: false
+					};
+					commandService.executeCommand(_univerjs_sheets_conditional_formatting.AddCfCommand.id, {
+						unitId,
+						subUnitId,
+						rule
+					});
+					props.onCancel();
+				}
+			}
+		}
+	};
+	const handleCancel = () => {
+		props.onCancel();
+	};
+	const handleVerify = (v, rangeText) => {
+		if (!rangeSelectorTouched.current && !v && rangeText.length < 1) {
+			setErrorText(void 0);
+			return;
+		}
+		if (v) if (rangeText.length < 1) setErrorText(localeService.t("sheets-conditional-formatting-ui.errorMessage.rangeError"));
+		else setErrorText(void 0);
+		else setErrorText(localeService.t("sheets-conditional-formatting-ui.errorMessage.rangeError"));
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.range")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-mt-4",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_sheets_formula_ui.RangeSelector, {
+				unitId,
+				subUnitId,
+				initialValue: rangeString,
+				onChange: (_, text) => onRangeSelectorChange(text),
+				onVerify: handleVerify
+			}), errorText && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-mt-1 univer-text-xs univer-text-red-500",
+				children: errorText
+			})]
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-conditional-formatting-ui.panel.styleType")
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+			className: "univer-mt-4 univer-w-full",
+			value: ruleType,
+			options,
+			onChange: (e) => setRuleType(e)
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsx)(StyleEditor, {
+			interceptorManager,
+			rule: (_props$rule5 = props.rule) === null || _props$rule5 === void 0 ? void 0 : _props$rule5.rule,
+			onChange: onStyleChange
+		}),
+		/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-mt-4 univer-flex univer-justify-end univer-gap-2",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				onClick: handleCancel,
+				children: localeService.t("sheets-conditional-formatting-ui.panel.cancel")
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				variant: "primary",
+				onClick: handleSubmit,
+				children: localeService.t("sheets-conditional-formatting-ui.panel.submit")
+			})]
+		})
+	] });
+};
+
+//#endregion
+//#region src/views/panel/RuleList.tsx
+const getRuleDescribe = (rule, localeService) => {
+	const ruleConfig = rule.rule;
+	switch (ruleConfig.type) {
+		case _univerjs_sheets_conditional_formatting.CFRuleType.colorScale: return localeService.t("sheets-conditional-formatting-ui.ruleType.colorScale");
+		case _univerjs_sheets_conditional_formatting.CFRuleType.dataBar: return localeService.t("sheets-conditional-formatting-ui.ruleType.dataBar");
+		case _univerjs_sheets_conditional_formatting.CFRuleType.iconSet: return localeService.t("sheets-conditional-formatting-ui.ruleType.iconSet");
+		case _univerjs_sheets_conditional_formatting.CFRuleType.highlightCell: switch (ruleConfig.subType) {
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.average: {
+				const operator = ruleConfig.operator;
+				return localeService.t(`sheets-conditional-formatting-ui.preview.describe.${operator}`, localeService.t("sheets-conditional-formatting-ui.subRuleType.average"));
+			}
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.duplicateValues: return localeService.t("sheets-conditional-formatting-ui.subRuleType.duplicateValues");
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.uniqueValues: return localeService.t("sheets-conditional-formatting-ui.subRuleType.uniqueValues");
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.number: {
+				const operator = ruleConfig.operator;
+				return localeService.t(`sheets-conditional-formatting-ui.preview.describe.${operator}`, ...Array.isArray(ruleConfig.value) ? ruleConfig.value.map((e) => String(e)) : [String(ruleConfig.value || "")]);
+			}
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.text: {
+				const operator = ruleConfig.operator;
+				return localeService.t(`sheets-conditional-formatting-ui.preview.describe.${operator}`, ruleConfig.value || "");
+			}
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.timePeriod: {
+				const operator = ruleConfig.operator;
+				return localeService.t(`sheets-conditional-formatting-ui.preview.describe.${operator}`);
+			}
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.rank: if (ruleConfig.isPercent) if (ruleConfig.isBottom) return localeService.t("sheets-conditional-formatting-ui.preview.describe.bottomNPercent", String(ruleConfig.value));
+			else return localeService.t("sheets-conditional-formatting-ui.preview.describe.topNPercent", String(ruleConfig.value));
+			else if (ruleConfig.isBottom) return localeService.t("sheets-conditional-formatting-ui.preview.describe.bottomN", String(ruleConfig.value));
+			else return localeService.t("sheets-conditional-formatting-ui.preview.describe.topN", String(ruleConfig.value));
+			case _univerjs_sheets_conditional_formatting.CFSubRuleType.formula: return localeService.t("sheets-conditional-formatting-ui.ruleType.formula");
+		}
+	}
+};
+function RuleList(props) {
+	const { onClick } = props;
+	const conditionalFormattingRuleModel = (0, _univerjs_ui.useDependency)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel);
+	const univerInstanceService = (0, _univerjs_ui.useDependency)(_univerjs_core.IUniverInstanceService);
+	const selectionManagerService = (0, _univerjs_ui.useDependency)(_univerjs_sheets.SheetsSelectionsService);
+	const commandService = (0, _univerjs_ui.useDependency)(_univerjs_core.ICommandService);
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const injector = (0, _univerjs_ui.useDependency)(_univerjs_core.Injector);
+	const conditionalFormattingI18nController = (0, _univerjs_ui.useDependency)(ConditionalFormattingI18nController);
+	const workbook = (0, _univerjs_ui.useObservable)(() => univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET), void 0, void 0, []);
+	const unitId = workbook.getUnitId();
+	const subUnitId = workbook.getActiveSheet().getSheetId();
+	const [currentRuleRanges, setCurrentRuleRanges] = (0, react.useState)([]);
+	const [selectValue, setSelectValue] = (0, react.useState)("2");
+	const [draggingId, setDraggingId] = (0, react.useState)("");
+	const selectOption = [{
+		label: localeService.t("sheets-conditional-formatting-ui.panel.workSheet"),
+		value: "2"
+	}, {
+		label: localeService.t("sheets-conditional-formatting-ui.panel.selectedRange"),
+		value: "1"
+	}];
+	const getRuleList = () => {
+		const ruleList = conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId);
+		if (!ruleList || !ruleList.length) return [];
+		if (selectValue === "1") {
+			const selection = selectionManagerService.getCurrentLastSelection();
+			if (!selection) return [];
+			const range = selection.range;
+			return ruleList.filter((rule) => {
+				return rule.ranges.some((ruleRange) => _univerjs_core.Rectangle.intersects(ruleRange, range));
+			});
+		} else if (selectValue === "2") return [...ruleList];
+		return [];
+	};
+	const ruleList = (0, _univerjs_ui.useObservable)(() => {
+		const commandEvent$ = new rxjs.Observable((subscriber) => {
+			const commandList = [
+				_univerjs_sheets.SetSelectionsOperation.id,
+				_univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id,
+				_univerjs_sheets_conditional_formatting.SetConditionalRuleMutation.id,
+				_univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutation.id,
+				_univerjs_sheets_conditional_formatting.MoveConditionalRuleMutation.id
+			];
+			const disposable = commandService.onCommandExecuted((commandInfo) => {
+				var _commandInfo$params;
+				if (commandInfo.id === _univerjs_sheets.SetWorksheetActiveOperation.id) {
+					subscriber.next("immediate");
+					return;
+				}
+				const commandUnitId = (_commandInfo$params = commandInfo.params) === null || _commandInfo$params === void 0 ? void 0 : _commandInfo$params.unitId;
+				if (selectValue === "1" && commandList.includes(commandInfo.id) && commandUnitId === unitId) subscriber.next("debounced");
+			});
+			return () => disposable.dispose();
+		}).pipe((0, rxjs.share)());
+		return (0, rxjs.merge)(conditionalFormattingRuleModel.$ruleChange, commandEvent$.pipe((0, rxjs.filter)((event) => event === "immediate")), commandEvent$.pipe((0, rxjs.filter)((event) => event === "debounced"), (0, rxjs.debounceTime)(16))).pipe((0, rxjs.map)(getRuleList), (0, rxjs.startWith)(getRuleList()));
+	}, [], false, [
+		commandService,
+		conditionalFormattingRuleModel,
+		selectValue,
+		subUnitId,
+		unitId
+	]);
+	(0, _univerjs_sheets_ui.useHighlightRange)(currentRuleRanges);
+	const handleDelete = (rule) => {
+		var _getActiveSheet;
+		const unitId = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getUnitId();
+		const subUnitId = (_getActiveSheet = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+		if (!unitId || !subUnitId) throw new Error("No active sheet found");
+		commandService.executeCommand(_univerjs_sheets_conditional_formatting.DeleteCfCommand.id, {
+			unitId,
+			subUnitId,
+			cfId: rule.cfId
+		});
+	};
+	const handleDragStart = (_layout, from) => {
+		const dragRule = ruleListByPermissionCheck[from.y];
+		setDraggingId((dragRule === null || dragRule === void 0 ? void 0 : dragRule.cfId) ?? "");
+	};
+	const handleDragStop = (_layout, from, to) => {
+		var _getActiveSheet2, _ruleListByPermission, _ruleListByPermission2;
+		setDraggingId("");
+		const unitId = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getUnitId();
+		const subUnitId = (_getActiveSheet2 = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet2 === void 0 ? void 0 : _getActiveSheet2.getSheetId();
+		if (!unitId || !subUnitId) throw new Error("No active sheet found");
+		const getSaveIndex = (index) => {
+			const length = ruleListByPermissionCheck.length;
+			return Math.min(length - 1, Math.max(0, index));
+		};
+		const cfId = (_ruleListByPermission = ruleListByPermissionCheck[getSaveIndex(from.y)]) === null || _ruleListByPermission === void 0 ? void 0 : _ruleListByPermission.cfId;
+		const targetCfId = (_ruleListByPermission2 = ruleListByPermissionCheck[getSaveIndex(to.y)]) === null || _ruleListByPermission2 === void 0 ? void 0 : _ruleListByPermission2.cfId;
+		if (!cfId || !targetCfId) return;
+		if (cfId !== targetCfId) commandService.executeCommand(_univerjs_sheets_conditional_formatting.MoveCfCommand.id, {
+			unitId,
+			subUnitId,
+			start: {
+				id: cfId,
+				type: "self"
+			},
+			end: {
+				id: targetCfId,
+				type: to.y > from.y ? "after" : "before"
+			}
+		});
+	};
+	const handleCreate = () => {
+		props.onCreate();
+	};
+	const handleClear = () => {
+		if (selectValue === "2") commandService.executeCommand(_univerjs_sheets_conditional_formatting.ClearWorksheetCfCommand.id);
+		else if (selectValue === "1") ruleList.map((rule) => ({
+			unitId,
+			subUnitId,
+			cfId: rule.cfId
+		})).forEach((config) => {
+			commandService.executeCommand(_univerjs_sheets_conditional_formatting.DeleteCfCommand.id, config);
+		});
+	};
+	const ruleListByPermissionCheck = (0, react.useMemo)(() => {
+		const workbook = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook.getActiveSheet();
+		return ruleList.filter((rule) => {
+			const ranges = rule.ranges;
+			return (0, _univerjs_sheets.checkRangesEditablePermission)(injector, workbook.getUnitId(), worksheet.getSheetId(), ranges);
+		});
+	}, [ruleList]);
+	const isHasAllRuleEditPermission = (0, react.useMemo)(() => {
+		const workbook = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook.getActiveSheet();
+		return ruleList.every((rule) => {
+			const ranges = rule.ranges;
+			return (0, _univerjs_sheets.checkRangesEditablePermission)(injector, workbook.getUnitId(), worksheet.getSheetId(), ranges);
+		});
+	}, [ruleList]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-mb-2 univer-flex univer-items-center univer-justify-between univer-gap-2 univer-text-sm",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-flex univer-items-center univer-gap-2",
+			children: conditionalFormattingI18nController.tWithReactNode("sheets-conditional-formatting-ui.panel.managerRuleSelect", /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Select, {
+				className: "univer-w-36",
+				options: selectOption,
+				value: selectValue,
+				onChange: (v) => {
+					setSelectValue(v);
+				}
+			})).map((ele, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { children: ele }, index))
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-flex univer-justify-end univer-gap-2",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Tooltip, {
+				title: localeService.t("sheets-conditional-formatting-ui.panel.createRule"),
+				placement: "bottom",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("a", {
+					className: "univer-size-5 univer-cursor-pointer",
+					onClick: handleCreate,
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.IncreaseIcon, {})
+				})
+			}), ruleList.length && isHasAllRuleEditPermission ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Tooltip, {
+				title: localeService.t("sheets-conditional-formatting-ui.panel.clear"),
+				placement: "bottom",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("a", {
+					className: "univer-size-5 univer-cursor-pointer",
+					onClick: handleClear,
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.DeleteIcon, { className: "univer-text-red-500" })
+				})
+			}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.DeleteIcon, { className: "univer-text-gray-300" }) })]
+		})]
+	}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.DraggableList, {
+		className: "univer-w-full",
+		draggableHandle: ".draggableHandle",
+		list: ruleListByPermissionCheck,
+		onListChange: () => void 0,
+		idKey: "cfId",
+		rowHeight: 60,
+		margin: [0, 10],
+		onDragStop: handleDragStop,
+		onDragStart: handleDragStart,
+		itemRender: (rule) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: (0, _univerjs_design.clsx)("univer-group univer-relative univer-flex univer-items-center univer-justify-between univer-rounded univer-py-2 univer-pl-5 univer-pr-8 hover:univer-bg-gray-100 rtl:univer-pl-8 rtl:univer-pr-5 dark:hover:!univer-bg-gray-700", { "univer-bg-gray-100 dark:!univer-bg-gray-700": draggingId === rule.cfId }),
+			onMouseMove: () => {
+				rule.ranges !== currentRuleRanges && setCurrentRuleRanges(rule.ranges);
+			},
+			onMouseLeave: () => setCurrentRuleRanges([]),
+			onClick: () => {
+				onClick(rule);
+			},
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: (0, _univerjs_design.clsx)("univer-absolute univer-left-0 univer-hidden univer-size-5 univer-cursor-grab univer-items-center univer-justify-center univer-rounded group-hover:univer-flex rtl:univer-left-auto rtl:univer-right-0", "draggableHandle"),
+					onClick: (e) => e.stopPropagation(),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.GripVerticalIcon, {})
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: "univer-min-w-0 univer-max-w-full univer-flex-shrink univer-overflow-hidden",
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-text-sm univer-text-gray-900 dark:!univer-text-gray-0",
+						children: getRuleDescribe(rule, localeService)
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-max-w-[250px] univer-overflow-hidden univer-text-ellipsis univer-text-xs univer-text-gray-400",
+						children: rule.ranges.map((range) => (0, _univerjs_engine_formula.serializeRange)(range)).join(",")
+					})]
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Preview, { rule: rule.rule }) }),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: (0, _univerjs_design.clsx)("univer-absolute univer-right-1 univer-hidden univer-size-6 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded univer-text-red-500 group-hover:univer-flex hover:univer-bg-gray-200 rtl:univer-left-1 rtl:univer-right-auto", { "univer-flex univer-items-center univer-justify-center": draggingId === rule.cfId }),
+					onClick: (e) => {
+						e.stopPropagation();
+						handleDelete(rule);
+						setCurrentRuleRanges([]);
+					},
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.DeleteIcon, {})
+				})
+			]
+		})
+	}) })] });
+}
+
+//#endregion
+//#region src/views/ConditionFormattingPanel.tsx
+const ConditionFormattingPanel = (props) => {
+	const [currentEditRule, setCurrentEditRule] = (0, react.useState)(props.rule);
+	const [isShowRuleEditor, setIsShowRuleEditor] = (0, react.useState)(!!props.rule);
+	const createCfRule = () => {
+		setIsShowRuleEditor(true);
+	};
+	const handleCancel = () => {
+		setIsShowRuleEditor(false);
+		setCurrentEditRule(void 0);
+	};
+	const handleRuleClick = (rule) => {
+		setCurrentEditRule(rule);
+		setIsShowRuleEditor(true);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-flex univer-h-full univer-flex-col univer-justify-between univer-py-4",
+		children: isShowRuleEditor ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RuleEdit, {
+			onCancel: handleCancel,
+			rule: currentEditRule
+		}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RuleList, {
+			onClick: handleRuleClick,
+			onCreate: createCfRule
+		})
+	});
+};
+
+//#endregion
+//#region src/controllers/components.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const CF_PANEL_KEY = "sheet.conditional.formatting.panel";
+let ComponentsController = class ComponentsController extends _univerjs_core.Disposable {
+	constructor(_componentManager, _iconManager) {
+		super();
+		this._componentManager = _componentManager;
+		this._iconManager = _iconManager;
+		this._registerComponents();
+		this._registerIcons();
+	}
+	_registerComponents() {
+		this.disposeWithMe(this._componentManager.register(CF_PANEL_KEY, ConditionFormattingPanel));
+	}
+	_registerIcons() {
+		this.disposeWithMe(this._iconManager.register({
+			ConditionsDoubleIcon: _univerjs_icons.ConditionsDoubleIcon,
+			DataBarIcon: _univerjs_icons.DataBarIcon,
+			RatingIcon: _univerjs_icons.RatingIcon
+		}));
+	}
+};
+ComponentsController = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_ui.ComponentManager)), __decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_ui.IconManager))], ComponentsController);
+
+//#endregion
+//#region src/menu/cf.menu.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ConditionalFormattingMenuController = class ConditionalFormattingMenuController extends _univerjs_core.Disposable {
+	constructor(_menuManagerService) {
+		super();
+		this._menuManagerService = _menuManagerService;
+		this._menuManagerService.mergeMenu(menuSchema);
+	}
+};
+ConditionalFormattingMenuController = __decorate([__decorateParam(0, _univerjs_ui.IMenuManagerService)], ConditionalFormattingMenuController);
+
+//#endregion
+//#region src/mobile-plugin.ts
+let UniverSheetsConditionalFormattingMobileUIPlugin = class UniverSheetsConditionalFormattingMobileUIPlugin extends _univerjs_core.Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _commandService, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._commandService = _commandService;
+		this._configService = _configService;
+		const { menu, ...rest } = (0, _univerjs_core.merge)({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_CONDITIONAL_FORMATTING_UI_PLUGIN_CONFIG_KEY, rest);
+		this._initCommand();
+	}
+	onStarting() {
+		(0, _univerjs_core.registerDependencies)(this._injector, [
+			[ComponentsController],
+			[SheetsCfRenderController],
+			[ConditionalFormattingCopyPasteController],
+			[ConditionalFormattingPermissionController],
+			[ConditionalFormattingI18nController],
+			[ConditionalFormattingFormulaRefRangeController],
+			[ConditionalFormattingPanelController],
+			[ConditionalFormattingMenuController]
+		]);
+		(0, _univerjs_core.touchDependencies)(this._injector, [
+			[ComponentsController],
+			[SheetsCfRenderController],
+			[ConditionalFormattingFormulaRefRangeController]
+		]);
+	}
+	onReady() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [[ConditionalFormattingMenuController], [ConditionalFormattingPanelController]]);
+	}
+	onRendered() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [
+			[ConditionalFormattingCopyPasteController],
+			[ConditionalFormattingPermissionController],
+			[ConditionalFormattingI18nController]
+		]);
+	}
+	_initCommand() {
+		[
+			AddAverageCfCommand,
+			AddColorScaleConditionalRuleCommand,
+			AddDataBarConditionalRuleCommand,
+			AddIconSetConditionalRuleCommand,
+			AddDuplicateValuesCfCommand,
+			AddNumberCfCommand,
+			AddRankCfCommand,
+			AddTextCfCommand,
+			AddTimePeriodCfCommand,
+			AddUniqueValuesCfCommand,
+			OpenConditionalFormattingOperator
+		].forEach((m) => {
+			this._commandService.registerCommand(m);
+		});
+	}
+};
+_defineProperty(UniverSheetsConditionalFormattingMobileUIPlugin, "pluginName", `${_univerjs_sheets_conditional_formatting.SHEET_CONDITIONAL_FORMATTING_PLUGIN}_MOBILE_UI_PLUGIN`);
+_defineProperty(UniverSheetsConditionalFormattingMobileUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsConditionalFormattingMobileUIPlugin, "version", version);
+_defineProperty(UniverSheetsConditionalFormattingMobileUIPlugin, "type", _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+UniverSheetsConditionalFormattingMobileUIPlugin = __decorate([
+	(0, _univerjs_core.DependentOn)(_univerjs_engine_render.UniverRenderEnginePlugin, _univerjs_sheets.UniverSheetsPlugin, _univerjs_sheets_formula.UniverSheetsFormulaPlugin, _univerjs_sheets_conditional_formatting.UniverSheetsConditionalFormattingPlugin, _univerjs_sheets_ui.UniverSheetsMobileUIPlugin),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.ICommandService)),
+	__decorateParam(3, _univerjs_core.IConfigService)
+], UniverSheetsConditionalFormattingMobileUIPlugin);
+
+//#endregion
+//#region src/controllers/cf.auto-fill.controller.ts
+let ConditionalFormattingAutoFillController = class ConditionalFormattingAutoFillController extends _univerjs_core.Disposable {
+	constructor(_injector, _univerInstanceService, _autoFillService, _conditionalFormattingRuleModel, _conditionalFormattingRangeTransformService) {
+		super();
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		this._autoFillService = _autoFillService;
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._conditionalFormattingRangeTransformService = _conditionalFormattingRangeTransformService;
+		this._initAutoFill();
+	}
+	_initAutoFill() {
+		const noopReturnFunc = () => ({
+			redos: [],
+			undos: []
+		});
+		const generalApplyFunc = (sourceRange, targetRange) => {
+			var _this$_univerInstance, _this$_univerInstance2;
+			const unitId = (_this$_univerInstance = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.getUnitId();
+			const subUnitId = (_this$_univerInstance2 = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance2 === void 0 || (_this$_univerInstance2 = _this$_univerInstance2.getActiveSheet()) === null || _this$_univerInstance2 === void 0 ? void 0 : _this$_univerInstance2.getSheetId();
+			const rangeMap = /* @__PURE__ */ new Map();
+			const rangeDeltaMap = /* @__PURE__ */ new Map();
+			const redos = [];
+			const undos = [];
+			if (!unitId || !subUnitId) return noopReturnFunc();
+			const virtualization = (0, _univerjs_sheets_ui.virtualizeDiscreteRanges)([sourceRange, targetRange]);
+			const [vSourceRange, vTargetRange] = virtualization.ranges;
+			const repeats = _univerjs_sheets.AutoFillTools.getAutoFillRepeatRange(vSourceRange, vTargetRange);
+			const targetRanges = repeats.flatMap((repeat) => virtualization.mapRange(_univerjs_core.Rectangle.getPositionRange(repeat.relativeRange, {
+				startRow: repeat.repeatStartCell.row,
+				endRow: repeat.repeatStartCell.row,
+				startColumn: repeat.repeatStartCell.col,
+				endColumn: repeat.repeatStartCell.col
+			})));
+			const getRangeDelta = (cfId) => {
+				let rangeDelta = rangeDeltaMap.get(cfId);
+				if (!rangeDelta) {
+					rangeDelta = {
+						add: [],
+						remove: []
+					};
+					rangeDeltaMap.set(cfId, rangeDelta);
+				}
+				return rangeDelta;
+			};
+			(this._conditionalFormattingRuleModel.getSubunitRules(unitId, subUnitId) ?? []).forEach((rule) => {
+				if (_univerjs_core.Rectangle.doAnyRangesIntersect(rule.ranges, targetRanges)) {
+					rangeMap.set(rule.cfId, rule.ranges);
+					getRangeDelta(rule.cfId).remove.push(...targetRanges);
+				}
+				const sourceRanges = rule.ranges.flatMap((range) => {
+					const projected = virtualization.projectRange(range);
+					const intersected = projected && (0, _univerjs_core.getIntersectRange)(projected, vSourceRange);
+					return intersected ? [_univerjs_core.Rectangle.getRelativeRange(intersected, vSourceRange)] : [];
+				});
+				const additions = repeats.flatMap((repeat) => sourceRanges.flatMap((range) => {
+					const copiedRange = (0, _univerjs_core.getIntersectRange)(range, repeat.relativeRange);
+					return copiedRange ? virtualization.mapRange(_univerjs_core.Rectangle.getPositionRange(copiedRange, {
+						startRow: repeat.repeatStartCell.row,
+						endRow: repeat.repeatStartCell.row,
+						startColumn: repeat.repeatStartCell.col,
+						endColumn: repeat.repeatStartCell.col
+					})) : [];
+				}));
+				if (additions.length) {
+					rangeMap.set(rule.cfId, rule.ranges);
+					getRangeDelta(rule.cfId).add.push(...additions);
+				}
+			});
+			rangeDeltaMap.forEach((rangeDelta, cfId) => {
+				const ranges = rangeMap.get(cfId);
+				if (!ranges) return;
+				rangeMap.set(cfId, this._conditionalFormattingRangeTransformService.applyRangeDelta(ranges, rangeDelta.remove, rangeDelta.add));
+			});
+			rangeMap.forEach((ranges, cfId) => {
+				const rule = this._conditionalFormattingRuleModel.getRule(unitId, subUnitId, cfId);
+				if (!rule) return;
+				if (ranges.length) {
+					const params = {
+						unitId,
+						subUnitId,
+						rule: {
+							...rule,
+							ranges
+						}
+					};
+					redos.push({
+						id: _univerjs_sheets_conditional_formatting.SetConditionalRuleMutation.id,
+						params
+					});
+					undos.push(...(0, _univerjs_sheets_conditional_formatting.setConditionalRuleMutationUndoFactory)(this._injector, params));
+				} else {
+					const params = {
+						unitId,
+						subUnitId,
+						cfId: rule.cfId
+					};
+					redos.push({
+						id: _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutation.id,
+						params
+					});
+					undos.push(...(0, _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutationUndoFactory)(this._injector, params));
+				}
+			});
+			return {
+				undos,
+				redos
+			};
+		};
+		const hook = {
+			id: _univerjs_sheets_conditional_formatting.SHEET_CONDITIONAL_FORMATTING_PLUGIN,
+			onFillData: (location, direction, applyType) => {
+				if (applyType === _univerjs_sheets.AUTO_FILL_APPLY_TYPE.COPY || applyType === _univerjs_sheets.AUTO_FILL_APPLY_TYPE.ONLY_FORMAT || applyType === _univerjs_sheets.AUTO_FILL_APPLY_TYPE.SERIES) {
+					const { source, target } = location;
+					return generalApplyFunc(source, target);
+				}
+				return noopReturnFunc();
+			}
+		};
+		this.disposeWithMe(this._autoFillService.addHook(hook));
+	}
+};
+ConditionalFormattingAutoFillController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.IUniverInstanceService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.IAutoFillService)),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel)),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRangeTransformService))
+], ConditionalFormattingAutoFillController);
+
+//#endregion
+//#region src/controllers/cf.editor.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ConditionalFormattingEditorController = class ConditionalFormattingEditorController extends _univerjs_core.Disposable {
+	constructor(_sheetInterceptorService, _conditionalFormattingService) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._conditionalFormattingService = _conditionalFormattingService;
+		this._initInterceptorEditorEnd();
+	}
+	/**
+	* Process the  values after  edit
+	* @private
+	* @memberof NumfmtService
+	*/
+	_initInterceptorEditorEnd() {
+		this.disposeWithMe((0, _univerjs_core.toDisposable)(this._sheetInterceptorService.writeCellInterceptor.intercept(_univerjs_sheets.AFTER_CELL_EDIT, { handler: (value, context, next) => {
+			if (!value) next(value);
+			const result = this._conditionalFormattingService.composeStyle(context.unitId, context.subUnitId, context.row, context.col);
+			const cfStyle = (result === null || result === void 0 ? void 0 : result.style) ?? {};
+			const keys = Object.keys(cfStyle);
+			if (value === null || value === void 0 ? void 0 : value.p) {
+				var _value$p$body;
+				(_value$p$body = value.p.body) === null || _value$p$body === void 0 || (_value$p$body = _value$p$body.textRuns) === null || _value$p$body === void 0 || _value$p$body.forEach((item) => {
+					if (item.ts) keys.forEach((key) => {
+						var _item$ts;
+						(_item$ts = item.ts) === null || _item$ts === void 0 || delete _item$ts[key];
+					});
+				});
+				return next(value);
+			} else {
+				const s = { ...(typeof (value === null || value === void 0 ? void 0 : value.s) === "string" ? context.workbook.getStyles().get(value.s) : value === null || value === void 0 ? void 0 : value.s) || {} };
+				keys.forEach((key) => {
+					delete s[key];
+				});
+				return next({
+					...value,
+					s: { ...s }
+				});
+			}
+		} })));
+	}
+};
+ConditionalFormattingEditorController = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetInterceptorService)), __decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingService))], ConditionalFormattingEditorController);
+
+//#endregion
+//#region src/controllers/cf.painter.controller.ts
+const repeatByRange = (sourceRange, targetRange) => {
+	const getRowLength = (range) => range.endRow - range.startRow + 1;
+	const getColLength = (range) => range.endColumn - range.startColumn + 1;
+	const rowMod = getRowLength(targetRange) % getRowLength(sourceRange);
+	const colMod = getColLength(targetRange) % getColLength(sourceRange);
+	const repeatRow = Math.floor(getRowLength(targetRange) / getRowLength(sourceRange));
+	const repeatCol = Math.floor(getColLength(targetRange) / getColLength(sourceRange));
+	const repeatList = [];
+	const repeatRelativeRange = {
+		startRow: 0,
+		endRow: getRowLength(sourceRange) - 1,
+		startColumn: 0,
+		endColumn: getColLength(sourceRange) - 1
+	};
+	if (getRowLength(targetRange) === 1 && getColLength(targetRange) === 1) {
+		const startRange = {
+			startRow: targetRange.startRow,
+			endRow: targetRange.startRow,
+			startColumn: targetRange.startColumn,
+			endColumn: targetRange.startColumn
+		};
+		repeatList.push({
+			repeatRelativeRange,
+			startRange
+		});
+		return repeatList;
+	}
+	for (let countRow = 0; countRow < repeatRow + (rowMod ? .1 : 0); countRow++) for (let countCol = 0; countCol < repeatCol + (colMod ? .1 : 0); countCol++) {
+		const row = getRowLength(sourceRange) * countRow;
+		const col = getColLength(sourceRange) * countCol;
+		const startRange = {
+			startRow: row + targetRange.startRow,
+			endRow: row + targetRange.startRow,
+			startColumn: col + targetRange.startColumn,
+			endColumn: col + targetRange.startColumn
+		};
+		let _repeatRelativeRange = repeatRelativeRange;
+		if (countRow === repeatRow && rowMod) {
+			_repeatRelativeRange = { ..._repeatRelativeRange };
+			_repeatRelativeRange.endRow = _repeatRelativeRange.endRow - (getRowLength(sourceRange) - rowMod);
+		}
+		if (countCol === repeatCol && colMod) {
+			_repeatRelativeRange = { ..._repeatRelativeRange };
+			_repeatRelativeRange.endColumn = _repeatRelativeRange.endColumn - (getColLength(sourceRange) - colMod);
+		}
+		repeatList.push({
+			repeatRelativeRange: _repeatRelativeRange,
+			startRange
+		});
+	}
+	return repeatList;
+};
+let ConditionalFormattingPainterController = class ConditionalFormattingPainterController extends _univerjs_core.Disposable {
+	constructor(_injector, _univerInstanceService, _formatPainterService, _sheetsSelectionsService, _conditionalFormattingRuleModel, _conditionalFormattingRangeTransformService) {
+		super();
+		this._injector = _injector;
+		this._univerInstanceService = _univerInstanceService;
+		this._formatPainterService = _formatPainterService;
+		this._sheetsSelectionsService = _sheetsSelectionsService;
+		this._conditionalFormattingRuleModel = _conditionalFormattingRuleModel;
+		this._conditionalFormattingRangeTransformService = _conditionalFormattingRangeTransformService;
+		_defineProperty(this, "_painterConfig", null);
+		this._initFormattingPainter();
+	}
+	_initFormattingPainter() {
+		const noopReturnFunc = () => ({
+			redos: [],
+			undos: []
+		});
+		const generalApplyFunc = (targetUnitId, targetSubUnitId, targetRange) => {
+			const { range: sourceRange, unitId: sourceUnitId, subUnitId: sourceSubUnitId } = this._painterConfig;
+			const isSkipSheet = targetUnitId !== sourceUnitId || sourceSubUnitId !== targetSubUnitId;
+			const rangeMap = /* @__PURE__ */ new Map();
+			const rangeDeltaMap = /* @__PURE__ */ new Map();
+			const redos = [];
+			const undos = [];
+			if (!targetUnitId || !targetSubUnitId || !sourceUnitId || !sourceSubUnitId) return noopReturnFunc();
+			const repeats = repeatByRange(sourceRange, targetRange);
+			const targetRanges = repeats.map((repeat) => _univerjs_core.Rectangle.getPositionRange(repeat.repeatRelativeRange, repeat.startRange));
+			const getRangeDelta = (cfId) => {
+				let rangeDelta = rangeDeltaMap.get(cfId);
+				if (!rangeDelta) {
+					rangeDelta = {
+						add: [],
+						remove: []
+					};
+					rangeDeltaMap.set(cfId, rangeDelta);
+				}
+				return rangeDelta;
+			};
+			const targetRuleList = this._conditionalFormattingRuleModel.getSubunitRules(targetUnitId, targetSubUnitId) ?? [];
+			const waitAddRule = /* @__PURE__ */ new Map();
+			targetRuleList.forEach((rule) => {
+				if (_univerjs_core.Rectangle.doAnyRangesIntersect(rule.ranges, targetRanges)) {
+					rangeMap.set(rule.cfId, rule.ranges);
+					getRangeDelta(rule.cfId).remove.push(...targetRanges);
+				}
+			});
+			const sourceRuleList = this._conditionalFormattingRuleModel.getSubunitRules(sourceUnitId, sourceSubUnitId) ?? [];
+			(isSkipSheet ? [...sourceRuleList].reverse() : sourceRuleList).forEach((rule) => {
+				const sourceRanges = rule.ranges.flatMap((range) => {
+					const intersected = (0, _univerjs_core.getIntersectRange)(range, sourceRange);
+					return intersected ? [_univerjs_core.Rectangle.getRelativeRange(intersected, sourceRange)] : [];
+				});
+				const additions = repeats.flatMap((repeat) => sourceRanges.flatMap((range) => {
+					const copiedRange = (0, _univerjs_core.getIntersectRange)(range, repeat.repeatRelativeRange);
+					return copiedRange ? [_univerjs_core.Rectangle.getPositionRange(copiedRange, repeat.startRange)] : [];
+				}));
+				if (additions.length) {
+					let targetCfId = rule.cfId;
+					if (isSkipSheet) {
+						targetCfId = this._conditionalFormattingRuleModel.createCfId(targetUnitId, targetSubUnitId);
+						waitAddRule.set(targetCfId, {
+							..._univerjs_core.Tools.deepClone(rule),
+							cfId: targetCfId,
+							ranges: []
+						});
+						rangeMap.set(targetCfId, []);
+					}
+					if (!rangeMap.has(targetCfId)) rangeMap.set(targetCfId, rule.ranges);
+					getRangeDelta(targetCfId).add.push(...additions);
+				}
+			});
+			rangeDeltaMap.forEach((rangeDelta, cfId) => {
+				const ranges = rangeMap.get(cfId);
+				if (!ranges) return;
+				rangeMap.set(cfId, this._conditionalFormattingRangeTransformService.applyRangeDelta(ranges, rangeDelta.remove, rangeDelta.add));
+			});
+			rangeMap.forEach((ranges, cfId) => {
+				if (!isSkipSheet) {
+					const rule = this._conditionalFormattingRuleModel.getRule(sourceUnitId, sourceSubUnitId, cfId);
+					if (!rule) return;
+					if (ranges.length) {
+						const params = {
+							unitId: sourceUnitId,
+							subUnitId: sourceSubUnitId,
+							rule: {
+								...rule,
+								ranges
+							}
+						};
+						redos.push({
+							id: _univerjs_sheets_conditional_formatting.SetConditionalRuleMutation.id,
+							params
+						});
+						undos.push(...(0, _univerjs_sheets_conditional_formatting.setConditionalRuleMutationUndoFactory)(this._injector, params));
+					} else {
+						const params = {
+							unitId: sourceUnitId,
+							subUnitId: sourceSubUnitId,
+							cfId: rule.cfId
+						};
+						redos.push({
+							id: _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutation.id,
+							params
+						});
+						undos.push(...(0, _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutationUndoFactory)(this._injector, params));
+					}
+				} else {
+					const waitAdd = waitAddRule.get(cfId);
+					if (waitAdd) {
+						if (ranges.length) {
+							const params = {
+								unitId: targetUnitId,
+								subUnitId: targetSubUnitId,
+								rule: {
+									...waitAdd,
+									ranges
+								}
+							};
+							redos.push({
+								id: _univerjs_sheets_conditional_formatting.AddConditionalRuleMutation.id,
+								params
+							});
+							undos.push((0, _univerjs_sheets_conditional_formatting.AddConditionalRuleMutationUndoFactory)(this._injector, params));
+						}
+						return;
+					}
+					const rule = this._conditionalFormattingRuleModel.getRule(targetUnitId, targetSubUnitId, cfId);
+					if (rule) if (ranges.length) {
+						const params = {
+							unitId: targetUnitId,
+							subUnitId: targetSubUnitId,
+							rule: {
+								...rule,
+								ranges
+							}
+						};
+						redos.push({
+							id: _univerjs_sheets_conditional_formatting.SetConditionalRuleMutation.id,
+							params
+						});
+						undos.push(...(0, _univerjs_sheets_conditional_formatting.setConditionalRuleMutationUndoFactory)(this._injector, params));
+					} else {
+						const params = {
+							unitId: targetUnitId,
+							subUnitId: targetSubUnitId,
+							cfId: rule.cfId
+						};
+						redos.push({
+							id: _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutation.id,
+							params
+						});
+						undos.push(...(0, _univerjs_sheets_conditional_formatting.DeleteConditionalRuleMutationUndoFactory)(this._injector, params));
+					}
+				}
+			});
+			return {
+				undos,
+				redos
+			};
+		};
+		const hook = {
+			id: _univerjs_sheets_conditional_formatting.SHEET_CONDITIONAL_FORMATTING_PLUGIN,
+			onStatusChange: (status) => {
+				switch (status) {
+					case _univerjs_sheets_ui.FormatPainterStatus.INFINITE:
+					case _univerjs_sheets_ui.FormatPainterStatus.ONCE: {
+						var _this$_univerInstance, _this$_univerInstance2;
+						const unitId = (_this$_univerInstance = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.getUnitId();
+						const subUnitId = (_this$_univerInstance2 = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance2 === void 0 || (_this$_univerInstance2 = _this$_univerInstance2.getActiveSheet()) === null || _this$_univerInstance2 === void 0 ? void 0 : _this$_univerInstance2.getSheetId();
+						const selection = this._sheetsSelectionsService.getCurrentLastSelection();
+						const range = selection === null || selection === void 0 ? void 0 : selection.range;
+						if (unitId && subUnitId && range) this._painterConfig = {
+							unitId,
+							subUnitId,
+							range
+						};
+						break;
+					}
+					case _univerjs_sheets_ui.FormatPainterStatus.OFF:
+						this._painterConfig = null;
+						break;
+				}
+			},
+			onApply: (unitId, subUnitId, targetRange) => {
+				if (this._painterConfig) return generalApplyFunc(unitId, subUnitId, targetRange);
+				return {
+					redos: [],
+					undos: []
+				};
+			}
+		};
+		this._formatPainterService.addHook(hook);
+	}
+};
+ConditionalFormattingPainterController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.IUniverInstanceService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.IFormatPainterService)),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetsSelectionsService)),
+	__decorateParam(4, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRuleModel)),
+	__decorateParam(5, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingRangeTransformService))
+], ConditionalFormattingPainterController);
+
+//#endregion
+//#region src/controllers/cf.viewport.controller.ts
+let ConditionalFormattingViewportController = class ConditionalFormattingViewportController extends _univerjs_core.Disposable {
+	constructor(_conditionalFormattingViewModel, _univerInstanceService, _renderManagerService) {
+		super();
+		this._conditionalFormattingViewModel = _conditionalFormattingViewModel;
+		this._univerInstanceService = _univerInstanceService;
+		this._renderManagerService = _renderManagerService;
+		_defineProperty(this, "_unitDisposable", new _univerjs_core.DisposableCollection());
+		this._init();
+	}
+	_init() {
+		const unit = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		const bindUnit = (unit) => {
+			this._unitDisposable.dispose();
+			this._unitDisposable = new _univerjs_core.DisposableCollection();
+			const unitId = unit.getUnitId();
+			const render = this._renderManagerService.getRenderUnitById(unitId);
+			if (!render) return;
+			const sheetSkeletonManagerService = render.with(_univerjs_sheets_ui.SheetSkeletonManagerService);
+			this._unitDisposable.add(sheetSkeletonManagerService.currentSkeleton$.subscribe((s) => {
+				if (s) {
+					const range = s.skeleton.rowColumnSegment;
+					const col = range.endColumn - range.startColumn + 1;
+					const length = (range.endRow - range.startRow + 1) * col * 9;
+					const result = Math.max(_univerjs_sheets_conditional_formatting.CONDITIONAL_FORMATTING_VIEWPORT_CACHE_LENGTH, length);
+					this._conditionalFormattingViewModel.setCacheLength(result);
+				}
+			}));
+		};
+		if (unit) bindUnit(unit);
+		this.disposeWithMe(this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET).subscribe((unit) => {
+			if (!unit) {
+				this._unitDisposable.dispose();
+				return;
+			}
+			bindUnit(unit);
+		}));
+	}
+	dispose() {
+		this._unitDisposable.dispose();
+		super.dispose();
+	}
+};
+ConditionalFormattingViewportController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets_conditional_formatting.ConditionalFormattingViewModel)),
+	__decorateParam(1, _univerjs_core.IUniverInstanceService),
+	__decorateParam(2, _univerjs_engine_render.IRenderManagerService)
+], ConditionalFormattingViewportController);
+
+//#endregion
+//#region src/plugin.ts
+let UniverSheetsConditionalFormattingUIPlugin = class UniverSheetsConditionalFormattingUIPlugin extends _univerjs_core.Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _commandService, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._commandService = _commandService;
+		this._configService = _configService;
+		const { menu, ...rest } = (0, _univerjs_core.merge)({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_CONDITIONAL_FORMATTING_UI_PLUGIN_CONFIG_KEY, rest);
+		this._initCommand();
+	}
+	onStarting() {
+		this._injector.add([ComponentsController]);
+		this._injector.get(ComponentsController);
+		(0, _univerjs_core.registerDependencies)(this._injector, [
+			[SheetsCfRenderController],
+			[ConditionalFormattingCopyPasteController],
+			[ConditionalFormattingAutoFillController],
+			[ConditionalFormattingPermissionController],
+			[ConditionalFormattingPanelController],
+			[ConditionalFormattingMenuController],
+			[ConditionalFormattingI18nController],
+			[ConditionalFormattingEditorController],
+			[ConditionalFormattingClearController],
+			[ConditionalFormattingPainterController],
+			[ConditionalFormattingViewportController],
+			[ConditionalFormattingFormulaRefRangeController]
+		]);
+		(0, _univerjs_core.touchDependencies)(this._injector, [[SheetsCfRenderController], [ConditionalFormattingFormulaRefRangeController]]);
+	}
+	onReady() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [[ConditionalFormattingMenuController], [ConditionalFormattingPanelController]]);
+	}
+	onRendered() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [
+			[ConditionalFormattingAutoFillController],
+			[ConditionalFormattingClearController],
+			[ConditionalFormattingCopyPasteController],
+			[ConditionalFormattingEditorController],
+			[ConditionalFormattingI18nController],
+			[ConditionalFormattingPainterController],
+			[ConditionalFormattingPermissionController],
+			[ConditionalFormattingViewportController]
+		]);
+	}
+	_initCommand() {
+		[
+			AddAverageCfCommand,
+			AddColorScaleConditionalRuleCommand,
+			AddDataBarConditionalRuleCommand,
+			AddIconSetConditionalRuleCommand,
+			AddDuplicateValuesCfCommand,
+			AddNumberCfCommand,
+			AddRankCfCommand,
+			AddTextCfCommand,
+			AddTimePeriodCfCommand,
+			AddUniqueValuesCfCommand,
+			OpenConditionalFormattingOperator
+		].forEach((m) => {
+			this._commandService.registerCommand(m);
+		});
+	}
+};
+_defineProperty(UniverSheetsConditionalFormattingUIPlugin, "pluginName", `${_univerjs_sheets_conditional_formatting.SHEET_CONDITIONAL_FORMATTING_PLUGIN}_UI_PLUGIN`);
+_defineProperty(UniverSheetsConditionalFormattingUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsConditionalFormattingUIPlugin, "version", version);
+_defineProperty(UniverSheetsConditionalFormattingUIPlugin, "type", _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+UniverSheetsConditionalFormattingUIPlugin = __decorate([
+	(0, _univerjs_core.DependentOn)(_univerjs_engine_render.UniverRenderEnginePlugin, _univerjs_sheets.UniverSheetsPlugin, _univerjs_sheets_formula.UniverSheetsFormulaPlugin, _univerjs_sheets_conditional_formatting.UniverSheetsConditionalFormattingPlugin, _univerjs_sheets_ui.UniverSheetsUIPlugin),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.ICommandService)),
+	__decorateParam(3, _univerjs_core.IConfigService)
+], UniverSheetsConditionalFormattingUIPlugin);
+
+//#endregion
+exports.AddAverageCfCommand = AddAverageCfCommand;
+exports.AddColorScaleConditionalRuleCommand = AddColorScaleConditionalRuleCommand;
+exports.AddDataBarConditionalRuleCommand = AddDataBarConditionalRuleCommand;
+exports.AddDuplicateValuesCfCommand = AddDuplicateValuesCfCommand;
+exports.AddIconSetConditionalRuleCommand = AddIconSetConditionalRuleCommand;
+exports.AddNumberCfCommand = AddNumberCfCommand;
+exports.AddRankCfCommand = AddRankCfCommand;
+exports.AddTextCfCommand = AddTextCfCommand;
+exports.AddTimePeriodCfCommand = AddTimePeriodCfCommand;
+exports.AddUniqueValuesCfCommand = AddUniqueValuesCfCommand;
+Object.defineProperty(exports, 'ConditionalFormattingClearController', {
+  enumerable: true,
+  get: function () {
+    return ConditionalFormattingClearController;
+  }
+});
+exports.OpenConditionalFormattingOperator = OpenConditionalFormattingOperator;
+exports.SheetsConditionalFormattingUIMenuSchema = menuSchema;
+Object.defineProperty(exports, 'UniverSheetsConditionalFormattingMobileUIPlugin', {
+  enumerable: true,
+  get: function () {
+    return UniverSheetsConditionalFormattingMobileUIPlugin;
+  }
+});
+Object.defineProperty(exports, 'UniverSheetsConditionalFormattingUIPlugin', {
+  enumerable: true,
+  get: function () {
+    return UniverSheetsConditionalFormattingUIPlugin;
+  }
+});

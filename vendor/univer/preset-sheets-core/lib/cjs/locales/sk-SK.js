@@ -1,0 +1,25 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_design_locale_sk_SK = require("@univerjs/design/locale/sk-SK");
+_univerjs_design_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_design_locale_sk_SK);
+let _univerjs_docs_ui_locale_sk_SK = require("@univerjs/docs-ui/locale/sk-SK");
+_univerjs_docs_ui_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_docs_ui_locale_sk_SK);
+let _univerjs_engine_formula_locale_sk_SK = require("@univerjs/engine-formula/locale/sk-SK");
+_univerjs_engine_formula_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_engine_formula_locale_sk_SK);
+let _univerjs_sheets_locale_sk_SK = require("@univerjs/sheets/locale/sk-SK");
+_univerjs_sheets_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_sheets_locale_sk_SK);
+let _univerjs_sheets_formula_locale_sk_SK = require("@univerjs/sheets-formula/locale/sk-SK");
+_univerjs_sheets_formula_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_sheets_formula_locale_sk_SK);
+let _univerjs_sheets_formula_ui_locale_sk_SK = require("@univerjs/sheets-formula-ui/locale/sk-SK");
+_univerjs_sheets_formula_ui_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_sheets_formula_ui_locale_sk_SK);
+let _univerjs_sheets_numfmt_ui_locale_sk_SK = require("@univerjs/sheets-numfmt-ui/locale/sk-SK");
+_univerjs_sheets_numfmt_ui_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_sheets_numfmt_ui_locale_sk_SK);
+let _univerjs_sheets_ui_locale_sk_SK = require("@univerjs/sheets-ui/locale/sk-SK");
+_univerjs_sheets_ui_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_sheets_ui_locale_sk_SK);
+let _univerjs_ui_locale_sk_SK = require("@univerjs/ui/locale/sk-SK");
+_univerjs_ui_locale_sk_SK = require_rolldown_runtime.__toESM(_univerjs_ui_locale_sk_SK);
+
+//#region src/locales/sk-SK.ts
+var sk_SK_default = Object.assign({}, _univerjs_design_locale_sk_SK.default, _univerjs_docs_ui_locale_sk_SK.default, _univerjs_engine_formula_locale_sk_SK.default, _univerjs_sheets_locale_sk_SK.default, _univerjs_sheets_formula_locale_sk_SK.default, _univerjs_sheets_formula_ui_locale_sk_SK.default, _univerjs_sheets_numfmt_ui_locale_sk_SK.default, _univerjs_sheets_ui_locale_sk_SK.default, _univerjs_ui_locale_sk_SK.default);
+
+//#endregion
+module.exports = sk_SK_default;

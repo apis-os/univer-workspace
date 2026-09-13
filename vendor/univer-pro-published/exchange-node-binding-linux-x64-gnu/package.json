@@ -1,0 +1,17 @@
+{
+  "name": "@univerjs-pro/exchange-node-binding-linux-x64-gnu",
+  "version": "0.1.1",
+  "cpu": [
+    "x64"
+  ],
+  "main": "univer-exchange-node.linux-x64-gnu.node",
+  "files": [
+    "univer-exchange-node.linux-x64-gnu.node"
+  ],
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "glibc"
+  ]
+}

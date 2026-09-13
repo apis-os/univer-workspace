@@ -1,0 +1,51 @@
+import { BoardElementType, BoardToolType, IBoardElementService, InsertBoardChartCommand, UniverBoardsPlugin, resolveBoardElementWorldBounds } from "@univerjs-pro/boards";
+import { BOARDS_UI_PLUGIN_CONFIG_KEY, BOARD_INSERT_CHART_PANEL_COMPONENT, BoardCanvasPopManagerService, BoardDeleteSelectionOperation, BoardDomLayerService, BoardInteractionSurfaceService, IBoardClipboardResourceAdapterService, IBoardElementStateService, IBoardSidePanelService, IBoardUIStateService, UniverBoardsUIPlugin, getBoardElementRenderObjectKey, resolveRotatedBoardObjectAnchorBound } from "@univerjs-pro/boards-ui";
+import { CommandType, DependentOn, Disposable, DisposableCollection, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, LocaleService, Optional, Plugin, RxDisposable, ThemeService, Tools, UniverInstanceType, createIdentifier, generateRandomId, merge, toDisposable, touchDependencies } from "@univerjs/core";
+import { BehaviorSubject, auditTime, combineLatest, filter, fromEvent, merge as mergeLocal, skip, takeUntil, throttleTime } from "rxjs";
+import { BoardChartConfigAdapter, BoardChartModelService, BoardChartResourceService, ChangeBoardChartDataSourceCommand, DEFAULT_BOARD_CHART_VALUES, RemoveBoardChartDataSourceMutation, RemoveBoardChartSnapshotMutation, SetBoardChartDataSourceMutation, SetBoardChartSnapshotMutation, UniverBoardsChartPlugin, UpdateBoardChartConfigCommand } from "@univerjs-pro/boards-chart";
+import { CHART_ELEMENT_FLOAT_MENU_COMPONENT, CHART_TYPE_CATALOG, ChartAxisSection, ChartCommonDataMappingSection, ChartEditBlockTitle, ChartEditPanel, ChartEditPanelSection, ChartEditPanelTab, ChartEditPanelTabs, ChartEditorCapability, ChartEditorProvider, ChartElementFloatMenuAdapterRegistry, ChartFunnelStyleSection, ChartGradientFillField, ChartGridlinesAndTicksSection, ChartHeatmapStyleSection, ChartHostAdapter, ChartImageExportService, ChartIndicatorLineSection, ChartInlineTableEditor, ChartLegendSection, ChartLineAndAreaSection, ChartNumberFormatTextField, ChartParetoSeriesSection, ChartPieStyleSection, ChartRadarStyleSection, ChartReferencedDataSourceEditor, ChartRelationStyleSection, ChartSectionAccordion, ChartSectionAccordionContent, ChartSectionAccordionItem, ChartSectionAccordionTrigger, ChartSeriesBorderFields, ChartSeriesDataLabelFields, ChartSeriesDataPointFields, ChartSeriesFillFields, ChartSeriesPointFields, ChartSeriesRightAxisField, ChartSeriesRoot, ChartSeriesSelector, ChartSeriesTypeField, ChartSnapshotQueue, ChartStackField, ChartStyleSection, ChartThemeField, ChartTitlesSection, ChartTrendlineSection, ChartTypeField, ChartTypeSpecificDataSection, ChartTypeSpecificSetupSection, ChartTypeSpecificStyleSection, ChartUIService, ChartViewStateRegistry, ChartWaterfallSetupFields, ChartWaterfallStyleSection, ChartWordCloudMaskImageIdField, ChartWordCloudRepeatField, ChartWordCloudRoot, ChartWordCloudShapeField, DEFAULT_CHART_AXIS_VALUES, DEFAULT_CHART_FUNNEL_VALUES, DEFAULT_CHART_HEATMAP_VALUES, DEFAULT_CHART_INDICATOR_LINE_VALUES, DEFAULT_CHART_LEGEND_VALUES, DEFAULT_CHART_LINE_AND_AREA_VALUES, DEFAULT_CHART_PARETO_VALUES, DEFAULT_CHART_PIE_VALUES, DEFAULT_CHART_RADAR_VALUES, DEFAULT_CHART_RELATION_VALUES, DEFAULT_CHART_SERIES_VALUES, DEFAULT_CHART_STYLE_VALUES, DEFAULT_CHART_TITLE_VALUES, DEFAULT_CHART_TRENDLINE_VALUES, DEFAULT_CHART_WATERFALL_SETUP_VALUES, DEFAULT_CHART_WATERFALL_STYLE_VALUES, DEFAULT_CHART_WORD_CLOUD_VALUES, InlineChartCreationIssueCode, UniverChartUIPlugin, buildChartTypeSelectOptions, chartTypeSupportsCapability, chartTypeSupportsLineAndAreaStyle, createChartElementFloatMenuAdapter, createChartInlineStarterData, getChartInlineTableMinColumns, resolveChartEditPanelRoute, resolveChartElementSelection, tryBuildInlineChartCreationPlan, tryPrepareInlineChartData, useChartEditorChartType, useChartEditorHasRightAxis, useChartTypeFieldState } from "@univerjs-pro/chart-ui";
+import { ShapeFloatingToolbarMenuActions } from "@univerjs-pro/shape-editor-ui";
+import { Button, Select, Separator, borderClassName, clsx } from "@univerjs/design";
+import { DeleteIcon, PenIcon } from "@univerjs/icons";
+import { ComponentManager, FloatingObjectToolbarPosition, ICanvasPopupService, IDialogService, useDependency, useObservable } from "@univerjs/ui";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { CHART_HOST_DEFAULT_BORDER_COLOR, CHART_HOST_DEFAULT_BORDER_RADIUS, ChartDataSourceRuntimeStatus, ChartImageExportFormat, ChartRenderMode, ChartThemeService, ChartTypeBits, DataUrlImageChartHost, IChartRenderModelManagerService, chartBitsUtils, chartTypeCanUseTrendLine, defaultChartConfig, isInlineChartDataSource, isReferencedChartDataSource, parseInlineChartTable, resolveChartRuntimeStyle, resolveDefaultChartHostFrameStyle } from "@univerjs-pro/engine-chart";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { IRenderManagerService, Image, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+let K = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46298, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46300) {
+    super(), this._resourceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46298, this._modelService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299, this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46300;
+  }
+  getDataEditState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46304, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46305) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46306 = this._resourceService["getChart"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46304, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46305),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46307 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46306 ? this._resourceService["getDataSource"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46304, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46306.dataSourceId) : undefined;
+    return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46306 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46307 ? null : {
+      chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46305,
+      chartType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46306.chartType,
+      dataSource: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46307,
+      sharingCount: this._resourceService["getDataSourceSharingCount"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46304, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46307.id),
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46304
+    };
+  }
+  async updateDataForChart(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46313;
+    if (!this.getDataEditState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.chartId) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.values["length"] === 0) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46313 = this._resourceService["getChart"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.chartId)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46313.chartType;
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314 === undefined) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315 = tryPrepareInlineChartData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.values);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315.ok) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316 = await this.changeDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.chartId, {
+      values: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315.values
+    });
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316 && this._modelService["refreshChartModel"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.chartId), !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316;
+  }
+  changeDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46322, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46323, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324) {
+    return this._commandService["executeCommand"](ChangeBoardChartDataSourceCommand.id, {
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46322,
+      chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46323,
+      dataSource: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324
+    });
+  }
+};
+export { K as BoardChartDataEditService };

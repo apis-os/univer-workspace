@@ -1,0 +1,148 @@
+import { AddSheetSparklineCommand, AddSheetSparklineMutation, PLUGIN_NAME, RemoveSheetSparklineCommand, RemoveSheetSparklineMutation, SetSheetSparklineCommand, SpacialShowAsEnum, SparklineDataSourceModel, SparklineExtremumTypeEnum, SparklinePointsNames, SparklineThemeMapping, SparklineThemeTypeEnum, SparklineTypeEnum, UniverSheetSparklinePlugin } from "@univerjs-pro/sheets-sparkline";
+import { ComponentManager, ContextMenuGroup, ContextMenuPosition, IDialogService, IMenuManagerService, ISidebarService, IconManager, MenuItemType, RibbonInsertGroup, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { ColorKit, CommandType, DependentOn, Direction, Disposable, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, LocaleService, ObjectMatrix, Plugin, Range, Rectangle, Tools, UniverInstanceType, cellToRange, generateRandomId, isValidRange, merge, touchDependencies } from "@univerjs/core";
+import { AUTO_FILL_APPLY_TYPE, IAutoFillService, RangeProtectionCache, RangeProtectionPermissionEditPoint, SetWorksheetActiveOperation, SheetPermissionCheckController, SheetsSelectionsService, UniverSheetsPlugin, WorkbookEditablePermission, WorksheetEditPermission, discreteRangeToRange, getSheetCommandTarget } from "@univerjs/sheets";
+import { UnitAction } from "@univerjs/protocol";
+import { COPY_TYPE, IMarkSelectionService, ISheetClipboardService, PREDEFINED_HOOK_NAME, SheetPrintInterceptorService, UniverSheetsUIPlugin, getCurrentRangeDisable$ } from "@univerjs/sheets-ui";
+import { auditTime, combineLatest, distinctUntilChanged, filter, map, merge as mergeLocal, of, startWith, switchMap } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { IRenderManagerService, SheetExtension, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { ColumnSparklineIcon, DeleteIcon, GroupSparklineIcon, LineSparklineIcon, MoreDownIcon, MoreRightIcon, PieChartIcon, PointColorDoubleIcon, UngroupSparklineIcon, WinlossSparklineIcon, WriteIcon } from "@univerjs/icons";
+import { ActionRow, Button, Checkbox, ColorPicker, Dropdown, InputNumber, Radio, RadioGroup, Segmented, Select, borderBottomClassName, borderClassName, clsx, selectClassName } from "@univerjs/design";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { deserializeRangeWithSheet, serializeRange } from "@univerjs/engine-formula";
+import { RangeSelector } from "@univerjs/sheets-formula-ui";
+import { ht, mt, ut } from "./internal-core-endo.js";
+const var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB52 = "sheet.sparkline.context-menu-id";
+function vt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46757) {
+  return {
+    id: ht.id,
+    title: "sheets-sparkline-ui.title",
+    tooltip: "sheets-sparkline-ui.title",
+    icon: ut,
+    type: MenuItemType.BUTTON,
+    hidden$: getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46757, UniverInstanceType.UNIVER_SHEET),
+    disabled$: getCurrentRangeDisable$(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46757, {
+      workbookTypes: [WorkbookEditablePermission],
+      worksheetTypes: [WorksheetEditPermission],
+      rangeTypes: [RangeProtectionPermissionEditPoint]
+    })
+  };
+}
+function yt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46759) {
+  return {
+    id: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB52,
+    type: MenuItemType.SUBITEMS,
+    icon: ut,
+    title: "sheets-sparkline-ui.title",
+    hidden$: combineLatest([getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46759, UniverInstanceType.UNIVER_SHEET), St(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46759)]).pipe(map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46418, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46419]) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46418 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46419))
+  };
+}
+function bt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46761) {
+  return {
+    id: RemoveSheetSparklineCommand.id,
+    type: MenuItemType.BUTTON,
+    title: "sheets-sparkline-ui.remove",
+    tooltip: "sheets-sparkline-ui.remove",
+    disabled$: getCurrentRangeDisable$(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46761, {
+      workbookTypes: [WorkbookEditablePermission],
+      worksheetTypes: [WorksheetEditPermission],
+      rangeTypes: [RangeProtectionPermissionEditPoint]
+    })
+  };
+}
+function xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46763) {
+  return {
+    id: mt.id,
+    title: "sheets-sparkline-ui.edit",
+    tooltip: "sheets-sparkline-ui.edit",
+    type: MenuItemType.BUTTON,
+    disabled$: getCurrentRangeDisable$(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46763, {
+      workbookTypes: [WorkbookEditablePermission],
+      worksheetTypes: [WorksheetEditPermission],
+      rangeTypes: [RangeProtectionPermissionEditPoint]
+    })
+  };
+}
+function St(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46765) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46766 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46765.get(IUniverInstanceService).getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46767 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46765.get(SparklineDataSourceModel),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46768 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46765.get(RangeProtectionCache);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46766.pipe(switchMap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46420 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46420 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46420.activeSheet$["pipe"](switchMap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199 => {
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199) return of(true);
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46765.get(SheetsSelectionsService);
+    return mergeLocal(of(undefined), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200.selectionMoveEnd$, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46767.updateConfig$).pipe(map(() => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200.getCurrentSelections();
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127.length > 1 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127.length === 0) return true;
+      let {
+        primary: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128,
+        range: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127[0];
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128) return true;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46420.getUnitId(),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.getSheetId();
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46767.getSparkline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128.actualRow, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128.actualColumn)) return true;
+      let var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig92995 = new Set();
+      Range.foreach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129, (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100) => {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46767.getSparkline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100);
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46767.getSparklineById(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101) && var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig92995.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101);
+      });
+      let var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = true;
+      return var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig92995.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105 => {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46767.getSparklineById(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105);
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106 && var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106.sparklines["forValue"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4680) => {
+          var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681;
+          ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46768.getCellInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4680)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681[UnitAction.Edit]) === false && (var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = false);
+        });
+      }), !var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A;
+    }));
+  })) : of(true)));
+}
+const Ct = {
+  [RibbonInsertGroup.MEDIA]: {
+    [ht.id]: {
+      order: 3,
+      menuItemFactory: vt
+    }
+  },
+  [ContextMenuPosition.MAIN_AREA]: {
+    [ContextMenuGroup.DATA]: {
+      [var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB52]: {
+        order: 5,
+        menuItemFactory: yt,
+        [mt.id]: {
+          menuItemFactory: xt
+        },
+        [RemoveSheetSparklineCommand.id]: {
+          menuItemFactory: bt
+        }
+      }
+    }
+  },
+  [ContextMenuPosition.COL_HEADER]: {
+    [ContextMenuGroup.LAYOUT]: {
+      [var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB52]: {
+        [mt.id]: {
+          menuItemFactory: xt
+        },
+        [RemoveSheetSparklineCommand.id]: {
+          menuItemFactory: bt
+        }
+      }
+    }
+  },
+  [ContextMenuPosition.ROW_HEADER]: {
+    [ContextMenuGroup.LAYOUT]: {
+      [var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB52]: {
+        [mt.id]: {
+          menuItemFactory: xt
+        },
+        [RemoveSheetSparklineCommand.id]: {
+          menuItemFactory: bt
+        }
+      }
+    }
+  }
+};
+export { Ct as SheetsSparklineUIMenuSchema };

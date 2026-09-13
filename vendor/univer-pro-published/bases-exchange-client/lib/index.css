@@ -1,0 +1,29 @@
+.univer-flex {
+  display: flex;
+}
+
+.univer-size-3 {
+  width: .75rem;
+  height: .75rem;
+}
+
+.univer-h-8 {
+  height: 2rem;
+}
+
+.univer-items-center {
+  align-items: center;
+}
+
+.univer-gap-1 {
+  gap: .25rem;
+}
+
+.univer-gap-2 {
+  gap: .5rem;
+}
+
+.univer-px-2 {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}

@@ -1,0 +1,235 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { ICellDataForSheetInterceptor, ICellInfo, IColAutoWidthInfo, IColumnRange, IDocumentData, IPaddingData, IRange, IRowAutoHeightInfo, IRowRange, ISize, IStyleData, ITextRotation, Nullable, Styles, Worksheet } from '@univerjs/core';
+import type { IBoundRectNoAngle, IPoint, IViewportInfo } from '../../basics/vector2';
+import type { Scene } from '../../scene';
+import type { IFontCacheItem, IStylesCache } from './interfaces';
+import { BooleanNumber, DocumentDataModel, HorizontalAlign, IConfigService, IContextService, Injector, LocaleService, ObjectMatrix, SheetSkeleton, VerticalAlign, WrapStrategy } from '@univerjs/core';
+import { DocumentSkeleton } from '../docs/layout/doc-skeleton';
+import { SHEET_VIEWPORT_KEY } from './interfaces';
+interface IRowColumnRange extends IRowRange, IColumnRange {
+}
+export interface IDocumentLayoutObject {
+    documentModel: Nullable<DocumentDataModel>;
+    fontString: string;
+    textRotation: ITextRotation;
+    wrapStrategy: WrapStrategy;
+    verticalAlign: VerticalAlign;
+    horizontalAlign: HorizontalAlign;
+    paddingData: IPaddingData;
+    fill?: Nullable<string>;
+}
+export declare const DEFAULT_PADDING_DATA: {
+    t: number;
+    b: number;
+    l: number;
+    r: number;
+};
+export declare const RENDER_RAW_FORMULA_KEY = "RENDER_RAW_FORMULA";
+export declare function getShrinkToFitScale(contentWidth: number, availableWidth: number, fontSize: number): number;
+export declare function getGeneralNumberDisplayText(value: number, displayText: string, fontString: string, availableWidth: number): string;
+export declare function scaleDocumentDataForShrinkToFit(documentData: IDocumentData, scale: number, fallbackFontSize: number): IDocumentData;
+export interface ICacheItem {
+    bg: boolean;
+    border: boolean;
+}
+interface ISetStylesCacheForOneCellOptions {
+    mergeRange?: IRange;
+    cacheItem?: ICacheItem;
+    reuseExisting?: boolean;
+    hasMergeData?: boolean;
+    rowVisible?: boolean;
+    skipFontCache?: boolean;
+}
+export interface ISetStylesCacheOptions {
+    scaleY?: number;
+}
+export interface IGetPosByRowColOptions {
+    closeFirst?: boolean;
+    /**
+     * for searchArray(rowHeightAccumulation) & searchArray(colWidthAccumulation)
+     * true means return first matched index in array
+     */
+    firstMatch?: boolean;
+}
+export declare class SpreadsheetSkeleton extends SheetSkeleton {
+    /**
+     * Range viewBounds. only update by viewBounds.
+     * It would change multiple times in one frame if there is multiple viewport (after freeze row&col)
+     */
+    private _drawingRange;
+    private _cacheRangeMap;
+    private _visibleRangeMap;
+    private _overflowCache;
+    private _incrementalFontRenderRanges;
+    private _stylesCache;
+    private _clearTaskId;
+    /** A matrix to store if a (row, column) position has render cache. */
+    private _handleBgMatrix;
+    private _handleBorderMatrix;
+    private _showGridlines;
+    private _gridlinesColor;
+    private _defaultGridlinesColor;
+    private _scene;
+    constructor(worksheet: Worksheet, _styles: Styles, _localeService: LocaleService, _contextService: IContextService, _configService: IConfigService, _injector: Injector);
+    registerGetCellHeight(): void;
+    setScene(scene: Scene): void;
+    _updateLayout(): void;
+    /**
+     * Range of visible area(range in viewBounds)
+     */
+    get rowColumnSegment(): IRowColumnRange;
+    /**
+     * Get range needs to render.
+     * @param viewportKey
+     * @returns
+     */
+    visibleRangeByViewportKey(viewportKey: SHEET_VIEWPORT_KEY): Nullable<IRowColumnRange>;
+    get stylesCache(): IStylesCache;
+    get overflowCache(): ObjectMatrix<IRange>;
+    get incrementalFontRenderRanges(): IRange[];
+    get showGridlines(): BooleanNumber;
+    get gridlinesColor(): string | undefined;
+    get defaultGridlinesColor(): string;
+    dispose(): void;
+    setOverflowCache(value: ObjectMatrix<IRange>): void;
+    getFont(rowIndex: number, columnIndex: number): Nullable<IFontCacheItem>;
+    /**
+     * Get range in visible area (range in view bounds) and set into this._rowColumnSegment.
+     * @param vpInfo
+     * @returns boolean
+     */
+    updateVisibleRange(vpInfo?: IViewportInfo): boolean;
+    getVisibleRangeByViewport(viewportKey: SHEET_VIEWPORT_KEY): IRowColumnRange | undefined;
+    getVisibleRanges(): Map<SHEET_VIEWPORT_KEY, IRowColumnRange>;
+    /**
+     * Clear cache out of visible range when browser are free.
+     */
+    private _clearCacheOutOfVisibleRange;
+    /**
+     * Set border background and font to this._stylesCache by visible range, which derives from bounds)
+     * @param vpInfo viewBounds
+     * @param options screen scale
+     */
+    setStylesCache(vpInfo?: IViewportInfo, options?: ISetStylesCacheOptions): Nullable<SpreadsheetSkeleton>;
+    /**
+     * Calc all auto height by getDocsSkeletonPageSize in ranges
+     * @param ranges
+     * @returns {IRowAutoHeightInfo[]} result
+     */
+    calculateAutoHeightInRange(ranges: Nullable<IRange[]>, currentCellHeights?: ObjectMatrix<number>): IRowAutoHeightInfo[];
+    calculateAutoHeightForCell(row: number, col: number): number | undefined;
+    private _calculateRowAutoHeight;
+    calculateAutoWidthInRange(ranges: Nullable<IRange[]>): IColAutoWidthInfo[];
+    /**
+     * Iterate rows in visible area(and rows around it) and return column width of the specified column(by column index)
+     *
+     * @param colIndex
+     * @returns {number} width
+     */
+    private _calculateColWidth;
+    getColWidth(colIndex: number): number;
+    getRowHeight(rowIndex: number): number;
+    /**
+     * For _calculateColMaxWidth
+     * @param cell
+     * @returns {number} currColWidth
+     */
+    _getMeasuredWidthByCell(cell: ICellDataForSheetInterceptor, row: number, column: number, currColWidth: number): number;
+    getRangeByViewport(vpInfo?: IViewportInfo): IRange;
+    getCacheRangeByViewport(vpInfo?: IViewportInfo, isPrinting?: boolean): IRange;
+    getRangeByViewBound(bound?: IBoundRectNoAngle): IRange;
+    appendToOverflowCache(row: number, column: number, startColumn: number, endColumn: number): void;
+    getOverflowPosition(contentSize: Required<ISize>, horizontalAlign: HorizontalAlign, row: number, column: number, columnCount: number): IColumnRange;
+    private _isOverflowBlockedByAdjacentCell;
+    private _isOverflowSideBlocked;
+    getCellWithMergeInfoByIndex(row: number, column: number): Nullable<ICellInfo>;
+    /**
+     * Calculate the overflow of cell text. If there is no value on either side of the cell,
+     * the text content of this cell can be drawn to both sides, not limited by the cell's width.
+     * Overflow on the left or right is aligned according to the text's horizontal alignment.
+     */
+    private _calculateOverflowCell;
+    /**
+     * Get the range of the bounding area of the canvas.
+     * @param rowHeightAccumulation Row layout information
+     * @param columnWidthAccumulation Column layout information
+     * @param viewBound The range of the visible area of the canvas
+     * @returns The range cell index of the canvas visible area
+     */
+    protected _getRangeByViewBounding(rowHeightAccumulation: number[], columnWidthAccumulation: number[], viewBound?: IBoundRectNoAngle, isPrinting?: boolean): IRange;
+    /**
+     * Get the current row and column segment visible merge data.
+     * @returns {IRange} The visible merge data
+     */
+    getCurrentRowColumnSegmentMergeData(range?: IRange): IRange[];
+    resetCache(): void;
+    /**
+     * Any changes to sheet model would reset cache.
+     */
+    _resetCache(): void;
+    resetRangeCache(ranges: IRange[]): void;
+    _setBorderStylesCache(row: number, col: number, style: Nullable<IStyleData>, options: ISetStylesCacheForOneCellOptions | undefined): void;
+    _setBgStylesCache(row: number, col: number, style: Nullable<IStyleData>, options: ISetStylesCacheForOneCellOptions | undefined): void;
+    private _applyShrinkToFit;
+    private _applyGeneralNumberDisplay;
+    _setFontStylesCache(row: number, col: number, cellData: Nullable<ICellDataForSheetInterceptor>, style: IStyleData, hasMergeData?: boolean): void;
+    /**
+     * Set border background and font to this._stylesCache cell by cell.
+     * @param row {number}
+     * @param col {number}
+     * @param options {{ mergeRange: IRange; cacheItem: ICacheItem } | undefined}
+     */
+    private _setStylesCacheForOneCell;
+    /**
+     * pro/issues/344
+     * In Excel, for the border rendering of merged cells to take effect, the outermost cells need to have the same border style.
+     */
+    private _setMergeBorderProps;
+    private _setBorderProps;
+    getDistanceFromTopLeft(row: number, col: number): IPoint;
+    colStartX(col: number): number;
+    rowStartY(row: number): number;
+    getHiddenRowsInRange(range: IRowRange): number[];
+    getHiddenColumnsInRange(range: IColumnRange): number[];
+}
+/**
+ * convert canvas content position to physical position in screen
+ * @param offsetX
+ * @param scaleX
+ * @param scrollXY
+ */
+export declare function convertTransformToOffsetX(offsetX: number, scaleX: number, scrollXY: {
+    x: number;
+    y: number;
+}): number;
+/**
+ * convert canvas content position to physical position in screen
+ * @param offsetY
+ * @param scaleY
+ * @param scrollXY
+ */
+export declare function convertTransformToOffsetY(offsetY: number, scaleY: number, scrollXY: {
+    x: number;
+    y: number;
+}): number;
+/**
+ * Obtain the height and width of a cell's text, taking into account scenarios with rotated text.
+ * @param documentSkeleton Data of the document's ViewModel
+ * @param angleInDegree The rotation angle of an Excel cell, it's **degree**
+ */
+export declare function getDocsSkeletonPageSize(documentSkeleton: DocumentSkeleton, angleInDegree?: number): Nullable<Required<ISize>>;
+export {};

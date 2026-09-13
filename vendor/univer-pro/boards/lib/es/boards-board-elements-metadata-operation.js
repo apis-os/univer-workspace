@@ -1,0 +1,74 @@
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { vd } from "./boards-board-container-membership-lock-operation.js";
+import { Mo, id } from "./internal-core-endo.js";
+import { L } from "./boards-iboard-element.js";
+import { var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB217 } from "./boards-board-element.js";
+function yd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465754, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465755) {
+  return Object.prototype["hasOwnProperty"].call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465754, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465755);
+}
+function bd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465758, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465759) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465760 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465758);
+  return vd.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461757 => {
+    if (!yd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465759, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461757)) return;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461758 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465759[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461757];
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461758 === undefined) {
+      delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465760[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461757];
+      return;
+    }
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465760[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461757] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461758;
+  }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465760;
+}
+function xd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465764, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465765) {
+  return vd.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461761 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465764[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461761] !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465765[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461761]);
+}
+function Sd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465768, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465769, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465770, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465771) {
+  return {
+    unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465768,
+    subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465769,
+    elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465770,
+    element: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465771,
+    allowInactiveTarget: true,
+    allowLockedTarget: true
+  };
+}
+const Cd = {
+  id: "board.operation.set-elements-metadata",
+  type: CommandType.OPERATION,
+  handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465776, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465777) => {
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465777 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465777.updates["length"] === 0) return false;
+    let {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465778,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465779,
+        updates: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465780
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465777,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465781 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465776.get(L).getElementData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465778, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465779),
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A258 = [];
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465780.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461762 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461763 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465781[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461762.elementId];
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461763) return;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461764 = bd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461763.element, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461762.metadata);
+      xd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461763.element, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461764) && var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A258.push({
+        redoMutation: {
+          id: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB217.id,
+          params: Sd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465778, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465779, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461763.elementId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461764)
+        },
+        undoMutation: {
+          id: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB217.id,
+          params: Sd(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465778, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465779, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461763.elementId, Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461763.element))
+        }
+      });
+    }), var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A258.length === 0) return false;
+    let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A259 = var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A258.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461768 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461768.redoMutation);
+    return !Mo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465781, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A259) || !sequenceExecute(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A259, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465776.get(ICommandService)).result ? false : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465776.get(IUndoRedoService).pushUndoRedo({
+      unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465778,
+      redoMutations: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A259,
+      undoMutations: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A258.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769.undoMutation)
+    }), true);
+  }
+};
+export { Cd as SetBoardElementsMetadataOperation };

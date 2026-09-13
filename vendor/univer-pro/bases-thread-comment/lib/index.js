@@ -1,0 +1,76 @@
+import { UniverBasesPlugin as var_core_value_sigA12B } from "@univerjs-pro/bases";
+import { UniverLicensePlugin as var_core_value_sigF230 } from "@univerjs-pro/license";
+import { DependentOn as var_core_value_sig09B8, Disposable as var_core_value_sig6F91, IConfigService as var_core_value_sigF9C7, IResourceManagerService as var_core_value_sig8895, Inject as var_core_value_sigC80B, Injector as var_core_value_sig284F, Plugin as var_core_value_sigE154, UniverInstanceType as var_core_value_sig4632, merge as var_core_value_sig12F2 } from "@univerjs/core";
+import { IThreadCommentDataSourceService as var_core_value_sig2259, TC_PLUGIN_NAME as var_core_value_sig9E2F, ThreadCommentModel as var_core_value_sigD082, UniverThreadCommentPlugin as var_core_value_sigDBB7, createThreadCommentResourceHook as var_core_value_sigD0A8 } from "@univerjs/thread-comment";
+const g = "bases-thread-comment.config",
+  _ = {};
+var v = "@univerjs-pro/bases-thread-comment",
+  y = "1.0.0-insiders.20260907-70fc579";
+function b(var_core_value_sigFBFA, var_core_value_sigF602) {
+  return function (var_core_value_sig7524, var_core_value_sig2AD8) {
+    var_core_value_sigF602(var_core_value_sig7524, var_core_value_sig2AD8, var_core_value_sigFBFA);
+  };
+}
+function x(var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sig2BCF, var_core_value_sig0D69) {
+  var var_core_value_sig480E = ox5814ec,
+    var_core_value_sig26DB = arguments.length,
+    var_core_value_sigF0F9 = var_core_value_sig26DB < 3 ? var_core_value_sigF704 : var_core_value_sig0D69 === null ? var_core_value_sig0D69 = Object[var_core_value_sig480E(337)](var_core_value_sigF704, var_core_value_sig2BCF) : var_core_value_sig0D69,
+    var_core_value_sig1A0F;
+  if (typeof Reflect == var_core_value_sig480E(306) && typeof Reflect[var_core_value_sig480E(327)] == var_core_value_sig480E(319)) var_core_value_sigF0F9 = Reflect.decorate(var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sig2BCF, var_core_value_sig0D69);else {
+    for (var var_core_value_sigFBA4 = var_core_value_sig1BBD[var_core_value_sig480E(320)] - 1; var_core_value_sigFBA4 >= 0; var_core_value_sigFBA4--) (var_core_value_sig1A0F = var_core_value_sig1BBD[var_core_value_sigFBA4]) && (var_core_value_sigF0F9 = (var_core_value_sig26DB < 3 ? var_core_value_sig1A0F(var_core_value_sigF0F9) : var_core_value_sig26DB > 3 ? var_core_value_sig1A0F(var_core_value_sigF704, var_core_value_sig2BCF, var_core_value_sigF0F9) : var_core_value_sig1A0F(var_core_value_sigF704, var_core_value_sig2BCF)) || var_core_value_sigF0F9);
+  }
+  return var_core_value_sig26DB > 3 && var_core_value_sigF0F9 && Object[var_core_value_sig480E(313)](var_core_value_sigF704, var_core_value_sig2BCF, var_core_value_sigF0F9), var_core_value_sigF0F9;
+}
+const S = "BASE_" + var_core_value_sig9E2F;
+let C = class extends var_core_value_sig6F91 {
+  constructor(var_core_value_sig2AD0, var_core_value_sig3EEE, var_core_value_sigBC46) {
+    super(), this._resourceManagerService = var_core_value_sig2AD0, this._threadCommentModel = var_core_value_sig3EEE, this._threadCommentDataSourceService = var_core_value_sigBC46, this.disposeWithMe(this._resourceManagerService["registerPluginResource"](var_core_value_sigD0A8(this._threadCommentModel, this._threadCommentDataSourceService, S, [var_core_value_sig4632.UNIVER_BASE])));
+  }
+};
+C = x([b(0, var_core_value_sig8895), b(1, var_core_value_sigC80B(var_core_value_sigD082)), b(2, var_core_value_sig2259)], C);
+function w(var_core_value_sig4383) {
+  "@babel/helpers - typeof";
+
+  return w = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig3D7D) {
+    return typeof var_core_value_sig3D7D;
+  } : function (var_core_value_sig27E5) {
+    return var_core_value_sig27E5 && typeof Symbol == "function" && var_core_value_sig27E5.constructor === Symbol && var_core_value_sig27E5 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig27E5;
+  }, w(var_core_value_sig4383);
+}
+function T(var_core_value_sig186C, var_core_value_sigD955) {
+  if (w(var_core_value_sig186C) != "object" || !var_core_value_sig186C) return var_core_value_sig186C;
+  var var_core_value_sig48BD = var_core_value_sig186C[Symbol.toPrimitive];
+  if (var_core_value_sig48BD !== undefined) {
+    var var_core_value_sig429F = var_core_value_sig48BD.call(var_core_value_sig186C, var_core_value_sigD955 || "default");
+    if (w(var_core_value_sig429F) != "object") return var_core_value_sig429F;
+    throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");
+  }
+  return (var_core_value_sigD955 === "string" ? String : Number)(var_core_value_sig186C);
+}
+function E(var_core_value_sigF62A) {
+  var var_core_value_sig8178 = ox5814ec,
+    var_core_value_sigE9ED = T(var_core_value_sigF62A, var_core_value_sig8178(315));
+  return w(var_core_value_sigE9ED) == var_core_value_sig8178(333) ? var_core_value_sigE9ED : var_core_value_sigE9ED + "";
+}
+function D(var_core_value_sigB577, var_core_value_sig9572, var_core_value_sigD873) {
+  return (var_core_value_sig9572 = E(var_core_value_sig9572)) in var_core_value_sigB577 ? Object.defineProperty(var_core_value_sigB577, var_core_value_sig9572, {
+    value: var_core_value_sigD873,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigB577[var_core_value_sig9572] = var_core_value_sigD873, var_core_value_sigB577;
+}
+let O = class extends var_core_value_sigE154 {
+  constructor(var_core_value_sig8061 = _, var_core_value_sig4D4C, var_core_value_sigC9E0) {
+    super(), this._config = var_core_value_sig8061, this._injector = var_core_value_sig4D4C, this._configService = var_core_value_sigC9E0;
+    let {
+      ...var_core_value_sig76BA
+    } = var_core_value_sig12F2({}, _, this._config);
+    this._configService["setConfig"](g, var_core_value_sig76BA);
+  }
+  onStarting() {
+    this._injector["add"]([C]), this._injector["get"](C);
+  }
+};
+D(O, "pluginName", "UNIVER_BASES_THREAD_COMMENT_PLUGIN"), D(O, "packageName", v), D(O, "version", y), D(O, "type", var_core_value_sig4632.UNIVER_BASE), O = x([var_core_value_sig09B8(var_core_value_sigF230, var_core_value_sigDBB7, var_core_value_sigA12B), b(1, var_core_value_sigC80B(var_core_value_sig284F)), b(2, var_core_value_sigF9C7)], O);
+export { g as BASES_THREAD_COMMENT_PLUGIN_CONFIG_KEY, O as UniverBasesThreadCommentPlugin };

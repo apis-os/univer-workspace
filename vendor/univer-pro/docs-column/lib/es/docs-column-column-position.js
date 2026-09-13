@@ -1,0 +1,8 @@
+import { ColumnLayoutType, ColumnResponsiveType, CommandType, DataStreamTreeTokenType, DependentOn, DocumentFlavor, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, TableAlignmentType, TableRowHeightRule, TableSizeType, TableTextWrapType, TextX, Tools, UniverInstanceType, containsInteriorInsertionOffset, createParagraphId, createSectionId, generateRandomId, getBlockRangeInterval, getColumnGroupRangeInterval, getTableRangeInterval, merge, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, consumeContentInsertRange } from "@univerjs/docs";
+import { getDocsTableRenderViewport } from "@univerjs/engine-render";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+let de = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364.LEFT = "left", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364.RIGHT = "right", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46364;
+}({});
+export { de as ColumnPosition };

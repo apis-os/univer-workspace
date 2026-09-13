@@ -1,0 +1,69 @@
+import { CollaborationEvent, CompressMutationService, EmptyMutationInfo, ISnapshotServerService, ITransformService, RevisionService, SnapshotService, UniverCollaborationPlugin, b64DecodeUnicode, isTransformChangesetsSuccess, isTransformMutationsWithChangesetFailure, isTransformMutationsWithChangesetSuccess, mapDocumentTypeToUniverInstanceType, parseChangesetToProtocol, parseProtocolChangeset, textEncoder, uuidv4 } from "@univerjs-pro/collaboration";
+import { CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, IContextService, IImageIoService, ILogService, IMentionIOService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, ImageUploadStatusType, Inject, Injector, JSONX, LocalUndoRedoService, LocaleService, MentionType, Optional, Plugin, Quantity, Rectangle, RxDisposable, Tools, UniverInstanceType, UserManagerService, Workbook, createIdentifier, generateRandomId, isInternalEditorID, merge, mergeOverrideWithDependencies, registerDependencies, resolveWithBasePath, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { DocStateChangeManagerService, RichTextEditingMutation } from "@univerjs/docs";
+import { InsertSheetMutation, SetSelectionsOperation, SheetPermissionInitController, SheetsSelectionsService, WorkbookEditablePermission } from "@univerjs/sheets";
+import { BehaviorSubject, ReplaySubject, Subject, concatMap, firstValueFrom, map, merge as mergeLocal, of, shareReplay, take, takeUntil } from "rxjs";
+import { CmdRspCode, CombCmd, ErrorCode, FileSource, UnitAction, UnitObject } from "@univerjs/protocol";
+import { ITelemetryService } from "@univerjs/telemetry";
+import { delay, filter, map as mapLocal, take as takeLocal, takeUntil as takeUntilLocal } from "rxjs/operators";
+import { AddSlidePageMutation, EnsureSlideMasterPageMutation, MoveSlidePageMutation, RemoveSlidePageMutation } from "@univerjs-pro/slides";
+import { HTTPRequest, HTTPService, ISocketService, MergeInterceptorFactory, ThresholdInterceptorFactory, UniverNetworkPlugin } from "@univerjs/network";
+import { UniverLicensePlugin, getGlobalObject } from "@univerjs-pro/license";
+import { cbc } from "@noble/ciphers/aes.js";
+import { concatBytes, randomBytes, utf8ToBytes } from "@noble/ciphers/utils.js";
+import { DRAWING_IMAGE_ALLOW_IMAGE_LIST, getDrawingImageAllowSize } from "@univerjs/drawing";
+import { z } from "./internal-glue.js";
+let Yn = class extends RxDisposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461498, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461499, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461500) {
+    super(), this._logService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461498, this._snapshotService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461499, this._localCacheService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461500, z(this, "_unitInfo$", new BehaviorSubject(null)), z(this, "_unitLoaded$", new Subject()), z(this, "unitInfo$", this._unitInfo$["asObservable"]()), z(this, "unitLoaded$", this._unitLoaded$["asObservable"]());
+  }
+  dispose() {
+    super.dispose(), this._unitLoaded$["complete"](), this._unitInfo$["complete"]();
+  }
+  async loadUnitOfRevision(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461504, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461505, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461506, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461507) {
+    this._unitInfo$["next"]({
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461504,
+      type: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461505,
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461507
+    });
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508 = null;
+    switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461505) {
+      case UniverInstanceType.UNIVER_SHEET:
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508 = await this._snapshotService["loadSheet"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461504, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461506, undefined, {
+          initialSubUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461507
+        });
+        break;
+      case UniverInstanceType.UNIVER_DOC:
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508 = await this._snapshotService["loadDoc"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461504, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461506);
+        break;
+      case UniverInstanceType.UNIVER_SLIDE:
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508 = await this._snapshotService["loadSlide"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461504, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461506);
+        break;
+      case UniverInstanceType.UNIVER_BOARD:
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508 = await this._snapshotService["loadBoard"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461504, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461506);
+        break;
+      case UniverInstanceType.UNIVER_BASE:
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508 = await this._snapshotService["loadBase"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461504, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461506);
+        break;
+      case UniverInstanceType.UNIVER_PDF:
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508 = await this._snapshotService["loadPdf"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461504, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461506);
+        break;
+      default:
+        this._logService["error"]("[DataLoaderService]", "Unknown type. Will not load files from remote address.");
+        break;
+    }
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508 && this._unitLoaded$["next"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461508;
+  }
+  async loadUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461514, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461515, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461516) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461517;
+    this._unitInfo$["next"]({
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461514,
+      type: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461515,
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461516
+    });
+    let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8 = 0,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461518 = await ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461517 = this._localCacheService) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461517.loadOfflineData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461514));
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461518 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461518.awaitingChangeset || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461518.mutations["length"] !== 0) && (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461518.rev), var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8 === 0 && this._logService["debug"]("[DataLoaderService]", "fetching the latest document from the server."), this.loadUnitOfRevision(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461514, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461515, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D8, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461516);
+  }
+};
+export { Yn as DataLoaderService };

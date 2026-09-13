@@ -1,0 +1,37 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/reduce-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 16 16",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M1.9999 7.9999H13.9999",
+			"strokeLinecap": "round",
+			"strokeWidth": 1.2
+		}
+	}]
+};
+const ReduceIcon = (0, react.forwardRef)(function ReduceIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "reduce-icon",
+		ref,
+		icon: element
+	}));
+});
+ReduceIcon.displayName = "ReduceIcon";
+//#endregion
+exports.ReduceIcon = ReduceIcon;
+exports.default = ReduceIcon;

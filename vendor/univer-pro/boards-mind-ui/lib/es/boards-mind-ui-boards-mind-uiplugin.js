@@ -1,0 +1,15 @@
+export { UniverBoardsMindUIPlugin } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-boards-mind-uiplugin.js";
+export { zt } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-zt.js";
+export { sn } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-sn.js";
+export { cn } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-cn.js";
+export { vn } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-vn.js";
+export { Gn } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-gn.js";
+export { ar } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-ar.js";
+export { tr } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-tr.js";
+export { lr } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-lr.js";
+export { or } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-or.js";
+export { vr, Vr } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-vr.js";
+export { br } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-br.js";
+export { Sr } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-sr.js";
+export { Hr } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-hr.js";
+export { G } from "./boards-mind-ui-boards-mind-uiplugin-boards-mind-ui-g.js";

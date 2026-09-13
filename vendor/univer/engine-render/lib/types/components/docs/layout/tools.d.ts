@@ -1,0 +1,271 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { DocumentDataModel, ICustomRangeForInterceptor, INumberUnit, IObjectPositionH, IObjectPositionV, IParagraph, IParagraphStyle, ITextStyle, Nullable, PositionedObjectLayoutType } from '@univerjs/core';
+import type { IDocumentSkeletonCached, IDocumentSkeletonColumn, IDocumentSkeletonDivide, IDocumentSkeletonFontStyle, IDocumentSkeletonGlyph, IDocumentSkeletonLine, IDocumentSkeletonPage, IDocumentSkeletonParagraphBorders, IDocumentSkeletonRow, IDocumentSkeletonSection, IDocumentSkeletonTable, ISkeletonResourceReference } from '../../../basics/i-document-skeleton-cached';
+import type { IDocsConfig, IParagraphConfig, ISectionBreakConfig } from '../../../basics/interfaces';
+import type { IBoundRectNoAngle } from '../../../basics/vector2';
+import type { IDocumentCompatibilityPolicy } from '../document-compatibility';
+import type { DataStreamTreeNode } from '../view-model/data-stream-tree-node';
+import type { DocumentViewModel } from '../view-model/document-view-model';
+import type { Hyphen } from './hyphenation/hyphen';
+import type { LanguageDetector } from './hyphenation/language-detector';
+import { BooleanNumber, GridType, SpacingRule } from '@univerjs/core';
+export declare function getLastPage(pages: IDocumentSkeletonPage[]): IDocumentSkeletonPage;
+export declare function getLastSection(page: IDocumentSkeletonPage): IDocumentSkeletonSection;
+export declare function getLastColumn(page: IDocumentSkeletonPage): IDocumentSkeletonColumn;
+export declare function getLastLine(page: IDocumentSkeletonPage): IDocumentSkeletonLine | undefined;
+export declare function getLastLineByColumn(column: IDocumentSkeletonColumn): IDocumentSkeletonLine;
+export declare function getPageContentWidth(page: IDocumentSkeletonPage): number;
+export declare function getPreLine(line: IDocumentSkeletonLine): IDocumentSkeletonLine | undefined;
+export declare function getColumnByDivide(divide: IDocumentSkeletonDivide): IDocumentSkeletonColumn | undefined;
+export declare function getLastNotFullColumnInfo(page: IDocumentSkeletonPage): {
+    column: IDocumentSkeletonColumn;
+    isLast: boolean;
+    index: number;
+} | undefined;
+export declare function getLastNotFullDivideInfo(page: IDocumentSkeletonPage): {
+    divide: IDocumentSkeletonDivide;
+    isLast: boolean;
+    index: number;
+} | undefined;
+export declare function getNextDivide(curLine: IDocumentSkeletonLine, curDivide: IDocumentSkeletonDivide): IDocumentSkeletonDivide | undefined;
+export declare function getLastRemainingDivide(curLine: IDocumentSkeletonLine): IDocumentSkeletonDivide | undefined;
+export declare function getLastSpan(page: IDocumentSkeletonPage): IDocumentSkeletonGlyph | undefined;
+export declare function isColumnFull(page: IDocumentSkeletonPage): boolean;
+export declare function isBlankPage(page: IDocumentSkeletonPage): boolean;
+export declare function isBlankColumn(column: IDocumentSkeletonColumn): boolean;
+export declare function getNumberUnitValue(unitValue: Nullable<INumberUnit>, benchMark: number): number;
+export declare function getCharSpaceApply(charSpace: number | undefined, defaultTabStop: number, gridType?: GridType, snapToGrid?: BooleanNumber): number;
+export declare function validationGrid(gridType?: GridType, snapToGrid?: BooleanNumber): boolean;
+export declare function reachesNextDocumentGridLine(lineSpacing: number, spaceBelow: number, linePitch: number): boolean;
+export declare function getLineHeightConfig(sectionBreakConfig: ISectionBreakConfig, paragraphConfig: IParagraphConfig): {
+    paragraphLineGapDefault: number;
+    linePitch: number;
+    gridType: GridType;
+    lineSpacing: number;
+    spacingRule: SpacingRule;
+    snapToGrid: BooleanNumber;
+    useWordStyleLineHeight: boolean;
+};
+export declare function getCharSpaceConfig(sectionBreakConfig: ISectionBreakConfig, paragraphConfig: IParagraphConfig): {
+    charSpace: number;
+    documentFontSize: number;
+    defaultTabStop: number;
+    gridType: GridType;
+    snapToGrid: BooleanNumber;
+};
+export declare function updateBlockIndex(pages: IDocumentSkeletonPage[], start?: number, documentCompatibilityPolicy?: IDocumentCompatibilityPolicy): void;
+export declare function hasSameParagraphBorderSet(first: IDocumentSkeletonParagraphBorders, second: IDocumentSkeletonParagraphBorders): boolean;
+export declare function updateInlineDrawingCoordsAndBorder(ctx: ILayoutContext, pages: IDocumentSkeletonPage[]): void;
+export declare function updateParagraphBorders(ctx: ILayoutContext, pages: IDocumentSkeletonPage[], targetPages?: IDocumentSkeletonPage[]): void;
+export declare function glyphIterator(pages: IDocumentSkeletonPage[], cb: (glyph: IDocumentSkeletonGlyph, divide: IDocumentSkeletonDivide, line: IDocumentSkeletonLine, column: IDocumentSkeletonColumn, section: IDocumentSkeletonSection, page: IDocumentSkeletonPage) => void): void;
+export declare function lineIterator(pagesOrCells: (IDocumentSkeletonPage)[], cb: (line: IDocumentSkeletonLine, column: IDocumentSkeletonColumn, section: IDocumentSkeletonSection, page: IDocumentSkeletonPage) => void): void;
+export type DocumentSkeletonLineSource = 'page' | 'table-cell' | 'column';
+export interface IDocumentSkeletonLineIteratorOptions {
+    docsLeft?: number;
+    pageMarginTop?: number;
+    tableCellInsetX?: number;
+    unitId?: string;
+}
+export interface IDocumentSkeletonLineContext {
+    clipLeft?: number;
+    clipRight?: number;
+    column: IDocumentSkeletonColumn;
+    line: IDocumentSkeletonLine;
+    lineWidth: number;
+    page: IDocumentSkeletonPage;
+    pageIndex: number;
+    pageLeft: number;
+    section: IDocumentSkeletonSection;
+    sectionTop: number;
+    source: DocumentSkeletonLineSource;
+    visualLeft?: number;
+    visualWidth?: number;
+}
+export type DocumentSkeletonTableSource = 'page' | 'column' | 'header' | 'footer';
+type HeaderFooterSkeletonMap = Map<string, Map<number, IDocumentSkeletonPage>>;
+export interface IDocumentSkeletonTableCellGeometry {
+    cell: IDocumentSkeletonPage;
+    cellRect: IBoundRectNoAngle;
+    clipLeft: number;
+    clipRight: number;
+    columnIndex: number;
+    pageLeft: number;
+    pageTop: number;
+    row: IDocumentSkeletonRow;
+    rowIndex: number;
+    visualLeft: number;
+    visualWidth: number;
+}
+export interface IDocumentSkeletonTableContext {
+    cells: IDocumentSkeletonTableCellGeometry[];
+    page: IDocumentSkeletonPage;
+    pageIndex: number;
+    pageLeft: number;
+    pageTop: number;
+    rootPage: IDocumentSkeletonPage;
+    source: DocumentSkeletonTableSource;
+    table: IDocumentSkeletonTable;
+    tableId: string;
+    tableRect: IBoundRectNoAngle;
+}
+export interface IDocumentSkeletonTableIteratorOptions {
+    includeCells?: boolean;
+    docsLeft?: number;
+    docsTop?: number;
+    pageMarginTop?: number;
+    resolveViewport?: boolean;
+    skeFooters?: HeaderFooterSkeletonMap;
+    skeHeaders?: HeaderFooterSkeletonMap;
+    tableCellInsetX?: number;
+    unitId?: string;
+}
+export declare function documentSkeletonTableIterator(pages: IDocumentSkeletonPage[], options?: IDocumentSkeletonTableIteratorOptions): IDocumentSkeletonTableContext[];
+export declare function documentSkeletonLineIterator(pages: IDocumentSkeletonPage[], options: IDocumentSkeletonLineIteratorOptions, cb: (context: IDocumentSkeletonLineContext) => void): void;
+export declare function getDocumentSkeletonNestedPageOffset(page: IDocumentSkeletonPage): {
+    left: number;
+    top: number;
+} | undefined;
+export interface IDocumentSkeletonColumnPagePathInfo {
+    columnGroupId: string;
+    columnIndex: number;
+    pageIndex: number;
+}
+export declare function getDocumentSkeletonColumnPagePathInfo(position: {
+    path?: (string | number)[];
+}): IDocumentSkeletonColumnPagePathInfo | undefined;
+export declare function compareDocumentSkeletonNestedPagePathOrder(pos1: {
+    path?: (string | number)[];
+}, pos2: {
+    path?: (string | number)[];
+}): boolean | undefined;
+export declare function columnIterator(pages: IDocumentSkeletonPage[], iteratorFunction: (column: IDocumentSkeletonColumn) => void): void;
+export declare function getPositionHorizon(positionH: IObjectPositionH, column: IDocumentSkeletonColumn, page: IDocumentSkeletonPage, objectWidth: number, isPageBreak?: boolean): number | undefined;
+export declare function getPositionVertical(positionV: IObjectPositionV, page: IDocumentSkeletonPage, lineTop: number, lineHeight: number, objectHeight: number, blockAnchorTop?: number, isPageBreak?: boolean): number | undefined;
+export declare function getGlyphGroupWidth(divide: IDocumentSkeletonDivide): number;
+interface IFontCreateConfig {
+    fontStyle: IDocumentSkeletonFontStyle;
+    textStyle: ITextStyle;
+    charSpace: number;
+    gridType: GridType;
+    snapToGrid: BooleanNumber;
+    pageWidth: number;
+}
+export declare function clearFontCreateConfigCache(): void;
+export declare function getFontConfigFromLastGlyph(glyph: IDocumentSkeletonGlyph, sectionBreakConfig: ISectionBreakConfig, paragraphStyle: IParagraphStyle): {
+    fontStyle: IDocumentSkeletonFontStyle;
+    textStyle: ITextStyle;
+    charSpace: number;
+    gridType: GridType;
+    snapToGrid: BooleanNumber;
+    pageWidth: number;
+};
+export declare function getFontCreateConfig(index: number, viewModel: DocumentViewModel, paragraphNode: DataStreamTreeNode, sectionBreakConfig: ISectionBreakConfig, paragraph: IParagraph): IFontCreateConfig;
+export declare function getCustomRangeGlyphWidth(index: number, viewModel: DocumentViewModel, paragraphNode: DataStreamTreeNode, config: IFontCreateConfig): number | undefined;
+/**
+ * Returns whether a custom range should occupy one measured glyph in the
+ * document skeleton while preserving its complete source text in the model.
+ *
+ * Visible whole-entity ranges such as mentions keep their existing shaping.
+ * The atomic behavior is reserved for hidden ranges whose renderer provides
+ * explicit glyph metrics, such as an inline formula.
+ */
+export declare function isMeasuredWholeEntityRange(customRange: Nullable<ICustomRangeForInterceptor>): customRange is ICustomRangeForInterceptor;
+export declare function getCustomRangeGlyphMetrics(index: number, viewModel: DocumentViewModel, paragraphNode: DataStreamTreeNode, config: IFontCreateConfig): {
+    ascent?: number;
+    descent?: number;
+    width?: number;
+} | undefined;
+export declare function getCustomRangeGlyphMetricsFromRange(customRange: ICustomRangeForInterceptor, config: IFontCreateConfig): {
+    ascent?: number;
+    descent?: number;
+    width?: number;
+} | undefined;
+export declare function getNullSkeleton(): IDocumentSkeletonCached;
+export declare function setPageParent(pages: IDocumentSkeletonPage[], parent: IDocumentSkeletonCached): void;
+export declare enum FloatObjectType {
+    IMAGE = "IMAGE",
+    TABLE = "TABLE"
+}
+export interface IFloatObject {
+    id: string;
+    top: number;
+    left: number;
+    width: number;
+    height: number;
+    angle: number;
+    behindDoc?: BooleanNumber;
+    layoutType?: PositionedObjectLayoutType;
+    type: FloatObjectType;
+    positionV: IObjectPositionV;
+}
+export interface IDocumentPaginationMetrics {
+    /** Paragraphs that entered the Word-compatible pagination decision path. */
+    constrainedParagraphs: number;
+    /** Paragraphs that stayed on the no-constraint fast path. */
+    noConstraintParagraphs: number;
+    /** Already-shaped lines inspected by pagination checkpoints. */
+    measuredLineCount: number;
+    /** Bounded local pagination adjustments; at most one per paragraph or keep chain. */
+    retryCount: number;
+    /** Already-shaped lines moved by a pagination adjustment. */
+    movedLineCount: number;
+    /** Paragraphs inspected while walking backward through keep-next chains. */
+    keepNextScanCount: number;
+    /** Largest number of line references retained by one local checkpoint. */
+    peakCheckpointLineCount: number;
+}
+export interface ILayoutContext {
+    viewModel: DocumentViewModel;
+    dataModel: DocumentDataModel;
+    docsConfig: IDocsConfig;
+    skeleton: IDocumentSkeletonCached;
+    layoutStartPointer: Record<string, Nullable<number>>;
+    isDirty: boolean;
+    skeletonResourceReference: ISkeletonResourceReference;
+    floatObjectsCache: Map<string, {
+        count: number;
+        page: IDocumentSkeletonPage;
+        floatObject: IFloatObject;
+    }>;
+    paragraphConfigCache: Map<string, Map<number, IParagraphConfig>>;
+    sectionBreakConfigCache: Map<number, ISectionBreakConfig>;
+    paragraphsOpenNewPage: Set<number>;
+    paginationMetrics?: IDocumentPaginationMetrics;
+    /**
+     * Incremental layout may defer an expensive split-table calculation after
+     * the normal line-layout path has resolved its exact pagination context.
+     * Synchronous callers leave this unset.
+     */
+    deferSlicedTableLayout?: (request: {
+        curPage: IDocumentSkeletonPage;
+        viewModel: DocumentViewModel;
+        tableNode: DataStreamTreeNode;
+        sectionBreakConfig: ISectionBreakConfig;
+        availableHeight: number;
+    }) => boolean;
+    hyphen: Hyphen;
+    languageDetector: LanguageDetector;
+}
+export declare const DEFAULT_PAGE_SIZE: {
+    width: number;
+    height: number;
+};
+export declare function prepareSectionBreakConfig(ctx: ILayoutContext, nodeIndex: number): ISectionBreakConfig;
+export declare function resetContext(ctx: ILayoutContext): void;
+export declare function mergeByV<T = unknown>(object: unknown, originObject: unknown, type: 'max' | 'min'): T;
+export declare function getPageFromPath(skeletonData: IDocumentSkeletonCached, path: (string | number)[]): Nullable<IDocumentSkeletonPage>;
+export {};

@@ -1,0 +1,8 @@
+let e = require("@univerjs-pro/collaboration-client-ui"),
+  t = require("@univerjs/core/facade");
+var n = class extends t.FUniver {
+  runOnServer(v1, v2, ...v3) {
+    return this._injector["get"](e.RemoteUniscriptService).runOnServer(v1, v2, {}, ...v3);
+  }
+};
+t.FUniver["extend"](n);

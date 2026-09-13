@@ -1,0 +1,316 @@
+.univer-m-0 {
+  margin: 0;
+}
+
+.univer-mt-2 {
+  margin-top: .5rem;
+}
+
+.univer-mt-4 {
+  margin-top: 1rem;
+}
+
+.univer-box-border {
+  box-sizing: border-box;
+}
+
+.univer-block {
+  display: block;
+}
+
+.univer-flex {
+  display: flex;
+}
+
+.univer-grid {
+  display: grid;
+}
+
+.univer-max-h-14 {
+  max-height: 3.5rem;
+}
+
+.univer-min-h-20 {
+  min-height: 5rem;
+}
+
+.univer-min-h-24 {
+  min-height: 6rem;
+}
+
+.univer-w-\[380px\] {
+  width: 380px;
+}
+
+.univer-w-\[420px\] {
+  width: 420px;
+}
+
+.univer-max-w-\[calc\(100vw_-_32px\)\] {
+  max-width: calc(100vw - 32px);
+}
+
+.univer-max-w-full {
+  max-width: 100%;
+}
+
+.univer-cursor-pointer {
+  cursor: pointer;
+}
+
+.\!univer-resize-y {
+  resize: vertical !important;
+}
+
+.univer-grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.univer-items-center {
+  align-items: center;
+}
+
+.univer-justify-end {
+  justify-content: flex-end;
+}
+
+.univer-justify-center {
+  justify-content: center;
+}
+
+.univer-gap-2 {
+  gap: .5rem;
+}
+
+.univer-overflow-hidden {
+  overflow: hidden;
+}
+
+.univer-break-all {
+  word-break: break-all;
+}
+
+.univer-rounded-lg {
+  border-radius: .5rem;
+}
+
+.univer-rounded-md {
+  border-radius: .375rem;
+}
+
+.univer-border {
+  border-width: 1px;
+}
+
+.univer-border-solid {
+  border-style: solid;
+}
+
+.univer-border-gray-200 {
+  border-color: var(--univer-gray-200);
+}
+
+.univer-bg-gray-0 {
+  background-color: var(--univer-gray-0);
+}
+
+.univer-bg-gray-50 {
+  background-color: var(--univer-gray-50);
+}
+
+.univer-p-2 {
+  padding: .5rem;
+}
+
+.univer-p-4 {
+  padding: 1rem;
+}
+
+.univer-font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+}
+
+.univer-text-sm {
+  font-size: .875rem;
+  line-height: 1.25rem;
+}
+
+.univer-text-xs {
+  font-size: .75rem;
+  line-height: 1rem;
+}
+
+.univer-font-medium {
+  font-weight: 500;
+}
+
+.univer-leading-4 {
+  line-height: 1rem;
+}
+
+.\!univer-text-red-400 {
+  color: var(--univer-red-400) !important;
+}
+
+.univer-text-gray-600 {
+  color: var(--univer-gray-600);
+}
+
+.univer-text-gray-700 {
+  color: var(--univer-gray-700);
+}
+
+.univer-text-gray-900 {
+  color: var(--univer-gray-900);
+}
+
+.univer-text-red-600 {
+  color: var(--univer-red-600);
+}
+
+.univer-shadow-xl {
+  --univer-tw-shadow: 0px 10px 10px 0px #1e284d0a, 0px 20px 24px -5px #1e284d1a;
+  --univer-tw-shadow-colored: 0px 10px 10px 0px var(--univer-tw-shadow-color), 0px 20px 24px -5px var(--univer-tw-shadow-color);
+  box-shadow: 0 0 #0000, 0 0 #0000, 0 10px 10px #1e284d0a, 0 20px 24px -5px #1e284d1a;
+  box-shadow: var(--univer-tw-ring-offset-shadow, 0 0 #0000), var(--univer-tw-ring-shadow, 0 0 #0000), var(--univer-tw-shadow);
+}
+
+.univer-transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-duration: .15s;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+
+[data-u-comp="ribbon-toolbar"] [data-u-comp^="docs-latex-ui.ribbon.menu."] {
+  box-sizing: border-box;
+  white-space: normal;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+  min-width: 52px;
+  height: 38px;
+  padding: 1px 14px 1px 6px;
+}
+
+[data-u-comp="ribbon-toolbar"] [data-u-comp^="docs-latex-ui.ribbon.menu."] > svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+}
+
+[data-u-comp="ribbon-toolbar"] [data-u-comp^="docs-latex-ui.ribbon.menu."] > span {
+  text-align: center;
+  max-width: 92px;
+  font-size: 10px;
+  line-height: 10px;
+  overflow: hidden;
+}
+
+[data-u-comp="ribbon-toolbar"] [data-u-comp^="docs-latex-ui.ribbon.menu."] > .univer-toolbar-selector-trigger {
+  height: 14px;
+  position: absolute;
+  top: 5px;
+  right: 3px;
+}
+
+[dir="rtl"] [data-u-comp="ribbon-toolbar"] [data-u-comp^="docs-latex-ui.ribbon.menu."] > .univer-toolbar-selector-trigger {
+  left: 3px;
+  right: auto;
+}
+
+.placeholder\:univer-text-gray-400::placeholder {
+  color: var(--univer-gray-400);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hover\:univer-border-primary-400:hover {
+    border-color: var(--univer-primary-400);
+  }
+
+  .hover\:univer-bg-gray-50:hover {
+    background-color: var(--univer-gray-50);
+  }
+}
+
+.focus\:univer-border-primary-600:focus {
+  border-color: var(--univer-primary-600);
+}
+
+.focus\:univer-bg-gray-0:focus {
+  background-color: var(--univer-gray-0);
+}
+
+.focus-visible\:univer-outline-none:focus-visible {
+  outline-offset: 2px;
+  outline: 2px solid #0000;
+}
+
+.focus-visible\:univer-ring-2:focus-visible {
+  --univer-tw-ring-offset-shadow: var(--univer-tw-ring-inset) 0 0 0 var(--univer-tw-ring-offset-width) var(--univer-tw-ring-offset-color);
+  --univer-tw-ring-shadow: var(--univer-tw-ring-inset) 0 0 0 calc(2px + var(--univer-tw-ring-offset-width)) var(--univer-tw-ring-color);
+  box-shadow: var(--univer-tw-ring-offset-shadow), var(--univer-tw-ring-shadow), 0 0 #0000;
+  box-shadow: var(--univer-tw-ring-offset-shadow), var(--univer-tw-ring-shadow), var(--univer-tw-shadow, 0 0 #0000);
+}
+
+.focus-visible\:univer-ring-primary-500:focus-visible {
+  --univer-tw-ring-color: var(--univer-primary-500);
+}
+
+.dark\:\!univer-border-gray-600:where(.univer-dark, .univer-dark *) {
+  border-color: var(--univer-gray-600) !important;
+}
+
+.dark\:\!univer-border-gray-700:where(.univer-dark, .univer-dark *) {
+  border-color: var(--univer-gray-700) !important;
+}
+
+.dark\:\!univer-bg-gray-800:where(.univer-dark, .univer-dark *) {
+  background-color: var(--univer-gray-800) !important;
+}
+
+.dark\:\!univer-bg-gray-900:where(.univer-dark, .univer-dark *) {
+  background-color: var(--univer-gray-900) !important;
+}
+
+.dark\:\!univer-text-gray-100:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-100) !important;
+}
+
+.dark\:\!univer-text-gray-200:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-200) !important;
+}
+
+.dark\:\!univer-text-gray-300:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-300) !important;
+}
+
+.dark\:\!univer-text-red-400:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-red-400) !important;
+}
+
+.dark\:univer-invert:where(.univer-dark, .univer-dark *) {
+  --univer-tw-invert: invert(100%);
+  filter: var(--univer-tw-blur) var(--univer-tw-brightness) var(--univer-tw-contrast) var(--univer-tw-grayscale) var(--univer-tw-hue-rotate) var(--univer-tw-invert) var(--univer-tw-saturate) var(--univer-tw-sepia) var(--univer-tw-drop-shadow);
+}
+
+.dark\:placeholder\:\!univer-text-gray-500:where(.univer-dark, .univer-dark *)::-moz-placeholder {
+  color: var(--univer-gray-500) !important;
+}
+
+.dark\:placeholder\:\!univer-text-gray-500:where(.univer-dark, .univer-dark *)::placeholder {
+  color: var(--univer-gray-500) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dark\:hover\:\!univer-border-primary-400:hover:where(.univer-dark, .univer-dark *) {
+    border-color: var(--univer-primary-400) !important;
+  }
+
+  .dark\:hover\:\!univer-bg-gray-800:hover:where(.univer-dark, .univer-dark *) {
+    background-color: var(--univer-gray-800) !important;
+  }
+}
+
+.dark\:focus\:\!univer-bg-gray-900:focus:where(.univer-dark, .univer-dark *) {
+  background-color: var(--univer-gray-900) !important;
+}

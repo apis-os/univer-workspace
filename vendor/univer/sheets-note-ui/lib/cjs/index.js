@@ -1,0 +1,852 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+let _univerjs_core = require("@univerjs/core");
+let _univerjs_engine_render = require("@univerjs/engine-render");
+let _univerjs_sheets = require("@univerjs/sheets");
+let _univerjs_sheets_note = require("@univerjs/sheets-note");
+let rxjs = require("rxjs");
+let _univerjs_sheets_ui = require("@univerjs/sheets-ui");
+let rxjs_operators = require("rxjs/operators");
+let _univerjs_ui = require("@univerjs/ui");
+let _univerjs_icons = require("@univerjs/icons");
+let _univerjs_design = require("@univerjs/design");
+let react = require("react");
+let react_jsx_runtime = require("react/jsx-runtime");
+
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/sheets-cell-content.controller.ts
+let SheetsCellContentController = class SheetsCellContentController extends _univerjs_core.Disposable {
+	constructor(_sheetInterceptorService, _sheetsNoteModel, _renderManagerService, _univerInstanceService) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._sheetsNoteModel = _sheetsNoteModel;
+		this._renderManagerService = _renderManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._initViewModelIntercept();
+		this._initSkeletonChange();
+	}
+	_initViewModelIntercept() {
+		this.disposeWithMe(this._sheetInterceptorService.intercept(_univerjs_sheets.INTERCEPTOR_POINT.CELL_CONTENT, {
+			effect: _univerjs_core.InterceptorEffectEnum.Style,
+			handler: (cell, pos, next) => {
+				const { row, col, unitId, subUnitId } = pos;
+				if (this._sheetsNoteModel.getNote(unitId, subUnitId, {
+					row,
+					col
+				})) {
+					if (!cell || cell === pos.rawData) cell = { ...pos.rawData };
+					cell.markers = {
+						...cell === null || cell === void 0 ? void 0 : cell.markers,
+						tr: {
+							color: "#FFBD37",
+							size: 6
+						}
+					};
+					return next(cell);
+				}
+				return next(cell);
+			},
+			priority: 100
+		}));
+	}
+	_initSkeletonChange() {
+		const markSkeletonDirty = () => {
+			var _currentRender$mainCo;
+			const workbook = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+			if (!workbook) return;
+			const unitId = workbook.getUnitId();
+			const currentRender = this._renderManagerService.getRenderUnitById(unitId);
+			currentRender === null || currentRender === void 0 || (_currentRender$mainCo = currentRender.mainComponent) === null || _currentRender$mainCo === void 0 || _currentRender$mainCo.makeForceDirty();
+		};
+		this.disposeWithMe(this._sheetsNoteModel.change$.pipe((0, rxjs.debounceTime)(16)).subscribe(() => {
+			markSkeletonDirty();
+		}));
+	}
+};
+SheetsCellContentController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetInterceptorService)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets_note.SheetsNoteModel)),
+	__decorateParam(2, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(3, _univerjs_core.IUniverInstanceService)
+], SheetsCellContentController);
+
+//#endregion
+//#region src/views/config.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const SHEET_NOTE_COMPONENT = "SHEET_NOTE_COMPONENT";
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region src/services/sheets-note-popup.service.ts
+let SheetsNotePopupService = class SheetsNotePopupService extends _univerjs_core.Disposable {
+	get activePopup() {
+		return this._activePopup;
+	}
+	constructor(_cellPopupManagerService) {
+		super();
+		this._cellPopupManagerService = _cellPopupManagerService;
+		_defineProperty(this, "_lastPopup", null);
+		_defineProperty(this, "_activePopup", void 0);
+		_defineProperty(this, "_activePopup$", new rxjs.BehaviorSubject(null));
+		_defineProperty(this, "activePopup$", this._activePopup$.asObservable());
+		this.disposeWithMe(() => {
+			this._activePopup$.complete();
+		});
+	}
+	dispose() {
+		super.dispose();
+		this.hidePopup();
+	}
+	showPopup(location, onHide) {
+		var _this$activePopup;
+		const { row, col, unitId, subUnitId } = location;
+		if (this._activePopup && row === this._activePopup.row && col === this._activePopup.col && unitId === this._activePopup.unitId && subUnitId === ((_this$activePopup = this.activePopup) === null || _this$activePopup === void 0 ? void 0 : _this$activePopup.subUnitId)) {
+			this._activePopup = location;
+			this._activePopup$.next(location);
+			return;
+		}
+		if (this._lastPopup) this._lastPopup.dispose();
+		this._activePopup = location;
+		this._activePopup$.next(location);
+		const popupDisposable = this._cellPopupManagerService.showPopup({
+			unitId,
+			subUnitId,
+			row,
+			col
+		}, {
+			componentKey: SHEET_NOTE_COMPONENT,
+			onClickOutside: () => {
+				this.hidePopup();
+			},
+			direction: "horizontal",
+			extraProps: { location },
+			priority: 3
+		});
+		if (!popupDisposable) throw new Error("[SheetsNotePopupService]: cannot show popup!");
+		const disposableCollection = new _univerjs_core.DisposableCollection();
+		disposableCollection.add(popupDisposable);
+		disposableCollection.add({ dispose: () => {
+			onHide === null || onHide === void 0 || onHide();
+		} });
+		this._lastPopup = disposableCollection;
+	}
+	hidePopup(force) {
+		if (!this._activePopup) return;
+		if (!force && !this._activePopup.temp) return;
+		if (this._lastPopup) this._lastPopup.dispose();
+		this._lastPopup = null;
+		this._activePopup = null;
+		this._activePopup$.next(null);
+	}
+	persistPopup() {
+		if (!this._activePopup || !this._activePopup.temp) return;
+		this._activePopup = {
+			...this._activePopup,
+			temp: false
+		};
+		this._activePopup$.next(this._activePopup);
+	}
+};
+SheetsNotePopupService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.CellPopupManagerService))], SheetsNotePopupService);
+
+//#endregion
+//#region src/controllers/sheets-note-attachment.controller.ts
+let SheetsNoteAttachmentController = class SheetsNoteAttachmentController extends _univerjs_core.Disposable {
+	constructor(_sheetsNoteModel, _univerInstanceService, _cellPopupManagerService, _sheetsNotePopupService) {
+		super();
+		this._sheetsNoteModel = _sheetsNoteModel;
+		this._univerInstanceService = _univerInstanceService;
+		this._cellPopupManagerService = _cellPopupManagerService;
+		this._sheetsNotePopupService = _sheetsNotePopupService;
+		_defineProperty(this, "_noteMatrix", new _univerjs_core.ObjectMatrix());
+		_defineProperty(this, "_suppressedUnitIds", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_activeUnitId", null);
+		_defineProperty(this, "_activeSheetId", null);
+		_defineProperty(this, "_noteChangeSubscription", null);
+		this._initNoteChangeListener();
+	}
+	_showPopup(unitId, sheetId, row, col) {
+		this._sheetsNotePopupService.hidePopup(true);
+		return this._cellPopupManagerService.showPopup({
+			unitId,
+			subUnitId: sheetId,
+			row,
+			col
+		}, {
+			componentKey: SHEET_NOTE_COMPONENT,
+			direction: "horizontal",
+			extraProps: { location: {
+				unitId,
+				subUnitId: sheetId,
+				row,
+				col
+			} },
+			priority: 3
+		});
+	}
+	dispose() {
+		var _this$_noteChangeSubs;
+		super.dispose();
+		this._clearNoteMatrix();
+		this._suppressedUnitIds.clear();
+		this._activeUnitId = null;
+		this._activeSheetId = null;
+		(_this$_noteChangeSubs = this._noteChangeSubscription) === null || _this$_noteChangeSubs === void 0 || _this$_noteChangeSubs.unsubscribe();
+		this._noteChangeSubscription = null;
+	}
+	setPopupSuppressed(unitId, suppressed) {
+		if (suppressed) this._suppressedUnitIds.add(unitId);
+		else this._suppressedUnitIds.delete(unitId);
+		if (unitId !== this._activeUnitId || !this._activeSheetId) return;
+		if (suppressed) this._clearNoteMatrix();
+		else this._showPersistentNotes(unitId, this._activeSheetId);
+	}
+	_initSheet(targetUnitId, targetSheetId) {
+		this._clearNoteMatrix();
+		this._activeUnitId = targetUnitId;
+		this._activeSheetId = targetSheetId;
+		const handleNote = (unitId, sheetId, row, col, note) => {
+			const matrix = this._noteMatrix;
+			const disposable = matrix.getValue(row, col);
+			if (note === null || note === void 0 ? void 0 : note.show) {
+				if (this._suppressedUnitIds.has(unitId)) {
+					disposable === null || disposable === void 0 || disposable.dispose();
+					matrix.realDeleteValue(row, col);
+					return;
+				}
+				if (!disposable) {
+					const newDisposable = this._showPopup(unitId, sheetId, row, col);
+					if (newDisposable) matrix.setValue(row, col, newDisposable);
+				}
+			} else if (disposable) {
+				disposable.dispose();
+				matrix.realDeleteValue(row, col);
+			}
+		};
+		if (!this._suppressedUnitIds.has(targetUnitId)) this._showPersistentNotes(targetUnitId, targetSheetId);
+		return this._sheetsNoteModel.change$.subscribe((change) => {
+			if (change.unitId !== targetUnitId || change.subUnitId !== targetSheetId) return;
+			switch (change.type) {
+				case "ref": {
+					const { unitId, subUnitId, oldNote, newNote } = change;
+					if (!newNote.show) return;
+					const matrix = this._noteMatrix;
+					const { row: oldRow, col: oldCol } = oldNote;
+					const { row: newRow, col: newCol } = newNote;
+					const disposable = matrix.getValue(oldRow, oldCol);
+					if (disposable) {
+						disposable.dispose();
+						matrix.realDeleteValue(oldRow, oldCol);
+					}
+					handleNote(unitId, subUnitId, newRow, newCol, newNote);
+					break;
+				}
+				case "update": {
+					const { unitId, subUnitId, oldNote, newNote } = change;
+					const row = newNote ? newNote.row : oldNote.row;
+					const col = newNote ? newNote.col : oldNote.col;
+					handleNote(unitId, subUnitId, row, col, newNote);
+					break;
+				}
+				default: break;
+			}
+		});
+	}
+	_initNoteChangeListener() {
+		this.disposeWithMe(this._univerInstanceService.getCurrentTypeOfUnit$(_univerjs_core.UniverInstanceType.UNIVER_SHEET).pipe((0, rxjs.switchMap)((workbook) => (workbook === null || workbook === void 0 ? void 0 : workbook.activeSheet$) ?? (0, rxjs.of)(null))).subscribe((sheet) => {
+			var _this$_noteChangeSubs2;
+			(_this$_noteChangeSubs2 = this._noteChangeSubscription) === null || _this$_noteChangeSubs2 === void 0 || _this$_noteChangeSubs2.unsubscribe();
+			this._noteChangeSubscription = null;
+			if (sheet) this._noteChangeSubscription = this._initSheet(sheet.getUnitId(), sheet.getSheetId());
+			else {
+				this._clearNoteMatrix();
+				this._activeUnitId = null;
+				this._activeSheetId = null;
+			}
+		}));
+	}
+	_showPersistentNotes(unitId, sheetId) {
+		var _this$_sheetsNoteMode;
+		(_this$_sheetsNoteMode = this._sheetsNoteModel.getSheetNotes(unitId, sheetId)) === null || _this$_sheetsNoteMode === void 0 || _this$_sheetsNoteMode.forEach((note) => {
+			if (!note.show || this._noteMatrix.getValue(note.row, note.col)) return;
+			const disposable = this._showPopup(unitId, sheetId, note.row, note.col);
+			if (disposable) this._noteMatrix.setValue(note.row, note.col, disposable);
+		});
+	}
+	_clearNoteMatrix() {
+		this._noteMatrix.forValue((_, __, disposable) => {
+			disposable.dispose();
+		});
+		this._noteMatrix = new _univerjs_core.ObjectMatrix();
+	}
+};
+SheetsNoteAttachmentController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets_note.SheetsNoteModel)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.IUniverInstanceService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.CellPopupManagerService)),
+	__decorateParam(3, (0, _univerjs_core.Inject)(SheetsNotePopupService))
+], SheetsNoteAttachmentController);
+
+//#endregion
+//#region src/controllers/sheets-note-popup.controller.ts
+let SheetsNotePopupController = class SheetsNotePopupController extends _univerjs_core.Disposable {
+	constructor(_sheetsNotePopupService, _sheetsNoteModel, _sheetSelectionService, _editorBridgeService, _renderManagerService, _hoverManagerService) {
+		super();
+		this._sheetsNotePopupService = _sheetsNotePopupService;
+		this._sheetsNoteModel = _sheetsNoteModel;
+		this._sheetSelectionService = _sheetSelectionService;
+		this._editorBridgeService = _editorBridgeService;
+		this._renderManagerService = _renderManagerService;
+		this._hoverManagerService = _hoverManagerService;
+		_defineProperty(this, "_isSwitchingSheet", false);
+		this._initSelectionUpdateListener();
+		this._initEditorBridge();
+		this._initHoverEvent();
+		this._initDeleteNoteListener();
+	}
+	_handleSelectionChange(selections, unitId, subUnitId) {
+		var _selections$, _render$with$getSkele;
+		const range = (_selections$ = selections[0]) === null || _selections$ === void 0 ? void 0 : _selections$.range;
+		const render = this._renderManagerService.getRenderUnitById(unitId);
+		const skeleton = render === null || render === void 0 || (_render$with$getSkele = render.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(subUnitId)) === null || _render$with$getSkele === void 0 ? void 0 : _render$with$getSkele.skeleton;
+		if (!skeleton) return;
+		if (!range) return;
+		const actualCell = skeleton.getCellWithCoordByIndex(range.startRow, range.startColumn);
+		if (((range.rangeType ?? _univerjs_core.RANGE_TYPE.NORMAL) !== _univerjs_core.RANGE_TYPE.NORMAL || range.endColumn - range.startColumn > 0 || range.endRow - range.startRow > 0) && !((actualCell.isMerged || actualCell.isMergedMainCell) && _univerjs_core.Rectangle.equals(actualCell.mergeInfo, range))) {
+			this._sheetsNotePopupService.hidePopup();
+			return;
+		}
+		const row = actualCell.actualRow;
+		const col = actualCell.actualColumn;
+		const note = this._sheetsNoteModel.getNote(unitId, subUnitId, {
+			row,
+			col
+		});
+		if (note === null || note === void 0 ? void 0 : note.show) return;
+		if (note) this._sheetsNotePopupService.showPopup({
+			unitId,
+			subUnitId,
+			noteId: note.id,
+			row,
+			col
+		});
+		else this._sheetsNotePopupService.hidePopup(true);
+	}
+	_initSelectionUpdateListener() {
+		this.disposeWithMe(this._sheetSelectionService.selectionMoveEnd$.subscribe((selections) => {
+			if (this._isSwitchingSheet) return;
+			const current = this._sheetSelectionService.currentSelectionParam;
+			if (!current) return;
+			this._handleSelectionChange(selections, current.unitId, current.sheetId);
+		}));
+	}
+	_initEditorBridge() {
+		this.disposeWithMe(this._editorBridgeService.visible$.subscribe((visible) => {
+			if (visible.visible) this._sheetsNotePopupService.hidePopup(true);
+		}));
+	}
+	_initHoverEvent() {
+		this.disposeWithMe(this._hoverManagerService.currentCell$.pipe((0, rxjs_operators.debounceTime)(100)).subscribe((cell) => {
+			var _render$with$getSkele2;
+			if (!(cell === null || cell === void 0 ? void 0 : cell.location)) return;
+			const { unitId, subUnitId, row, col } = cell.location;
+			const render = this._renderManagerService.getRenderUnitById(unitId);
+			const skeleton = render === null || render === void 0 || (_render$with$getSkele2 = render.with(_univerjs_sheets_ui.SheetSkeletonManagerService).getSkeletonParam(subUnitId)) === null || _render$with$getSkele2 === void 0 ? void 0 : _render$with$getSkele2.skeleton;
+			let targetRow = row;
+			let targetCol = col;
+			let note = this._sheetsNoteModel.getNote(unitId, subUnitId, {
+				row: targetRow,
+				col: targetCol
+			});
+			if (!note && skeleton) {
+				const { startRow, endRow, startColumn, endColumn } = skeleton.getCellWithCoordByIndex(row, col).mergeInfo;
+				if (startRow !== endRow || startColumn !== endColumn) {
+					const sheetNotes = this._sheetsNoteModel.getSheetNotes(unitId, subUnitId);
+					if (sheetNotes) {
+						for (const [_id, _note] of sheetNotes) if (_note.row >= startRow && _note.row <= endRow && _note.col >= startColumn && _note.col <= endColumn) {
+							note = _note;
+							targetRow = _note.row;
+							targetCol = _note.col;
+							break;
+						}
+					}
+				}
+			}
+			if (note === null || note === void 0 ? void 0 : note.show) return;
+			if (note) this._sheetsNotePopupService.showPopup({
+				unitId,
+				subUnitId,
+				noteId: note.id,
+				row: targetRow,
+				col: targetCol,
+				temp: true
+			});
+			else this._sheetsNotePopupService.hidePopup();
+		}));
+	}
+	_initDeleteNoteListener() {
+		this.disposeWithMe(this._sheetsNoteModel.change$.subscribe((change) => {
+			if (!this._sheetsNotePopupService.activePopup) return;
+			const { unitId, subUnitId, noteId, row, col } = this._sheetsNotePopupService.activePopup;
+			const { oldNote, newNote } = change;
+			if (newNote === null && change.unitId === unitId && change.subUnitId === subUnitId && ((oldNote === null || oldNote === void 0 ? void 0 : oldNote.id) && oldNote.id === noteId || (oldNote === null || oldNote === void 0 ? void 0 : oldNote.row) === row && oldNote.col === col)) this._sheetsNotePopupService.hidePopup(true);
+		}));
+	}
+};
+SheetsNotePopupController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(SheetsNotePopupService)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets_note.SheetsNoteModel)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetsSelectionsService)),
+	__decorateParam(3, _univerjs_sheets_ui.IEditorBridgeService),
+	__decorateParam(4, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(5, (0, _univerjs_core.Inject)(_univerjs_sheets_ui.HoverManagerService))
+], SheetsNotePopupController);
+
+//#endregion
+//#region src/commands/operations/add-note-popup.operation.ts
+const AddNotePopupOperation = {
+	id: "sheet.operation.add-note-popup",
+	type: _univerjs_core.CommandType.OPERATION,
+	handler: async (accessor, params) => {
+		const selectionService = accessor.get(_univerjs_sheets.SheetsSelectionsService);
+		const notePopupService = accessor.get(SheetsNotePopupService);
+		const workbook = accessor.get(_univerjs_core.IUniverInstanceService).getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return false;
+		const worksheet = workbook.getActiveSheet();
+		const lastSelection = selectionService.getCurrentLastSelection();
+		if (!(lastSelection === null || lastSelection === void 0 ? void 0 : lastSelection.primary)) return false;
+		const { primary } = lastSelection;
+		notePopupService.showPopup({
+			unitId: workbook.getUnitId(),
+			subUnitId: worksheet.getSheetId(),
+			row: primary.actualRow,
+			col: primary.actualColumn,
+			temp: false,
+			trigger: (params === null || params === void 0 ? void 0 : params.trigger) ?? "add-note"
+		});
+		return true;
+	}
+};
+
+//#endregion
+//#region src/menu/note.menu.ts
+function getHasNote$(accessor) {
+	const sheetsSelectionsService = accessor.get(_univerjs_sheets.SheetsSelectionsService);
+	const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+	return sheetsSelectionsService.selectionMoveEnd$.pipe((0, rxjs.map)(() => {
+		const selection = sheetsSelectionsService.getCurrentLastSelection();
+		if (!(selection === null || selection === void 0 ? void 0 : selection.primary)) return false;
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(univerInstanceService);
+		if (!target) return false;
+		const { actualColumn, actualRow } = selection.primary;
+		const noteModel = accessor.get(_univerjs_sheets_note.SheetsNoteModel);
+		return Boolean(noteModel.getNote(target.unitId, target.subUnitId, {
+			row: actualRow,
+			col: actualColumn
+		}));
+	}));
+}
+function sheetNoteContextMenuFactory(accessor) {
+	return {
+		id: AddNotePopupOperation.id,
+		type: _univerjs_ui.MenuItemType.BUTTON,
+		title: "sheets-note-ui.rightClick.addNote",
+		icon: "AddNoteIcon",
+		hidden$: (0, rxjs.combineLatest)([(0, _univerjs_ui.getMenuHiddenObservable)(accessor, _univerjs_core.UniverInstanceType.UNIVER_SHEET), getHasNote$(accessor)]).pipe((0, rxjs.map)(([hidden, hasNote]) => hidden || hasNote)),
+		disabled$: (0, _univerjs_sheets_ui.getCurrentRangeDisable$)(accessor, {
+			workbookTypes: [_univerjs_sheets.WorkbookEditablePermission],
+			worksheetTypes: [_univerjs_sheets.WorksheetEditPermission]
+		}),
+		commandId: AddNotePopupOperation.id
+	};
+}
+function sheetDeleteNoteMenuFactory(accessor) {
+	return {
+		id: _univerjs_sheets_note.SheetDeleteNoteCommand.id,
+		type: _univerjs_ui.MenuItemType.BUTTON,
+		title: "sheets-note-ui.rightClick.deleteNote",
+		icon: "DeleteNoteIcon",
+		hidden$: getHasNote$(accessor).pipe((0, rxjs.map)((hasNote) => !hasNote)),
+		disabled$: (0, _univerjs_sheets_ui.getCurrentRangeDisable$)(accessor, {
+			workbookTypes: [_univerjs_sheets.WorkbookEditablePermission],
+			worksheetTypes: [_univerjs_sheets.WorksheetEditPermission]
+		})
+	};
+}
+function sheetNoteToggleMenuFactory(accessor) {
+	return {
+		id: _univerjs_sheets_note.SheetToggleNotePopupCommand.id,
+		type: _univerjs_ui.MenuItemType.BUTTON,
+		title: "sheets-note-ui.rightClick.toggleNote",
+		icon: "HideNoteIcon",
+		hidden$: getHasNote$(accessor).pipe((0, rxjs.map)((hasNote) => !hasNote))
+	};
+}
+
+//#endregion
+//#region src/menu/schema.ts
+const menuSchema = { [_univerjs_ui.ContextMenuPosition.MAIN_AREA]: { [_univerjs_ui.ContextMenuGroup.OTHERS]: {
+	order: 0,
+	[AddNotePopupOperation.id]: {
+		order: 0,
+		menuItemFactory: sheetNoteContextMenuFactory
+	},
+	[_univerjs_sheets_note.SheetDeleteNoteCommand.id]: {
+		order: 0,
+		menuItemFactory: sheetDeleteNoteMenuFactory
+	},
+	[_univerjs_sheets_note.SheetToggleNotePopupCommand.id]: {
+		order: 0,
+		menuItemFactory: sheetNoteToggleMenuFactory
+	}
+} } };
+
+//#endregion
+//#region package.json
+var name = "@univerjs/sheets-note-ui";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/config/config.ts
+const SHEETS_NOTE_UI_PLUGIN_CONFIG_KEY = "sheets-note-ui.config";
+const configSymbol = Symbol(SHEETS_NOTE_UI_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/views/Note.tsx
+const SheetsNote = (props) => {
+	var _props$popup$extraPro;
+	const activePopup = (_props$popup$extraPro = props.popup.extraProps) === null || _props$popup$extraPro === void 0 ? void 0 : _props$popup$extraPro.location;
+	if (!activePopup) {
+		console.error("Popup extraProps or location is undefined.");
+		return null;
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SheetsNoteContent, { activePopup });
+};
+function SheetsNoteContent({ activePopup }) {
+	const noteModel = (0, _univerjs_ui.useDependency)(_univerjs_sheets_note.SheetsNoteModel);
+	const localeService = (0, _univerjs_ui.useDependency)(_univerjs_core.LocaleService);
+	const renderManagerService = (0, _univerjs_ui.useDependency)(_univerjs_engine_render.IRenderManagerService);
+	const notePopupService = (0, _univerjs_ui.useDependency)(SheetsNotePopupService);
+	const config = (0, _univerjs_ui.useConfigValue)(SHEETS_NOTE_UI_PLUGIN_CONFIG_KEY);
+	const textareaRef = (0, react.useRef)(null);
+	const initialWidthRef = (0, react.useRef)(null);
+	const currentRender = renderManagerService.getRenderUnitById(activePopup.unitId);
+	const [note, setNote] = (0, react.useState)(null);
+	const applyResizeOffset = (0, react.useCallback)((width) => {
+		const textarea = textareaRef.current;
+		if (!textarea) return;
+		if (localeService.getDirection() === "rtl" && initialWidthRef.current != null) {
+			const offset = initialWidthRef.current - width;
+			textarea.style.transform = offset ? `translateX(${offset}px)` : "";
+		} else textarea.style.transform = "";
+	}, [localeService]);
+	(0, react.useEffect)(() => {
+		var _config$defaultNoteSi, _config$defaultNoteSi2;
+		const { unitId, subUnitId, row, col } = activePopup;
+		const note = noteModel.getNote(unitId, subUnitId, {
+			row,
+			col
+		});
+		const width = (note === null || note === void 0 ? void 0 : note.width) ?? (config === null || config === void 0 || (_config$defaultNoteSi = config.defaultNoteSize) === null || _config$defaultNoteSi === void 0 ? void 0 : _config$defaultNoteSi.width) ?? 160;
+		const height = (note === null || note === void 0 ? void 0 : note.height) ?? (config === null || config === void 0 || (_config$defaultNoteSi2 = config.defaultNoteSize) === null || _config$defaultNoteSi2 === void 0 ? void 0 : _config$defaultNoteSi2.height) ?? 72;
+		if (!note) {
+			const initNote = {
+				id: (0, _univerjs_core.generateRandomId)(6),
+				width,
+				height,
+				note: ""
+			};
+			setNote(initNote);
+			updateNote(initNote);
+		} else setNote(note);
+		if (textareaRef.current) {
+			initialWidthRef.current = width;
+			textareaRef.current.style.width = `${width}px`;
+			textareaRef.current.style.height = `${height}px`;
+			textareaRef.current.style.transform = "";
+		}
+	}, [activePopup, textareaRef]);
+	(0, react.useEffect)(() => {
+		if (!activePopup || activePopup.temp || !activePopup.trigger) return;
+		if (!textareaRef.current) return;
+		const focusId = requestAnimationFrame(() => {
+			var _textareaRef$current;
+			(_textareaRef$current = textareaRef.current) === null || _textareaRef$current === void 0 || _textareaRef$current.focus();
+		});
+		return () => cancelAnimationFrame(focusId);
+	}, [activePopup]);
+	const commandService = (0, _univerjs_ui.useDependency)(_univerjs_core.ICommandService);
+	const updateNote = (0, _univerjs_ui.useDebounceFn)((newNote) => {
+		if (!activePopup) return;
+		const { unitId, subUnitId, row, col } = activePopup;
+		if (!commandService.syncExecuteCommand(_univerjs_sheets_note.SheetUpdateNoteCommand.id, {
+			unitId,
+			sheetId: subUnitId,
+			row,
+			col,
+			note: newNote
+		})) {
+			const oldNote = noteModel.getNote(unitId, subUnitId, {
+				noteId: newNote.id,
+				row,
+				col
+			});
+			if (oldNote) setNote(oldNote);
+			else notePopupService.hidePopup(true);
+		}
+	});
+	const handleNoteChange = (0, react.useCallback)((value) => {
+		if (!note) return;
+		if (value === note.note) return;
+		const newNote = {
+			...note,
+			note: value
+		};
+		setNote(newNote);
+		updateNote(newNote);
+	}, [note]);
+	const handleResize = (0, react.useCallback)((width, height) => {
+		if (!note) return;
+		applyResizeOffset(width);
+		if (width === note.width && height === note.height) return;
+		const newNote = {
+			...note,
+			width,
+			height
+		};
+		setNote(newNote);
+		updateNote(newNote);
+	}, [applyResizeOffset, note]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Textarea, {
+		ref: textareaRef,
+		"data-u-comp": "note-textarea",
+		className: (0, _univerjs_design.clsx)("univer-ml-px univer-min-h-1 univer-min-w-1 univer-bg-gray-0 !univer-text-sm univer-shadow dark:!univer-bg-gray-800"),
+		value: note === null || note === void 0 ? void 0 : note.note,
+		placeholder: localeService.t("sheets-note-ui.note.placeholder"),
+		onResize: handleResize,
+		onValueChange: handleNoteChange,
+		onWheel: (e) => {
+			if (document.activeElement !== textareaRef.current) currentRender.engine.getCanvasElement().dispatchEvent(new WheelEvent(e.type, e.nativeEvent));
+		}
+	});
+}
+
+//#endregion
+//#region src/controllers/components.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ComponentsController = class ComponentsController extends _univerjs_core.Disposable {
+	constructor(_componentManager, _iconManager) {
+		super();
+		this._componentManager = _componentManager;
+		this._iconManager = _iconManager;
+		this._registerComponents();
+		this._registerIcons();
+	}
+	_registerComponents() {
+		[[SHEET_NOTE_COMPONENT, SheetsNote]].forEach(([key, comp]) => {
+			this.disposeWithMe(this._componentManager.register(key, comp));
+		});
+	}
+	_registerIcons() {
+		this.disposeWithMe(this._iconManager.register({
+			AddNoteIcon: _univerjs_icons.AddNoteIcon,
+			DeleteNoteIcon: _univerjs_icons.DeleteNoteIcon,
+			HideNoteIcon: _univerjs_icons.HideNoteIcon
+		}));
+	}
+};
+ComponentsController = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_ui.ComponentManager)), __decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_ui.IconManager))], ComponentsController);
+
+//#endregion
+//#region src/controllers/ui.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let SheetsNoteUIController = class SheetsNoteUIController extends _univerjs_core.Disposable {
+	constructor(_menuManagerService, _commandService) {
+		super();
+		this._menuManagerService = _menuManagerService;
+		this._commandService = _commandService;
+		this._initMenu();
+		this._initCommands();
+	}
+	_initMenu() {
+		this._menuManagerService.mergeMenu(menuSchema);
+	}
+	_initCommands() {
+		this._commandService.registerCommand(AddNotePopupOperation);
+	}
+};
+SheetsNoteUIController = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_ui.IMenuManagerService)), __decorateParam(1, _univerjs_core.ICommandService)], SheetsNoteUIController);
+
+//#endregion
+//#region src/plugin.ts
+let UniverSheetsNoteUIPlugin = class UniverSheetsNoteUIPlugin extends _univerjs_core.Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._configService = _configService;
+		const { menu, ...rest } = (0, _univerjs_core.merge)({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_NOTE_UI_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		this._injector.add([ComponentsController]);
+		this._injector.get(ComponentsController);
+		[
+			[SheetsNotePopupService],
+			[SheetsCellContentController],
+			[SheetsNotePopupController],
+			[SheetsNoteUIController],
+			[SheetsNoteAttachmentController]
+		].forEach((dependency) => {
+			this._injector.add(dependency);
+		});
+	}
+	onReady() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [[SheetsNoteUIController], [SheetsCellContentController]]);
+	}
+	onRendered() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [[SheetsNotePopupController], [SheetsNoteAttachmentController]]);
+	}
+};
+_defineProperty(UniverSheetsNoteUIPlugin, "pluginName", "SHEET_NOTE_UI_PLUGIN");
+_defineProperty(UniverSheetsNoteUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsNoteUIPlugin, "version", version);
+_defineProperty(UniverSheetsNoteUIPlugin, "type", _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+UniverSheetsNoteUIPlugin = __decorate([
+	(0, _univerjs_core.DependentOn)(_univerjs_engine_render.UniverRenderEnginePlugin, _univerjs_sheets.UniverSheetsPlugin, _univerjs_sheets_note.UniverSheetsNotePlugin, _univerjs_sheets_ui.UniverSheetsUIPlugin),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(2, _univerjs_core.IConfigService)
+], UniverSheetsNoteUIPlugin);
+
+//#endregion
+Object.defineProperty(exports, 'SheetsCellContentController', {
+  enumerable: true,
+  get: function () {
+    return SheetsCellContentController;
+  }
+});
+Object.defineProperty(exports, 'SheetsNoteAttachmentController', {
+  enumerable: true,
+  get: function () {
+    return SheetsNoteAttachmentController;
+  }
+});
+Object.defineProperty(exports, 'SheetsNotePopupController', {
+  enumerable: true,
+  get: function () {
+    return SheetsNotePopupController;
+  }
+});
+Object.defineProperty(exports, 'SheetsNotePopupService', {
+  enumerable: true,
+  get: function () {
+    return SheetsNotePopupService;
+  }
+});
+exports.SheetsNoteUIMenuSchema = menuSchema;
+Object.defineProperty(exports, 'UniverSheetsNoteUIPlugin', {
+  enumerable: true,
+  get: function () {
+    return UniverSheetsNoteUIPlugin;
+  }
+});

@@ -1,0 +1,17 @@
+{
+  "name": "@univerjs-pro/doc-typst-native-binding",
+  "version": "1.0.0-insiders.20260723-c21613b",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "optionalDependencies": {
+    "@univerjs-pro/doc-typst-native-binding-darwin-arm64": "1.0.0-insiders.20260723-c21613b",
+    "@univerjs-pro/doc-typst-native-binding-darwin-x64": "1.0.0-insiders.20260723-c21613b",
+    "@univerjs-pro/doc-typst-native-binding-linux-x64-gnu": "1.0.0-insiders.20260723-c21613b",
+    "@univerjs-pro/doc-typst-native-binding-linux-arm64-gnu": "1.0.0-insiders.20260723-c21613b",
+    "@univerjs-pro/doc-typst-native-binding-win32-x64-msvc": "1.0.0-insiders.20260723-c21613b"
+  }
+}

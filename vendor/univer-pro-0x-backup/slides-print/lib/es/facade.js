@@ -1,0 +1,1 @@
+import{OpenSlidePrintDialogOperation as v3,SlidePrintOperation as v4}from"@univerjs-pro/slides-print";import{FUniver as v5}from"@univerjs/core/facade";var r=class extends v5{printSlidesAsync(v1){return this._commandService["executeCommand"](v4.id,v1);}openSlidesPrintDialog(v2){return this._commandService["syncExecuteCommand"](v3.id,v2);}};v5.extend(r);export{};

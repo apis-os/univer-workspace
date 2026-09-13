@@ -1,0 +1,92 @@
+import { combineDrawingEffectFilter, createDrawingEffectFilter, expandDrawingEffectBounds } from '@univerjs/engine-render';
+import { BooleanNumber, DependentOn, HorizontalAlign, IConfigService, ImageSourceType, Inject, Injector, JSONX, Plugin, RichTextBuilder, RichTextValue, TextX, Tools, UniverInstanceType, VerticalAlign, createIdentifier, generateRandomId, getSingleDataStreamChange, merge, toDisposable } from '@univerjs/core';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { HostExternalReferenceModel } from '@univerjs-pro/engine-formula';
+const bg = 'urn:microsoft.com/office/officeart/2005/8/colors',
+  xg = ["#4472C4", "#ED7D31", "#A5A5A5", "#FFC000", "#5B9BD5", "#70AD47"],
+  Sg = ['#174A7E', "#2E75B6", "#5B9BD5", '#9DC3E6', "#BDD7EE"],
+  Cg = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612671 = xg[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 - 1],
+      var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB380 = 'accent' + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670;
+    return [{
+      'id': bg + "/accent" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_1',
+      'key': 'accent' + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_1',
+      'section': var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB380,
+      'colors': [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612671],
+      'variant': "outline"
+    }, {
+      'id': bg + "/accent" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_2',
+      'key': 'accent' + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_2',
+      'section': var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB380,
+      'colors': [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612671],
+      'variant': "fill"
+    }, {
+      'id': bg + "/accent" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_3',
+      'key': "accent" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_3',
+      'section': var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB380,
+      'colors': Sg,
+      'variant': "gradient"
+    }, {
+      'id': bg + "/accent" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_4',
+      'key': "accent" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_4',
+      'section': var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB380,
+      'colors': [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612671, ...Sg.slice(1)],
+      'variant': 'cycle'
+    }, {
+      'id': bg + "/accent" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_5',
+      'key': 'accent' + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612670 + '_5',
+      'section': var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB380,
+      'colors': [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612671, ...Sg.slice(1)],
+      'variant': "transparent"
+    }];
+  },
+  wg = [{
+    'id': bg + "/accent0_1",
+    'key': "accent0_1",
+    'section': "theme",
+    'colors': ["#000000"],
+    'variant': "outline"
+  }, {
+    'id': bg + '/accent0_2',
+    'key': "accent0_2",
+    'section': 'theme',
+    'colors': ["#44546A"],
+    'variant': "outline"
+  }, {
+    'id': bg + '/accent0_3',
+    'key': "accent0_3",
+    'section': "theme",
+    'colors': ["#44546A"],
+    'variant': "fill"
+  }, {
+    'id': bg + '/colorful1',
+    'key': "colorful1",
+    'section': 'colorful',
+    'colors': xg,
+    'variant': "fill"
+  }, {
+    'id': bg + "/colorful2",
+    'key': 'colorful2',
+    'section': 'colorful',
+    'colors': xg.slice(1, 3),
+    'variant': 'gradient'
+  }, {
+    'id': bg + "/colorful3",
+    'key': "colorful3",
+    'section': "colorful",
+    'colors': xg.slice(2, 4),
+    'variant': "gradient"
+  }, {
+    'id': bg + "/colorful4",
+    'key': "colorful4",
+    'section': 'colorful',
+    'colors': xg.slice(3, 5),
+    'variant': "gradient"
+  }, {
+    'id': bg + "/colorful5",
+    'key': "colorful5",
+    'section': 'colorful',
+    'colors': xg.slice(4, 6),
+    'variant': "gradient"
+  }, ...Cg(1), ...Cg(2), ...Cg(3), ...Cg(4), ...Cg(5), ...Cg(6)];
+export { wg as SMART_ART_COLOR_STYLE_CATALOG };

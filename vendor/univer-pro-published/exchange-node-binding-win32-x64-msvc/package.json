@@ -1,0 +1,14 @@
+{
+  "name": "@univerjs-pro/exchange-node-binding-win32-x64-msvc",
+  "version": "0.1.1",
+  "cpu": [
+    "x64"
+  ],
+  "main": "univer-exchange-node.win32-x64-msvc.node",
+  "files": [
+    "univer-exchange-node.win32-x64-msvc.node"
+  ],
+  "os": [
+    "win32"
+  ]
+}

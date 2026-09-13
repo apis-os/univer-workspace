@@ -1,0 +1,16 @@
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { Qa, tn } from "./internal-core-endo.js";
+import { Q } from "./boards-board-connector-element-data.js";
+function Ts(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464268, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464269, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464270) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464271 = tn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464268, [...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464269], [...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464270]),
+    var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929962 = new Set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464271);
+  return Object.values(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464268).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461144 => {
+    !Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461144) || var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929962.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461144.elementId) || Qa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461144.element).some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268 => var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929962.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268)) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464271.push(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461144.elementId), var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929962.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461144.elementId));
+  }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464271;
+}
+export { Ts as collectBoardElementIdsForRemoveWithBoundConnectors };

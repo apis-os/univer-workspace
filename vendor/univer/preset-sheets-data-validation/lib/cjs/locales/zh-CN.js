@@ -1,0 +1,13 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_data_validation_locale_zh_CN = require("@univerjs/data-validation/locale/zh-CN");
+_univerjs_data_validation_locale_zh_CN = require_rolldown_runtime.__toESM(_univerjs_data_validation_locale_zh_CN);
+let _univerjs_sheets_data_validation_locale_zh_CN = require("@univerjs/sheets-data-validation/locale/zh-CN");
+_univerjs_sheets_data_validation_locale_zh_CN = require_rolldown_runtime.__toESM(_univerjs_sheets_data_validation_locale_zh_CN);
+let _univerjs_sheets_data_validation_ui_locale_zh_CN = require("@univerjs/sheets-data-validation-ui/locale/zh-CN");
+_univerjs_sheets_data_validation_ui_locale_zh_CN = require_rolldown_runtime.__toESM(_univerjs_sheets_data_validation_ui_locale_zh_CN);
+
+//#region src/locales/zh-CN.ts
+var zh_CN_default = Object.assign({}, _univerjs_data_validation_locale_zh_CN.default, _univerjs_sheets_data_validation_locale_zh_CN.default, _univerjs_sheets_data_validation_ui_locale_zh_CN.default);
+
+//#endregion
+module.exports = zh_CN_default;

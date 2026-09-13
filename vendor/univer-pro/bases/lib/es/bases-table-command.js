@@ -1,0 +1,55 @@
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
+import { wa } from "./bases-table-name.js";
+import { U } from "./bases-json1-op-factory.js";
+import { R } from "./bases-json1-op-applier.js";
+import { Q } from "./bases-json1-mutation.js";
+const Ea = {
+  'id': 'base.command.create-base-table',
+  'type': CommandType.COMMAND,
+  'handler': (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464516, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464517) => {
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464517) return false;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464518 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464516.get(IUniverInstanceService),
+      {
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464519,
+        table: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464520,
+        index: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464521
+      } = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464517,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464522 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464518.getUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464519, UniverInstanceType.UNIVER_BASE);
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464522 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464522.getSnapshot().tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464520.id] || !wa(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464522.getSnapshot(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464520.name).valid) return false;
+    try {
+      assertBaseTableRecordIdentity(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464520);
+    } catch {
+      return false;
+    }
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464523 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464516.get(ICommandService),
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464524 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464516.get(IUndoRedoService),
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464525 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464522.getSnapshot(),
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464526 = new U().createTable(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464525, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464520, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464521),
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464527 = new R().invertOp(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464525, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464526),
+      var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB120 = {
+        'unitId': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464519,
+        'op': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464526
+      },
+      var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB121 = {
+        'unitId': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464519,
+        'op': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464527
+      };
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464523.syncExecuteCommand(Q.id, var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB120) ? (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464518.focusUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464519), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464524.pushUndoRedo({
+      'unitID': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464519,
+      'undoMutations': [{
+        'id': Q.id,
+        'params': var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB121
+      }],
+      'redoMutations': [{
+        'id': Q.id,
+        'params': var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB120
+      }]
+    }), true) : false;
+  }
+};
+export { Ea as CreateBaseTableCommand };

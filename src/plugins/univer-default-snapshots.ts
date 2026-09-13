@@ -2,6 +2,7 @@
  * Default snapshot generators for Univer documents (Sheet, Doc, Slide).
  * Matches the official @univerjs-pro/collaboration protocol ISnapshot structures.
  */
+import { buildQ3ForecastSnapshot, DEMO_WELCOME_UNIT_ID } from "./univer-demo-snapshot.ts";
 
 export const DEFAULT_SHEET_ORIGINAL_META = btoa(JSON.stringify({
   tabColor: "",
@@ -132,6 +133,10 @@ export function generateDefaultSnapshot(unitId: string, type: number | string, n
   }
 
   // Default: Sheet (type 2)
+  if (unitId === DEMO_WELCOME_UNIT_ID) {
+    return buildQ3ForecastSnapshot(unitId);
+  }
+
   return {
     unitID: unitId,
     rev: 1,

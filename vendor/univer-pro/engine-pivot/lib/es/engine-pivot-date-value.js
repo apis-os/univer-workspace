@@ -1,0 +1,4 @@
+function D(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463049) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463049 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463049.v !== undefined : false;
+}
+export { D as isDateValue };

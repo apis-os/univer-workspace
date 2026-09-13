@@ -1,0 +1,84 @@
+import { ArrangeTypeEnum, BooleanNumber, ColorKit, CommandType, CustomRangeType, DEFAULT_STYLES, DependentOn, Direction, Disposable, DisposableCollection, DocumentDataModel, DocumentFlavor, EDITOR_ACTIVATED, FOCUSING_COMMON_DRAWINGS, FOCUSING_SHAPE_TEXT_EDITOR, FOCUSING_SLIDE, HorizontalAlign, ICommandService, IConfigService, IContextService, IImageIoService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, LifecycleService, LifecycleStages, LocaleService, Optional, Plugin, PresetListType, RedoCommand, Registry, RxDisposable, ThemeService, Tools, UndoCommand, UniverInstanceType, VerticalAlign, WrapStrategy, checkIfMove, createIdentifier, createInternalEditorID, createParagraphId, generateRandomId, isInternalEditorID, merge, toDisposable } from "@univerjs/core";
+import * as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614828 from "@univerjs-pro/slides";
+import { AddSlideElementCommand, AddSlideElementMutation, AddSlidePageCommand, CancelSlideGroupMutation, ConvertSlideSmartArtToShapesCommand, CreateSlideByLayoutCommand, DEFAULT_LAYOUT_ORDER, DEFAULT_MASTER_PAGE, DEFAULT_MASTER_PAGE_ID, ISlideDrawingService, InsertDrawingObjectMutation, LAYOUT_PAGE_IDS, MoveSlidePageCommand, PageElementTypeEnum, PageTypeEnum, PlaceholderTypeEnum, RemoveSlideElementCommand, RemoveSlideElementMutation, RemoveSlidePageCommand, ReorderSlideElementsCommand, SLIDE_INSERT_DEFAULT_SIZE, SLIDE_PLACEHOLDER_ICON_COMPONENT_NAME_BY_KEY, SLIDE_TEXT_BOX_DEFAULT_STYLE, SLIDE_THEME_PRESETS, SetPresentationBackgroundGraphicsCommand, SetSlideDrawingApplyMutation, SetSlideGroupMutation, SetSlidePageSizeCommand, SetSlidePageSizeMutation, SetSlideSpeakerNotesCommand, SetSlideSpeakerNotesMutation, SetSlideTransitionCommand, SetSlideZoomRatioOperation, SlideBackgroundTypeEnum, SlideDrawingApplyType, SlidePageLayoutTypeEnum, SlidePageSizePresetEnum, SlidePresentationBackgroundGraphicFitEnum, SlidePresentationBackgroundGraphicsTargetEnum, SlideSceneTypeEnum, SlideTransitionDirectionEnum, SlideTransitionTypeEnum, UniverSlidesPlugin, UpdateSlideDrawingCommand, UpdateSlideElementMutation, UpdateSlidePageBackgroundCommand, UpdateSlidePageBackgroundMutation, UpdateSlideSmartArtCommand, applySlideElementPlainText, applySlideElementTextDocument, buildResolvedSlideDrawingMap, canEditSlideTargets, getEmbedSlidesFloatingCustomData, getEmbedSlidesPageCustomData, getPlaceholderImageContent, getPresentationBackgroundGraphics, getSlideElementDisplayName, getSlideElementEditPermissionObjectIds, getSlideElementPermissionObjectId, getSlidePagePermissionObjectId, getSlidePermissionValue, getSlideThemePreset, isPresentationBackgroundGraphic, normalizeSlideDocumentDataStream, plainTextToSlideDocumentData, resolveDefaultPlaceholderTextKey, resolvePlaceholderActionIcons, resolveSlideElementTextDocument, resolveSlideTextBoxDefaultSize, resolveSlideThemePreviewColors, resolveSlideTransition, resolveThemeDefaultShapeText, setPlaceholderImageContent, slideDocumentDataToPlainText } from "@univerjs-pro/slides";
+import { AlignmentSnapSession, BaseObject, CURSOR_TYPE, DEFAULT_TRANSFORMER_CONFIG, DRAWING_OBJECT_LAYER_INDEX, DeviceType, DocumentSkeleton, DocumentViewModel, Documents, DrawingGroupObject, Group, IRenderManagerService, Image, MAIN_VIEW_PORT_KEY, PageLayoutType, RENDER_CLASS_TYPE, Rect, Scene, ScrollBar, Shape, Transform, UniverRenderEnginePlugin, UniverRenderingContext, VERTICAL_ROTATE_ANGLE, Vector2, Viewport, cancelRequestFrame, createCanvasElement, degToRad, getAlignmentRectXAnchors, getAlignmentRectYAnchors, getNextWheelZoomRatio, measureDocumentNoWrapTextWidth, pxToNum, requestNewFrame, resolveDrawingEffectMasks, resolveOuterShadowEffect } from "@univerjs/engine-render";
+import { BuiltInUIPart, ComponentContainer, ComponentManager, ContextMenuGroup, CopyCommand, CutCommand, EmojiPicker, FloatingObjectToolbarPosition, FontFamilyDropdown, ICanvasPopupService, IClipboardInterfaceService, IContextMenuService, IDialogService, ILayoutService, IMenuManagerService, IMessageService, IRibbonService, IShortcutService, ISidebarService, IUIPartsService, IUIRuntimeScopeService, IUnitPresenceUIAdapterRegistry, IWorkbenchService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, RectPopup, RibbonPosition, RibbonStartGroup, RibbonViewGroup, Slider, SymbolPicker, ToggleFullscreenOperation, UndoRedoGroupService, ZoomInput, connectInjector, getEmbedChildUnitId, getMenuHiddenObservable, useComponentsOfPart, useDependency, useObservable } from "@univerjs/ui";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
+import { InsertSlideTableCommand, SetSlideTableMutation, SlideTableBorderDashEnum, SlideTableFillTypeEnum, SlideTableResourceService, SlideTableTextDirectionEnum, UpdateSlideTableCommand, buildDefaultSlideTableThemes, buildSlideTableControls, buildSlideTableTriggers, hitTestSlideTableControl, hitTestSlideTableTrigger, normalizeSlideTableSnapshot, resizeSlideTableGrid, resolveSlideTableBuildOptions, resolveSlideTableCellBoundaryBorder, resolveSlideTableCellRect, resolveSlideTableCellTextMargins, resolveSlideTableRenderModel, resolveSlideTableThemePalette } from "@univerjs-pro/slides-table";
+import { BehaviorSubject, Observable, Subject, combineLatest, distinctUntilChanged, filter, fromEvent, map, merge as mergeLocal, of as of1, pairwise, startWith, switchMap, take, takeUntil } from "rxjs";
+import { DocParagraphTypeDropdown, FormulaShapeAnimationController, OpenShapeTextHyperLinkOperation, SHAPE_CHANGE_PICKER_COMPONENT, SHAPE_FLOATING_TOOLBAR_TOP_OFFSET, SMART_ART_LAYOUT_GALLERY_CATALOG, ShapeEffectsRibbonControl, ShapeFloatingToolbar, ShapeFloatingToolbarService, ShapeFloatingToolbarToggleFactory, ShapeFormulaRibbonControl, ShapeGroupEnum, ShapePickerPanel, ShapeQuickStyleGallery, ShapeStyleRibbonControl, ShapeTextBoxEditor, ShapeTextEditorContainer, ShapeTextEffectsRibbonControl, ShapeTextFloatMenuRenderControllerBase, ShapeTextFloatToolbar, ShapeTextHyperLinkInfo, ShapeTextHyperLinkPopupService, ShapeTextRibbonControl, SmartArtCreateGraphicRibbonControl, SmartArtLayoutGallery, SmartArtLayoutRibbonControl, SmartArtResetRibbonControl, SmartArtRibbonControl, SmartArtStyleRibbonControl, SmartArtTextPane, ToggleShapeFloatingToolbarOperation, UniverShapeEditorUIPlugin, buildShapeTextDataUpdate, createShapeTextPlaceholderDocumentData, drawFormulaShapeAnimationLayers, getShapeTextOpticalVerticalOffset, getTextModel, getTextStyle, isShapeTextOpticalVerticalAlignEnabled, normalizeShapeTextModel, normalizeShapeTextRect, prepareShapeTextDocumentData, resolveShapeContextualRibbonHostMode, resolveShapeTextBoxResizePolicy, resolveShapeTextDocumentAlignment, resolveShapeTextDocumentPageHeight, resolveShapeTextDocumentRenderLayout, resolveShapeTextEditorBehaviorShapeData, resolveShapeTextEditorFlowAxis, resolveShapeTextEditorWrapStrategy, resolveShapeTextNoWrapLayout, shapeTypeOptions, shouldAllowShapeTextEditorHostSizeShrink, shouldAutoFitShapeTextEditorNoWrap, shouldClipShapeTextDocument, useFormulaShapeToolbar } from "@univerjs-pro/shape-editor-ui";
+import { ConnectorCoordinateTransform, ImageFillModeEnum, ImageSourceTypeEnum, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeBevelPresetEnum, ShapeDefaultConfig, ShapeFillEnum, ShapeGradientTypeEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeMaterialPresetEnum, ShapeModel, ShapePresetShadowValEnum, ShapeRenderModeEnum, ShapeSketchTypeEnum, ShapeTextAutoFitType, ShapeTextWrapType, ShapeTypeEnum, SmartArtDirectionEnum, SmartArtInsertPositionEnum, SmartArtOperationTypeEnum, SmartArtPresentationShapeRoleEnum, computeConnectorRouteLayout, createDefaultInsertedShapeData, createSmartArtDataFromLayout, getBasicShapeRotateBound, getShape3DBounds, isConnectorShape, isCurvedConnectorShape, isShape3DProjectiveScene, isSmartArtShapeData, normalizeShapeTextData, parseSmartArtCategory, projectShape3DRect, resolveShape3DGlyphRenderPlan, resolveShapeBevelExtent, resolveShapeDefaultInsertSize, resolveShapeTextBodyBehavior, resolveSmartArtPresentationNodeIdAtTextOffset, resolveSmartArtPresentationShapeData, resolveSmartArtPresentationShapeIdForNode, resolveSmartArtPresentationTransform, routeConnectorLineShape } from "@univerjs-pro/engine-shape";
+import { ShapeFormulaService, UniverShapeEditorPlugin, createShapeFormulaDocument, createShapeTextBoxShapeData, getShapeQuickStylePreset, getShapeQuickStylePresets } from "@univerjs-pro/shape-editor";
+import { takeUntil as takeUntilLocal } from "rxjs/operators";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { AddImageIcon, AddNoteIcon, AlignBottomIcon, AlignTextBothIcon, AlignTopIcon, ArrowLeftIcon, ArrowRightIcon, BasesMultiIcon, BoardsMultiIcon, BoldIcon, BottomIcon, CatalogueIcon, ChartIcon, CloseIcon, ConnectionLineIcon, CopyIcon, CutIcon, DeleteIcon, DocsMultiIcon, ExpandIcon, FeatureSearchIcon, FlipHorizontalIcon, FlipVerticalIcon, FontColorDoubleIcon, FountainPenIcon, GroupIcon, HandIcon, HorizontallyIcon, ItalicIcon, LeftJustifyingIcon, LoadingMultiIcon, MindMapIcon, MoreDownIcon, MoreLeftIcon, MoveDownIcon, MoveUpIcon, ObjectLayersIcon, OneToOneIcon, PaintBucketDoubleIcon, PasteSpecialDoubleIcon, RecordIcon, RelationshipIcon, RightJustifyingIcon, RulerIcon, ShapeBackgroundColorDoubleIcon, ShapeFormatSettingIcon, ShapeStrokeColorDoubleIcon, SheetsMultiIcon, ShrinkIcon, SlidesMultiIcon, SlideshowPlayIcon, SlideshowThemeIcon, SmartArtIcon, SmileIcon, StickyNoteIcon, StrikethroughIcon, SymbolsIcon, TableIcon, TextIcon, TopmostIcon, TransitionsIcon, UnderlineIcon, UngroupIcon, VerticalCenterIcon } from "@univerjs/icons";
+import { Accordion, Button, Checkbox, ColorPicker, Dropdown, DropdownMenu, GradientColorPicker, Input, InputNumber, MessageType, Radio, RadioGroup, Segmented, Select, Separator, Textarea, borderClassName, clsx, scrollbarClassName } from "@univerjs/design";
+import { DocInterceptorService, DocSelectionManagerService, DocSkeletonManagerService, UniverDocsPlugin } from "@univerjs/docs";
+import { DeleteLeftCommand, DeleteRightCommand, DocCanvasPopManagerService, DocEventManagerService, DocRenderController, DocSelectAllCommand, DocSelectionRenderService, EnterCommand, IEditorService, SetInlineFormatBoldCommand, SetInlineFormatFontFamilyCommand, SetInlineFormatFontSizeCommand, SetInlineFormatItalicCommand, SetInlineFormatStrikethroughCommand, SetInlineFormatTextColorCommand, SetInlineFormatUnderlineCommand, UniverDocsUIPlugin, convertBodyToHtml, convertClipboardHtmlToDocumentData, convertClipboardRtfToPlainText, removeClipboardHtmlImages, useEditor, useKeyboardEvent, useLeftAndRightArrow, useOnChange } from "@univerjs/docs-ui";
+import { UnitAction } from "@univerjs/protocol";
+import { getImageSize } from "@univerjs/drawing";
+import { ImageCropperObject, ObjectListPanelBase, extractClipboardHtmlImageFiles, extractClipboardImageFiles, extractClipboardTextImageFile, getObjectListPanelLabels, getObjectListPanelTypeName, isClipboardTextImage, isImageOnlyClipboardHtml, normalizeClipboardImageFile, svgImageFileToDataUrl, writeImageSourceToClipboard } from "@univerjs/drawing-ui";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { convertPlainTextTableToHtml, parseHtmlTableClipboard } from "@univerjs-pro/docs-table";
+const Tc = "slides-ui.config",
+  Ec = {
+    editor: {
+      enabled: true
+    },
+    coreRenderArea: {
+      width: "82%",
+      height: "82%"
+    }
+  },
+  Dc = "gray.50",
+  Oc = "#ffffff",
+  kc = "#5b8def",
+  Ac = "#000000",
+  jc = "#7c7c7c",
+  Mc = Oc,
+  Nc = "rgba(0,0,0,0.15)",
+  Pc = SlidePresentationBackgroundGraphicFitEnum.Stretch,
+  Fc = "#5b8def",
+  Ic = "#2f3f5f",
+  Lc = "#000000",
+  Rc = Oc,
+  zc = Ac,
+  Bc = "#111827",
+  Vc = "gray.50",
+  Hc = "gray.100",
+  Uc = "rgba(255,255,255,0)",
+  Wc = "gray.300",
+  Gc = "primary.600",
+  Kc = "gray.50",
+  qc = Gc,
+  Jc = Gc,
+  Yc = Gc,
+  Xc = "primary.600",
+  Zc = 0.1,
+  Qc = 0.82,
+  var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB306 = "gray.50",
+  el = "primary.600",
+  tl = el,
+  nl = "primary.700",
+  rl = "primary.500",
+  il = "gray.50",
+  al = "yellow.500",
+  ol = "gray.600",
+  sl = "gray.0",
+  cl = "gray.200",
+  ll = "0 8px 24px rgba(15, 23, 42, 0.14), 0 1px 3px rgba(15, 23, 42, 0.12)",
+  ul = "0 10px 28px rgba(15,23,42,0.16)",
+  dl = "#0f172a",
+  fl = "#fde68a",
+  pl = 42,
+  ml = 10,
+  hl = 12,
+  gl = "gray.50",
+  var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB307 = "gray.300",
+  vl = "gray.600",
+  yl = "16px Source Han Sans CN, PingFang SC, Microsoft YaHei, sans-serif",
+  bl = "gray.700",
+  xl = "gray.600",
+  Sl = "gray.900",
+  Cl = "gray.500";
+export { Tc as SLIDES_UI_PLUGIN_CONFIG_KEY, Ec as defaultPluginConfig, Dc as SLIDE_CANVAS_DEFAULT_BACKGROUND, Oc as SLIDE_BACKGROUND_DEFAULT_PAGE_COLOR, kc as SLIDE_BACKGROUND_DEFAULT_SOLID_COLOR, Ac as SLIDE_BACKGROUND_DEFAULT_GRADIENT_END_COLOR, jc as SLIDE_BACKGROUND_DEFAULT_PATTERN_FOREGROUND_COLOR, Mc as SLIDE_BACKGROUND_DEFAULT_PATTERN_BACKGROUND_COLOR, Nc as SLIDE_BACKGROUND_DEFAULT_PATTERN_STROKE_COLOR, Pc as SLIDE_BACKGROUND_DEFAULT_GRAPHIC_FIT, Fc as SLIDE_SHAPE_DEFAULT_FILL_COLOR, Ic as SLIDE_SHAPE_DEFAULT_STROKE_COLOR, Lc as SLIDE_SHAPE_DEFAULT_SHADOW_COLOR, Rc as SLIDE_SHAPE_DEFAULT_GRADIENT_START_COLOR, zc as SLIDE_SHAPE_DEFAULT_GRADIENT_END_COLOR, Bc as SLIDE_SHAPE_TEXT_FALLBACK_COLOR, Vc as SLIDE_PRESENTATION_STAGE_BACKGROUND_COLOR, Hc as SLIDE_PRESENTATION_CONTROL_BACKGROUND_COLOR, Uc as SLIDE_PAGE_RECT_FILL_COLOR, Wc as SLIDE_PAGE_RECT_STROKE_COLOR, Gc as SLIDE_TRANSFORMER_BORDER_STROKE_COLOR, Kc as SLIDE_TRANSFORMER_ANCHOR_FILL_COLOR, qc as SLIDE_TRANSFORMER_ANCHOR_STROKE_COLOR, Jc as SLIDE_TRANSFORMER_ROTATE_STROKE_COLOR, Yc as SLIDE_TRANSFORMER_ROTATE_ICON_STROKE_COLOR, Xc as SLIDE_MARQUEE_SELECTION_THEME_TOKEN, Zc as SLIDE_MARQUEE_SELECTION_FILL_ALPHA, Qc as SLIDE_MARQUEE_SELECTION_STROKE_ALPHA, var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB306 as SLIDE_CONNECTOR_CONNECTION_SITE_FILL_COLOR, el as SLIDE_CONNECTOR_CONNECTION_SITE_STROKE_COLOR, tl as SLIDE_CONNECTOR_CONNECTION_SITE_HIGHLIGHT_FILL_COLOR, nl as SLIDE_CONNECTOR_CONNECTION_SITE_HIGHLIGHT_STROKE_COLOR, rl as SLIDE_CONNECTOR_ENDPOINT_HANDLE_FILL_COLOR, il as SLIDE_CONNECTOR_ENDPOINT_HANDLE_STROKE_COLOR, al as SLIDE_ADJUST_POINT_HANDLE_FILL_COLOR, ol as SLIDE_ADJUST_POINT_HANDLE_STROKE_COLOR, sl as SLIDE_TEXT_EDITOR_FLOATING_TOOLBAR_BACKGROUND_COLOR, cl as SLIDE_TEXT_EDITOR_FLOATING_TOOLBAR_BORDER_COLOR, ll as SLIDE_TEXT_EDITOR_FLOATING_TOOLBAR_SHADOW, ul as SLIDE_TEXT_EDITOR_FONT_SIZE_MENU_SHADOW, dl as SLIDE_TEXT_EDITOR_DEFAULT_TEXT_COLOR, fl as SLIDE_TEXT_EDITOR_DEFAULT_TEXT_BACKGROUND_COLOR, pl as SLIDE_PLACEHOLDER_ICON_BOX_SIZE, ml as SLIDE_PLACEHOLDER_ICON_GRID_GAP_X, hl as SLIDE_PLACEHOLDER_ICON_GRID_GAP_Y, gl as SLIDE_PLACEHOLDER_ICON_BOX_BACKGROUND, var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB307 as SLIDE_PLACEHOLDER_ICON_BOX_STROKE, vl as SLIDE_PLACEHOLDER_ICON_LABEL_COLOR, yl as SLIDE_PLACEHOLDER_ICON_LABEL_FONT, bl as SLIDE_PLACEHOLDER_TEXT_COLOR_PRIMARY, xl as SLIDE_PLACEHOLDER_TEXT_COLOR_SECONDARY, Sl as SLIDE_PLACEHOLDER_TEXT_COLOR_TITLE, Cl as SLIDE_PLACEHOLDER_TEXT_COLOR_MUTED };

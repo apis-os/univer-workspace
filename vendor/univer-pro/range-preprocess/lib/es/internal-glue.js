@@ -1,0 +1,24 @@
+import { BuildTextUtils, CellValueType, DependentOn, Disposable, IConfigService, Inject, Injector, Plugin, RTree, generateRandomId, merge, registerDependencies } from "@univerjs/core";
+import "@univerjs/sheets-filter";
+import { TableManager } from "@univerjs/sheets-table";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { X, fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sigD23F } from "./range-preprocess-range-preprocess.js";
+import { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524 } from "./range-preprocess-plugin.js";
+function J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46506, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46507) {
+  return function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46507(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46506);
+  };
+}
+function Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46510, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46513) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514 = arguments.length,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46513 === null ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46513 = Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46513,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515 = Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46510, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46513);else {
+    for (var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D67 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46510.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D67 >= 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D67--) (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46510[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D67]) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514 > 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512)) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515);
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514 > 3 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515 && Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46511, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46515;
+}
+X = Y([J(0, Inject(Injector))], X);
+var Z = "@univerjs-pro/range-preprocess",
+  fe = "1.0.0-insiders.20260907-70fc579";
+fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524, "pluginName", "UNIVER_RANGE_PREPROCESS_PLUGIN"), fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524, "packageName", Z), fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524, "version", fe), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524 = Y([DependentOn(UniverLicensePlugin), J(1, Inject(Injector)), J(2, IConfigService)], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524);

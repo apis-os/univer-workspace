@@ -26,6 +26,14 @@ export interface LoginSession {
   expires_at: number;
 }
 
+export interface CliAuthorization {
+  user_code: string;
+  device_code_hash: string;
+  user_id: string | null;
+  status: "pending" | "approved";
+  expires_at: number;
+}
+
 export type SpaceType = "personal" | "team";
 
 export interface Space {
@@ -133,6 +141,7 @@ export interface WorktreeItem {
   kind: "user" | "team";
   team_space_id: string | null;
   visibility: "private" | "space";
+  status?: "draft" | "ready" | "merged" | "discarded";
   processed_at: number | null;
   created_at: number;
   updated_at: number;

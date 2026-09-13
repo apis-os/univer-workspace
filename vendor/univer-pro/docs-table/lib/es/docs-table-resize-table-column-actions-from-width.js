@@ -1,0 +1,21 @@
+import { BooleanNumber, CommandType, DOC_RANGE_TYPE, DashStyleType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentFlavor, ICommandService, IConfigService, IResourceManagerService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, TableAlignmentType, TableRowHeightRule, TableSizeType, TableTextWrapType, TextX, Tools, UniverInstanceType, containsInteriorInsertionOffset, createParagraphId, createSectionId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getCustomBlockIdsInSelections, getParagraphContentStartOffset, getTableCellTokenInterval, getTableRangeInterval, getTableRowTokenInterval, merge } from "@univerjs/core";
+import { DocHistoryAction, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+function En(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461890, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461891, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461892, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461893) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461894, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461895, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461896;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461897 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461894 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461890.tableSource) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461894 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461894[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461891]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461894.tableColumns[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461892];
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461897) return null;
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D132 = Math.max(1, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461893);
+  if (((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461895 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461897.size) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461895 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461895.width) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461895.v) === var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D132) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461898 = JSONX.getInstance();
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461897.size ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461897.size["width"] ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461898.replaceOp(["tableSource", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461891, "tableColumns", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461892, "size", "width", "v"], (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461896 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461897.size) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461896 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461896.width) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461896.v, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D132) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461898.insertOp(["tableSource", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461891, "tableColumns", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461892, "size", "width"], {
+    v: var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D132
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461898.insertOp(["tableSource", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461891, "tableColumns", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461892, "size"], {
+    type: TableSizeType.SPECIFIED,
+    width: {
+      v: var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D132
+    }
+  });
+}
+export { En as buildResizeTableColumnActionsFromWidth };

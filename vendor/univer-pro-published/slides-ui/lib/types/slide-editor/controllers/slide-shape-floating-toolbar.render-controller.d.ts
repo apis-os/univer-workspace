@@ -1,0 +1,31 @@
+import type { UnitModel } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { ShapeFloatingToolbarService } from '@univerjs-pro/shape-editor-ui';
+import { ISlideDrawingService } from '@univerjs-pro/slides';
+import { RxDisposable } from '@univerjs/core';
+import { IMenuManagerService } from '@univerjs/ui';
+import { SlideCanvasPopManagerService } from '../../services/slide-canvas-pop-manager.service';
+import { ISlideDrawingStateService } from '../../services/slide-drawing-state.service';
+import { SlideHitTestService } from '../../services/slide-hit-test.service';
+import { SlideTextEditingService } from '../services/slide-text-editing.service';
+export declare class SlideShapeFloatingToolbarRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _slideCanvasPopManagerService;
+    private readonly _slideDrawingStateService;
+    private readonly _hitTestService;
+    private readonly _slideTextEditingService;
+    private readonly _slideDrawingService;
+    private readonly _shapeFloatingToolbarService;
+    private readonly _menuManagerService;
+    private _popupDisposable;
+    private _popupSelectionKey;
+    constructor(_renderContext: IRenderContext<UnitModel>, _slideCanvasPopManagerService: SlideCanvasPopManagerService, _slideDrawingStateService: ISlideDrawingStateService, _hitTestService: SlideHitTestService, _slideTextEditingService: SlideTextEditingService, _slideDrawingService: ISlideDrawingService, _shapeFloatingToolbarService: ShapeFloatingToolbarService, _menuManagerService: IMenuManagerService);
+    dispose(): void;
+    private _init;
+    private _clearPopup;
+    private _clearPopupIfSelectionChanged;
+    private _isPopupSelectionStillActive;
+    private _buildPopupSelectionKey;
+    private _showPopupForSelection;
+    private _resolveShapeToolbarEntry;
+}

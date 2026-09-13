@@ -1,0 +1,24 @@
+import { IDocExchangeService as var_core_value_sig4D4C } from "@univerjs-pro/docs-exchange-client";
+import { FUniver as var_core_value_sigC9E0 } from "@univerjs/core/facade";
+var n = class extends var_core_value_sigC9E0 {
+  importDocToUnitIdAsync(var_core_value_sig7524, var_core_value_sig2AD8) {
+    return this._injector["get"](var_core_value_sig4D4C).importDocToUnitId(var_core_value_sig7524, var_core_value_sig2AD8);
+  }
+  importDocToSnapshotAsync(var_core_value_sig2AD0, var_core_value_sig3EEE) {
+    return this._injector["get"](var_core_value_sig4D4C).importDocToSnapshot(var_core_value_sig2AD0, var_core_value_sig3EEE);
+  }
+  exportDocByUnitIdAsync(var_core_value_sigBC46) {
+    return this._injector["get"](var_core_value_sig4D4C).exportDocByUnitId(var_core_value_sigBC46);
+  }
+  exportDocBySnapshotAsync(var_core_value_sig3D7D) {
+    return this._injector["get"](var_core_value_sig4D4C).exportDocBySnapshot(var_core_value_sig3D7D);
+  }
+  transformSnapshotJsonToDocumentDataAsync(var_core_value_sig27E5) {
+    return this._injector["get"](var_core_value_sig4D4C).transformSnapshotJsonToDocumentData(var_core_value_sig27E5);
+  }
+  transformDocumentDataToSnapshotJsonAsync(var_core_value_sig8061) {
+    return this._injector["get"](var_core_value_sig4D4C).transformDocumentDataToSnapshotJson(var_core_value_sig8061);
+  }
+};
+var_core_value_sigC9E0.extend(n);
+export {};

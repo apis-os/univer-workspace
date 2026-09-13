@@ -1,0 +1,150 @@
+const e = {
+  "boards-chart-ui": {
+    dataEditor: {
+      unavailable: "I dati del grafico non sono disponibili.",
+      updateFailed: "Impossibile aggiornare i dati del grafico.",
+    },
+    common: {
+      editChart: "Editor grafico",
+      deleteChart: "Elimina\x20grafico",
+      editData: "Modifica dati",
+      insertChartFailed: "Inserimento grafico non riuscito",
+      data: "Dati",
+      cancel: "Annulla",
+      insert: "Inserisci",
+      setup: "Configura",
+      customize: "Personalizza",
+      switchRowColumn: "Passa\x20a\x20riga/colonna",
+      duplicate: "Duplica",
+      apply: "Applica",
+      chartAndAxisTitles: "Titoli\x20grafico\x20e\x20assi",
+      chartStyle: "Stile grafico",
+      heatmap: "Mappa di calore",
+      horizontalAxis: "Asse orizzontale",
+      legend: "Legenda",
+      rightVerticalAxis: "Asse verticale destro",
+      series: "Serie",
+      trendline: "Linea di tendenza",
+      verticalAxis: "Asse verticale",
+      tableDataEmpty: "I dati della tabella sono vuoti",
+      category: "Categoria",
+      label: "Etichetta",
+      value: "Valore",
+      valueField: "Campo valore",
+      chartType: "Tipo di grafico",
+    },
+    chartTypes: {
+      line: "Grafico a linee",
+      column: "Grafico a colonne",
+      columnStacked: "Impila · Grafico a colonne",
+      columnPercentStacked:
+        "Impila\x20percentuale\x20·\x20Grafico\x20a\x20colonne",
+      bar: "Grafico a barre",
+      barStacked: "Grafico a barre impilato",
+      barPercentStacked: "Grafico a barre impilato percentuale",
+      pie: "Grafico\x20a\x20torta",
+      donut: "Grafico ad anello",
+      pieOfPie: "Grafico a torta della torta",
+      barOfPie: "Grafico a barre della torta",
+      area: "Grafico ad area",
+      areaStacked: "Grafico ad area impilato",
+      areaPercentStacked: "Grafico ad area impilato percentuale",
+      radar: "Grafico radar",
+      scatter: "Grafico\x20a\x20dispersione",
+      combination: "Grafico combinato",
+      wordCloud: "Grafico\x20nuvola\x20di\x20parole",
+      funnel: "Grafico a imbuto",
+      bubble: "Grafico a bolle",
+      relation: "Grafico delle relazioni",
+      waterfall: "Grafico a cascata",
+      pareto: "Grafico di Pareto",
+      sankey: "Grafico di Sankey",
+      heatmap: "Mappa di calore",
+      boxplot: "Box plot",
+      candlestick: "Grafico\x20a\x20candele",
+      histogram: "Istogramma",
+      treemap: "Mappa ad albero",
+      sunburst: "Grafico radiale",
+      gauge: "Grafico a tachimetro",
+      chord: "Diagramma a corde",
+    },
+    section: {
+      candlestick: "Grafico a candela",
+      chord: "Grafico degli accordi",
+      funnel: "Grafico a imbuto",
+      gauge: "Grafico\x20del\x20calibro",
+      gridlinesAndTicks: "Linee griglia e segni di graduazione",
+      histogram: "Grafico dell'istogramma",
+      indicatorLine: "Linea indicatore",
+      lineAndArea: "Grafico a linee / Grafico ad area",
+      paretoBar: "Serie grafico a barre",
+      paretoLine: "Serie percentuale cumulativa",
+      pie: "Grafico a torta",
+      radar: "Grafico\x20radar",
+      relation: "Grafico\x20delle\x20relazioni",
+      sunburst: "Grafico dello sprazzo di sole",
+      treemap: "Grafico della mappa ad albero",
+      waterfall: "Grafico\x20a\x20cascata",
+      wordCloud: "Nuvola di parole",
+    },
+    candlestick: {
+      columnsError:
+        "I dati del grafico a candele richiedono le colonne Categoria, Apertura, Massimo, Minimo e Chiusura.",
+      close: "Chiusura",
+      high: "Massimo",
+      low: "Minimo",
+      open: "Apertura",
+      series: "Serie OHLC",
+    },
+    chord: {
+      source: "Fonte",
+      target: "Obiettivo",
+      emptyDiagnostic:
+        "Il diagramma a corde richiede almeno una relazione con peso positivo tra due nodi distinti.",
+      mappingDiagnostic:
+        "Il diagramma a corde richiede campi Origine e Destinazione distinti e, facoltativamente, un campo Valore diverso.",
+      configDiagnostic:
+        "La configurazione del diagramma a corde non è valida. Controllare angoli, raggi, opacità e dimensioni.",
+      count: "Conteggio\x20delle\x20relazioni",
+      associatedValue: "Valore associato",
+    },
+    sunburst: {
+      hierarchy: "Gerarchia",
+      ownValue: "Valore\x20proprio",
+      children: "Elementi figli",
+      diagnostic:
+        "Il\x20grafico\x20radiale\x20gerarchico\x20richiede\x20almeno\x20un\x20campo\x20gerarchico\x20e\x20un\x20campo\x20di\x20valore\x20numerico.",
+    },
+    histogram: { frequency: "Frequenza" },
+    pie: { aggregateOther: "Altro", aggregateMembers: "Elementi" },
+    treemap: {
+      hierarchy: "Campi\x20gerarchici",
+      ownValue: "Valore proprio",
+      children: "Elementi figli",
+      diagnostic:
+        "La mappa ad albero richiede almeno un campo gerarchico e un campo di valore numerico.",
+    },
+    gauge: {
+      emptyDiagnostic:
+        "Il grafico a indicatore richiede almeno un valore numerico finito.",
+      mappingDiagnostic:
+        "Il grafico a indicatore richiede un campo etichetta ed esattamente un campo valore.",
+      configDiagnostic:
+        "La configurazione del grafico a indicatore non è valida. Controllare scala, intervalli, proporzioni e dimensioni.",
+    },
+    chartField: {
+      missingCategoryFields: "Questo grafico richiede più campi etichetta.",
+      missingSeriesFields:
+        "Questo grafico richiede più campi di valori numerici.",
+      invalidFieldIndex:
+        "Un\x20campo\x20del\x20grafico\x20selezionato\x20non\x20è\x20più\x20disponibile.",
+      invalidValueFieldType:
+        "Il campo valore selezionato non contiene dati numerici.",
+      invalidDataStructure:
+        "I\x20campi\x20selezionati\x20non\x20formano\x20una\x20struttura\x20dati\x20valida\x20per\x20questo\x20grafico.",
+      unsupportedChartType:
+        "Questo\x20tipo\x20di\x20grafico\x20non\x20dispone\x20di\x20una\x20regola\x20per\x20l’utilizzo\x20dei\x20campi.",
+    },
+  },
+};
+export { e as default };

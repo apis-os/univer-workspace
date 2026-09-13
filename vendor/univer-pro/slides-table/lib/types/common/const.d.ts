@@ -1,0 +1,9 @@
+export declare const DEFAULT_SLIDE_TABLE_ELEMENT_LEFT = 120;
+export declare const DEFAULT_SLIDE_TABLE_ELEMENT_TOP = 80;
+export declare const DEFAULT_SLIDE_TABLE_ELEMENT_WIDTH = 360;
+export declare const DEFAULT_SLIDE_TABLE_ELEMENT_HEIGHT = 240;
+export declare const DEFAULT_SLIDE_TABLE_ELEMENT_ROTATION = 0;
+export declare const DEFAULT_SLIDE_TABLE_ROW_COUNT = 3;
+export declare const DEFAULT_SLIDE_TABLE_COLUMN_COUNT = 3;
+export declare const DEFAULT_SLIDE_TABLE_COLUMN_WIDTH = 120;
+export declare const DEFAULT_SLIDE_TABLE_ROW_HEIGHT = 36;

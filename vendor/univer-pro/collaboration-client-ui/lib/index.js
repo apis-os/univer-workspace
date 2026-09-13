@@ -1,0 +1,2316 @@
+import { COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as v834, CollaborationController as v835, CollaborationSessionService as v836, CollaborationSocketService as v837, CollaborationStatus as v838, CollaborationUIEventId as v839, CollaborationUIEventService as v840, DEFAULT_REMOTE_UNISCRIPT_EXECUTION_ENDPOINT as v841, DEFAULT_WS_SESSION_TICKET_URL as v842, DataLoaderService as v843, DocCollaborationEntity as v844, ILocalCacheService as v845, LOCAL_CACHE_INTERVAL as v846, LOCAL_CACHE_INTERVAL_KEY as v847, MemberService as v848, REMOTE_UNISCRIPT_EXECUTION_ENDPOINT_KEY as v849, SessionStatus as v850, UnitStatus as v851, UniverCollaborationClientPlugin as v852, getLocalCacheKey as v853 } from '@univerjs-pro/collaboration-client';
+import { COLORS as v854, CanceledError as v855, ColorKit as v856, CommandType as v857, DOC_RANGE_TYPE as v858, DependentOn as v859, Disposable as v860, DisposableCollection as v861, ICommandService as v862, IConfigService as v863, IImageIoService as v864, ILocalStorageService as v865, ILogService as v866, IUniverInstanceService as v867, Inject as v868, Injector as v869, LocaleService as v870, Plugin as v871, Rectangle as v872, RxDisposable as v873, ThemeService as v874, Tools as v875, UniverInstanceType as v876, Workbook as v877, createIdentifier as v878, debounce as v879, fromEventSubject as v880, generateRandomId as v881, isFormulaId as v882, isFormulaString as v883, isInternalEditorID as v884, merge as v885, mergeOverrideWithDependencies as v886, registerDependencies as v887, toDisposable as v888, touchDependencies as v889 } from '@univerjs/core';
+import { BuiltInUIPart as v890, IBeforeCloseService as v891, IMessageService as v892, INotificationService as v893, IUIPartsService as v894, IUnitPresenceUIAdapterRegistry as v895, connectInjector as v896, useDependency as v897, useObservable as v898 } from '@univerjs/ui';
+import { BehaviorSubject as v899, Subject as v900, combineLatest as v901, debounceTime as v902, distinctUntilChanged as v903, filter as v904, fromEvent as v905, mapTo as v906, merge as v907, of as v908, shareReplay as v909, switchMap as v910, takeUntil as v911, throttle as v912, timer as v913 } from 'rxjs';
+import { distinctUntilChanged as v914, filter as v915, map as v916, switchMap as v917, takeUntil as v918, throttleTime as v919 } from 'rxjs/operators';
+import { Button as v920, MessageType as v921, Tooltip as v922, clsx as v923 } from '@univerjs/design';
+import { LoadingMultiIcon as v924, OffLineIcon as v925, OnLineIcon as v926, WarningIcon as v927 } from '@univerjs/icons';
+import { createElement as v928, useCallback as v929, useMemo as v930 } from 'react';
+import { jsx as v931, jsxs as v932 } from 'react/jsx-runtime';
+import { CollaborationEvent as v933, ISnapshotServerService as v934, ITransformService as v935, RevisionService as v936, SnapshotLoadStage as v937, SnapshotLoadingService as v938, UniverCollaborationPlugin as v939, isTransformMutationFailure as v940, isTransformMutationsWithChangesetSuccess as v941 } from '@univerjs-pro/collaboration';
+import { UniverLicensePlugin as v942 } from '@univerjs-pro/license';
+import { DocSelectionManagerService as v943, DocSkeletonManagerService as v944, DocStateChangeManagerService as v945, RichTextEditingMutation as v946, SetTextSelectionsOperation as v947, UniverDocsPlugin as v948 } from '@univerjs/docs';
+import { DocIMEInputManagerService as v949, IDocClipboardService as v950, NodePositionConvertToCursor as v951, NodePositionConvertToRectRange as v952, SetDocZoomRatioOperation as v953, TEXT_RANGE_LAYER_INDEX as v954, UniverDocsUIPlugin as v955 } from '@univerjs/docs-ui';
+import { DocumentSkeletonPageType as v956, IRenderManagerService as v957, Rect as v958, RegularPolygon as v959, SHEET_VIEWPORT_KEY as v960, Shape as v961, TRANSFORM_CHANGE_OBSERVABLE_TYPE as v962, UniverRenderEnginePlugin as v963, Vector2 as v964, getColor as v965, getDocumentSkeletonColumnPagePathInfo as v966 } from '@univerjs/engine-render';
+import { HTTPService as v967, ISocketService as v968, UniverNetworkPlugin as v969, WebSocketService as v970 } from '@univerjs/network';
+import { FormulaExecuteStageType as v971, FormulaExecutedStateType as v972, SetFormulaCalculationNotificationMutation as v973, SetFormulaCalculationStartMutation as v974, deserializeRangeWithSheet as v975, serializeRangeWithSheet as v976 } from '@univerjs/engine-formula';
+import { EffectRefRangId as v977, RefRangeService as v978, SetSelectionsOperation as v979, SetWorksheetActivateCommand as v980, SheetsSelectionsService as v981, handleDeleteRangeMoveLeft as v982, handleDeleteRangeMoveUp as v983, handleIRemoveCol as v984, handleIRemoveRow as v985, handleInsertCol as v986, handleInsertRangeMoveDown as v987, handleInsertRangeMoveRight as v988, handleInsertRow as v989, handleMoveRange as v990, runRefRangeMutations as v991 } from '@univerjs/sheets';
+import { SheetSkeletonManagerService as v992, getCoordByCell as v993, getSheetObject as v994 } from '@univerjs/sheets-ui';
+import { ErrorCode as v995 } from '@univerjs/protocol';
+function ln(v738) {
+  switch (v738) {
+    case v838.OFFLINE:
+      return {
+        'icon': v931(v925, {}),
+        'colorClass': "univer-text-red-500",
+        'i18nKey': 'collaboration-client-ui.collabStatus.offline',
+        'tooltipKey': "collaboration-client-ui.collabClient.tooltip.reconnect",
+        'clickable': true,
+        'indicator': "static"
+      };
+    case v838.CONFLICT:
+      return {
+        'icon': v931(v925, {}),
+        'colorClass': "univer-text-orange-500",
+        'i18nKey': "collaboration-client-ui.collabStatus.conflict",
+        'clickable': false,
+        'indicator': "static"
+      };
+    case v838.FETCH_MISS:
+      return {
+        'icon': v931(v924, {}),
+        'colorClass': "univer-text-blue-500",
+        'i18nKey': 'collaboration-client-ui.collabStatus.fetchMiss',
+        'clickable': false,
+        'indicator': "spin"
+      };
+    case v838.NOT_COLLAB:
+      return {
+        'icon': v931(v926, {}),
+        'colorClass': "univer-text-gray-400",
+        'i18nKey': "collaboration-client-ui.collabStatus.notCollab",
+        'clickable': false,
+        'indicator': 'static'
+      };
+    case v838.AWAITING:
+    case v838.AWAITING_WITH_PENDING:
+      return {
+        'icon': v931(v924, {}),
+        'colorClass': "univer-text-blue-500",
+        'i18nKey': "collaboration-client-ui.collabStatus.syncing",
+        'clickable': false,
+        'indicator': 'spin'
+      };
+    case v838.PENDING:
+      return {
+        'icon': v931(v924, {}),
+        'colorClass': 'univer-text-blue-500',
+        'i18nKey': "collaboration-client-ui.collabStatus.syncing",
+        'clickable': false,
+        'indicator': "spin"
+      };
+    case v838.SYNCED:
+      return {
+        'icon': v931(v926, {}),
+        'colorClass': "univer-text-green-500",
+        'i18nKey': "collaboration-client-ui.collabStatus.synced",
+        'clickable': false,
+        'indicator': "static"
+      };
+  }
+}
+;
+function un(v739) {
+  let {
+      status$: v740
+    } = v739,
+    v741 = v898(v740, v838.NOT_COLLAB),
+    v742 = v897(v870),
+    v743 = v897(v836),
+    v744 = v930(() => ln(v741), [v741]),
+    v745 = v741 !== v838.OFFLINE,
+    v746 = v742.t(v744.i18nKey),
+    v747 = v744.tooltipKey ? v742.t(v744.tooltipKey) : v746,
+    v748 = v929(() => {
+      v745 || v743.reconnect();
+    }, [v745, v743]),
+    v749 = v929(v285 => {
+      !v745 && (v285.key === "Enter" || v285.key === '\x20') && (v285.preventDefault(), v743.reconnect());
+    }, [v745, v743]),
+    v750 = v931("span", {
+      'className': v923("univer-flex univer-items-center univer-justify-center", 'univer-text-xl\x20univer-transition-colors\x20univer-duration-200', v744.colorClass, {
+        'univer-animate-spin': v744.indicator === "spin",
+        'univer-animate-pulse': v744.indicator === "pulse"
+      }),
+      'aria-hidden': "true",
+      'children': v744.icon
+    }),
+    v751 = v931('span', {
+      'className': v923('univer-flex\x20univer-items-center\x20univer-justify-center', 'univer-h-8\x20univer-w-8\x20univer-rounded-lg', "univer-transition-all univer-duration-200", 'focus:univer-outline-none\x20focus:univer-ring-2\x20focus:univer-ring-primary-500\x20focus:univer-ring-offset-2', "dark:focus:!univer-ring-offset-gray-800", {
+        'univer-cursor-pointer\x20hover:univer-bg-gray-100\x20dark:hover:!univer-bg-gray-700': v744.clickable,
+        'univer-cursor-default': !v744.clickable
+      }),
+      'children': v750
+    });
+  return v744.clickable ? v931(v922, {
+    'title': v747,
+    'placement': "bottom",
+    'children': v931('button', {
+      'type': "button",
+      'onClick': v748,
+      'onKeyDown': v749,
+      'className': v923("univer-inline-flex univer-items-center univer-justify-center", "univer-border-none univer-bg-transparent", 'univer-m-0\x20univer-p-0', "univer-appearance-none"),
+      'aria-label': v746 + " - " + v747,
+      'role': "status",
+      'aria-live': "polite",
+      'aria-atomic': "true",
+      'children': v751
+    })
+  }) : v931(v922, {
+    'title': v747,
+    'placement': "bottom",
+    'children': v931("div", {
+      'className': v923("univer-inline-flex univer-items-center univer-justify-center", 'univer-border-none\x20univer-bg-transparent', "univer-m-0 univer-p-0"),
+      'aria-label': v746,
+      'role': 'status',
+      'aria-live': "polite",
+      'aria-atomic': "true",
+      'children': v751
+    })
+  });
+}
+;
+function K(v752) {
+  '@babel/helpers - typeof';
+
+  return K = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (v286) {
+    return typeof v286;
+  } : function (v287) {
+    return v287 && typeof Symbol == "function" && v287.constructor === Symbol && v287 !== Symbol.prototype ? "symbol" : typeof v287;
+  }, K(v752);
+}
+;
+function dn(v753, v754) {
+  if (K(v753) != "object" || !v753) return v753;
+  var v755 = v753[Symbol.toPrimitive];
+  if (v755 !== undefined) {
+    var v756 = v755.call(v753, v754 || 'default');
+    if (K(v756) != 'object') return v756;
+    throw TypeError('@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.');
+  }
+  return (v754 === "string" ? String : Number)(v753);
+}
+;
+function fn(v757) {
+  var v758 = dn(v757, "string");
+  return K(v758) == "symbol" ? v758 : v758 + '';
+}
+;
+function q(v759, v760, v761) {
+  return (v760 = fn(v760)) in v759 ? Object.defineProperty(v759, v760, {
+    'value': v761,
+    'enumerable': true,
+    'configurable': true,
+    'writable': true
+  }) : v759[v760] = v761, v759;
+}
+;
+function J(v762, v763) {
+  return function (v288, v289) {
+    v763(v288, v289, v762);
+  };
+}
+;
+function Y(v764, v765, v766, v767) {
+  var v768 = arguments.length,
+    v769 = v768 < 3 ? v765 : v767 === null ? v767 = Object.getOwnPropertyDescriptor(v765, v766) : v767,
+    v770;
+  if (typeof Reflect == 'object' && typeof Reflect.decorate == 'function') v769 = Reflect.decorate(v764, v765, v766, v767);else {
+    for (var v771 = v764.length - 1; v771 >= 0; v771--) (v770 = v764[v771]) && (v769 = (v768 < 3 ? v770(v769) : v768 > 3 ? v770(v765, v766, v769) : v770(v765, v766)) || v769);
+  }
+  return v768 > 3 && v769 && Object.defineProperty(v765, v766, v769), v769;
+}
+let X = class extends v860 {
+  constructor(v290, v291, v292, v293, v294) {
+    super(), this._univerInstanceService = v290, this._injector = v291, this._collaborationController = v292, this._uiPartsService = v293, this._presenceAdapterRegistry = v294, q(this, "_status$", new v899(v838.NOT_COLLAB)), q(this, '_presenceStatusRegistrations', new Map()), this._initStatusComponent(), this._initStatusListener(), this._initPresenceStatusComponents();
+  }
+  dispose() {
+    this._presenceStatusRegistrations["forEach"](v96 => v96.dispose()), this._presenceStatusRegistrations["clear"](), this._status$["complete"](), super.dispose();
+  }
+  _initStatusListener() {
+    this.disposeWithMe(v907(this._univerInstanceService["focused$"], this._univerInstanceService["getCurrentTypeOfUnit$"](v876.UNIVER_DOC), this._univerInstanceService["getCurrentTypeOfUnit$"](v876.UNIVER_SHEET)).pipe(v916(() => pn(this._univerInstanceService)), v914(), v910(v97 => v97 ? this._collaborationController["getCollabEntity$"](v97) : v908(null)), v910(v98 => v98 ? v98.status$ : v908(v838.NOT_COLLAB))).subscribe(v99 => {
+      this._status$["next"](v99);
+    }));
+  }
+  _initStatusComponent() {
+    this.disposeWithMe(this._uiPartsService["registerComponent"](v890.HEADER_MENU, () => v896(mn({
+      'status$': this._status$["asObservable"]()
+    }), this._injector)));
+  }
+  _initPresenceStatusComponents() {
+    let v295 = this._presenceAdapterRegistry["adapters$"].subscribe(v100 => {
+      this._syncPresenceStatusComponents(v100);
+    });
+    this.disposeWithMe(v888(() => v295.unsubscribe()));
+  }
+  _syncPresenceStatusComponents(v296) {
+    let v297 = new Map(v296.filter(v101 => v101.statusUIPart != null).map(v102 => [v102.unitType, v102]));
+    this._presenceStatusRegistrations["forEach"]((v103, v104) => {
+      v297.has(v104) || (v103.dispose(), this._presenceStatusRegistrations['delete'](v104));
+    }), v297.forEach((v105, v106) => {
+      this._presenceStatusRegistrations["has"](v106) || this._registerPresenceStatusComponent(v105);
+    });
+  }
+  _registerPresenceStatusComponent(v298) {
+    let v299 = v298.statusUIPart;
+    if (!v299) return;
+    let v300 = new v861(),
+      v301 = new v899(v838.NOT_COLLAB);
+    v300.add(v888(() => v301.complete())), v300.add(this._uiPartsService["registerComponent"](v299, () => v896(mn({
+      'status$': v301.asObservable()
+    }), this._injector)));
+    let v302 = this._univerInstanceService['getCurrentTypeOfUnit$'](v298.unitType).pipe(v916(v107 => (v107 == null ? undefined : v107.getUnitId()) ?? null), v914(), v910(v108 => v108 ? this._collaborationController['getCollabEntity$'](v108) : v908(null)), v910(v109 => (v109 == null ? undefined : v109.status$) ?? v908(v838.NOT_COLLAB))).subscribe(v110 => v301.next(v110));
+    v300.add(v888(() => v302.unsubscribe())), this._presenceStatusRegistrations["set"](v298.unitType, v300);
+  }
+};
+X = Y([J(0, v867), J(1, v868(v869)), J(2, v868(v835)), J(3, v894), J(4, v868(v895))], X);
+function pn(v772) {
+  let v773 = v772.getFocusedUnit(),
+    v774 = v773 == null ? undefined : v773.getUnitId();
+  if (v774 && !v884(v774)) return v774;
+  let v775 = v772.getCurrentUnitOfType(v876.UNIVER_DOC),
+    v776 = v775 == null ? undefined : v775.getUnitId();
+  if (v776 && !v884(v776)) return v776;
+  let v777 = v772.getCurrentUnitOfType(v876.UNIVER_SHEET);
+  if (v777) return v777.getUnitId();
+  let v778 = v772.getAllUnitsForType(v876.UNIVER_DOC).find(v303 => !v884(v303.getUnitId()));
+  return v778 ? v778.getUnitId() : null;
+}
+;
+function mn(v779) {
+  let {
+    status$: v780
+  } = v779;
+  return function () {
+    return v931(un, {
+      'status$': v780
+    });
+  };
+}
+var hn = "@univerjs-pro/collaboration-client-ui",
+  gn = "1.0.0-insiders.20260907-70fc579";
+const _n = {
+    'id': "collaboration-client-ui.operation.update-remote-unit-presence",
+    'type': v857.OPERATION,
+    'handler': (v781, v782) => {
+      let v783 = v781.get(v895).get(v782.unitType);
+      if (!v783) return false;
+      switch (v782.update['type']) {
+        case 'set':
+          return v783.setRemotePresence(v782.update["state"]), true;
+        case "remove":
+          return v783.removeRemotePresence(v782.update['unitId'], v782.update['memberId']), true;
+        case "clear":
+          return v783.clearRemotePresences(v782.update['unitId']), true;
+        default:
+          return false;
+      }
+    }
+  },
+  vn = {};
+let yn = class extends v873 {
+  constructor(v304, v305) {
+    super(), this._docClipboardService = v304, this._imageIoService = v305, this._init();
+  }
+  _init() {
+    let v306 = this;
+    this.disposeWithMe(this._docClipboardService["addClipboardHook"]({
+      'onBeforePasteImage': async v111 => {
+        let v112 = await v306._imageIoService["saveImage"](v111);
+        return v112 ? {
+          'source': v112.source,
+          'imageSourceType': v112.imageSourceType
+        } : null;
+      }
+    }));
+  }
+};
+yn = Y([J(0, v950), J(1, v864)], yn);
+const bn = ["purple.300", "jiqing.500", "green.600", "red.300", 'blue.400', 'yellow.400'];
+var xn = class extends v860 {
+  constructor(...v307) {
+    super(...v307), q(this, "_assignedColors", new Map()), q(this, '_colorIndex', 0);
+  }
+  assignAColorForMemberID(v308) {
+    if (this._assignedColors["has"](v308)) return this._assignedColors["get"](v308);
+    let v309 = bn[this._colorIndex];
+    return this._colorIndex = (this._colorIndex + 1) % bn.length, this._assignedColors["set"](v308, v309), v309;
+  }
+};
+function Sn(v784) {
+  let v785 = '';
+  for (let v310 of v784) {
+    let {
+      startOffset: v113,
+      endOffset: v114,
+      isActive: v115,
+      rangeType: v116,
+      segmentId: v117,
+      segmentPage: v118
+    } = v310;
+    v785.length && (v785 += ','), v785 += v113 + ':' + v114 + ':' + (v115 ? '1' : '0') + ':' + v116 + ':' + v117 + ':' + v118;
+  }
+  return v785;
+}
+;
+function Cn(v786) {
+  let v787 = v786.split(','),
+    v788 = [];
+  for (let v311 of v787) {
+    let [v119, v120, v121, v122, v123, v124] = v311.split(':');
+    v788.push({
+      'startOffset': Number(v119),
+      'endOffset': Number(v120),
+      'collapsed': v119 === v120,
+      'isActive': v121 === '1',
+      'rangeType': v122 === v858.TEXT ? v858.TEXT : v858.RECT,
+      'segmentId': typeof v123 == "string" ? String(v123) : '',
+      'segmentPage': Number(v124 ?? -1)
+    });
+  }
+  return v788.some(v312 => v312.isActive) || (v788[0].isActive = true), v788;
+}
+var wn = class extends v873 {
+  constructor(...v313) {
+    super(...v313), q(this, "_collabCursorState$", new v899(null)), q(this, "collabCursorState$", this._collabCursorState$['asObservable']());
+  }
+  syncEditingCollabCursor(v314) {
+    let {
+        unitID: v315,
+        memberID: v316,
+        textRanges: v317
+      } = v314,
+      v318 = Sn(v317);
+    if (v318 === '') return;
+    let v319 = {
+      'unitID': v315,
+      'memberID': v316,
+      'selection': v318
+    };
+    this._collabCursorState$["next"](v319);
+  }
+};
+let Tn = class extends v873 {
+  get cursorInfo() {
+    return this._cursorInfo$["getValue"]();
+  }
+  get roomMembers() {
+    return this._roomMembers$["getValue"]();
+  }
+  constructor(v320, v321, v322, v323, v324, v325, v326, v327, v328) {
+    super(), this.unitID = v320, this._session = v321, this._injector = v322, this._colorAssignService = v323, this._memberService = v324, this._syncEditingCollabCursorService = v325, this._transformService = v326, this._univerInstanceService = v327, this._commandService = v328, q(this, "_online", false), q(this, "_init", false), q(this, "_cursorInfo$", new v899(new Map())), q(this, "cursorInfo$", this._cursorInfo$["asObservable"]()), q(this, "_roomMembers$", new v899([])), q(this, "roomMembers$", this._roomMembers$['pipe'](v902(300))), q(this, "_updateLocalCursor", v879(v125 => {
+      let v126 = {
+        'eventID': v933.UPDATE_CURSOR,
+        'data': {
+          'unitID': this.unitID,
+          'memberID': this._session["getMemberID"](),
+          'selection': Sn(v125)
+        }
+      };
+      this._session["send"](v126, this.unitID);
+    }, 100));
+  }
+  dispose() {
+    super.dispose(), this._cursorInfo$["next"](new Map()), this._cursorInfo$['complete'](), this._roomMembers$["next"]([]), this._roomMembers$["complete"]();
+  }
+  init() {
+    this._init || (this._init = true, this._session["sessionStatus$"].pipe(v911(this.dispose$)).subscribe(v127 => {
+      v127 === v850.ONLINE ? this._toggleOnline() : this._toggleOffline();
+    }), this._session["event$"].pipe(v911(this.dispose$)).subscribe(v128 => {
+      let v129 = v128.eventID;
+      v129 === v933.UPDATE_CURSOR && this._onCursorUpdate(v128), v129 === v933.USERS_LEAVE && this._onCursorDelete(v128);
+    }), this.disposeWithMe(this._commandService['onCommandExecuted'](v130 => {
+      let v131 = v130.params;
+      v131 != null && this._online && v130.id === v947.id && v131.unitId === this.unitID && v131.isEditing === false && v131.ranges["length"] > 0 && this._updateLocalCursor(v131.ranges);
+    })), this._syncEditingCollabCursorService["collabCursorState$"].pipe(v911(this.dispose$)).subscribe(v132 => {
+      if ((v132 == null ? undefined : v132.unitID) !== this.unitID) return;
+      let v133 = {
+        'eventID': v933.UPDATE_CURSOR,
+        'data': v132
+      };
+      this._onCursorUpdate(v133);
+    }), this.disposeWithMe(this._commandService["onCommandExecuted"](v134 => {
+      if (v134.params == null) return;
+      let v135 = v134.params;
+      if (v134.id !== v946.id || v135.unitId !== this.unitID) return;
+      let v136 = {
+          'id': "doc.mutation.rich-text-editing",
+          'params': v135
+        },
+        v137 = this.cursorInfo;
+      for (let [v23, v24] of v137) {
+        let v10 = {
+            'id': "doc.mutation.rich-text-editing",
+            'params': {
+              'unitId': this.unitID,
+              'actions': null,
+              'textRanges': v24.ranges
+            }
+          },
+          v11 = this._transformService['transformMutation'](v136, v10, false);
+        if (v940(v11)) throw v11.error;
+        v137.set(v23, {
+          ...v24,
+          'ranges': v11.m2Prime['params'].textRanges
+        });
+      }
+      queueMicrotask(() => {
+        this._cursorInfo$["next"](v137);
+      });
+    })));
+  }
+  _onCursorUpdate(v329) {
+    var v330;
+    let {
+        memberID: v331,
+        selection: v332
+      } = v329.data,
+      v333 = Cn(v332),
+      v334 = ((v330 = this._memberService['getMember'](this.unitID, v331)) == null ? undefined : v330.name) ?? "Unknown user",
+      v335 = {
+        'color': this._colorAssignService["assignAColorForMemberID"](v331),
+        'name': v334,
+        'ranges': v333
+      },
+      v336 = this.cursorInfo;
+    v336.set(v331, v335), this._cursorInfo$["next"](v336);
+  }
+  _onCursorDelete(v337) {
+    let {
+        memberID: v338
+      } = v337.data,
+      v339 = this.cursorInfo;
+    v339.delete(v338), this._cursorInfo$['next'](v339);
+  }
+  _toggleOnline() {
+    var v340;
+    if (this._online = true, ((v340 = this._univerInstanceService["getFocusedUnit"]()) == null ? undefined : v340.getUnitId()) !== this.unitID) return;
+    let v341 = this._injector["get"](v943).getDocRanges();
+    Array.isArray(v341) && v341.length > 0 && this._updateLocalCursor(v341);
+  }
+  _toggleOffline() {
+    this._online = false;
+  }
+};
+Tn = Y([J(2, v868(v869)), J(3, v868(xn)), J(4, v868(v848)), J(5, v868(wn)), J(6, v935), J(7, v867), J(8, v862)], Tn);
+const En = () => {
+  let v789 = [],
+    v790 = false;
+  return v342 => {
+    v789.push(v342), v790 || (v790 = true, setTimeout(() => {
+      v789.forEach(v25 => v25()), v789 = [], v790 = false;
+    }));
+  };
+};
+let Dn = class extends v873 {
+  get cursorInfo() {
+    return this._cursorInfo$["getValue"]();
+  }
+  get roomMembers() {
+    return this._roomMembers$["getValue"]();
+  }
+  constructor(v343, v344, v345, v346, v347, v348, v349, v350) {
+    super(), this.unitID = v343, this._session = v344, this._injector = v345, this._colorAssignService = v346, this._memberService = v347, this._univerInstanceService = v348, this._commandService = v349, this._refRangeService = v350, q(this, "_online", false), q(this, '_init', false), q(this, "_cursorInfo$", new v899(new Map())), q(this, "cursorInfo$", this._cursorInfo$["asObservable"]()), q(this, '_roomMembers$', new v899([])), q(this, "roomMembers$", this._roomMembers$["pipe"](v902(300))), q(this, "_updateLocalCursor", v879((v138, v139) => {
+      let v140 = {
+        'eventID': v933.UPDATE_CURSOR,
+        'data': {
+          'unitID': this.unitID,
+          'memberID': this._session["getMemberID"](),
+          'selection': v976(v138, v139.range)
+        }
+      };
+      this._session['send'](v140, this.unitID);
+    }, 100));
+  }
+  dispose() {
+    super.dispose(), this._cursorInfo$["next"](new Map()), this._cursorInfo$["complete"](), this._roomMembers$["next"]([]), this._roomMembers$["complete"]();
+  }
+  init() {
+    this._init || (this._init = true, this._session['sessionStatus$'].pipe(v911(this.dispose$)).subscribe(v141 => {
+      v141 === v850.ONLINE ? this._toggleOnline() : this._toggleOffline();
+    }), this._session["event$"].pipe(v911(this.dispose$)).subscribe(v142 => {
+      let v143 = v142.eventID;
+      v143 === v933.UPDATE_CURSOR && this._onCursorUpdate(v142), v143 === v933.USERS_LEAVE && this._onCursorDelete(v142);
+    }), this._onRefRangeChange(), this.disposeWithMe(this._commandService["onCommandExecuted"](v144 => {
+      if (this._online && v144.id === v979.id && v144.params["unitId"] === this.unitID) {
+        let v26 = v144.params;
+        this._updateLocalCursor(v26.subUnitId, v26.selections[0]);
+      }
+    })));
+  }
+  _onCursorUpdate(v351) {
+    var v352;
+    let {
+        memberID: v353,
+        selection: v354
+      } = v351.data,
+      {
+        sheetName: v355,
+        range: v356
+      } = v975(v354),
+      v357 = {
+        'name': ((v352 = this._memberService["getMember"](this.unitID, v353)) == null ? undefined : v352.name) ?? "Unknown user",
+        'range': this._getMergeRange(v355, v356),
+        'sheetID': v355,
+        'color': this._colorAssignService["assignAColorForMemberID"](v353),
+        'selection': v354
+      },
+      v358 = this.cursorInfo;
+    v358.set(v353, v357), this._cursorInfo$['next'](v358);
+  }
+  _onCursorDelete(v359) {
+    let {
+        memberID: v360
+      } = v359.data,
+      v361 = this.cursorInfo;
+    v361.delete(v360), this._cursorInfo$["next"](v361);
+  }
+  _getMergeRange(v362, v363) {
+    var v364;
+    let v365 = (v364 = this._univerInstanceService["getUnit"](this.unitID, v876.UNIVER_SHEET)) == null || (v364 = v364.getSheetBySheetId(v362)) == null ? undefined : v364.getMergeData();
+    return (v365 == null ? undefined : v365.find(v145 => v872.contains(v145, v363))) || v363;
+  }
+  _onRefRangeChange() {
+    let v366 = new v861(),
+      v367 = En(),
+      v368 = () => {
+        v366.dispose();
+        let v146 = (v27, v28, v29, v30) => {
+          let v31 = [];
+          switch (v27.id) {
+            case v977.DeleteRangeMoveLeftCommandId:
+              v31 = v982(v27, v30);
+              break;
+            case v977.DeleteRangeMoveUpCommandId:
+              v31 = v983(v27, v30);
+              break;
+            case v977.InsertColCommandId:
+              v31 = v986(v27, v30);
+              break;
+            case v977.InsertRangeMoveDownCommandId:
+              v31 = v987(v27, v30);
+              break;
+            case v977.InsertRangeMoveRightCommandId:
+              v31 = v988(v27, v30);
+              break;
+            case v977.InsertRowCommandId:
+              v31 = v989(v27, v30);
+              break;
+            case v977.MoveRangeCommandId:
+              v31 = v990(v27, v30);
+              break;
+            case v977.RemoveColCommandId:
+              v31 = v984(v27, v30);
+              break;
+            case v977.RemoveRowCommandId:
+              v31 = v985(v27, v30);
+              break;
+          }
+          let v32 = v991(v31, v30),
+            v33 = this.cursorInfo["get"](v28);
+          if (v33 && v32) {
+            let v12 = {
+              ...v33,
+              'range': v32
+            };
+            this.cursorInfo['set'](v28, v12), v367(() => {
+              let v5 = this._refRangeService["registerRefRange"](v32, v1 => (v5.dispose(), v146(v1, v28, v29, v32)));
+              v366.add(v5);
+            });
+          }
+          return {
+            'redos': [],
+            'undos': []
+          };
+        };
+        this.cursorInfo["forEach"]((v34, v35) => {
+          let {
+              range: v36,
+              sheetID: v37
+            } = v34,
+            v38 = this._refRangeService['registerRefRange'](v36, v13 => (v38.dispose(), v146(v13, v35, v37, v36)));
+          v366.add(v38);
+        });
+      };
+    this.disposeWithMe(v888(this._cursorInfo$["subscribe"](() => {
+      v368();
+    })));
+  }
+  _toggleOnline() {
+    var v369, v370;
+    if (this._online = true, ((v369 = this._univerInstanceService["getFocusedUnit"]()) == null ? undefined : v369.getUnitId()) !== this.unitID) return;
+    let v371 = (v370 = this._injector["get"](v981).getCurrentSelections()) == null ? undefined : v370[0],
+      v372 = this._univerInstanceService['getCurrentUnitOfType'](v876.UNIVER_SHEET).getActiveSheet();
+    v371 && v372 && this._updateLocalCursor(v372.getSheetId(), v371);
+  }
+  _toggleOffline() {
+    this._online = false;
+  }
+};
+Dn = Y([J(2, v868(v869)), J(3, v868(xn)), J(4, v868(v848)), J(5, v867), J(6, v862), J(7, v868(v978))], Dn);
+let Z = class extends v873 {
+  constructor(v373, v374, v375) {
+    super(), this._univerInstanceService = v373, this._injector = v374, this._collabSessionService = v375, q(this, "_entities", new Map()), q(this, "_entityInit$", new v900()), this._init();
+  }
+  dispose() {
+    super.dispose(), this._entityInit$["complete"](), this._entities["forEach"](v147 => v147.dispose());
+  }
+  getCollabCursors$(v376) {
+    let v377 = this._entities['get'](v376);
+    return v377 ? v377.cursorInfo$ : this._entityInit$["pipe"](v904(v148 => v148.unitID === v376), v910(v149 => v149.cursorInfo$));
+  }
+  _init() {
+    this._univerInstanceService["getTypeOfUnitAdded$"](v876.UNIVER_SHEET).pipe(v911(this.dispose$)).subscribe(async v150 => {
+      let v151 = v150.unit["getUnitId"](),
+        v152 = await this._startSheetCollabCursor(v151);
+      this._entityInit$["next"](v152), this._entities['set'](v151, v152);
+    }), this._univerInstanceService["getTypeOfUnitAdded$"](v876.UNIVER_DOC).pipe(v911(this.dispose$)).pipe(v904(v153 => !v153.unit["getUnitId"]().startsWith('__'))).subscribe(async v154 => {
+      let {
+          unit: v155
+        } = v154,
+        v156 = v155.getUnitId(),
+        v157 = await this._startDocCollabCursor(v156);
+      this._entityInit$['next'](v157), this._entities["set"](v156, v157);
+    }), v907(this._univerInstanceService["getTypeOfUnitDisposed$"](v876.UNIVER_DOC), this._univerInstanceService['getTypeOfUnitDisposed$'](v876.UNIVER_SHEET)).pipe(v911(this.dispose$)).subscribe(v158 => {
+      let v159 = v158.getUnitId(),
+        v160 = this._entities["get"](v159);
+      v160 && (v160.dispose(), this._entities["delete"](v159));
+    });
+  }
+  async _startSheetCollabCursor(v378) {
+    let v379 = await this._collabSessionService["requireSession"](v378),
+      v380 = this._injector["createInstance"](Dn, v378, v379);
+    return v380.init(), v380;
+  }
+  async _startDocCollabCursor(v381) {
+    let v382 = await this._collabSessionService["requireSession"](v381),
+      v383 = this._injector["createInstance"](Tn, v381, v382);
+    return v383.init(), v383;
+  }
+};
+Z = Y([J(0, v867), J(1, v868(v869)), J(2, v868(v836))], Z);
+function On(v791, v792) {
+  v791.save(), v791.font = "bold 13px Arial, sans-serif";
+  let v793 = v791.measureText(v792).width;
+  return v791.restore(), Math.min(v793 + 8, 200);
+}
+;
+function kn(v794, v795) {
+  let {
+    radius: v796,
+    width: v797,
+    height: v798
+  } = v795;
+  v796 ??= 0, v797 ??= 30, v798 ??= 30;
+  let v799 = 0,
+    v800 = 0,
+    v801 = 0;
+  v799 = v800 = v801 = Math.min(v796, v797 / 2, v798 / 2), v794.beginPath(), v794.moveTo(v799, 0), v794.lineTo(v797 - v800, 0), v794.arc(v797 - v800, v800, v800, Math.PI * 3 / 2, 0, false), v794.lineTo(v797, v798 - v801), v794.arc(v797 - v801, v798 - v801, v801, 0, Math.PI / 2, false), v794.lineTo(0, v798), v794.lineTo(0, v799), v794.arc(v799, v799, v799, Math.PI, Math.PI * 3 / 2, false), v794.closePath(), v795.fill && (v794.save(), v794.fillStyle = v795.fill, v795.fillRule === "evenodd" ? v794.fill("evenodd") : v794.fill(), v794.restore());
+}
+var An = class e extends v961 {
+  constructor(v384, v385) {
+    super(v384, v385), q(this, 'color', undefined), q(this, "text", undefined), this.color = v385 == null ? undefined : v385.color, this.text = v385 == null ? undefined : v385.text;
+  }
+  static drawWith(v386, v387) {
+    let {
+      text: v388,
+      color: v389
+    } = v387;
+    v386.save(), v386.font = 'bold\x2013px\x20Source\x20Han\x20Sans\x20CN';
+    let v390 = v386.measureText(v388).width;
+    if (kn(v386, {
+      'height': 20,
+      'radius': 4,
+      'width': On(v386, v388),
+      'fill': v389,
+      'evented': false
+    }), v386.fillStyle = "#FFF", v390 > 192) {
+      let v161 = '',
+        v162 = 0;
+      for (let v39 of v388) {
+        let v14 = v386.measureText(v39).width;
+        if (v162 + v14 <= 192 - v386.measureText("...").width) v161 += v39, v162 += v14;else {
+          v161 += "...";
+          break;
+        }
+      }
+      v386.fillText(v161, 4, 15);
+    } else v386.fillText(v388, 4, 15);
+    v386.restore();
+  }
+  _draw(v391) {
+    e.drawWith(v391, this);
+  }
+};
+const jn = "collab-text-anchor-";
+var Mn = class {
+  constructor(v392, v393, v394, v395) {
+    this._cursor = v392, this._scene = v393, this._docSkeleton = v394, this._document = v395, q(this, "_shapes", []), q(this, '_anchor', null), q(this, "_textBubble", null), q(this, "_anchorDot", null), q(this, "_hideTimer", null), q(this, '_eventUnsubscribe', null), this._render();
+  }
+  set _hover(v396) {
+    v396 ? (this._anchorDot && this._anchorDot['hide'](), this._textBubble && this._textBubble["show"]()) : (this._anchorDot && this._anchorDot["show"](), this._textBubble && this._textBubble['hide']());
+  }
+  dispose() {
+    for (let v163 of this._shapes) v163.dispose();
+    this._textBubble && this._textBubble["dispose"](), this._anchorDot && this._anchorDot["dispose"](), this._anchor && this._anchor["dispose"](), this._eventUnsubscribe && this._eventUnsubscribe();
+  }
+  _render() {
+    let {
+        _docSkeleton: v397,
+        _document: v398
+      } = this,
+      {
+        color: v399,
+        name: v400,
+        ranges: v401
+      } = this._cursor,
+      v402 = v398.getOffsetConfig(),
+      {
+        docsLeft: v403,
+        docsTop: v404
+      } = v402,
+      v405 = new v951(v402, v397);
+    for (let {
+      startOffset: v164,
+      endOffset: v165,
+      rangeType: v166,
+      segmentId: v167,
+      segmentPage: v168,
+      collapsed: v169,
+      isActive: v170
+    } of v401) {
+      let v40 = v397.findNodePositionByCharIndex(v164, true, v167, v168),
+        v41 = v397.findNodePositionByCharIndex(v165, true, v167, v168);
+      v41 ??= v397.findNodePositionByCharIndex(v165 - 1, false, v167, v168);
+      let v42 = Nn(v40, v41);
+      if (v170 && v42.canRenderAnchor) {
+        let {
+          contentBoxPointGroup: v15
+        } = v405.getRangePointData(v41, v41);
+        if (v15.length === 0) continue;
+        this._drawAnchor(v399, v15, v403, v404, v400), this._eventUnsubscribe = this._handleHover();
+      }
+      if (v40 && v41) {
+        if (v166 === v858.RECT) {
+          let {
+            pointGroup: v6
+          } = new v952(v402, v397).getRangePointData(v40, v41) ?? {};
+          if (v6 == null || v6.length === 0) continue;
+          this._drawRectRange(v399, v6, v403, v404);
+        } else {
+          if (!v169 && v42.canRenderSelection) {
+            let {
+              borderBoxPointGroup: v2
+            } = v405.getRangePointData(v40, v41);
+            if (v2.length === 0) continue;
+            this._drawTextRange(v399, v2, v403, v404);
+          }
+        }
+      }
+    }
+  }
+  _drawAnchor(v406, v407, v408, v409, v410) {
+    let {
+        left: v411,
+        top: v412,
+        height: v413
+      } = this._getAnchorBounding(v407),
+      v414 = 1.5 / this._getScale(),
+      v415 = new v958(jn + v881(6), {
+        'left': v411 + v408 - v414,
+        'top': v412 + v409,
+        'height': v413,
+        'width': 1.5,
+        'fill': v406 || v965(v854.black, 0),
+        'strokeWidth': v414,
+        'stroke': "rgba(255, 255, 255, 0.01)",
+        'evented': true
+      });
+    this._anchor = v415, this._scene['addObject'](v415, v954);
+    let v416 = new v958(jn + v881(6), {
+      'left': v411 + v408 - v414,
+      'top': v412 + v409 - 4 / 2,
+      'height': 4,
+      'width': 4,
+      'fill': v406 || v965(v854.black, 0),
+      'strokeWidth': 0,
+      'stroke': v406 || v965(v854.black, 0),
+      'evented': false
+    });
+    this._anchorDot = v416, this._scene["addObject"](v416, v954);
+    let v417 = new An(jn + v881(6), {
+      'left': v411 + v408 - v414,
+      'top': v412 + v409 - 20,
+      'text': v410,
+      'color': v406
+    });
+    this._textBubble = v417, this._scene["addObject"](v417, v954), this._hover = false;
+  }
+  _handleHover() {
+    let v418 = this._anchor["onPointerEnter$"].subscribeEvent(() => {
+        this._hover = true;
+      }),
+      v419 = this._anchor["onPointerLeave$"].subscribeEvent(() => {
+        this._hideTimer && clearTimeout(this._hideTimer), this._hideTimer = setTimeout(() => {
+          this._hover = false;
+        }, 2000);
+      });
+    return () => {
+      v418.unsubscribe(), v419.unsubscribe();
+    };
+  }
+  _drawTextRange(v420, v421, v422, v423) {
+    let v424 = 0.2,
+      v425 = new v856(v420).setAlpha(v424).toRgbString(),
+      v426 = new v959("collab-text-range-" + v881(6), {
+        'pointsGroup': v421,
+        'fill': v425 || v965(v854.black, v424),
+        'left': v422,
+        'top': v423,
+        'evented': false,
+        'debounceParentDirty': false
+      });
+    this._shapes['push'](v426), this._scene["addObject"](v426, v954);
+  }
+  _drawRectRange(v427, v428, v429, v430) {
+    let v431 = 0.2,
+      v432 = new v856(v427).setAlpha(v431).toRgbString(),
+      v433 = new v959("collab-rect-range-" + v881(6), {
+        'pointsGroup': v428,
+        'fill': v432 || v965(v854.black, v431),
+        'left': v429,
+        'top': v430,
+        'evented': false,
+        'debounceParentDirty': false
+      });
+    this._shapes["push"](v433), this._scene["addObject"](v433, v954);
+  }
+  _getAnchorBounding(v434) {
+    let v435 = v434[0],
+      v436 = v435[0],
+      v437 = v435[2],
+      {
+        x: v438,
+        y: v439
+      } = v436,
+      {
+        x: v440,
+        y: v441
+      } = v437;
+    return {
+      'left': v438,
+      'top': v439,
+      'width': v440 - v438,
+      'height': v441 - v439
+    };
+  }
+  _getScale() {
+    let {
+      scaleX: v442,
+      scaleY: v443
+    } = this._scene["getAncestorScale"]();
+    return Math.max(v442, v443);
+  }
+};
+function Nn(v802, v803) {
+  if (!v803) return {
+    'canRenderAnchor': false,
+    'canRenderSelection': false
+  };
+  if (!v802 || v802.pageType !== v803.pageType || (v802.pageType === v956.HEADER || v802.pageType === v956.FOOTER) && v802.segmentPage !== v803.segmentPage) return {
+    'canRenderAnchor': true,
+    'canRenderSelection': false
+  };
+  let v804 = v966(v802),
+    v805 = v966(v803);
+  return {
+    'canRenderAnchor': true,
+    'canRenderSelection': v804 == null || v805 == null ? v804 == null && v805 == null : v804.pageIndex === v805.pageIndex && v804.columnGroupId === v805.columnGroupId && v804.columnIndex === v805.columnIndex
+  };
+}
+let Pn = class extends v873 {
+  constructor(v444, v445, v446, v447, v448) {
+    super(), this._context = v444, this._docSkeletonManagerService = v445, this._collabCursorController = v446, this._commandService = v447, this._themeService = v448, q(this, "_cursorShapes", []), q(this, "_cursors", []), this._init();
+  }
+  _init() {
+    let v449 = this._context["unitId"],
+      v450 = this._docSkeletonManagerService;
+    this.disposeWithMe(v901([this._collabCursorController["getCollabCursors$"](v449), this._themeService["currentTheme$"]]).pipe(v916(([v171, v172]) => ({
+      'skeleton': v450.getSkeleton(),
+      'cursors': [...v171.values()].flatMap(v43 => ({
+        ...v43,
+        'color': this._themeService["getColorFromTheme"](v43.color)
+      }))
+    }))).subscribe(v173 => {
+      if (this._removeCollabCursors(), v173) {
+        let {
+          skeleton: v44,
+          cursors: v45
+        } = v173;
+        this._updateCollabCursors(v44, v45);
+      }
+    })), this._initResize(), this._initCommandExecutedListener();
+  }
+  _updateCollabCursors(v451, v452) {
+    let {
+        scene: v453,
+        mainComponent: v454
+      } = this._context,
+      v455 = v452.map(v174 => new Mn(v174, v453, v451, v454));
+    this._cursorShapes = v455, this._cursors = v452;
+  }
+  _refreshCollabCursors() {
+    this._removeCollabCursors();
+    let {
+        scene: v456,
+        mainComponent: v457
+      } = this._context,
+      v458 = this._docSkeletonManagerService["getSkeleton"](),
+      v459 = this._cursors["map"](v175 => new Mn(v175, v456, v458, v457));
+    this._cursorShapes = v459;
+  }
+  _removeCollabCursors() {
+    this._cursorShapes["forEach"](v176 => v176.dispose()), this._cursorShapes = [];
+  }
+  _initCommandExecutedListener() {
+    let v460 = [v953.id];
+    this.disposeWithMe(this._commandService["onCommandExecuted"](v177 => {
+      v460.includes(v177.id) && v177.params['unitId'] === this._context["unitId"] && this._refreshCollabCursors();
+    }));
+  }
+  _initResize() {
+    this.disposeWithMe(v880(this._context["engine"].onTransformChange$).pipe(v915(v178 => v178.type === v962.resize), v919(16)).subscribe(() => {
+      this._refreshCollabCursors();
+    }));
+  }
+};
+Pn = Y([J(1, v868(v944)), J(2, v868(Z)), J(3, v862), J(4, v868(v874))], Pn);
+var Fn = class extends v961 {
+  constructor(v461, v462) {
+    super(v461, v462), q(this, "_color", undefined), q(this, "_hovered", false), q(this, "_range", undefined), q(this, "_name", ''), q(this, "_labelPosition", "top"), q(this, "_backgroundColor", undefined), q(this, "_showText", undefined), q(this, "_highlight", undefined), q(this, "_highlightSecond", 4), q(this, "_blinkTimer", undefined), q(this, "_blinkIntervalTimer", undefined), q(this, '_isBlinkVisible', true), q(this, '_offsetY', 0), q(this, "_labelHorizontalPosition", 'right'), v462 && (this.setShapeProps(v462), v462.highlight && (v462.highlightSecond ?? this._highlightSecond) && this._startBlinking(v462.highlightSecond ?? this._highlightSecond)), this.onPointerEnter$["subscribeEvent"](() => this.setShapeProps({
+      'hovered': true
+    })), this.onPointerLeave$["subscribeEvent"](() => this.setShapeProps({
+      'hovered': false
+    }));
+  }
+  setOffsetY(v463) {
+    this._offsetY = v463;
+  }
+  setShapeProps(v464) {
+    this._color = v464.color ?? this._color, this._hovered = v464.hovered ?? this._hovered, this._range = v464.range ?? this._range, this._name = v464.name ?? this._name, this._labelPosition = v464.labelPosition ?? this._labelPosition, this._backgroundColor = v464.backgroundColor ?? this._backgroundColor, this._showText = v464.showText ?? this._showText, this._labelHorizontalPosition = v464.labelHorizontalPosition ?? this._labelHorizontalPosition, v464.highlightSecond !== undefined && (this._highlightSecond = v464.highlightSecond), v464.highlight !== undefined && (this._highlight = v464.highlight), v464.offsetY !== undefined && (this._offsetY = v464.offsetY), this.transformByState({
+      'width': v464.width,
+      'height': v464.height
+    });
+  }
+  onMouseMove(v465) {
+    let {
+      row: v466,
+      column: v467
+    } = v465;
+    if (v466 >= this._range["startRow"] && v466 <= this._range["endRow"] && v467 >= this._range["startColumn"] && v467 <= this._range["endColumn"]) {
+      this.setShapeProps({
+        'hovered': true
+      });
+      return;
+    }
+    this.setShapeProps({
+      'hovered': false
+    });
+  }
+  _startBlinking(v468) {
+    this._stopBlinking(), this._isBlinkVisible = true, this._blinkIntervalTimer = window.setInterval(() => {
+      this._isBlinkVisible = !this._isBlinkVisible, this.makeDirty(true);
+    }, 500), this._blinkTimer = window.setTimeout(() => {
+      this._stopBlinking(), this._isBlinkVisible = true, this.makeDirty(true);
+    }, v468 * 1000);
+  }
+  _stopBlinking() {
+    this._blinkIntervalTimer &&= (window.clearInterval(this._blinkIntervalTimer), undefined), this._blinkTimer &&= (window.clearTimeout(this._blinkTimer), undefined);
+  }
+  triggerDblclick(v469) {
+    return false;
+  }
+  dispose() {
+    this._stopBlinking(), super.dispose();
+  }
+  _draw(v470) {
+    let v471 = this._color,
+      v472 = this._backgroundColor;
+    if (this._highlight && !this._isBlinkVisible && (v471 = this._getLighterColor(this._color), v472 = this._backgroundColor ? this._getLighterColor(this._backgroundColor) : undefined), v958.drawWith(v470, {
+      'width': this.width,
+      'height': this.height,
+      'strokeWidth': this.strokeWidth || 1.5,
+      'stroke': v471,
+      'evented': false,
+      'fill': v472
+    }), this._hovered || this._showText) {
+      v470.save();
+      let v179 = this._labelHorizontalPosition === "left" ? -On(v470, this._name) : this.width;
+      v470.transform(1, 0, 0, 1, v179, (this._labelPosition === 'bottom' ? 0 : -20) + (this._offsetY ?? 0)), An.drawWith(v470, {
+        'text': this._name,
+        'color': v471
+      }), v470.restore();
+    }
+  }
+  _getLighterColor(v473) {
+    return v473.startsWith('#') ? "rgba(" + Number.parseInt(v473.slice(1, 3), 16) + ',\x20' + Number.parseInt(v473.slice(3, 5), 16) + ',\x20' + Number.parseInt(v473.slice(5, 7), 16) + ", 0.2)" : v473.startsWith("rgba") ? v473.replace(/[\d.]+\)$/g, "0.2)") : v473.startsWith("rgb") ? v473.replace("rgb", 'rgba').replace(')', ", 0.2)") : v473;
+  }
+};
+let In = class extends v873 {
+  constructor(v474, v475, v476, v477) {
+    super(), this._context = v474, this._sheetSkeletonManagerService = v475, this._collabCursorController = v476, this._themeService = v477, q(this, "_cursors", new Set()), q(this, "_lastPointer", null), q(this, "_pointerMoveDisposable", null), this._init();
+  }
+  _init() {
+    this._sheetSkeletonManagerService["currentSkeleton$"].pipe(v918(this.dispose$), v917(v180 => {
+      if (v180) {
+        let v46 = v180.sheetId;
+        return v901(this._collabCursorController["getCollabCursors$"](this._context["unitId"]), this._themeService['currentTheme$']).pipe(v916(([v16, v17]) => {
+          let v18 = new Map();
+          return v16.forEach((v7, v8) => {
+            if (v7.sheetID === v46) {
+              let v3 = {
+                ...v7
+              };
+              v3.color = this._themeService["getColorFromTheme"](v7.color), v18.set(v8, v3);
+            }
+          }), {
+            'skeleton': v180,
+            'cursors': v18
+          };
+        }));
+      }
+      return v908({
+        'skeleton': null,
+        'cursors': new Map()
+      });
+    })).subscribe(({
+      skeleton: v181,
+      cursors: v182
+    }) => {
+      this._removeCollabCursors(), v181 && this._updateCollabCursors(v181, v182);
+    }), this.disposeWithMe(this._sheetSkeletonManagerService['currentSkeleton$'].pipe(v918(this.dispose$)).subscribe(v183 => {
+      var v184;
+      if (v183 == null) return;
+      (v184 = this._pointerMoveDisposable) == null || v184.unsubscribe(), this._pointerMoveDisposable = null;
+      let {
+          skeleton: v185
+        } = v183,
+        {
+          scene: v186
+        } = this._context;
+      this._pointerMoveDisposable = v186.onPointerMove$['subscribeEvent'](v879(v47 => {
+        var v48, v49;
+        let {
+            offsetX: v50,
+            offsetY: v51
+          } = v47,
+          {
+            x: v52,
+            y: v53
+          } = v186.getCoordRelativeToViewport(v964.FromArray([v50, v51])),
+          {
+            scaleX: v54,
+            scaleY: v55
+          } = v186.getAncestorScale(),
+          v56 = v186.getViewport(v960.VIEW_MAIN),
+          v57 = v186.getScrollXYInfoByViewport(v964.FromArray([v52, v53]), v56),
+          v58 = v185.getCellIndexByOffset(v50, v51, v54, v55, v57);
+        (((v48 = this._lastPointer) == null ? undefined : v48.column) !== v58.column || ((v49 = this._lastPointer) == null ? undefined : v49.row) !== v58.row) && this._cursors["forEach"](v19 => {
+          v19.onMouseMove(v58);
+        });
+      }, 100));
+    })), this.disposeWithMe(v888(() => {
+      var v187;
+      (v187 = this._pointerMoveDisposable) == null || v187.unsubscribe(), this._pointerMoveDisposable = null;
+    }));
+  }
+  _updateCollabCursors(v478, v479) {
+    let v480 = this._sheetSkeletonManagerService["getCurrentSkeleton"]();
+    if (!v480) return;
+    let v481 = this._getSheetObject();
+    if (!v481) return;
+    this._cursors["forEach"](v188 => {
+      v188.makeDirty();
+    });
+    let {
+        scene: v482
+      } = v481,
+      v483 = Ln(Array.from(v479.values())).map(v189 => {
+        let {
+            color: v190,
+            range: v191,
+            name: v192,
+            selection: v193,
+            sheetID: v194
+          } = v189,
+          {
+            startColumn: v195,
+            startRow: v196,
+            endColumn: v197,
+            endRow: v198
+          } = v191,
+          v199 = v993(v196, v195, v482, v480),
+          v200 = v993(v198, v197, v482, v480),
+          {
+            columnHeaderHeightAndMarginTop: v201
+          } = v480,
+          {
+            startX: v202,
+            startY: v203
+          } = v199,
+          {
+            endX: v204,
+            endY: v205
+          } = v200,
+          v206 = v204 - v202,
+          v207 = v205 - v203;
+        return new Fn(v192, {
+          'labelPosition': v203 - v201 >= 20 ? 'top' : 'bottom',
+          'sheetID': v194,
+          'range': v191,
+          'color': v190,
+          'name': v192,
+          'selection': v193,
+          'left': v202,
+          'top': v203,
+          'width': v206,
+          'height': v207,
+          'evented': false,
+          'zIndex': 5001
+        });
+      });
+    v482.addObjects(v483, 1), this._cursors = new Set(v483);
+  }
+  _removeCollabCursors() {
+    var v484;
+    (v484 = this._cursors) == null || v484.forEach(v208 => v208.dispose());
+  }
+  _getSheetObject() {
+    return v994(this._context['unit'], this._context);
+  }
+};
+In = Y([J(1, v868(v992)), J(2, v868(Z)), J(3, v868(v874))], In);
+function Ln(v806) {
+  let v807 = new Map();
+  return v806.forEach(v485 => {
+    if (v807.has(v485.selection)) {
+      let v209 = v807.get(v485.selection);
+      v209.name += ',\x20' + v485.name;
+    } else v807.set(v485.selection, v485);
+  }), Array.from(v807.values());
+}
+;
+function Rn(v808) {
+  return typeof v808 == 'object' && !!v808;
+}
+;
+function zn(v809) {
+  return v809.eventID === v933.UPDATE_CURSOR && "data" in v809 && Rn(v809.data) && typeof v809.data["memberID"] == "string" && typeof v809.data["selection"] == "string";
+}
+;
+function Bn(v810) {
+  return v810.eventID === v933.USERS_LEAVE && 'data' in v810 && Rn(v810.data) && typeof v810.data["memberID"] == "string";
+}
+;
+function Vn(v811, v812) {
+  let v813;
+  try {
+    v813 = JSON.parse(v811);
+  } catch {
+    return null;
+  }
+  if (!Rn(v813) || typeof v813.kind != "string" || typeof v813.unitId != "string" || typeof v813.subUnitId != 'string') return null;
+  let v814 = typeof v813.unitType == "number" ? v813.unitType : v812;
+  if (v814 == null) return null;
+  let v815 = Rn(v813.pointer) && typeof v813.pointer['x'] == "number" && Number.isFinite(v813.pointer['x']) && typeof v813.pointer['y'] == 'number' && Number.isFinite(v813.pointer['y']) ? {
+    'x': v813.pointer['x'],
+    'y': v813.pointer['y']
+  } : null;
+  return {
+    'kind': v813.kind,
+    'unitType': v814,
+    'unitId': v813.unitId,
+    'subUnitId': v813.subUnitId,
+    'selectedIds': Array.isArray(v813.selectedIds) ? v813.selectedIds["filter"](v486 => typeof v486 == "string") : [],
+    'focusedId': typeof v813.focusedId == "string" ? v813.focusedId : null,
+    'pointer': v815
+  };
+}
+;
+function Hn(v816, v817, v818) {
+  return {
+    'kind': v817,
+    'unitType': v816,
+    'unitId': v818.unitId,
+    'subUnitId': v818.subUnitId,
+    'selectedIds': Array.from(v818.selectedIds),
+    'focusedId': v818.focusedId,
+    'pointer': v818.pointer ? {
+      ...v818.pointer
+    } : null
+  };
+}
+let Un = class extends v873 {
+  constructor(v487, v488, v489, v490, v491, v492) {
+    super(), this.unitId = v487, this._session = v488, this._adapter = v489, this._colorAssignService = v490, this._memberService = v491, this._commandService = v492, q(this, "_online", false), q(this, "_initialized", false);
+  }
+  get unitType() {
+    return this._adapter['unitType'];
+  }
+  dispose() {
+    this._clearRemotePresences(), super.dispose();
+  }
+  init() {
+    this._initialized || (this._initialized = true, this._session["sessionStatus$"].pipe(v911(this.dispose$)).subscribe(v210 => {
+      if (v210 === v850.ONLINE) {
+        this._online = true;
+        let v59 = this._adapter['getLocalPresence'](this.unitId);
+        v59 && this._sendLocalPresence(v59);
+        return;
+      }
+      this._online = false, this._clearRemotePresences();
+    }), this._session['event$'].pipe(v911(this.dispose$)).subscribe(v211 => {
+      zn(v211) ? this._handleCursorUpdate(v211) : Bn(v211) && this._removeRemotePresence(v211.data["memberID"]);
+    }), this._adapter['localPresence$'].pipe(v904(v212 => this._online && v212.unitId === this.unitId), v912(v213 => v913(v213.shareInterval), {
+      'leading': true,
+      'trailing': true
+    }), v911(this.dispose$)).subscribe(v214 => this._sendLocalPresence(v214)));
+  }
+  _sendLocalPresence(v493) {
+    let v494 = this._session["getMemberID"]();
+    if (!v494 || !this._online) return;
+    let v495 = {
+      'eventID': v933.UPDATE_CURSOR,
+      'data': {
+        'unitID': this.unitId,
+        'memberID': v494,
+        'selection': JSON.stringify(Hn(this.unitType, this._adapter["presenceKind"], v493))
+      }
+    };
+    this._session['send'](v495, this.unitId).catch(() => undefined);
+  }
+  _handleCursorUpdate(v496) {
+    let {
+      memberID: v497,
+      selection: v498
+    } = v496.data;
+    if (v497 === this._session["getMemberID"]()) return;
+    let v499 = Vn(v498, this.unitType);
+    if (!v499 || v499.kind !== this._adapter["presenceKind"] || v499.unitType !== this.unitType || v499.unitId !== this.unitId) return;
+    let v500 = this._memberService["getMember"](this.unitId, v497),
+      v501 = {
+        'unitId': v499.unitId,
+        'subUnitId': v499.subUnitId,
+        'selectedIds': v499.selectedIds,
+        'focusedId': v499.focusedId,
+        'pointer': v499.pointer,
+        'memberId': v497,
+        'color': this._colorAssignService["assignAColorForMemberID"](v497),
+        'name': (v500 == null ? undefined : v500.name) ?? v497
+      };
+    this._commandService["executeCommand"](_n.id, {
+      'unitType': this.unitType,
+      'update': {
+        'type': 'set',
+        'state': v501
+      }
+    }).catch(() => undefined);
+  }
+  _removeRemotePresence(v502) {
+    this._commandService['executeCommand'](_n.id, {
+      'unitType': this.unitType,
+      'update': {
+        'type': "remove",
+        'unitId': this.unitId,
+        'memberId': v502
+      }
+    }).catch(() => undefined);
+  }
+  _clearRemotePresences() {
+    this._commandService["executeCommand"](_n.id, {
+      'unitType': this.unitType,
+      'update': {
+        'type': 'clear',
+        'unitId': this.unitId
+      }
+    }).catch(() => undefined);
+  }
+};
+Un = Y([J(3, v868(xn)), J(4, v868(v848)), J(5, v868(v862))], Un);
+let Wn = class extends v873 {
+  constructor(v503, v504, v505, v506) {
+    super(), this._univerInstanceService = v503, this._injector = v504, this._collabSessionService = v505, this._adapterRegistry = v506, q(this, "_isDisposed", false), q(this, '_entities', new Map()), q(this, "_pendingEntities", new Map()), q(this, "_adapterDisposables", new Map()), this._init();
+  }
+  dispose() {
+    this._isDisposed = true, this._adapterDisposables["forEach"](v215 => v215.dispose()), this._adapterDisposables['clear'](), this._entities["forEach"](v216 => v216.dispose()), this._entities["clear"](), this._pendingEntities["clear"](), super.dispose();
+  }
+  _init() {
+    this._adapterRegistry["adapters$"].pipe(v911(this.dispose$)).subscribe(v217 => this._syncAdapters(v217));
+  }
+  _syncAdapters(v507) {
+    let v508 = new Set(v507.map(v218 => v218.unitType));
+    this._adapterDisposables["forEach"]((v219, v220) => {
+      v508.has(v220) || (v219.dispose(), this._adapterDisposables["delete"](v220), this._disposeEntitiesForType(v220));
+    }), v507.forEach(v221 => {
+      this._adapterDisposables["has"](v221.unitType) || this._bindAdapter(v221);
+    });
+  }
+  _bindAdapter(v509) {
+    let v510 = new v861();
+    this._adapterDisposables['set'](v509.unitType, v510), v510.add(v509.activate()), this._univerInstanceService["getAllUnitsForType"](v509.unitType).forEach(v222 => this._startEntity(v222.getUnitId(), v509).catch(() => undefined));
+    let v511 = this._univerInstanceService["getTypeOfUnitAdded$"](v509.unitType).subscribe(({
+      unit: v223
+    }) => this._startEntity(v223.getUnitId(), v509).catch(() => undefined));
+    v510.add(v888(() => v511.unsubscribe()));
+    let v512 = this._univerInstanceService["getTypeOfUnitDisposed$"](v509.unitType).subscribe(v224 => this._disposeEntity(v224.getUnitId()));
+    v510.add(v888(() => v512.unsubscribe()));
+  }
+  async _startEntity(v513, v514) {
+    if (this._entities["has"](v513) || this._pendingEntities["has"](v513)) return;
+    let v515 = {};
+    this._pendingEntities["set"](v513, v515);
+    let v516 = await this._collabSessionService["requireSession"](v513).catch(v225 => {
+      throw this._pendingEntities['get'](v513) === v515 && this._pendingEntities["delete"](v513), v225;
+    });
+    if (this._isDisposed || this._pendingEntities['get'](v513) !== v515 || this._adapterRegistry["get"](v514.unitType) !== v514) {
+      this._pendingEntities["get"](v513) === v515 && this._pendingEntities['delete'](v513);
+      return;
+    }
+    let v517 = this._injector['createInstance'](Un, v513, v516, v514);
+    v517.init(), this._pendingEntities["delete"](v513), this._entities['set'](v513, v517);
+  }
+  _disposeEntity(v518) {
+    this._pendingEntities["delete"](v518);
+    let v519 = this._entities["get"](v518);
+    v519 && (v519.dispose(), this._entities['delete'](v518));
+  }
+  _disposeEntitiesForType(v520) {
+    this._univerInstanceService['getAllUnitsForType'](v520).forEach(v226 => this._pendingEntities["delete"](v226.getUnitId())), Array.from(this._entities['entries']()).forEach(([v227, v228]) => {
+      v228.unitType === v520 && this._disposeEntity(v227);
+    });
+  }
+};
+Wn = Y([J(0, v867), J(1, v868(v869)), J(2, v868(v836)), J(3, v868(v895))], Wn);
+let Gn = class extends v860 {
+  constructor(v521, v522, v523, v524, v525, v526) {
+    super(), this._beforeCloseService = v521, this._localCacheService = v522, this._collaborationUIEventService = v523, this._messageService = v524, this._notificationService = v525, this._localeService = v526, this._setupBeforeClosingHandler(), this._initEvent();
+  }
+  _setupBeforeClosingHandler() {
+    this.disposeWithMe(this._beforeCloseService["registerBeforeClose"](() => {
+      if (this._localCacheService['saveTaskMap'].size) return this._localeService['t']('collaboration-client-ui.collaboration.offline-data-not-saved');
+    }));
+  }
+  _initEvent() {
+    this.disposeWithMe(this._collaborationUIEventService["event$"].subscribe(v229 => {
+      v229.id === v839.OTHER_CLIENT_EDITING && this._messageService["show"]({
+        'type': v921.Warning,
+        'content': this._localeService['t']("collaboration-client-ui.collaboration.single-unit.warning")
+      }), v229.id === v839.CLOSE_ROOM && this._messageService['show']({
+        'type': v921.Warning,
+        'content': this._localeService['t']("collaboration-client-ui.collaboration.closeRoom")
+      }), v229.id === v839.PERMISSION_DENIED && this._notificationService["show"]({
+        'title': this._localeService['t']("collaboration-client-ui.permission.title"),
+        'content': this._localeService['t']("collaboration-client-ui.permission.content"),
+        'type': 'error',
+        'duration': 0
+      }), v229.id === v839.CONFLICT && this._notificationService["show"]({
+        'title': this._localeService['t']("collaboration-client-ui.conflict.title"),
+        'content': this._localeService['t']("collaboration-client-ui.conflict.content"),
+        'type': "error",
+        'duration': 0
+      }), v229.id === v839.JOIN_ROOM_FAILED && this._messageService["show"]({
+        'type': v921.Warning,
+        'content': this._localeService['t'](v229.data || '')
+      }), v229.id === v839.SOCKET_FAILED_RETRY && this._messageService["show"]({
+        'type': v921.Warning,
+        'content': this._localeService['t']("collaboration-client-ui.session.will-retry")
+      }), v229.id === v839.SOCKET_FAILED && this._messageService["show"]({
+        'type': v921.Error,
+        'content': this._localeService['t']('collaboration-client-ui.session.connection-failed')
+      }), v229.id === v839.SUBMIT_CHANGESET_TIMEOUT && this._messageService['show']({
+        'type': v921.Error,
+        'content': this._localeService['t']("collaboration-client-ui.session.collaboration-timeout")
+      });
+    }));
+  }
+};
+Gn = Y([J(0, v891), J(1, v845), J(2, v868(v840)), J(3, v892), J(4, v893), J(5, v868(v870))], Gn);
+const Kn = v878('uni.network.url-service');
+let qn = class extends v873 {
+  constructor(v527, v528, v529, v530) {
+    super(), this._urlService = v527, this._logService = v528, this._commandService = v529, this._dataLoaderService = v530, this._init().catch(v230 => this._logService["error"]("[CollaborationDataLoaderController]", v230));
+  }
+  async _init() {
+    let v531 = this._urlService["getParam"]("unit"),
+      v532 = this._urlService["getParam"]('type'),
+      v533 = this._urlService["getParam"]("subunit");
+    if (!v531 || !v532) {
+      this._logService["debug"]("[CollaborationDataLoaderController]", "No unitID or type in URL. Will not load files from remote address.");
+      return;
+    }
+    let v534 = await this._dataLoaderService["loadUnit"](v531, Number(v532), v533);
+    this._disposed || v534 && v534 instanceof v877 && (await this._setupSubUnitSync(v534));
+  }
+  async _setupSubUnitSync(v535) {
+    await this._updateSubUnitFromURLParams(v535), !this._disposed && (v535.activeSheet$['pipe'](v911(this.dispose$)).subscribe(v231 => {
+      v231 && this._updateURLWithCurrentState(v231);
+    }), this._urlService["urlChange$"].pipe(v911(this.dispose$)).subscribe(() => {
+      this._updateSubUnitFromURLParams(v535).catch(v60 => this._logService["error"]("[CollaborationDataLoaderController]", v60));
+    }));
+  }
+  _updateURLWithCurrentState(v536, v537 = false) {
+    let v538 = this._urlService["getParam"]("subunit");
+    v536.getSheetId() !== v538 && this._urlService['setParam']("subunit", v536.getSheetId(), v537);
+  }
+  async _updateSubUnitFromURLParams(v539) {
+    var v540;
+    let v541 = this._urlService["getParam"]("subunit");
+    if (!v541 || !v539.getSheetBySheetId(v541)) {
+      let v232 = v539.getUnhiddenWorksheets()[0],
+        v233 = v539.getSheetBySheetId(v232);
+      if (!v233 || (this._updateURLWithCurrentState(v233, true), this._disposed)) return;
+      await this._commandService['executeCommand'](v980.id, {
+        'unitId': v539.getUnitId(),
+        'subUnitId': v232
+      });
+      return;
+    }
+    ((v540 = v539.getActiveSheet()) == null ? undefined : v540.getSheetId()) !== v541 && (await this._commandService["executeCommand"](v980.id, {
+      'unitId': v539.getUnitId(),
+      'subUnitId': v541
+    }));
+  }
+};
+qn = Y([J(0, Kn), J(1, v866), J(2, v862), J(3, v868(v843))], qn);
+let Jn = class {
+  constructor(v542, v543) {
+    this._transformService = v542, this._renderManagerService = v543;
+  }
+  transformIMECache(v544) {
+    this._transformUndoRedoStack(v544), this._transformPreviousActiveRange(v544);
+  }
+  transformRemoteChangeset(v545) {
+    let {
+        unitID: v546
+      } = v545,
+      {
+        redoCache: v547
+      } = this._renderManagerService["getRenderUnitById"](v546).with(v949).getUndoRedoMutationParamsCache();
+    if (v547.length === 0) return v545;
+    let v548 = v875.deepClone(v545.mutations[0]);
+    for (let v234 = 0; v234 < v547.length; v234++) {
+      let v61 = {
+          'id': "doc.mutation.rich-text-editing",
+          'params': {
+            ...v547[v234]
+          }
+        },
+        v62 = this._transformService["transformMutation"](v548, v61, false);
+      if (v940(v62)) throw v62.error;
+      v548 = v62.m1Prime;
+    }
+    return {
+      ...v875.deepClone(v545),
+      'mutations': [v548]
+    };
+  }
+  _transformUndoRedoStack(v549) {
+    let {
+        unitID: v550
+      } = v549,
+      v551 = this._renderManagerService['getRenderUnitById'](v550).with(v949),
+      {
+        undoCache: v552,
+        redoCache: v553
+      } = v551.getUndoRedoMutationParamsCache();
+    if (v552.length === 0 || v553.length === 0) return;
+    let v554 = [],
+      v555 = [],
+      v556 = v875.deepClone(v549.mutations[0]),
+      v557 = v875.deepClone(v549.mutations[0]);
+    for (let v235 = v552.length - 1; v235 >= 0; v235--) {
+      let v63 = {
+          'id': "doc.mutation.rich-text-editing",
+          'params': {
+            ...v552[v235]
+          }
+        },
+        v64 = {
+          'id': 'doc.mutation.rich-text-editing',
+          'params': {
+            ...v553[v235]
+          }
+        },
+        v65 = this._transformService["transformMutation"](v556, v63, false),
+        v66 = this._transformService['transformMutation'](v557, v64, false);
+      if (v940(v65)) throw v65.error;
+      if (v940(v66)) throw v66.error;
+      v554.unshift(v65.m2Prime['params']), v555.unshift(v66.m2Prime["params"]), v556 = v65.m1Prime, v557 = v66.m1Prime;
+    }
+    v551.setUndoRedoMutationParamsCache({
+      'undoCache': v554,
+      'redoCache': v555
+    });
+  }
+  _transformPreviousActiveRange(v558) {
+    let {
+        unitID: v559
+      } = v558,
+      v560 = this._renderManagerService['getRenderUnitById'](v559).with(v949),
+      v561 = v560.getActiveRange();
+    if (v561 == null) return;
+    let v562 = [{
+        'id': "doc.mutation.rich-text-editing",
+        'params': {
+          'unitId': v558.unitID,
+          'actions': null,
+          'textRanges': [v561]
+        }
+      }],
+      v563 = this._transformService["transformMutationsWithChangeset"](v558, v562);
+    if (!v941(v563)) throw v563.error;
+    let v564 = v563.m2Prime[0].params['textRanges'];
+    Array.isArray(v564) && v564.length && v560.setActiveRange(v564[0]);
+  }
+};
+Jn = Y([J(0, v935), J(1, v957)], Jn);
+let Yn = class {
+  constructor(v565, v566, v567) {
+    this._injector = v565, this._transformService = v566, this._docStateChangeManagerService = v567;
+  }
+  transformStateCache(v568) {
+    this._transformHistoryAndStateStack(v568);
+  }
+  transformRemoteChangeset(v569) {
+    let {
+        unitID: v570
+      } = v569,
+      {
+        collaboration: v571
+      } = this._docStateChangeManagerService["getStateCache"](v570);
+    if (v571.length === 0) return v569;
+    let v572 = v875.deepClone(v569.mutations[0]);
+    for (let v236 = 0; v236 < v571.length; v236++) {
+      let v67 = {
+          'id': "doc.mutation.rich-text-editing",
+          'params': {
+            'unitId': v571[v236].unitId,
+            ...v571[v236].redoState
+          }
+        },
+        v68 = this._transformService["transformMutation"](v572, v67, false);
+      if (v940(v68)) throw v68.error;
+      v572 = v68.m1Prime;
+    }
+    return {
+      ...v875.deepClone(v569),
+      'mutations': [v572]
+    };
+  }
+  _transformHistoryAndStateStack(v573) {
+    let {
+        unitID: v574
+      } = v573,
+      {
+        history: v575,
+        collaboration: v576
+      } = this._docStateChangeManagerService["getStateCache"](v574);
+    if (v575.length === 0 && v576.length === 0) return;
+    let v577 = [],
+      v578 = [],
+      v579 = v875.deepClone(v573.mutations[0]),
+      v580 = v875.deepClone(v573.mutations[0]);
+    for (let v237 = v575.length - 1; v237 >= 0; v237--) {
+      let v69 = {
+          'id': "doc.mutation.rich-text-editing",
+          'params': {
+            'unitId': v575[v237].unitId,
+            ...v575[v237].undoState
+          }
+        },
+        v70 = {
+          'id': "doc.mutation.rich-text-editing",
+          'params': {
+            'unitId': v575[v237].unitId,
+            ...v575[v237].redoState
+          }
+        },
+        v71 = this._transformService["transformMutation"](v579, v69, false),
+        v72 = this._transformService["transformMutation"](v580, v70, false);
+      if (v940(v71)) throw v71.error;
+      if (v940(v72)) throw v72.error;
+      v577.unshift({
+        ...v575[v237],
+        'undoState': v71.m2Prime["params"],
+        'redoState': v72.m2Prime["params"]
+      }), v579 = v71.m1Prime, v580 = v72.m1Prime;
+    }
+    v579 = v875.deepClone(v573.mutations[0]), v580 = v875.deepClone(v573.mutations[0]);
+    for (let v238 = v576.length - 1; v238 >= 0; v238--) {
+      let v73 = {
+          'id': "doc.mutation.rich-text-editing",
+          'params': {
+            'unitId': v576[v238].unitId,
+            ...v576[v238].undoState
+          }
+        },
+        v74 = {
+          'id': "doc.mutation.rich-text-editing",
+          'params': {
+            'unitId': v576[v238].unitId,
+            ...v576[v238].redoState
+          }
+        },
+        v75 = this._transformService['transformMutation'](v579, v73, false),
+        v76 = this._transformService["transformMutation"](v580, v74, false);
+      if (v940(v75)) throw v75.error;
+      if (v940(v76)) throw v76.error;
+      v578.unshift({
+        ...v576[v238],
+        'undoState': v75.m2Prime["params"],
+        'redoState': v76.m2Prime["params"]
+      }), v579 = v75.m1Prime, v580 = v76.m1Prime;
+    }
+    this._docStateChangeManagerService["setStateCache"](v574, {
+      'history': v577,
+      'collaboration': v578
+    });
+  }
+};
+Yn = Y([J(0, v868(v869)), J(1, v935), J(2, v868(v945))], Yn);
+let Q = class {
+  constructor(v581, v582) {
+    this._docSelectionManagerService = v581, this._transformService = v582;
+  }
+  prepareTransformSelections(v583) {
+    var v584;
+    let v585 = this._docSelectionManagerService["getDocRanges"]() ?? [],
+      v586 = this._docSelectionManagerService['getSelectionInfo']();
+    if (v585.length === 0 || v586 == null) return null;
+    let v587 = v583.unitID,
+      v588 = [{
+        'id': "doc.mutation.rich-text-editing",
+        'params': {
+          'unitId': v587,
+          'actions': null,
+          'textRanges': v585
+        }
+      }],
+      v589 = this._transformService["transformMutationsWithChangeset"](v583, v588);
+    if (!v941(v589)) throw v589.error;
+    let v590 = (v584 = v589.m2Prime[0]) == null ? undefined : v584.params,
+      v591 = v590 && typeof v590 == "object" && "textRanges" in v590 ? v590.textRanges : null;
+    if (!Qn(v591)) return null;
+    let v592 = Xn(v583.mutations["some"](v239 => $n(v239.params)) ? v591.filter(v240 => !("tableId" in v240)) : v591, {
+        ...v586,
+        'options': v586.options ? {
+          ...v586.options,
+          'wholeDocument': false
+        } : undefined
+      }),
+      v593 = {
+        'unitId': v587,
+        'subUnitId': v587
+      };
+    this._docSelectionManagerService['replaceSelectionInfoWithoutRefresh'](v592, v593);
+    let v594 = true;
+    return {
+      'commit': () => {
+        v594 = false;
+      },
+      'rollback': () => {
+        v594 && (v594 = false, this._docSelectionManagerService["replaceSelectionInfoWithoutRefresh"](v586, v593));
+      }
+    };
+  }
+};
+Q = Y([J(0, v868(v943)), J(1, v935)], Q);
+function Xn(v819, v820) {
+  let v821 = [],
+    v822 = [];
+  for (let v595 of v819) Zn(v595) ? v822.push(v595) : v821.push(v595);
+  return {
+    ...v820,
+    'textRanges': v821,
+    'rectRanges': v822
+  };
+}
+;
+function Zn(v823) {
+  return "tableId" in v823;
+}
+;
+function Qn(v824) {
+  return Array.isArray(v824) && v824.every(v596 => typeof v596 == "object" && !!v596 && 'startOffset' in v596 && "endOffset" in v596);
+}
+;
+function $n(v825) {
+  return v825 === "tableSource" ? true : Array.isArray(v825) ? v825.some(v597 => $n(v597)) : !v825 || typeof v825 != 'object' ? false : Object.values(v825).some(v598 => $n(v598));
+}
+let er = class extends v860 {
+  constructor(v599, v600, v601, v602, v603, v604, v605) {
+    super(), this._collaborationController = v599, this._docTransformIMECacheService = v600, this._docTransformStateCacheService = v601, this._docTransformSelectionsService = v602, this._docSyncEditingCollabCursorService = v603, this._messageService = v604, this._localeService = v605, q(this, '_status$', new v899(v838.NOT_COLLAB)), this._initEntityListener();
+  }
+  _initEntityListener() {
+    this.disposeWithMe(this._collaborationController["entityInit$"].subscribe(v241 => {
+      v241 instanceof v844 && v241.addHandlerCallback({
+        'onTransformIME': v77 => this._docTransformIMECacheService["transformIMECache"](v77),
+        'onTransformState': v78 => this._docTransformStateCacheService["transformStateCache"](v78),
+        'onPrepareTransformSelections': v79 => this._docTransformSelectionsService["prepareTransformSelections"](v79),
+        'onSyncEditingCollabCursor': v80 => this._docSyncEditingCollabCursorService["syncEditingCollabCursor"](v80),
+        'onTransformRemoteChangesetByIMECache': v81 => this._docTransformIMECacheService["transformRemoteChangeset"](v81),
+        'onTransformRemoteChangesetByStateCache': v82 => this._docTransformStateCacheService["transformRemoteChangeset"](v82)
+      });
+    }));
+  }
+};
+er = Y([J(0, v868(v835)), J(1, v868(Jn)), J(2, v868(Yn)), J(3, v868(Q)), J(4, v868(wn)), J(5, v892), J(6, v868(v870))], er);
+let tr = class extends v860 {
+  constructor(v606, v607, v608, v609) {
+    super(), this._injector = v606, this._httpService = v607, this._logService = v608, this._collaborationSessionService = v609, q(this, "_memberID", undefined), this._init();
+  }
+  _init() {
+    this._initWindowErrorListener(), this._initUnhandledRejectionListener(), this._monkeyPatchLogService(), this._initUserListener();
+  }
+  _initUserListener() {
+    this.disposeWithMe(this._collaborationSessionService["socket$"].subscribe(v242 => {
+      this._memberID = v242 == null ? undefined : v242.memberID;
+    }));
+  }
+  _initWindowErrorListener() {
+    let v610 = v243 => {
+      var v244;
+      this._uploadLog('error', "[Window Error]: " + v243.message + " at " + v243.filename + ':' + v243.lineno + ':' + v243.colno + '\x0a' + (((v244 = v243.error) == null ? undefined : v244.stack) || ''));
+    };
+    window.addEventListener('error', v610), this.disposeWithMe(() => {
+      window.removeEventListener("error", v610);
+    });
+  }
+  _initUnhandledRejectionListener() {
+    let v611 = v245 => {
+      this._uploadLog("error", "[Unhandled Rejection]: " + v245.reason);
+    };
+    window.addEventListener("unhandledrejection", v611), this.disposeWithMe(() => {
+      window.removeEventListener("unhandledrejection", v611);
+    });
+  }
+  _monkeyPatchLogService() {
+    let v612 = this._logService['error'].bind(this._logService);
+    this._logService["error"] = (...v246) => {
+      let v247 = v246.map(v83 => v83 instanceof Error ? v83.message + '\x0a' + v83.stack : String(v83)).join('\x20');
+      this._uploadLog("error", "[LogService Error]: " + v247), v612(...v246);
+    }, this.disposeWithMe(() => {
+      this._logService["error"] = v612;
+    });
+  }
+  _uploadLog(v613, v614) {
+    try {
+      let v248 = {
+        'userId': this._memberID,
+        'logLabel': v613,
+        'content': v614
+      };
+      this._httpService["post"]("/universer-api/frontend/logs", {
+        'body': v248
+      }).catch(() => {});
+    } catch {}
+  }
+};
+tr = Y([J(0, v868(v869)), J(1, v868(v967)), J(2, v866), J(3, v868(v836))], tr);
+function nr({
+  state$: v826
+}) {
+  let v827 = v898(v826, null, true);
+  return v827 ? v932('div', {
+    'data-u-comp': "snapshot-loading-timeout",
+    'role': "alert",
+    'className': "univer-fixed univer-left-1/2 univer-top-4 univer-z-[1001] univer-flex univer-max-w-[calc(100vw-32px)] -univer-translate-x-1/2 univer-items-center univer-gap-2 univer-rounded-lg univer-bg-gray-0 univer-px-3 univer-py-2 univer-text-sm univer-text-gray-900 univer-shadow-lg dark:!univer-bg-gray-700 dark:!univer-text-gray-0",
+    'children': [v931(v927, {
+      'className': "univer-size-4 univer-shrink-0 univer-text-amber-500"
+    }), v931("span", {
+      'children': v827.content
+    }), v931(v920, {
+      'size': "small",
+      'variant': "primary",
+      'onClick': () => window.location["reload"](),
+      'children': v827.refreshLabel
+    })]
+  }) : null;
+}
+const rr = 'snapshot-loading-';
+let ir = class extends v860 {
+  constructor(v615, v616, v617, v618, v619, v620) {
+    super(), this._snapshotLoadingService = v615, this._messageService = v616, this._localeService = v617, this._injector = v618, this._urlService = v620, q(this, "_timeoutState$", new v899(null)), q(this, "_messageIds", new Set()), q(this, "_blockProgressWatches", new Map()), q(this, '_latestStates', new Map()), q(this, "timeoutState$", this._timeoutState$["asObservable"]());
+    let v621 = () => v928(nr, {
+      'state$': this.timeoutState$
+    });
+    this.disposeWithMe(v619.registerComponent(v890.GLOBAL, () => v896(v621, this._injector))), this.disposeWithMe(this._snapshotLoadingService["state$"].subscribe(v249 => {
+      this._latestStates = v249, v249.forEach(v84 => this._updateMessage(v84));
+    })), this.disposeWithMe(this._urlService['urlChange$'].subscribe(() => {
+      this._latestStates['forEach'](v85 => this._updateMessage(v85));
+    }));
+  }
+  dispose() {
+    this._messageIds["forEach"](v250 => this._messageService["remove"](v250)), this._messageIds["clear"](), this._blockProgressWatches["forEach"](({
+      timeoutId: v251
+    }) => clearTimeout(v251)), this._blockProgressWatches["clear"](), this._timeoutState$["complete"](), super.dispose();
+  }
+  _updateMessage(v622) {
+    let v623 = '' + rr + v622.unitId;
+    if (v622.stage === v937.COMPLETE) {
+      this._clearBlockProgressWatch(v622.unitId), this._clearTimeoutState(v622.unitId), this._messageService['remove'](v623), this._messageIds['delete'](v623);
+      return;
+    }
+    if (!this._isVisibleUnit(v622.unitId)) {
+      this._clearBlockProgressWatch(v622.unitId), this._clearTimeoutState(v622.unitId), this._messageService["remove"](v623), this._messageIds["delete"](v623);
+      return;
+    }
+    if (v622.stage === v937.ERROR) {
+      this._clearBlockProgressWatch(v622.unitId), this._clearTimeoutState(v622.unitId), this._messageService['show']({
+        'id': v623,
+        'type': v921.Error,
+        'content': this._localeService['t']("collaboration-client-ui.session.connection-failed")
+      }), this._messageIds["delete"](v623);
+      return;
+    }
+    if (v622.stage !== v937.LOADING_BLOCKS || v622.totalBlocks <= 10) {
+      this._clearBlockProgressWatch(v622.unitId), this._messageService["remove"](v623), this._messageIds["delete"](v623);
+      return;
+    }
+    this._watchBlockProgress(v622) || (this._messageService["show"]({
+      'id': v623,
+      'type': v921.Loading,
+      'duration': 1 / 0,
+      'content': this._localeService['t']('collaboration-client-ui.collabStatus.fetchMiss') + '\x20' + v622.loadedBlocks + '/' + v622.totalBlocks
+    }), this._messageIds["add"](v623));
+  }
+  _watchBlockProgress(v624) {
+    let v625 = this._blockProgressWatches['get'](v624.unitId);
+    if ((v625 == null ? undefined : v625.loadedBlocks) === v624.loadedBlocks) return v625.timedOut;
+    this._clearBlockProgressWatch(v624.unitId);
+    let v626 = setTimeout(() => {
+      let v252 = this._blockProgressWatches['get'](v624.unitId);
+      if (!v252 || v252.timeoutId !== v626) return;
+      v252.timedOut = true;
+      let v253 = '' + rr + v624.unitId;
+      this._messageService["remove"](v253), this._messageIds["delete"](v253), this._timeoutState$['next']({
+        'unitId': v624.unitId,
+        'content': this._localeService['t']("collaboration-client-ui.snapshotLoading.timeout", String(v624.loadedBlocks), String(v624.totalBlocks)),
+        'refreshLabel': this._localeService['t']("collaboration-client-ui.snapshotLoading.refresh")
+      });
+    }, 60000);
+    return this._blockProgressWatches["set"](v624.unitId, {
+      'loadedBlocks': v624.loadedBlocks,
+      'timedOut': false,
+      'timeoutId': v626
+    }), false;
+  }
+  _clearBlockProgressWatch(v627) {
+    let v628 = this._blockProgressWatches['get'](v627);
+    v628 && (clearTimeout(v628.timeoutId), this._blockProgressWatches["delete"](v627), this._clearTimeoutState(v627));
+  }
+  _clearTimeoutState(v629) {
+    var v630;
+    ((v630 = this._timeoutState$['value']) == null ? undefined : v630.unitId) === v629 && this._timeoutState$["next"](null);
+  }
+  _isVisibleUnit(v631) {
+    let v632 = this._urlService["getParam"]('unit');
+    return !v632 || v632 === v631;
+  }
+};
+ir = Y([J(0, v868(v938)), J(1, v892), J(2, v868(v870)), J(3, v868(v869)), J(4, v894), J(5, Kn)], ir);
+function ar(v828) {
+  var v829, v830;
+  let v831 = (v829 = v828.stageInfo) == null ? undefined : v829.stage,
+    v832 = ((v830 = v828.stageInfo) == null ? undefined : v830.totalFormulasToCalculate) || 0;
+  return v831 === v971.START_CALCULATION && v832 > 0;
+}
+;
+function or(v833) {
+  return v833.functionsExecutedState === v972.SUCCESS;
+}
+let sr = class extends v860 {
+  constructor(v633, v634, v635, v636, v637, v638, v639) {
+    super(), this._messageService = v633, this._commandService = v634, this._configService = v635, this._httpService = v636, this._univerInstanceService = v637, this._logService = v638, this._localeService = v639, q(this, "_pollingInterval", null), q(this, '_maxFormulaLimit', 0), q(this, "_currentUsage", 0), q(this, '_taskIds', []), q(this, "_lastResponseTimestamp", 0), this._initCommandInterceptor();
+  }
+  _initCommandInterceptor() {
+    this.disposeWithMe(this._commandService["beforeCommandExecuted"]((v254, v255) => {
+      if (v254.id !== v974.id) return;
+      let v256 = v254.params;
+      if (this._hasFormulaInDirtyRanges(v256.dirtyRanges ?? []) && !this._checkCalculationAvailable()) throw this._checkAndWaitForCalculationPermission(v254, v255), this._showGuardMessage(), new v855();
+    })), this.disposeWithMe(this._commandService["onCommandExecuted"]((v257, v258) => {
+      if (v257.id !== v973.id) return;
+      let v259 = v257.params;
+      if (ar(v259)) {
+        let v86 = v881();
+        this._taskIds["push"](v86), this._startCalculationLimit(v86);
+      } else {
+        if (or(v259) && this._taskIds["length"] > 0) {
+          let v20 = this._taskIds["shift"]();
+          this._releaseCalculationLimit(v20);
+        }
+      }
+    }));
+  }
+  dispose() {
+    super.dispose(), this._clearPolling(), this._taskIds = [], this._currentUsage = 0, this._maxFormulaLimit = 0, this._lastResponseTimestamp = 0;
+  }
+  async _checkAndWaitForCalculationPermission(v640, v641) {
+    for (let v260 = 0; v260 < 30; v260++) try {
+      if (await this._getFormulaLimitStatus(), this._checkCalculationAvailable()) {
+        this._applyCommand(v640, v641), this._messageService["show"]({
+          'content': this._localeService['t']("collaboration-client-ui.formula.calculation.started"),
+          'type': v921.Success
+        });
+        return;
+      }
+      await new Promise(v21 => {
+        this._pollingInterval = window.setTimeout(v21, 1000);
+      });
+    } catch (v87) {
+      this._logService["error"](v87);
+    }
+    this._messageService["show"]({
+      'content': this._localeService['t']("collaboration-client-ui.formula.calculation.unable"),
+      'type': v921.Error
+    });
+  }
+  _applyCommand(v642, v643) {
+    try {
+      this._commandService["executeCommand"](v642.id, v642.params, v643);
+    } catch (v261) {
+      this._logService['error'](v261);
+    }
+  }
+  _setFormulaLimitStatus(v644, v645) {
+    v645 < this._lastResponseTimestamp || (this._lastResponseTimestamp = v645, this._maxFormulaLimit = Number.parseInt(v644.maxFormulaLimit), this._currentUsage = Number.parseInt(v644.currentUsage));
+  }
+  async _startCalculationLimit(v646) {
+    let v647 = Date.now();
+    try {
+      var v648, v649;
+      let v262 = ((v648 = this._configService["getConfig"](v834)) == null ? undefined : v648.startFormulaLimitUrl) || "/universer-api/license/formula/limit/start",
+        v263 = (await this._httpService["post"](v262, {
+          'body': JSON.stringify({
+            'taskId': v646
+          })
+        })).body;
+      if (((v649 = v263.error) == null ? undefined : v649.code) !== v995.OK) return;
+      this._setFormulaLimitStatus(v263.limitInfo, v647);
+    } catch (v264) {
+      this._logService["error"](v264);
+    }
+  }
+  async _getFormulaLimitStatus(v650) {
+    let v651 = Date.now();
+    try {
+      var v652, v653;
+      let v265 = ((v652 = this._configService["getConfig"](v834)) == null ? undefined : v652.getFormulaLimitStatusUrl) || "/universer-api/license/formula/limit/status",
+        v266 = v650 ? v265 + "?taskId=" + encodeURIComponent(v650) : v265,
+        v267 = (await this._httpService["get"](v266)).body;
+      if (((v653 = v267.error) == null ? undefined : v653.code) !== v995.OK) return;
+      this._setFormulaLimitStatus(v267.limitInfo, v651);
+    } catch (v268) {
+      this._logService["error"](v268);
+    }
+  }
+  async _releaseCalculationLimit(v654) {
+    let v655 = Date.now();
+    try {
+      var v656, v657;
+      let v269 = ((v656 = this._configService['getConfig'](v834)) == null ? undefined : v656.releaseFormulaLimitUrl) || "/universer-api/license/formula/limit/done",
+        v270 = (await this._httpService["post"](v269, {
+          'body': JSON.stringify({
+            'taskId': v654
+          })
+        })).body;
+      if (((v657 = v270.error) == null ? undefined : v657.code) !== v995.OK) return;
+      this._setFormulaLimitStatus(v270.limitInfo, v655);
+    } catch (v271) {
+      this._logService["error"](v271);
+    }
+  }
+  _checkCalculationAvailable() {
+    return this._maxFormulaLimit === 0 || this._maxFormulaLimit - this._currentUsage > 0;
+  }
+  _clearPolling() {
+    this._pollingInterval &&= (clearTimeout(this._pollingInterval), null);
+  }
+  _showGuardMessage() {
+    this._messageService["show"]({
+      'content': this._localeService['t']("collaboration-client-ui.formula.calculation.waiting"),
+      'type': v921.Loading
+    });
+  }
+  _hasFormulaInDirtyRanges(v658) {
+    for (let v272 of v658) {
+      let {
+          unitId: v88,
+          sheetId: v89,
+          range: v90
+        } = v272,
+        v91 = this._univerInstanceService["getUnit"](v88, v876.UNIVER_SHEET);
+      if (!v91) continue;
+      let v92 = v91.getSheetBySheetId(v89);
+      if (!v92) continue;
+      let v93 = v92.getCellMatrix();
+      for (let v22 = v90.startRow; v22 <= v90.endRow; v22++) for (let v9 = v90.startColumn; v9 <= v90.endColumn; v9++) {
+        let v4 = v93.getValue(v22, v9);
+        if (v4 && (v883(v4.f) || v882(v4.si))) return true;
+      }
+    }
+    return false;
+  }
+};
+sr = Y([J(0, v868(v892)), J(1, v862), J(2, v863), J(3, v868(v967)), J(4, v867), J(5, v866), J(6, v868(v870))], sr);
+let cr = class extends v860 {
+  constructor(v659, v660, v661) {
+    super(), this._configService = v659, this._localStorageService = v660, this._revisionService = v661, q(this, "_cachedData", new Map()), q(this, '_saveTaskMap', new Map()), q(this, "_disabled", false);
+  }
+  disableLocalCache() {
+    this._disabled = true;
+  }
+  enableLocalCache() {
+    this._disabled = false;
+  }
+  get saveTaskMap() {
+    return this._saveTaskMap;
+  }
+  dispose() {
+    this.exhaustSavingTask().then(() => super.dispose());
+  }
+  async loadOfflineData(v662) {
+    return this._disabled ? null : this._localStorageService["getItem"](v853(v662));
+  }
+  async saveOfflineData(v663, v664) {
+    return !!this._localStorageService["setItem"](v853(v663), v664);
+  }
+  async backupOfflineData(v665, v666) {
+    let v667 = this._cachedData['get'](v665) ?? (await this._localStorageService["getItem"](v853(v665)));
+    if (!v667) return;
+    let v668 = Date.now(),
+      v669 = new Date(v668).toISOString();
+    await this._localStorageService['setItem'](v853(v665) + ":backup:" + v668, {
+      'reason': v666,
+      'createdAt': v669,
+      'data': v667
+    });
+  }
+  updateOfflineData(v670, v671, v672, v673) {
+    let v674 = this._revisionService['getCurrentRevOfUnit'](v670);
+    this._cachedData['set'](v670, {
+      'unitID': v670,
+      'type': v671,
+      'awaitingChangeset': v672,
+      'mutations': v673,
+      'rev': v674
+    }), this._saveTaskMap["has"](v670) || this._scheduleSaving(v670);
+  }
+  _scheduleSaving(v675) {
+    let v676 = this._getSaveTimeout();
+    v676 === 0 ? this._saveCache(v675) : this._saveTaskMap["set"](v675, window.setTimeout(() => this._saveCache(v675), v676));
+  }
+  _getSaveTimeout() {
+    return this._configService["getConfig"](v847) ?? v846;
+  }
+  _saveCache(v677) {
+    let v678 = this._saveTaskMap['get'](v677);
+    return v678 !== undefined && window.clearTimeout(v678), this._localStorageService['setItem'](v853(v677), this._cachedData["get"](v677)).then(() => this._saveTaskMap["delete"](v677));
+  }
+  async exhaustSavingTask() {
+    let v679 = [];
+    this._saveTaskMap["forEach"]((v273, v274) => {
+      window.clearTimeout(v273), v679.push(this._saveCache(v274).then(() => {
+        this._saveTaskMap['delete'](v274);
+      }));
+    }), await Promise.all(v679);
+  }
+};
+cr = Y([J(0, v863), J(1, v865), J(2, v868(v936))], cr);
+var lr = class extends v873 {
+  constructor() {
+    super(), q(this, "urlChange$", undefined), this.urlChange$ = v905(window, "popstate").pipe(v911(this.dispose$), v909({
+      'bufferSize': 1,
+      'refCount': true
+    }), v906(undefined));
+  }
+  setParam(v680, v681, v682 = false) {
+    let v683 = new URL(window.location["href"]);
+    v683.searchParams["set"](v680, v681), v682 ? window.history['replaceState']('', '', v683.toString()) : window.history["pushState"]('', '', v683.toString());
+  }
+  removeParam(v684, v685 = false) {
+    let v686 = new URL(window.location["href"]);
+    v686.searchParams['delete'](v684), v685 ? window.history["replaceState"]('', '', v686.toString()) : window.history['pushState']('', '', v686.toString());
+  }
+  getParam(v687) {
+    return new URL(window.location['href']).searchParams["get"](v687) ?? undefined;
+  }
+};
+let $ = class extends v871 {
+  constructor(v688 = vn, v689, v690, v691, v692) {
+    super(), this._config = v688, this._renderManagerService = v689, this._injector = v690, this._configService = v691, this._commandService = v692;
+    let {
+      ...v693
+    } = v885({}, vn, this._config);
+    this._configService['setConfig']('collaboration-client-ui.config', v693);
+  }
+  onStarting() {
+    this._registerDependencies(), this.disposeWithMe(this._commandService['registerCommand'](_n)), this._initDependencies();
+  }
+  onRendered() {
+    this._registerRenderDependencies();
+  }
+  _registerDependencies() {
+    var v694;
+    let v695 = [[xn], [sr], [Kn, {
+      'useClass': lr
+    }], [v968, {
+      'useClass': v970
+    }], [v845, {
+      'useClass': cr
+    }], [X], [Gn], [Z], [Wn], [qn], [ir]];
+    this._config["enableDocumentCollaborationUI"] !== false && v695.push([Q], [Jn], [Yn], [wn], [er], [yn]), this._config["enableFrontendLog"] && v695.push([tr]), v887(this._injector, v886(v695, (v694 = this._config) == null ? undefined : v694.override));
+  }
+  _registerRenderDependencies() {
+    this._config["enableDocumentCollaborationUI"] !== false && this.disposeWithMe(this._renderManagerService['registerRenderModule'](v876.UNIVER_DOC, [Pn])), this.disposeWithMe(this._renderManagerService["registerRenderModule"](v876.UNIVER_SHEET, [In]));
+  }
+  _initDependencies() {
+    v889(this._injector, [[Z], [Wn], [X], [Gn], [qn], [sr], [ir]]), this._config["enableDocumentCollaborationUI"] !== false && v889(this._injector, [[er], [yn]]), this._config["enableFrontendLog"] && v889(this._injector, [[tr]]);
+  }
+};
+q($, "pluginName", 'UNIVER_COLLABORATION_CLIENT_WEB_PLUGIN'), q($, 'packageName', hn), q($, "version", gn), $ = Y([v859(v942, v948, v963, v969, v939, v955, v852), J(1, v957), J(2, v868(v869)), J(3, v863), J(4, v862)], $);
+let ur = class extends v837 {
+  constructor(v696, v697, v698, v699, v700) {
+    super(v696, v697, v698, v699, v700);
+  }
+  async createSocket(v701) {
+    let v702 = await this._getSessionTicket(),
+      v703 = this._createSocketURL(v701, v702);
+    return this._doCreateSocket(v703);
+  }
+  _createSocketURL(v704, v705) {
+    let v706 = typeof window > 'u' ? new URL(v704) : new URL(v704, window.location["origin"]);
+    v706.searchParams["set"]("sessionTicket", v705);
+    let v707 = typeof window > 'u' ? new URLSearchParams() : new URLSearchParams(window.location["search"]);
+    return v707.get("runId") && v706.searchParams["set"]("runId", v707.get("runId")), v706.toString();
+  }
+  async _getSessionTicket() {
+    var v708;
+    let v709 = this._configService["getConfig"](v834),
+      v710 = (v709 == null ? undefined : v709.wsSessionTicketUrl) ?? v842;
+    return ((v708 = (await this._httpService["get"](v710, {
+      'headers': {
+        'Content-Type': 'application/json'
+      }
+    })).body) == null ? undefined : v708.ticket) ?? '';
+  }
+};
+ur = Y([J(0, v868(v869)), J(1, v868(v967)), J(2, v863), J(3, v866), J(4, v934)], ur);
+let dr = class extends v860 {
+  constructor(v711, v712, v713) {
+    super(), this._instanceService = v711, this._httpService = v712, this._configService = v713;
+  }
+  async runOnServer(v714, v715, v716, ...v717) {
+    let v718 = this._instanceService["getFocusedUnit"]();
+    if (!v718) throw Error("[RemoteUniscriptService]: no focused unit");
+    let v719 = (this._configService["getConfig"](v849) ?? v841) + '/' + v714 + '/run/' + v715,
+      v720 = {
+        'scriptId': v714,
+        'runId': new URL(window.location["href"]).searchParams['get']("runId") ?? '',
+        'function': v715,
+        'unitId': v718.getUnitId(),
+        'argsOfFunction': JSON.stringify(v717),
+        'invokeId': v716.invokeId ?? '',
+        'executionId': v716.executionId ?? ''
+      };
+    try {
+      let v275 = await this._httpService["post"](v719, {
+        'body': v720
+      });
+      return v275.body["error"] && v275.body["error"].code !== v995.OK ? 'Failed' : v275.body["result"];
+    } catch {
+      return 'Failed';
+    }
+  }
+};
+dr = Y([J(0, v867), J(1, v868(v967)), J(2, v863)], dr);
+const fr = 30000,
+  pr = "ACTIVE_UNIT_EVENT_CHANNEL";
+var mr = class extends v860 {
+  constructor() {
+    super(), q(this, "_id", v881()), q(this, "_selfUnitIDs", new Set()), q(this, '_unitOnClients', new Map()), q(this, "_heartbeatTimer", null), q(this, "_clearOtherTimers", new Map()), q(this, "_unitStatus", new Map()), this._init();
+  }
+  dispose() {
+    super.dispose(), this._clearOtherTimers["forEach"]((v276, v277) => this._removeClearOtherTimer(v277)), this._heartbeatTimer && window.clearInterval(this._heartbeatTimer);
+  }
+  getUnitStatus$(v721) {
+    return this._ensureSubject(v721).pipe(v903());
+  }
+  editingUnit(v722) {
+    this._selfUnitIDs['size'] === 0 && this._scheduleHeartbeat(), this._selfUnitIDs["add"](v722), this._send({
+      'type': 0,
+      'memberID': this._id,
+      'unitIDs': [v722],
+      'isForwarded': false
+    });
+  }
+  disposeUnit(v723) {
+    this._selfUnitIDs['delete'](v723), this._selfUnitIDs["size"] === 0 && this._heartbeatTimer && window.clearInterval(this._heartbeatTimer);
+  }
+  _init() {
+    this.disposeWithMe(v888(v905(window, 'storage').subscribe(v278 => {
+      if (v278.key !== pr || !v278.newValue) return;
+      let v279 = JSON.parse(v278.newValue);
+      this._handleEvent(v279);
+    }))), window.addEventListener("unload", () => this._send({
+      'type': 1,
+      'memberID': this._id,
+      'unitIDs': Array.from(this._selfUnitIDs)
+    }));
+  }
+  _handleEvent(v724) {
+    switch (v724.type) {
+      case 0:
+        this._handleJoinEvent(v724);
+        break;
+      case 1:
+        this._handleLeaveEvent(v724);
+        break;
+      case 2:
+        this._handleHeartbeatEvent(v724);
+        break;
+    }
+  }
+  _handleJoinEvent(v725) {
+    let {
+      unitIDs: v726,
+      memberID: v727,
+      isForwarded: v728
+    } = v725;
+    v726.forEach(v280 => {
+      if (!v728 && this._unitOnClients["has"](v280) && this._ensureSubject(v280).next(v851.OTHER_CLIENTS_EDITING), !this._unitOnClients["has"](v280) || !this._unitOnClients['get'](v280).has(v727)) {
+        let v94 = this._unitOnClients["get"](v280) || new Set();
+        v94.add(v727), this._unitOnClients["set"](v280, v94), this._scheduleClearOtherTimer(v727);
+      }
+    }), v728 || this._send({
+      'type': 0,
+      'memberID': this._id,
+      'unitIDs': [...this._selfUnitIDs],
+      'isForwarded': true
+    });
+  }
+  _scheduleClearOtherTimer(v729) {
+    this._removeClearOtherTimer(v729);
+    let v730 = window.setTimeout(() => {
+      this._unitOnClients["forEach"](v95 => {
+        v95.delete(v729);
+      });
+    }, fr * 2);
+    this._clearOtherTimers["set"](v729, v730);
+  }
+  _removeClearOtherTimer(v731) {
+    if (this._clearOtherTimers["has"](v731)) {
+      let v281 = this._clearOtherTimers['get'](v731);
+      v281 && window.clearTimeout(v281), this._clearOtherTimers['set'](v731, null);
+    }
+  }
+  _handleLeaveEvent(v732) {
+    let {
+      memberID: v733,
+      unitIDs: v734
+    } = v732;
+    v734.forEach(v282 => {
+      var v283;
+      let v284 = this._unitOnClients["get"](v282);
+      v284 && (v284.delete(v733), (v283 = this._ensureSubject(v282)) == null || v283.next(v284.size === 0 ? v851.NO_OTHER_CLIENTS_EDITING : v851.OTHER_CLIENTS_EDITING));
+    }), this._removeClearOtherTimer(v733);
+  }
+  _handleHeartbeatEvent(v735) {
+    this._scheduleClearOtherTimer(v735.memberID);
+  }
+  _send(v736) {
+    localStorage.setItem(pr, JSON.stringify(v736));
+  }
+  _scheduleHeartbeat() {
+    this._heartbeatTimer = window.setInterval(() => {
+      this._send({
+        'type': 2,
+        'memberID': this._id
+      });
+    }, fr);
+  }
+  _ensureSubject(v737) {
+    return this._unitStatus['has'](v737) || this._unitStatus["set"](v737, new v899(v851.NO_OTHER_CLIENTS_EDITING)), this._unitStatus["get"](v737);
+  }
+};
+export { ur as BrowserCollaborationSocketService, X as DesktopCollaborationStatusDisplayController, Kn as IURLService, dr as RemoteUniscriptService, Fn as SheetCollabCursorShape, $ as UniverCollaborationClientUIPlugin, mr as WebBrowserSingleActiveUnitService };

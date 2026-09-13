@@ -1,0 +1,37 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-snip-round-rect-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M2 16V6.2C2 4.985 2.985 4 4.2 4H13.6L18 8V16H2Z",
+			"strokeLinejoin": "round",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeSnipRoundRectIcon = (0, react.forwardRef)(function ShapeSnipRoundRectIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-snip-round-rect-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeSnipRoundRectIcon.displayName = "ShapeSnipRoundRectIcon";
+//#endregion
+exports.ShapeSnipRoundRectIcon = ShapeSnipRoundRectIcon;
+exports.default = ShapeSnipRoundRectIcon;

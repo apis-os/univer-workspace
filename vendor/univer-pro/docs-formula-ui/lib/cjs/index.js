@@ -1,0 +1,1056 @@
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/docs-formula"),
+  t = require("@univerjs/core"),
+  n = require("@univerjs/docs"),
+  r = require("@univerjs/docs-ui"),
+  i = require("@univerjs/engine-render"),
+  a = require("rxjs"),
+  o = require("@univerjs/ui"),
+  s = require("@univerjs-pro/license"),
+  c = require("@univerjs-pro/shape-editor-ui"),
+  l = require("@univerjs/icons"),
+  u = require("react/jsx-runtime"),
+  d = require("@univerjs/design"),
+  f = require("react");
+const p = {
+  fill: "rgba(0, 0, 0, 0)",
+  stroke: "rgba(0,\x200,\x200,\x200)",
+  strokeActive: "rgba(0, 0, 0, 0)",
+  strokeWidth: 0
+};
+function m(var_core_value_sigB4B4) {
+  return (var_core_value_sigB4B4 == null ? undefined : var_core_value_sigB4B4.fill) === p.fill && var_core_value_sigB4B4.stroke === p.stroke && var_core_value_sigB4B4.strokeActive === p.strokeActive && var_core_value_sigB4B4.strokeWidth === p.strokeWidth;
+}
+function h(var_core_value_sigD407, var_core_value_sig63F3, var_core_value_sig6A71) {
+  let var_core_value_sig3BF6 = var_core_value_sig63F3 - var_core_value_sig6A71.ascent - 2,
+    var_core_value_sig38CE = var_core_value_sig6A71.ascent + var_core_value_sig6A71.descent + 4,
+    var_core_value_sig62B7 = var_core_value_sigD407,
+    var_core_value_sig37A8 = var_core_value_sig62B7 + g(var_core_value_sig6A71);
+  return {
+    bottom: var_core_value_sig3BF6 + var_core_value_sig38CE,
+    contentRight: var_core_value_sig37A8,
+    height: var_core_value_sig38CE,
+    left: var_core_value_sig62B7,
+    textX: var_core_value_sig62B7 + 2,
+    top: var_core_value_sig3BF6
+  };
+}
+function g(var_core_value_sigA90D) {
+  return var_core_value_sigA90D.width + 4;
+}
+function _(var_core_value_sig7A3C, var_core_value_sig0511) {
+  return g(var_core_value_sig7A3C) / var_core_value_sig0511;
+}
+const v = "DOC_FORMULA_EDITOR_POPUP",
+  y = "DOC_FORMULA_HOVER_POPUP";
+function b(var_core_value_sig1F44) {
+  "@babel/helpers - typeof";
+
+  return b = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig5237) {
+    return typeof var_core_value_sig5237;
+  } : function (var_core_value_sigBB00) {
+    return var_core_value_sigBB00 && typeof Symbol == "function" && var_core_value_sigBB00.constructor === Symbol && var_core_value_sigBB00 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigBB00;
+  }, b(var_core_value_sig1F44);
+}
+function ee(var_core_value_sigCB04, var_core_value_sig947E) {
+  if (b(var_core_value_sigCB04) != "object" || !var_core_value_sigCB04) return var_core_value_sigCB04;
+  var var_core_value_sig4545 = var_core_value_sigCB04[Symbol.toPrimitive];
+  if (var_core_value_sig4545 !== undefined) {
+    var var_core_value_sigF39A = var_core_value_sig4545.call(var_core_value_sigCB04, var_core_value_sig947E || "default");
+    if (b(var_core_value_sigF39A) != "object") return var_core_value_sigF39A;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig947E === "string" ? String : Number)(var_core_value_sigCB04);
+}
+function te(var_core_value_sigF79C) {
+  var var_core_value_sig2E54 = ee(var_core_value_sigF79C, "string");
+  return b(var_core_value_sig2E54) == "symbol" ? var_core_value_sig2E54 : var_core_value_sig2E54 + "";
+}
+function x(var_core_value_sig7658, var_core_value_sigDCF5, var_core_value_sigC786) {
+  return (var_core_value_sigDCF5 = te(var_core_value_sigDCF5)) in var_core_value_sig7658 ? Object.defineProperty(var_core_value_sig7658, var_core_value_sigDCF5, {
+    value: var_core_value_sigC786,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig7658[var_core_value_sigDCF5] = var_core_value_sigC786, var_core_value_sig7658;
+}
+function S(var_core_value_sigC0D9, var_core_value_sigF051) {
+  return function (var_core_value_sig7E54, var_core_value_sig9A8D) {
+    var_core_value_sigF051(var_core_value_sig7E54, var_core_value_sig9A8D, var_core_value_sigC0D9);
+  };
+}
+function C(var_core_value_sig5825, var_core_value_sig4EB7, var_core_value_sig73AF, var_core_value_sig548A) {
+  var var_core_value_sigE026 = arguments.length,
+    var_core_value_sig339E = var_core_value_sigE026 < 3 ? var_core_value_sig4EB7 : var_core_value_sig548A === null ? var_core_value_sig548A = Object.getOwnPropertyDescriptor(var_core_value_sig4EB7, var_core_value_sig73AF) : var_core_value_sig548A,
+    var_core_value_sig7550;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig339E = Reflect.decorate(var_core_value_sig5825, var_core_value_sig4EB7, var_core_value_sig73AF, var_core_value_sig548A);else {
+    for (var var_core_value_sig2983 = var_core_value_sig5825.length - 1; var_core_value_sig2983 >= 0; var_core_value_sig2983--) (var_core_value_sig7550 = var_core_value_sig5825[var_core_value_sig2983]) && (var_core_value_sig339E = (var_core_value_sigE026 < 3 ? var_core_value_sig7550(var_core_value_sig339E) : var_core_value_sigE026 > 3 ? var_core_value_sig7550(var_core_value_sig4EB7, var_core_value_sig73AF, var_core_value_sig339E) : var_core_value_sig7550(var_core_value_sig4EB7, var_core_value_sig73AF)) || var_core_value_sig339E);
+  }
+  return var_core_value_sigE026 > 3 && var_core_value_sig339E && Object.defineProperty(var_core_value_sig4EB7, var_core_value_sig73AF, var_core_value_sig339E), var_core_value_sig339E;
+}
+let w = class extends t.Disposable {
+  get hasOpenPopup() {
+    return this._editorTarget$["value"] != null || this._hoverTarget$["value"] != null;
+  }
+  get hasOpenEditor() {
+    return this._editorTarget$["value"] != null;
+  }
+  constructor(var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sig48CA) {
+    super(), this._popupManagerService = var_core_value_sigC259, this._selectionManagerService = var_core_value_sig9C9F, this._model = var_core_value_sigFDEA, this._univerInstanceService = var_core_value_sig86D0, this._permissionService = var_core_value_sig4CD2, this._renderManagerService = var_core_value_sig48CA, x(this, "_editorPopup", null), x(this, "_hoverPopup", null), x(this, "_lastFormulaTarget", null), x(this, "_editorTarget$", new a["BehaviorSubject"](null)), x(this, "_hoverTarget$", new a["BehaviorSubject"](null)), x(this, "editorTarget$", this._editorTarget$["asObservable"]()), x(this, "hoverTarget$", this._hoverTarget$["asObservable"]()), this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(() => {
+      let var_core_value_sigBC46 = this._editorTarget$["value"],
+        var_core_value_sig3D7D = this._hoverTarget$["value"];
+      var_core_value_sigBC46 && !this._canEditRange(var_core_value_sigBC46.unitId, var_core_value_sigBC46.rangeId, var_core_value_sigBC46.selection["segmentId"]) && this.closeEditor(), var_core_value_sig3D7D && !this._canEditRange(var_core_value_sig3D7D.unitId, var_core_value_sig3D7D.rangeId, var_core_value_sig3D7D.segmentId) && this.closeHover();
+    })), this.disposeWithMe(this._renderManagerService["disposed$"].subscribe(var_core_value_sig27E5 => {
+      var var_core_value_sig8061, var_core_value_sig4D4C;
+      ((var_core_value_sig8061 = this._editorTarget$["value"]) == null ? undefined : var_core_value_sig8061.unitId) === var_core_value_sig27E5 && this.closeEditor(), ((var_core_value_sig4D4C = this._hoverTarget$["value"]) == null ? undefined : var_core_value_sig4D4C.unitId) === var_core_value_sig27E5 && this.closeHover();
+    }));
+  }
+  openEditor(var_core_value_sig50AF) {
+    var var_core_value_sigA942;
+    if (!this._canEditRange(var_core_value_sig50AF.unitId, var_core_value_sig50AF.rangeId, (var_core_value_sigA942 = var_core_value_sig50AF.selection) == null ? undefined : var_core_value_sigA942.segmentId)) return null;
+    let var_core_value_sigA621 = this._resolveEditorSelection(var_core_value_sig50AF);
+    return var_core_value_sigA621 ? (this.closeEditor(), this.closeHover(), this._editorTarget$["next"]({
+      unitId: var_core_value_sig50AF.unitId,
+      rangeId: var_core_value_sig50AF.rangeId,
+      selection: var_core_value_sigA621
+    }), this._editorPopup = this._popupManagerService["attachPopupToRange"](var_core_value_sigA621, {
+      componentKey: v,
+      direction: "bottom",
+      onClickOutside: () => this.closeEditor()
+    }, var_core_value_sig50AF.unitId), this._editorPopup) : null;
+  }
+  openSelectedEditor(var_core_value_sigBBFF) {
+    let var_core_value_sig8889 = this.getSelectedFormulaTarget(var_core_value_sigBBFF);
+    return var_core_value_sig8889 ? this.openEditor(var_core_value_sig8889) : null;
+  }
+  showHover(var_core_value_sig32F8, var_core_value_sig5B67) {
+    var var_core_value_sig1758, var_core_value_sig4805;
+    if (!this._canEditRange(var_core_value_sig32F8.unitId, var_core_value_sig32F8.rangeId, var_core_value_sig32F8.segmentId)) return null;
+    if (((var_core_value_sig1758 = this._hoverTarget$["value"]) == null ? undefined : var_core_value_sig1758.unitId) === var_core_value_sig32F8.unitId && ((var_core_value_sig4805 = this._hoverTarget$["value"]) == null ? undefined : var_core_value_sig4805.rangeId) === var_core_value_sig32F8.rangeId) return this._hoverPopup;
+    this.closeHover();
+    let var_core_value_sigE67E = this._getRange(var_core_value_sig32F8);
+    if (!var_core_value_sigE67E) return null;
+    this._lastFormulaTarget = var_core_value_sig32F8, this._hoverTarget$["next"](var_core_value_sig32F8);
+    let var_core_value_sig2902 = {
+        componentKey: y,
+        direction: "top-center",
+        onClickOutside: () => this.closeHover()
+      },
+      var_core_value_sig9989 = var_core_value_sig5B67 == null ? undefined : var_core_value_sig5B67();
+    return this._hoverPopup = var_core_value_sig9989 ? this._popupManagerService["attachPopupToRect"](() => (var_core_value_sig5B67 == null ? undefined : var_core_value_sig5B67()) ?? var_core_value_sig9989, var_core_value_sig2902, var_core_value_sig32F8.unitId) : this._popupManagerService["attachPopupToRange"]({
+      collapsed: false,
+      startOffset: var_core_value_sigE67E.startIndex,
+      endOffset: var_core_value_sigE67E.endIndex + 1,
+      segmentId: var_core_value_sig32F8.segmentId,
+      segmentPage: var_core_value_sig32F8.segmentPage
+    }, {
+      ...var_core_value_sig2902,
+      multipleDirection: "top"
+    }, var_core_value_sig32F8.unitId), this._hoverPopup;
+  }
+  showSelectedHover(var_core_value_sig698E) {
+    let var_core_value_sig2809 = this.getSelectedFormulaTarget(var_core_value_sig698E);
+    return var_core_value_sig2809 ? this.showHover(var_core_value_sig2809) : null;
+  }
+  getSelectedFormulaTarget(var_core_value_sig2DAB) {
+    var var_core_value_sig877E, var_core_value_sig20C8;
+    let var_core_value_sigE9A7 = this._hoverTarget$["value"];
+    if ((var_core_value_sigE9A7 == null ? undefined : var_core_value_sigE9A7.unitId) === var_core_value_sig2DAB) return var_core_value_sigE9A7;
+    let var_core_value_sigBECE = this._univerInstanceService["getUnit"](var_core_value_sig2DAB, t.UniverInstanceType["UNIVER_DOC"]),
+      var_core_value_sig1B22 = var_core_value_sigBECE == null ? undefined : var_core_value_sigBECE.getBody(),
+      var_core_value_sig7F72 = this._selectionManagerService["getTextRanges"]({
+        unitId: var_core_value_sig2DAB,
+        subUnitId: var_core_value_sig2DAB
+      });
+    if (!var_core_value_sig1B22 || (var_core_value_sig7F72 == null ? undefined : var_core_value_sig7F72.length) !== 1) return null;
+    let var_core_value_sig7B2A = var_core_value_sig7F72[0];
+    if (var_core_value_sig7B2A.collapsed) return null;
+    let var_core_value_sig06CD = Math.min(var_core_value_sig7B2A.startOffset ?? 0, var_core_value_sig7B2A.endOffset ?? 0),
+      var_core_value_sigA5F1 = Math.max(var_core_value_sig7B2A.startOffset ?? 0, var_core_value_sig7B2A.endOffset ?? 0),
+      var_core_value_sig97A2 = (var_core_value_sig877E = var_core_value_sig1B22.customRanges) == null ? undefined : var_core_value_sig877E.find(var_core_value_sigC9E0 => var_core_value_sigC9E0.startIndex === var_core_value_sig06CD && var_core_value_sigC9E0.endIndex + 1 === var_core_value_sigA5F1 && this._model["getFormula"](var_core_value_sig2DAB, var_core_value_sigC9E0.rangeId) != null);
+    if (var_core_value_sig97A2) return {
+      unitId: var_core_value_sig2DAB,
+      rangeId: var_core_value_sig97A2.rangeId
+    };
+    let var_core_value_sig07E9 = ((var_core_value_sig20C8 = this._lastFormulaTarget) == null ? undefined : var_core_value_sig20C8.unitId) === var_core_value_sig2DAB ? this._getRange(this._lastFormulaTarget) : undefined;
+    return var_core_value_sig07E9 && var_core_value_sig06CD < var_core_value_sig07E9.endIndex + 1 && var_core_value_sigA5F1 > var_core_value_sig07E9.startIndex ? {
+      unitId: var_core_value_sig2DAB,
+      rangeId: var_core_value_sig07E9.rangeId
+    } : null;
+  }
+  closeEditor() {
+    var var_core_value_sig4F59;
+    (var_core_value_sig4F59 = this._editorPopup) == null || var_core_value_sig4F59.dispose(), this._editorPopup = null, this._editorTarget$["next"](null);
+  }
+  closeHover() {
+    var var_core_value_sigF564;
+    (var_core_value_sigF564 = this._hoverPopup) == null || var_core_value_sigF564.dispose(), this._hoverPopup = null, this._hoverTarget$["next"](null);
+  }
+  closeAndRestoreSelection() {
+    var var_core_value_sig8CFA;
+    let var_core_value_sig2E11 = (var_core_value_sig8CFA = this._editorTarget$["value"]) != null && var_core_value_sig8CFA.rangeId ? {
+      unitId: this._editorTarget$["value"].unitId,
+      rangeId: this._editorTarget$["value"].rangeId
+    } : this._hoverTarget$["value"];
+    if (!this.hasOpenPopup) return false;
+    if (this.closeEditor(), this.closeHover(), var_core_value_sig2E11) {
+      let var_core_value_sig76BA = this._getRange(var_core_value_sig2E11);
+      var_core_value_sig76BA && this._selectionManagerService["replaceDocRanges"]([{
+        startOffset: var_core_value_sig76BA.startIndex,
+        endOffset: var_core_value_sig76BA.endIndex + 1,
+        style: p
+      }], {
+        unitId: var_core_value_sig2E11.unitId,
+        subUnitId: var_core_value_sig2E11.unitId
+      });
+    }
+    return true;
+  }
+  dispose() {
+    this.closeEditor(), this.closeHover(), this._editorTarget$["complete"](), this._hoverTarget$["complete"](), super.dispose();
+  }
+  _resolveEditorSelection(var_core_value_sig5B69) {
+    if (var_core_value_sig5B69.rangeId) {
+      let var_core_value_sigFBFA = this._getRange({
+        unitId: var_core_value_sig5B69.unitId,
+        rangeId: var_core_value_sig5B69.rangeId
+      });
+      return var_core_value_sigFBFA ? {
+        collapsed: false,
+        startOffset: var_core_value_sigFBFA.startIndex,
+        endOffset: var_core_value_sigFBFA.endIndex + 1
+      } : null;
+    }
+    if (var_core_value_sig5B69.selection) return var_core_value_sig5B69.selection;
+    let var_core_value_sigB098 = this._selectionManagerService["getTextRanges"]({
+      unitId: var_core_value_sig5B69.unitId,
+      subUnitId: var_core_value_sig5B69.unitId
+    });
+    return (var_core_value_sigB098 == null ? undefined : var_core_value_sigB098[var_core_value_sigB098.length - 1]) ?? null;
+  }
+  _getRange(var_core_value_sigCE71) {
+    var var_core_value_sig21D8;
+    let var_core_value_sig2B65 = this._univerInstanceService["getUnit"](var_core_value_sigCE71.unitId, t.UniverInstanceType["UNIVER_DOC"]),
+      var_core_value_sigD7EA = var_core_value_sig2B65 == null || (var_core_value_sig21D8 = var_core_value_sig2B65.getSelfOrHeaderFooterModel(var_core_value_sigCE71.segmentId)) == null ? undefined : var_core_value_sig21D8.getBody();
+    if (!(!var_core_value_sigD7EA || !this._model["getFormula"](var_core_value_sigCE71.unitId, var_core_value_sigCE71.rangeId))) return (0, e.findDocFormulaRange)(var_core_value_sigD7EA, var_core_value_sigCE71.rangeId);
+  }
+  _canEditRange(var_core_value_sigB33B, var_core_value_sig24B9, var_core_value_sigE627 = "") {
+    let var_core_value_sigEF3E = this._univerInstanceService["getUnit"](var_core_value_sigB33B, t.UniverInstanceType["UNIVER_DOC"]);
+    return var_core_value_sigEF3E ? var_core_value_sig24B9 ? (0, n.canEditDocumentTargets)(this._permissionService, var_core_value_sigB33B, [...(0, n.getDocumentEntityParentPermissionObjectIds)(var_core_value_sigEF3E, var_core_value_sigE627, "custom-range", var_core_value_sig24B9), (0, n.getDocumentEntityPermissionObjectId)(var_core_value_sigE627, "custom-range", var_core_value_sig24B9)]) : (0, n.canEditDocumentTargets)(this._permissionService, var_core_value_sigB33B, []) : true;
+  }
+};
+w = C([S(0, (0, t.Inject)(r.DocCanvasPopManagerService)), S(1, (0, t.Inject)(n.DocSelectionManagerService)), S(2, (0, t.Inject)(e.DocFormulaModel)), S(3, t.IUniverInstanceService), S(4, t.IPermissionService), S(5, i.IRenderManagerService)], w);
+const T = {
+    id: "docs-formula.operation.open-editor",
+    type: t.CommandType["OPERATION"],
+    handler: (var_core_value_sigE1B0, var_core_value_sigD4FF) => {
+      var var_core_value_sig1E5B;
+      let var_core_value_sigB680 = (var_core_value_sigD4FF == null ? undefined : var_core_value_sigD4FF.unitId) ?? ((var_core_value_sig1E5B = var_core_value_sigE1B0.get(t.IUniverInstanceService).getCurrentUnitOfType(t.UniverInstanceType["UNIVER_DOC"])) == null ? undefined : var_core_value_sig1E5B.getUnitId());
+      if (!var_core_value_sigB680) return false;
+      let var_core_value_sig1F64 = var_core_value_sigE1B0.get(w);
+      if (!(var_core_value_sigD4FF != null && var_core_value_sigD4FF.rangeId) && !(var_core_value_sigD4FF != null && var_core_value_sigD4FF.selection)) {
+        let var_core_value_sig273D = var_core_value_sig1F64.getSelectedFormulaTarget(var_core_value_sigB680);
+        return !!var_core_value_sig1F64.openEditor(var_core_value_sig273D ?? {
+          unitId: var_core_value_sigB680
+        });
+      }
+      return !!var_core_value_sig1F64.openEditor({
+        ...var_core_value_sigD4FF,
+        unitId: var_core_value_sigB680
+      });
+    }
+  },
+  E = {
+    id: "docs-formula.operation.open-selected-hover",
+    type: t.CommandType["OPERATION"],
+    handler: var_core_value_sigDD1C => {
+      let var_core_value_sig2C39 = k(var_core_value_sigDD1C.get(t.IUniverInstanceService));
+      return var_core_value_sig2C39 ? !!var_core_value_sigDD1C.get(w).showSelectedHover(var_core_value_sig2C39) : false;
+    }
+  },
+  D = {
+    id: "docs-formula.operation.close-popup",
+    type: t.CommandType["OPERATION"],
+    handler: var_core_value_sigB7D1 => var_core_value_sigB7D1.get(w).closeAndRestoreSelection()
+  },
+  O = {
+    id: "docs-formula.operation.remove-selected",
+    type: t.CommandType["OPERATION"],
+    handler: var_core_value_sig64F0 => {
+      let var_core_value_sig85B1 = k(var_core_value_sig64F0.get(t.IUniverInstanceService));
+      if (!var_core_value_sig85B1) return false;
+      let var_core_value_sig3141 = var_core_value_sig64F0.get(w),
+        var_core_value_sig2162 = var_core_value_sig3141.getSelectedFormulaTarget(var_core_value_sig85B1);
+      if (!var_core_value_sig2162) return false;
+      let var_core_value_sig2EAD = var_core_value_sig64F0.get(t.ICommandService).syncExecuteCommand(e.RemoveDocFormulaCommand["id"], var_core_value_sig2162);
+      return var_core_value_sig2EAD && (var_core_value_sig3141.closeEditor(), var_core_value_sig3141.closeHover()), !!var_core_value_sig2EAD;
+    }
+  };
+function k(var_core_value_sig6774) {
+  var var_core_value_sig340D;
+  return (var_core_value_sig340D = var_core_value_sig6774.getCurrentUnitOfType(t.UniverInstanceType["UNIVER_DOC"])) == null ? undefined : var_core_value_sig340D.getUnitId();
+}
+const A = "docs-formula-ui.config",
+  j = {};
+function ne(var_core_value_sig82D4) {
+  return {
+    id: T.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "FxIcon",
+    title: "docs-formula-ui.menu.formula",
+    tooltip: "docs-formula-ui.menu.formula",
+    hidden$: (0, o.getMenuHiddenObservable)(var_core_value_sig82D4, t.UniverInstanceType["UNIVER_DOC"]),
+    disabled$: (0, r.disableMenuWhenHeaderFooterEditing)(var_core_value_sig82D4)
+  };
+}
+const M = {
+  [o.MenuManagerPosition["RIBBON"]]: {
+    [o.RibbonPosition["INSERT"]]: {
+      [o.RibbonInsertGroup["MEDIA"]]: {
+        [T.id]: {
+          order: 7,
+          menuItemFactory: ne
+        }
+      }
+    }
+  }
+};
+var N = "@univerjs-pro/docs-formula-ui",
+  re = "1.0.0-insiders.20260907-70fc579";
+function ie() {
+  let var_core_value_sigBDE4 = (0, o.useDependency)(t.ICommandService),
+    var_core_value_sig7DF1 = (0, o.useDependency)(e.DocFormulaModel),
+    var_core_value_sigDC86 = (0, o.useDependency)(w),
+    var_core_value_sig0B0C = (0, o.useObservable)(var_core_value_sigDC86.editorTarget$);
+  if (!var_core_value_sig0B0C) return null;
+  let var_core_value_sigA39E = var_core_value_sig0B0C.rangeId ? var_core_value_sig7DF1.getFormula(var_core_value_sig0B0C.unitId, var_core_value_sig0B0C.rangeId) : undefined;
+  return (0, u.jsx)(c.FormulaBindingEditorDialog, {
+    open: true,
+    host: {
+      unitId: var_core_value_sig0B0C.unitId
+    },
+    value: {
+      formula: (var_core_value_sigA39E == null ? undefined : var_core_value_sigA39E.formula) ?? "=",
+      numberFormat: var_core_value_sigA39E == null ? undefined : var_core_value_sigA39E.numberFormat
+    },
+    onClose: () => var_core_value_sigDC86.closeEditor(),
+    onConfirm: var_core_value_sig9A0D => {
+      (var_core_value_sig0B0C.rangeId ? var_core_value_sigBDE4.syncExecuteCommand(e.UpdateDocFormulaCommand["id"], {
+        unitId: var_core_value_sig0B0C.unitId,
+        rangeId: var_core_value_sig0B0C.rangeId,
+        formula: var_core_value_sig9A0D.formula,
+        numberFormat: var_core_value_sig9A0D.numberFormat,
+        externalReferences: var_core_value_sig9A0D.externalReferences
+      }) : var_core_value_sigBDE4.syncExecuteCommand(e.InsertDocFormulaCommand["id"], {
+        unitId: var_core_value_sig0B0C.unitId,
+        formula: var_core_value_sig9A0D.formula,
+        numberFormat: var_core_value_sig9A0D.numberFormat,
+        externalReferences: var_core_value_sig9A0D.externalReferences,
+        target: {
+          type: "selection",
+          selection: var_core_value_sig0B0C.selection
+        }
+      })) && var_core_value_sigDC86.closeEditor();
+    }
+  }, var_core_value_sig0B0C.unitId + ":" + (var_core_value_sig0B0C.rangeId ?? "new"));
+}
+function ae() {
+  var var_core_value_sigBBEE;
+  let var_core_value_sig011D = (0, o.useDependency)(t.ICommandService),
+    var_core_value_sig6167 = (0, o.useDependency)(t.LocaleService),
+    var_core_value_sig65A1 = (0, o.useDependency)(e.DocFormulaModel),
+    var_core_value_sig7F19 = (0, o.useDependency)(e.DocFormulaDisplayTextService),
+    var_core_value_sig7827 = (0, o.useDependency)(w),
+    var_core_value_sig652C = (0, o.useObservable)(var_core_value_sig7827.hoverTarget$),
+    [var_core_value_sig7E32, var_core_value_sig4C07] = (0, f.useState)(false);
+  if (!var_core_value_sig652C) return null;
+  let var_core_value_sig79AB = var_core_value_sigA319 => {
+      var_core_value_sig011D.syncExecuteCommand(var_core_value_sigA319, {
+        unitId: var_core_value_sig652C.unitId,
+        rangeId: var_core_value_sig652C.rangeId
+      }) && var_core_value_sig7827.closeHover();
+    },
+    var_core_value_sig8E74 = var_core_value_sig65A1.getFormula(var_core_value_sig652C.unitId, var_core_value_sig652C.rangeId),
+    var_core_value_sig104C = var_core_value_sig7F19.resolveFormula(var_core_value_sig652C.unitId, var_core_value_sig652C.rangeId);
+  return (0, u.jsxs)(u.Fragment, {
+    children: [(0, u.jsxs)("div", {
+      className: "univer-flex univer-items-center univer-gap-1 univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-1 dark:!univer-border-gray-600 dark:!univer-bg-gray-900",
+      role: "toolbar",
+      "aria-label": var_core_value_sig6167.t("docs-formula-ui.menu.formula") + ":\x20" + var_core_value_sig104C + ".\x20" + var_core_value_sig6167.t("docs-formula-ui.menu.actions"),
+      "aria-live": "polite",
+      children: [(0, u.jsx)(d.Tooltip, {
+        title: var_core_value_sig6167.t("docs-formula-ui.menu.edit"),
+        children: (0, u.jsx)(d.Button, {
+          type: "button",
+          size: "small",
+          "aria-label": var_core_value_sig6167.t("docs-formula-ui.menu.edit"),
+          onClick: () => {
+            var_core_value_sig011D.syncExecuteCommand(T.id, var_core_value_sig652C);
+          },
+          children: (0, u.jsx)(l.WriteIcon, {})
+        })
+      }), (0, u.jsx)(d.Tooltip, {
+        title: var_core_value_sig6167.t("docs-formula-ui.menu.numberFormat"),
+        children: (0, u.jsx)(d.Button, {
+          type: "button",
+          size: "small",
+          "aria-label": var_core_value_sig6167.t("docs-formula-ui.menu.numberFormat"),
+          onClick: () => var_core_value_sig4C07(true),
+          children: (0, u.jsx)(l.NumberIcon, {})
+        })
+      }), (0, u.jsx)(d.Tooltip, {
+        title: var_core_value_sig6167.t("docs-formula-ui.menu.convertToText"),
+        children: (0, u.jsx)(d.Button, {
+          type: "button",
+          size: "small",
+          "aria-label": var_core_value_sig6167.t("docs-formula-ui.menu.convertToText"),
+          onClick: () => var_core_value_sig79AB(e.ConvertDocFormulaToTextCommand["id"]),
+          children: (0, u.jsx)(l.TextIcon, {})
+        })
+      }), (0, u.jsx)(d.Tooltip, {
+        title: var_core_value_sig6167.t("docs-formula-ui.menu.delete"),
+        children: (0, u.jsx)(d.Button, {
+          type: "button",
+          size: "small",
+          "aria-label": var_core_value_sig6167.t("docs-formula-ui.menu.delete"),
+          onClick: () => var_core_value_sig79AB(e.RemoveDocFormulaCommand["id"]),
+          children: (0, u.jsx)(l.DeleteIcon, {})
+        })
+      })]
+    }), var_core_value_sig7E32 && (0, u.jsx)(c.FormulaBindingNumberFormatDialog, {
+      open: true,
+      pattern: (var_core_value_sig8E74 == null || (var_core_value_sigBBEE = var_core_value_sig8E74.numberFormat) == null ? undefined : var_core_value_sigBBEE.pattern) ?? t.DEFAULT_NUMBER_FORMAT,
+      onClose: () => var_core_value_sig4C07(false),
+      onConfirm: var_core_value_sig2D58 => {
+        var_core_value_sig011D.syncExecuteCommand(e.SetDocFormulaNumberFormatCommand["id"], {
+          unitId: var_core_value_sig652C.unitId,
+          rangeId: var_core_value_sig652C.rangeId,
+          numberFormat: {
+            pattern: var_core_value_sig2D58
+          }
+        }) && var_core_value_sig4C07(false);
+      }
+    })]
+  });
+}
+let P = class extends t.Disposable {
+  constructor(var_core_value_sig223F, var_core_value_sigD749) {
+    super(), this._componentManager = var_core_value_sig223F, this._iconManager = var_core_value_sigD749, this._registerComponents(), this._registerIcons();
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](v, ie)), this.disposeWithMe(this._componentManager["register"](y, ae));
+  }
+  _registerIcons() {
+    this.disposeWithMe(this._iconManager["register"]({
+      FxIcon: l.FxIcon
+    }));
+  }
+};
+P = C([S(0, (0, t.Inject)(o.ComponentManager)), S(1, (0, t.Inject)(o.IconManager))], P);
+function F(var_core_value_sig841D, var_core_value_sig90CB, var_core_value_sigBDF5) {
+  for (let var_core_value_sigCFFA = var_core_value_sig841D.length - 1; var_core_value_sigCFFA >= 0; var_core_value_sigCFFA--) {
+    let var_core_value_sigF602 = var_core_value_sig841D[var_core_value_sigCFFA];
+    if (var_core_value_sig90CB >= var_core_value_sigF602.left && var_core_value_sig90CB <= var_core_value_sigF602.right && var_core_value_sigBDF5 >= var_core_value_sigF602.top && var_core_value_sigBDF5 <= var_core_value_sigF602.bottom) return var_core_value_sigF602;
+  }
+  return null;
+}
+function oe(var_core_value_sigACC6, var_core_value_sig1614) {
+  return var_core_value_sig1614.collapsed ? var_core_value_sig1614.startOffset >= var_core_value_sigACC6.startIndex && var_core_value_sig1614.startOffset <= var_core_value_sigACC6.endIndex : var_core_value_sig1614.startOffset === var_core_value_sigACC6.startIndex && var_core_value_sig1614.endOffset === var_core_value_sigACC6.endIndex + 1;
+}
+function se(var_core_value_sig85C3, var_core_value_sigB996) {
+  return var_core_value_sigB996.collapsed ? var_core_value_sigB996.startOffset >= var_core_value_sig85C3.startIndex && var_core_value_sigB996.startOffset <= var_core_value_sig85C3.endIndex : var_core_value_sigB996.startOffset < var_core_value_sig85C3.endIndex + 1 && var_core_value_sigB996.endOffset > var_core_value_sig85C3.startIndex;
+}
+function I(var_core_value_sig4BBA, var_core_value_sig6201, var_core_value_sig5151, var_core_value_sigB542, var_core_value_sigBB6C = 0, var_core_value_sigE2BF = 0) {
+  return {
+    x: var_core_value_sig4BBA / var_core_value_sig5151 + var_core_value_sigBB6C,
+    y: var_core_value_sig6201 / var_core_value_sigB542 + var_core_value_sigE2BF
+  };
+}
+var ce = class extends i.ComponentExtension {
+  constructor(var_core_value_sig58C1) {
+    super(), this._state = var_core_value_sig58C1, x(this, "uKey", "DocFormulaExtension"), x(this, "type", 0), x(this, "Z_INDEX", 110);
+  }
+  draw(var_core_value_sig5090, var_core_value_sigC368, var_core_value_sigAD56) {
+    var var_core_value_sigDB4A, var_core_value_sig6418, var_core_value_sig1896;
+    let var_core_value_sig0285 = L(var_core_value_sigAD56);
+    if (var_core_value_sig0285 == null) return;
+    let var_core_value_sig777D = (var_core_value_sigDB4A = this._state["getBody"]()) == null || (var_core_value_sigDB4A = var_core_value_sigDB4A.customRanges) == null ? undefined : var_core_value_sigDB4A.find(var_core_value_sig1BBD => (0, e.isDocFormulaRange)(var_core_value_sig1BBD) && var_core_value_sig1BBD.startIndex === var_core_value_sig0285),
+      var_core_value_sig3F4C = this.extensionOffset["spanPointWithFont"];
+    if (!var_core_value_sig777D || !var_core_value_sig3F4C) return;
+    let var_core_value_sigD65A = this._state["getResult"](var_core_value_sig777D.rangeId),
+      var_core_value_sig5A13 = (var_core_value_sigD65A == null ? undefined : var_core_value_sigD65A.text) || "…",
+      var_core_value_sigF593 = var_core_value_sigD65A == null ? undefined : var_core_value_sigD65A.color,
+      var_core_value_sig3607 = (0, i.ptToPixel)(((var_core_value_sig6418 = var_core_value_sigAD56.fontStyle) == null ? undefined : var_core_value_sig6418.originFontSize) ?? ((var_core_value_sig1896 = var_core_value_sigAD56.ts) == null ? undefined : var_core_value_sig1896.fs) ?? 14),
+      var_core_value_sigB512 = this._state["renderService"].getMetrics(var_core_value_sig5A13, var_core_value_sigF593, var_core_value_sig3607),
+      var_core_value_sigF2E6 = this._state["isActive"](var_core_value_sig777D.rangeId),
+      var_core_value_sig34C8 = h(var_core_value_sig3F4C.x, var_core_value_sig3F4C.y, var_core_value_sigB512);
+    var_core_value_sigF2E6 && (0, r.drawDocCustomRangeChrome)(var_core_value_sig5090, {
+      bottom: var_core_value_sig34C8.bottom,
+      left: var_core_value_sig34C8.left,
+      right: var_core_value_sig34C8.contentRight,
+      top: var_core_value_sig34C8.top
+    }, this._state["getChromeTheme"]()), this._state["renderService"].draw(var_core_value_sig5090, var_core_value_sig5A13, var_core_value_sigF593, var_core_value_sig3607, var_core_value_sig34C8.textX, var_core_value_sig3F4C.y), this._state["setHitRect"]({
+      bottom: var_core_value_sig34C8.bottom,
+      contentRight: var_core_value_sig34C8.contentRight,
+      left: var_core_value_sig34C8.left,
+      range: var_core_value_sig777D,
+      right: var_core_value_sig34C8.contentRight,
+      top: var_core_value_sig34C8.top
+    });
+  }
+  clearCache() {
+    this._state["clearHitRects"]();
+  }
+};
+function L(var_core_value_sigB8C7) {
+  let var_core_value_sigA56E = var_core_value_sigB8C7.parent;
+  if (!(var_core_value_sigA56E != null && var_core_value_sigA56E.glyphGroup)) return null;
+  let var_core_value_sig1998 = var_core_value_sigA56E.st;
+  for (let var_core_value_sigB744 of var_core_value_sigA56E.glyphGroup) {
+    var var_core_value_sigFF19;
+    if (var_core_value_sigB744 === var_core_value_sigB8C7) return var_core_value_sig1998;
+    var_core_value_sig1998 += var_core_value_sigB744.count || ((var_core_value_sigFF19 = var_core_value_sigB744.content) == null ? undefined : var_core_value_sigFF19.length) || 1;
+  }
+  return null;
+}
+function R(var_core_value_sig43B8, var_core_value_sigD98F, var_core_value_sig66C0, var_core_value_sig9D15) {
+  let var_core_value_sigB785 = {
+    fs: (0, i.pixelToPt)(var_core_value_sig9D15),
+    ...(var_core_value_sig66C0 ? {
+      cl: {
+        rgb: var_core_value_sig66C0
+      }
+    } : null)
+  };
+  return {
+    id: var_core_value_sig43B8,
+    body: {
+      dataStream: var_core_value_sigD98F + "\x0d\x0a",
+      paragraphs: [{
+        startIndex: var_core_value_sigD98F.length,
+        paragraphId: (0, t.createParagraphId)(new Set()),
+        paragraphStyle: {
+          textStyle: var_core_value_sigB785
+        }
+      }],
+      textRuns: [{
+        st: 0,
+        ed: var_core_value_sigD98F.length,
+        ts: var_core_value_sigB785
+      }]
+    },
+    documentStyle: {
+      marginBottom: 0,
+      marginLeft: 0,
+      marginRight: 0,
+      marginTop: 0,
+      pageSize: {
+        width: 10000,
+        height: Math.max(100, var_core_value_sig9D15 * 4)
+      },
+      renderConfig: {
+        horizontalAlign: t.HorizontalAlign["LEFT"],
+        verticalAlign: t.VerticalAlign["TOP"]
+      },
+      textStyle: var_core_value_sigB785
+    }
+  };
+}
+function z(var_core_value_sig130F) {
+  var var_core_value_sigC0E3;
+  let var_core_value_sig52F7 = (var_core_value_sigC0E3 = var_core_value_sig130F.getSkeletonData()) == null ? undefined : var_core_value_sigC0E3.pages[0],
+    var_core_value_sig866F = var_core_value_sig52F7 == null ? undefined : var_core_value_sig52F7.sections[0],
+    var_core_value_sigDE3D = var_core_value_sig866F == null ? undefined : var_core_value_sig866F.columns[0],
+    var_core_value_sigF175 = var_core_value_sigDE3D == null ? undefined : var_core_value_sigDE3D.lines[0],
+    var_core_value_sig6A18 = var_core_value_sigF175 == null ? undefined : var_core_value_sigF175.divides[0];
+  return {
+    column: var_core_value_sigDE3D,
+    divide: var_core_value_sig6A18,
+    glyph: var_core_value_sig6A18 == null ? undefined : var_core_value_sig6A18.glyphGroup[0],
+    line: var_core_value_sigF175,
+    page: var_core_value_sig52F7,
+    section: var_core_value_sig866F
+  };
+}
+function B(var_core_value_sig4E3D, var_core_value_sig49B0) {
+  var var_core_value_sig2547;
+  let var_core_value_sigBCA9 = ((var_core_value_sig2547 = var_core_value_sig4E3D.line) == null ? undefined : var_core_value_sig2547.divides["reduce"]((var_core_value_sigEAE2, var_core_value_sigE68A) => var_core_value_sigEAE2 + (var_core_value_sigE68A.glyphGroupWidth ?? var_core_value_sigE68A.glyphGroup["reduce"]((var_core_value_sigF704, var_core_value_sig2BCF) => var_core_value_sigF704 + var_core_value_sig2BCF.width, 0)), 0)) ?? var_core_value_sig49B0 * 0.6;
+  return {
+    ascent: var_core_value_sig4E3D.line && var_core_value_sig4E3D.line["asc"] > 0 ? var_core_value_sig4E3D.line["asc"] : var_core_value_sig49B0 * 0.8,
+    descent: var_core_value_sig4E3D.line && var_core_value_sig4E3D.line["dsc"] > 0 ? var_core_value_sig4E3D.line["dsc"] : var_core_value_sig49B0 * 0.2,
+    width: Math.max(1, var_core_value_sigBCA9)
+  };
+}
+function V(var_core_value_sig4CDF, var_core_value_sig3F79) {
+  let var_core_value_sig880E = z(var_core_value_sig4CDF),
+    var_core_value_sigC9ED = B(var_core_value_sig880E, var_core_value_sig3F79);
+  return {
+    metrics: var_core_value_sigC9ED,
+    originBaseline: H(var_core_value_sig880E, var_core_value_sigC9ED.ascent),
+    originX: U(var_core_value_sig880E)
+  };
+}
+function H(var_core_value_sigB57B, var_core_value_sig780B) {
+  var var_core_value_sig7D1B, var_core_value_sig7BE0, var_core_value_sig7D40, var_core_value_sig6C7E, var_core_value_sig68BE;
+  return (((var_core_value_sig7D1B = var_core_value_sigB57B.page) == null ? undefined : var_core_value_sig7D1B.marginTop) ?? 0) + (((var_core_value_sig7BE0 = var_core_value_sigB57B.section) == null ? undefined : var_core_value_sig7BE0.top) ?? 0) + (((var_core_value_sig7D40 = var_core_value_sigB57B.line) == null ? undefined : var_core_value_sig7D40.top) ?? 0) + (((var_core_value_sig6C7E = var_core_value_sigB57B.line) == null ? undefined : var_core_value_sig6C7E.marginTop) ?? 0) + (((var_core_value_sig68BE = var_core_value_sigB57B.line) == null ? undefined : var_core_value_sig68BE.paddingTop) ?? 0) + var_core_value_sig780B;
+}
+function U(var_core_value_sig04C6) {
+  var var_core_value_sigCA05, var_core_value_sig2F2B, var_core_value_sig70AF, var_core_value_sigD04E, var_core_value_sigB99B;
+  return (((var_core_value_sigCA05 = var_core_value_sig04C6.page) == null ? undefined : var_core_value_sigCA05.marginLeft) ?? 0) + (((var_core_value_sig2F2B = var_core_value_sig04C6.column) == null ? undefined : var_core_value_sig2F2B.left) ?? 0) + (((var_core_value_sig70AF = var_core_value_sig04C6.divide) == null ? undefined : var_core_value_sig70AF.left) ?? 0) + (((var_core_value_sigD04E = var_core_value_sig04C6.divide) == null ? undefined : var_core_value_sigD04E.paddingLeft) ?? 0) + (((var_core_value_sigB99B = var_core_value_sig04C6.glyph) == null ? undefined : var_core_value_sigB99B.left) ?? 0);
+}
+let W = class extends t.Disposable {
+  constructor(var_core_value_sig3E68) {
+    super(), this._localeService = var_core_value_sig3E68, x(this, "_layouts", new Map());
+  }
+  getMetrics(var_core_value_sigF4C5, var_core_value_sig5410, var_core_value_sig492F) {
+    return this._getLayout(var_core_value_sigF4C5, var_core_value_sig5410, var_core_value_sig492F).metrics;
+  }
+  draw(var_core_value_sig8EA0, var_core_value_sigA6F6, var_core_value_sigCDDA, var_core_value_sigE243, var_core_value_sig74A8, var_core_value_sig21B2) {
+    let var_core_value_sigDE08 = this._getLayout(var_core_value_sigA6F6, var_core_value_sigCDDA, var_core_value_sigE243);
+    return var_core_value_sig8EA0.save(), var_core_value_sig8EA0.translateWithPrecision(var_core_value_sig74A8 - var_core_value_sigDE08.originX, var_core_value_sig21B2 - var_core_value_sigDE08.originBaseline), var_core_value_sigDE08.documents["draw"](var_core_value_sig8EA0), var_core_value_sig8EA0.restore(), var_core_value_sigDE08.metrics;
+  }
+  dispose() {
+    for (let var_core_value_sig0D69 of this._layouts["values"]()) var_core_value_sig0D69.documents["dispose"](), var_core_value_sig0D69.documentSkeleton["dispose"](), var_core_value_sig0D69.documentViewModel["dispose"](), var_core_value_sig0D69.documentModel["dispose"]();
+    this._layouts["clear"](), super.dispose();
+  }
+  _getLayout(var_core_value_sigACCB, var_core_value_sig7F33, var_core_value_sig0C53) {
+    let var_core_value_sigEA04 = var_core_value_sigACCB || "\x20",
+      var_core_value_sig7A62 = JSON.stringify([var_core_value_sigEA04, var_core_value_sig7F33 ?? "", var_core_value_sig0C53]),
+      var_core_value_sig8109 = this._layouts["get"](var_core_value_sig7A62);
+    if (var_core_value_sig8109) return var_core_value_sig8109;
+    let var_core_value_sig7565 = new t.DocumentDataModel(R("doc-formula-render-" + this._layouts["size"], var_core_value_sigEA04, var_core_value_sig7F33, var_core_value_sig0C53)),
+      var_core_value_sigD4FB = new i["DocumentViewModel"](var_core_value_sig7565),
+      var_core_value_sig3E71 = i.DocumentSkeleton["create"](var_core_value_sigD4FB, this._localeService);
+    var_core_value_sig3E71.calculate();
+    let var_core_value_sig01B3 = V(var_core_value_sig3E71, var_core_value_sig0C53),
+      var_core_value_sig7442 = new i["Documents"](var_core_value_sig7A62, var_core_value_sig3E71, {
+        pageMarginLeft: 0,
+        pageMarginTop: 0
+      });
+    var_core_value_sig7442.resize(var_core_value_sig01B3.metrics["width"], var_core_value_sig01B3.metrics["ascent"] + var_core_value_sig01B3.metrics["descent"]);
+    let var_core_value_sigDF87 = {
+      documents: var_core_value_sig7442,
+      documentModel: var_core_value_sig7565,
+      documentSkeleton: var_core_value_sig3E71,
+      documentViewModel: var_core_value_sigD4FB,
+      ...var_core_value_sig01B3
+    };
+    return this._layouts["set"](var_core_value_sig7A62, var_core_value_sigDF87), var_core_value_sigDF87;
+  }
+};
+W = C([S(0, (0, t.Inject)(t.LocaleService))], W);
+const G = -10980;
+let K = class extends t.Disposable {
+  constructor(var_core_value_sig9EE0, var_core_value_sigF0511, var_core_value_sig0B45, var_core_value_sig36F8, var_core_value_sig03E1, var_core_value_sigBB57, var_core_value_sig7C4A, var_core_value_sigE799, var_core_value_sigB601, var_core_value_sig8B71, var_core_value_sigAEFB, var_core_value_sig826B) {
+    super(), this._context = var_core_value_sig9EE0, this._formulaService = var_core_value_sigF0511, this._textRenderService = var_core_value_sig0B45, this._popupService = var_core_value_sig36F8, this._interceptorService = var_core_value_sig03E1, this._docLayoutExecutorService = var_core_value_sigBB57, this._selectionManagerService = var_core_value_sig7C4A, this._skeletonManagerService = var_core_value_sigE799, this._floatMenuService = var_core_value_sigB601, this._paragraphMenuService = var_core_value_sig8B71, this._renderManagerService = var_core_value_sigAEFB, this._themeService = var_core_value_sig826B, x(this, "_hitRects", new Map()), x(this, "_activeRangeIds", new Set()), x(this, "_hoveredRangeId", null), x(this, "_cursorBeforeHover", null), x(this, "_normalizingSelectionRangeId", null), this._initExtension(), this._initCustomRangeInterceptor(), this._initWorkerCustomRangePresentation(), this._initSelection(), this._initPointer(), this.disposeWithMe(this._formulaService["presentationChanged$"].subscribe(({
+      unitId: var_core_value_sig480E
+    }) => {
+      var_core_value_sig480E === this._context["unitId"] && this._recalculateLayout();
+    })), this.disposeWithMe(this._themeService["currentTheme$"].subscribe(() => {
+      this._context["scene"].makeDirty(true);
+    })), this.disposeWithMe(this._themeService["darkMode$"].subscribe(() => {
+      this._context["scene"].makeDirty(true);
+    }));
+  }
+  _initExtension() {
+    let var_core_value_sigCF89 = this._context["mainComponent"];
+    if (!(var_core_value_sigCF89 instanceof i.Documents)) return;
+    let var_core_value_sig00CB = var_core_value_sigCF89.register(new ce({
+      clearHitRects: () => this._hitRects["clear"](),
+      getBody: () => this._context["unit"].getBody(),
+      getChromeTheme: () => (0, r.resolveDocCustomRangeChromeTheme)(this._themeService),
+      getResult: var_core_value_sig26DB => this._formulaService["getResult"]({
+        unitId: this._context["unitId"],
+        rangeId: var_core_value_sig26DB
+      }),
+      isActive: var_core_value_sigF0F9 => this._hoveredRangeId === var_core_value_sigF0F9 || this._activeRangeIds["has"](var_core_value_sigF0F9),
+      renderService: this._textRenderService,
+      setHitRect: var_core_value_sig1A0F => this._hitRects["set"](var_core_value_sig1A0F.range["rangeId"], this._toDocumentHitRect(var_core_value_sig1A0F))
+    }));
+    this.disposeWithMe(var_core_value_sig00CB);
+  }
+  _initCustomRangeInterceptor() {
+    this.disposeWithMe(this._interceptorService["intercept"](n.DOC_INTERCEPTOR_POINT["CUSTOM_RANGE"], {
+      priority: 110,
+      handler: (var_core_value_sigFBA4, var_core_value_sig4383, var_core_value_sig186C) => {
+        let var_core_value_sigD955 = var_core_value_sig186C(var_core_value_sigFBA4);
+        return !var_core_value_sigD955 || !(0, e.isDocFormulaRange)(var_core_value_sigD955) ? var_core_value_sigD955 : {
+          ...var_core_value_sigD955,
+          ...this._getFormulaPresentation(var_core_value_sigD955)
+        };
+      }
+    }));
+  }
+  _initWorkerCustomRangePresentation() {
+    this.disposeWithMe(this._docLayoutExecutorService["registerCustomRangePresentationProvider"]((var_core_value_sig48BD, var_core_value_sig429F) => var_core_value_sig48BD !== this._context["unitId"] || !(0, e.isDocFormulaRange)(var_core_value_sig429F) ? null : this._getFormulaPresentation(var_core_value_sig429F)));
+  }
+  _getFormulaPresentation(var_core_value_sig77EE) {
+    let var_core_value_sig9F76 = this._formulaService["getResult"]({
+        unitId: this._context["unitId"],
+        rangeId: var_core_value_sig77EE.rangeId
+      }),
+      var_core_value_sigB008 = (0, i.ptToPixel)(14),
+      var_core_value_sig8721 = this._textRenderService["getMetrics"]((var_core_value_sig9F76 == null ? undefined : var_core_value_sig9F76.text) || "…", var_core_value_sig9F76 == null ? undefined : var_core_value_sig9F76.color, var_core_value_sigB008);
+    return {
+      active: this._activeRangeIds["has"](var_core_value_sig77EE.rangeId),
+      glyphAscentEm: var_core_value_sig8721.ascent / var_core_value_sigB008,
+      glyphDescentEm: var_core_value_sig8721.descent / var_core_value_sigB008,
+      glyphWidthEm: _(var_core_value_sig8721, var_core_value_sigB008),
+      show: false
+    };
+  }
+  _initSelection() {
+    this.disposeWithMe(this._selectionManagerService["textSelection$"].subscribe(({
+      textRanges: var_core_value_sigF62A,
+      unitId: var_core_value_sig8178,
+      options: var_core_value_sigE9ED
+    }) => {
+      var_core_value_sig8178 === this._context["unitId"] && this._updateSelectionState(var_core_value_sigF62A, (var_core_value_sigE9ED == null ? undefined : var_core_value_sigE9ED[n.DOC_SELECTION_OPTION_PRESERVE_CARET]) === true);
+    }));
+  }
+  _updateSelectionState(var_core_value_sig08BA, var_core_value_sigDBB5 = false) {
+    var var_core_value_sigCFAC;
+    this._activeRangeIds["clear"]();
+    let var_core_value_sig237B = ((var_core_value_sigCFAC = this._context["unit"].getBody()) == null || (var_core_value_sigCFAC = var_core_value_sigCFAC.customRanges) == null ? undefined : var_core_value_sigCFAC.filter(e.isDocFormulaRange)) ?? [],
+      {
+        focusedRange: var_core_value_sigFEAB,
+        focusedSelection: var_core_value_sigE347,
+        focusedTarget: var_core_value_sig3C5B
+      } = ue(le(var_core_value_sig08BA, var_core_value_sigDBB5), var_core_value_sig237B, (var_core_value_sig08BA == null ? undefined : var_core_value_sig08BA.length) === 1, this._activeRangeIds);
+    if (var_core_value_sigFEAB && var_core_value_sigE347 && (var_core_value_sigE347.collapsed || !m(var_core_value_sigE347.style)) && this._normalizingSelectionRangeId !== var_core_value_sigFEAB.rangeId) {
+      this._normalizingSelectionRangeId = var_core_value_sigFEAB.rangeId, this._selectFormulaRange(var_core_value_sigFEAB, var_core_value_sigE347);
+      return;
+    }
+    (!var_core_value_sigFEAB || m(var_core_value_sigE347 == null ? undefined : var_core_value_sigE347.style)) && (this._normalizingSelectionRangeId = null), this._popupService["hasOpenEditor"] || (var_core_value_sig3C5B ? (this._closeCompetingContextMenus(), this._popupService["showHover"]({
+      unitId: this._context["unitId"],
+      ...var_core_value_sig3C5B
+    }, () => this._getFormulaAnchorRect(var_core_value_sig3C5B.rangeId))) : this._popupService["closeHover"]()), this._context["scene"].makeDirty(true);
+  }
+  _initPointer() {
+    let var_core_value_sig200B = this._context["mainComponent"] ?? this._context["scene"];
+    this.disposeWithMe(var_core_value_sig200B.onPointerMove$["subscribeEvent"]({
+      next: ([var_core_value_sigB577]) => {
+        if (var_core_value_sigB577.buttons > 0) {
+          this._restoreCursor();
+          return;
+        }
+        let var_core_value_sig9572 = q(var_core_value_sigB577.offsetX, var_core_value_sigB577.offsetY, this._context["scene"]),
+          var_core_value_sigD873 = F([...this._hitRects["values"]()], var_core_value_sig9572.x, var_core_value_sig9572.y);
+        if (!var_core_value_sigD873) {
+          this._setHoveredRange(null), this._restoreCursor();
+          return;
+        }
+        this._setHoveredRange(var_core_value_sigD873.range["rangeId"]), this._setPointerCursor();
+      },
+      priority: G
+    })), this.disposeWithMe(var_core_value_sig200B.onPointerLeave$["subscribeEvent"](() => {
+      this._setHoveredRange(null), this._restoreCursor();
+    })), this.disposeWithMe(var_core_value_sig200B.onPointerDown$["subscribeEvent"]({
+      next: ([var_core_value_sigA12B, var_core_value_sigF230]) => {
+        var var_core_value_sig09B8, var_core_value_sig6F91;
+        if (var_core_value_sigA12B.button === 2) return;
+        let var_core_value_sigF9C7 = q(var_core_value_sigA12B.offsetX, var_core_value_sigA12B.offsetY, this._context["scene"]),
+          var_core_value_sig8895 = F([...this._hitRects["values"]()], var_core_value_sigF9C7.x, var_core_value_sigF9C7.y);
+        var_core_value_sig8895 && (var_core_value_sigF230.stopPropagation(), var_core_value_sigF230.skipNextObservers = true, (var_core_value_sig09B8 = var_core_value_sigA12B.preventDefault) == null || var_core_value_sig09B8.call(var_core_value_sigA12B), (var_core_value_sig6F91 = var_core_value_sigA12B.stopPropagation) == null || var_core_value_sig6F91.call(var_core_value_sigA12B), this._closeCompetingContextMenus(), this._selectFormulaRange(var_core_value_sig8895.range, {
+          segmentId: var_core_value_sig8895.segmentId,
+          segmentPage: var_core_value_sig8895.segmentPage
+        }), this._popupService["showHover"]({
+          unitId: this._context["unitId"],
+          rangeId: var_core_value_sig8895.range["rangeId"],
+          segmentId: var_core_value_sig8895.segmentId,
+          segmentPage: var_core_value_sig8895.segmentPage
+        }, () => this._getFormulaAnchorRect(var_core_value_sig8895.range["rangeId"])));
+      },
+      priority: G
+    }));
+  }
+  _selectFormulaRange(var_core_value_sig3863, var_core_value_sigC97C) {
+    this._selectionManagerService["replaceDocRanges"]([{
+      endOffset: var_core_value_sig3863.endIndex + 1,
+      segmentId: var_core_value_sigC97C.segmentId,
+      segmentPage: var_core_value_sigC97C.segmentPage,
+      startOffset: var_core_value_sig3863.startIndex,
+      style: p
+    }], {
+      subUnitId: this._context["unitId"],
+      unitId: this._context["unitId"]
+    });
+  }
+  _closeCompetingContextMenus() {
+    this._floatMenuService["hideFloatMenu"](), this._paragraphMenuService["hideParagraphMenu"](true);
+  }
+  _getFormulaAnchorRect(var_core_value_sigC4B1) {
+    let var_core_value_sig1BD9 = this._hitRects["get"](var_core_value_sigC4B1);
+    return var_core_value_sig1BD9 ? {
+      bottom: var_core_value_sig1BD9.bottom,
+      left: var_core_value_sig1BD9.left,
+      right: var_core_value_sig1BD9.right,
+      top: var_core_value_sig1BD9.top
+    } : undefined;
+  }
+  _toDocumentHitRect(var_core_value_sigE43E) {
+    let var_core_value_sigA937 = this._context["mainComponent"];
+    if (!(var_core_value_sigA937 instanceof i.Documents)) return var_core_value_sigE43E;
+    let {
+      docsLeft: var_core_value_sigCAD5 = 0,
+      docsTop: var_core_value_sigE503 = 0
+    } = var_core_value_sigA937.getOffsetConfig();
+    return {
+      ...var_core_value_sigE43E,
+      bottom: var_core_value_sigE43E.bottom + var_core_value_sigE503,
+      contentRight: var_core_value_sigE43E.contentRight + var_core_value_sigCAD5,
+      left: var_core_value_sigE43E.left + var_core_value_sigCAD5,
+      right: var_core_value_sigE43E.right + var_core_value_sigCAD5,
+      top: var_core_value_sigE43E.top + var_core_value_sigE503
+    };
+  }
+  _setPointerCursor() {
+    this._cursorBeforeHover ??= this._context["scene"].getCursor(), this._context["scene"].setCursor(i.CURSOR_TYPE["POINTER"]);
+  }
+  _setHoveredRange(var_core_value_sig48DD) {
+    this._hoveredRangeId !== var_core_value_sig48DD && (this._hoveredRangeId = var_core_value_sig48DD, this._context["scene"].makeDirty(true));
+  }
+  _restoreCursor() {
+    this._cursorBeforeHover != null && (this._context["scene"].setCursor(this._cursorBeforeHover), this._cursorBeforeHover = null);
+  }
+  _recalculateLayout() {
+    if (this._docLayoutExecutorService["getExecutor"]() != null) {
+      var var_core_value_sig5E6A, var_core_value_sigB7FC;
+      let var_core_value_sigC80B = Math.min(...(((var_core_value_sig5E6A = this._context["unit"].getBody()) == null || (var_core_value_sig5E6A = var_core_value_sig5E6A.customRanges) == null ? undefined : var_core_value_sig5E6A.filter(e.isDocFormulaRange).map(var_core_value_sig7524 => var_core_value_sig7524.startIndex)) ?? [0])),
+        var_core_value_sig284F = (var_core_value_sigB7FC = this._renderManagerService["getRenderUnitById"](this._context["unitId"])) == null ? undefined : var_core_value_sigB7FC.with(r.DocRenderController);
+      if (var_core_value_sig284F != null) {
+        let var_core_value_sig2AD8 = Number.isFinite(var_core_value_sigC80B) ? var_core_value_sigC80B : 0;
+        var_core_value_sig284F.reRender(this._context["unitId"], var_core_value_sig2AD8, undefined, var_core_value_sig2AD8, false, true);
+        return;
+      }
+    }
+    let var_core_value_sig9CD9 = this._skeletonManagerService["getSkeleton"]();
+    var_core_value_sig9CD9.makeDirty(true), var_core_value_sig9CD9.calculate(), this._context["scene"].makeDirty(true);
+  }
+};
+K = C([S(1, (0, t.Inject)(e.DocFormulaService)), S(2, (0, t.Inject)(W)), S(3, (0, t.Inject)(w)), S(4, (0, t.Inject)(n.DocInterceptorService)), S(5, (0, t.Inject)(n.DocLayoutExecutorService)), S(6, (0, t.Inject)(n.DocSelectionManagerService)), S(7, (0, t.Inject)(n.DocSkeletonManagerService)), S(8, (0, t.Inject)(r.DocFloatMenuService)), S(9, (0, t.Inject)(r.DocParagraphMenuService)), S(10, i.IRenderManagerService), S(11, (0, t.Inject)(t.ThemeService))], K);
+function le(var_core_value_sig5A75, var_core_value_sig7BAF) {
+  return var_core_value_sig7BAF ? (var_core_value_sig5A75 == null ? undefined : var_core_value_sig5A75.filter(var_core_value_sigFD0C => !var_core_value_sigFD0C.collapsed)) ?? [] : var_core_value_sig5A75 ?? [];
+}
+function ue(var_core_value_sig8F69, var_core_value_sig6884, var_core_value_sig066E, var_core_value_sig9B0D) {
+  let var_core_value_sig3D2C = null,
+    var_core_value_sigC56D = null,
+    var_core_value_sig3A17 = null;
+  for (let var_core_value_sig849B of var_core_value_sig8F69) {
+    let var_core_value_sigE154 = {
+      collapsed: var_core_value_sig849B.collapsed,
+      endOffset: var_core_value_sig849B.endOffset ?? var_core_value_sig849B.startOffset ?? 0,
+      startOffset: var_core_value_sig849B.startOffset ?? 0
+    };
+    for (let var_core_value_sig2AD0 of var_core_value_sig6884) se(var_core_value_sig2AD0, var_core_value_sigE154) && var_core_value_sig9B0D.add(var_core_value_sig2AD0.rangeId), var_core_value_sig066E && oe(var_core_value_sig2AD0, var_core_value_sigE154) && (var_core_value_sig3D2C = var_core_value_sig2AD0, var_core_value_sigC56D = var_core_value_sig849B, var_core_value_sig3A17 = {
+      rangeId: var_core_value_sig2AD0.rangeId,
+      segmentId: var_core_value_sig849B.segmentId,
+      segmentPage: var_core_value_sig849B.segmentPage
+    });
+  }
+  return {
+    focusedRange: var_core_value_sig3D2C,
+    focusedSelection: var_core_value_sigC56D,
+    focusedTarget: var_core_value_sig3A17
+  };
+}
+function q(var_core_value_sig938F, var_core_value_sigD948, var_core_value_sigBE5E) {
+  let {
+      scaleX: var_core_value_sig0281,
+      scaleY: var_core_value_sigED71
+    } = var_core_value_sigBE5E.getAncestorScale(),
+    var_core_value_sig281C = var_core_value_sigBE5E.getViewport("viewMain");
+  return var_core_value_sig281C ? I(var_core_value_sig938F, var_core_value_sigD948, var_core_value_sig0281, var_core_value_sigED71, var_core_value_sig281C.viewportScrollX, var_core_value_sig281C.viewportScrollY) : I(var_core_value_sig938F, var_core_value_sigD948, var_core_value_sig0281, var_core_value_sigED71);
+}
+let J = class extends t.Disposable {
+  constructor(var_core_value_sig5F1A, var_core_value_sigB455, var_core_value_sig5241, var_core_value_sigC6E5, var_core_value_sigCEFB) {
+    super(), this._displayTextService = var_core_value_sigC6E5, this._model = var_core_value_sigCEFB, this.disposeWithMe(var_core_value_sig5F1A.addClipboardHook({
+      onBeforePaste: (var_core_value_sig4632, var_core_value_sig12F2) => this._degradeCrossDocumentPaste(var_core_value_sig4632, var_core_value_sig12F2.documentData, var_core_value_sig12F2.targetUnitId),
+      onCopyDocData: (var_core_value_sig2259, var_core_value_sig9E2F) => this._appendFormulaResource(var_core_value_sig2259, var_core_value_sig9E2F.sourceDocuments),
+      onCopyContent: (var_core_value_sigD082, var_core_value_sigDBB7, var_core_value_sigD0A8) => var_core_value_sigD0A8.segmentId ? var_core_value_sigD0A8.body["dataStream"].slice(var_core_value_sigD082, var_core_value_sigDBB7) : this._displayTextService["resolveText"](var_core_value_sigD0A8.unitId, var_core_value_sigD082, var_core_value_sigDBB7)
+    })), this.disposeWithMe(var_core_value_sigB455.registerAdapter({
+      getPasteMutationInfos: var_core_value_sigF4B9 => this._getPasteMutationInfos(var_core_value_sigF4B9)
+    })), this.disposeWithMe(var_core_value_sig5241.registerTransformer(var_core_value_sig5CEE => this._displayTextService["degradeDocumentData"](var_core_value_sig5CEE)));
+  }
+  _appendFormulaResource(var_core_value_sig1537, var_core_value_sigE4C6) {
+    var var_core_value_sig4313;
+    if (var_core_value_sigE4C6.length !== 1) return var_core_value_sig1537;
+    let var_core_value_sigFC87 = var_core_value_sigE4C6[0],
+      var_core_value_sig156F = {},
+      var_core_value_sigDD51 = {};
+    if ((var_core_value_sig4313 = var_core_value_sigFC87.body) == null || (var_core_value_sig4313 = var_core_value_sig4313.customRanges) == null || var_core_value_sig4313.forEach(var_core_value_sigE92A => {
+      if (!(0, e.isDocFormulaRange)(var_core_value_sigE92A)) return;
+      let var_core_value_sig362B = this._model["getFormula"](var_core_value_sigFC87.id, var_core_value_sigE92A.rangeId);
+      var_core_value_sig362B && (var_core_value_sig156F[var_core_value_sigE92A.rangeId] = t.Tools["deepClone"](var_core_value_sig362B), var_core_value_sigDD51[var_core_value_sigE92A.rangeId] = this._displayTextService["resolveFormula"](var_core_value_sigFC87.id, var_core_value_sigE92A.rangeId));
+    }), Object.keys(var_core_value_sig156F).length === 0) return var_core_value_sig1537;
+    let var_core_value_sigF057 = {
+      schemaVersion: e.DOC_FORMULA_SCHEMA_VERSION,
+      formulas: var_core_value_sig156F,
+      clipboard: {
+        sourceUnitId: var_core_value_sigFC87.id,
+        displayText: var_core_value_sigDD51
+      }
+    };
+    return {
+      ...var_core_value_sig1537,
+      id: var_core_value_sigFC87.id,
+      resources: [...(var_core_value_sig1537.resources ?? []).filter(var_core_value_sig5CA5 => var_core_value_sig5CA5.name !== e.DOC_FORMULA_PLUGIN), {
+        name: e.DOC_FORMULA_PLUGIN,
+        data: JSON.stringify(var_core_value_sigF057)
+      }]
+    };
+  }
+  _degradeCrossDocumentPaste(var_core_value_sig72F6, var_core_value_sig9FBA, var_core_value_sigFE01) {
+    let var_core_value_sigA2CE = Y(var_core_value_sig9FBA);
+    return !var_core_value_sigA2CE || var_core_value_sigA2CE.clipboard["sourceUnitId"] === var_core_value_sigFE01 ? var_core_value_sig72F6 : this._displayTextService["degradeBody"](var_core_value_sigA2CE.clipboard["sourceUnitId"], var_core_value_sig72F6, var_core_value_sigA2CE.clipboard["displayText"]);
+  }
+  _getPasteMutationInfos(var_core_value_sig1975) {
+    let var_core_value_sig6EA1 = Y(var_core_value_sig1975.doc);
+    if (!var_core_value_sig6EA1 || var_core_value_sig6EA1.clipboard["sourceUnitId"] !== var_core_value_sig1975.unitId) return {
+      redoMutations: [],
+      undoMutations: []
+    };
+    let var_core_value_sig029F = [],
+      var_core_value_sig3767 = [];
+    for (let var_core_value_sigE90F of var_core_value_sig1975.customRangeMappings ?? []) {
+      if (!(0, e.isDocFormulaRange)(var_core_value_sigE90F.sourceRange)) continue;
+      let var_core_value_sig3EEE = var_core_value_sig6EA1.formulas[var_core_value_sigE90F.sourceRange["rangeId"]];
+      !var_core_value_sig3EEE || !(0, e.isDocFormulaRange)(var_core_value_sigE90F.targetRange) || (var_core_value_sig029F.push({
+        id: e.SetDocFormulaMutation["id"],
+        params: {
+          unitId: var_core_value_sig1975.unitId,
+          rangeId: var_core_value_sigE90F.targetRange["rangeId"],
+          config: var_core_value_sig3EEE
+        }
+      }), var_core_value_sig3767.push({
+        id: e.RemoveDocFormulaMutation["id"],
+        params: {
+          unitId: var_core_value_sig1975.unitId,
+          rangeId: var_core_value_sigE90F.targetRange["rangeId"]
+        }
+      }));
+    }
+    return {
+      redoMutations: var_core_value_sig029F,
+      undoMutations: var_core_value_sig3767
+    };
+  }
+};
+J = C([S(0, r.IDocClipboardService), S(1, r.IDocClipboardPasteAdapterService), S(2, (0, t.Inject)(r.DocHtmlExportService)), S(3, (0, t.Inject)(e.DocFormulaDisplayTextService)), S(4, (0, t.Inject)(e.DocFormulaModel))], J);
+function Y(var_core_value_sig3C92) {
+  var var_core_value_sigB16B;
+  let var_core_value_sig585D = (var_core_value_sigB16B = var_core_value_sig3C92.resources) == null ? undefined : var_core_value_sigB16B.find(var_core_value_sig670B => var_core_value_sig670B.name === e.DOC_FORMULA_PLUGIN);
+  if (!var_core_value_sig585D) return null;
+  try {
+    let var_core_value_sig6912 = JSON.parse(var_core_value_sig585D.data);
+    if (!var_core_value_sig6912 || typeof var_core_value_sig6912 != "object" || Array.isArray(var_core_value_sig6912) || Object.keys(var_core_value_sig6912).length !== 3 || !("schemaVersion" in var_core_value_sig6912) || !("formulas" in var_core_value_sig6912) || !("clipboard" in var_core_value_sig6912)) return null;
+    let var_core_value_sigE235 = {
+      schemaVersion: var_core_value_sig6912.schemaVersion,
+      formulas: var_core_value_sig6912.formulas
+    };
+    if (!(0, e.isDocFormulaResource)(var_core_value_sigE235)) return null;
+    let var_core_value_sig7664 = de(var_core_value_sig6912.clipboard);
+    return var_core_value_sig7664 ? {
+      schemaVersion: var_core_value_sigE235.schemaVersion,
+      formulas: var_core_value_sigE235.formulas,
+      clipboard: var_core_value_sig7664
+    } : null;
+  } catch {
+    return null;
+  }
+}
+function de(var_core_value_sigE722) {
+  if (!var_core_value_sigE722 || typeof var_core_value_sigE722 != "object" || Array.isArray(var_core_value_sigE722) || Object.keys(var_core_value_sigE722).length !== 2 || !("sourceUnitId" in var_core_value_sigE722) || typeof var_core_value_sigE722.sourceUnitId != "string" || !("displayText" in var_core_value_sigE722) || !var_core_value_sigE722.displayText || typeof var_core_value_sigE722.displayText != "object" || Array.isArray(var_core_value_sigE722.displayText)) return null;
+  let var_core_value_sig062A = {};
+  for (let [var_core_value_sig2281, var_core_value_sig5E86] of Object.entries(var_core_value_sigE722.displayText)) {
+    if (typeof var_core_value_sig5E86 != "string") return null;
+    var_core_value_sig062A[var_core_value_sig2281] = var_core_value_sig5E86;
+  }
+  return {
+    sourceUnitId: var_core_value_sigE722.sourceUnitId,
+    displayText: var_core_value_sig062A
+  };
+}
+const X = 1000;
+function Z(var_core_value_sig050A) {
+  let var_core_value_sig8B32 = var_core_value_sig6998 => fe(var_core_value_sig6998.target, var_core_value_sig050A.hasSelectedFormula);
+  return [{
+    id: T.id,
+    binding: o.KeyCode["ENTER"],
+    priority: X,
+    eventPreconditions: var_core_value_sig8B32
+  }, {
+    id: E.id,
+    binding: o.KeyCode["F10"] | o.MetaKeys["SHIFT"],
+    priority: X,
+    eventPreconditions: var_core_value_sig8B32
+  }, {
+    id: D.id,
+    binding: o.KeyCode["ESC"],
+    priority: X,
+    eventPreconditions: var_core_value_sig050A.hasOpenPopup
+  }, {
+    id: O.id,
+    binding: o.KeyCode["BACKSPACE"],
+    priority: X,
+    eventPreconditions: var_core_value_sig8B32
+  }, {
+    id: O.id,
+    binding: o.KeyCode["DELETE"],
+    priority: X,
+    eventPreconditions: var_core_value_sig8B32
+  }];
+}
+function fe(var_core_value_sig870F, var_core_value_sigB683) {
+  return !pe(var_core_value_sig870F) && var_core_value_sigB683();
+}
+function pe(var_core_value_sig26EC) {
+  return typeof HTMLElement < "u" && var_core_value_sig26EC instanceof HTMLElement && (var_core_value_sig26EC.isContentEditable || var_core_value_sig26EC instanceof HTMLInputElement || var_core_value_sig26EC instanceof HTMLTextAreaElement);
+}
+let Q = class extends t.Disposable {
+  constructor(var_core_value_sigF639, var_core_value_sigEAE5, var_core_value_sigE94C, var_core_value_sig6D47, var_core_value_sigCB82) {
+    super(), this._commandService = var_core_value_sigF639, this._menuManagerService = var_core_value_sigEAE5, this._shortcutService = var_core_value_sigE94C, this._univerInstanceService = var_core_value_sig6D47, this._popupService = var_core_value_sigCB82, [T, E, D, O].forEach(var_core_value_sigEFD4 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sigEFD4));
+    }), Z({
+      hasOpenPopup: () => this._popupService["hasOpenPopup"],
+      hasSelectedFormula: () => this._hasSelectedFormula()
+    }).forEach(var_core_value_sig861B => {
+      this.disposeWithMe(this._shortcutService["registerShortcut"](var_core_value_sig861B));
+    }), this._menuManagerService["appendRootMenu"](M);
+  }
+  _hasSelectedFormula() {
+    var var_core_value_sigCF4E;
+    let var_core_value_sig6CAD = (var_core_value_sigCF4E = this._univerInstanceService["getCurrentUnitOfType"](t.UniverInstanceType["UNIVER_DOC"])) == null ? undefined : var_core_value_sigCF4E.getUnitId();
+    return !!(var_core_value_sig6CAD && this._popupService["getSelectedFormulaTarget"](var_core_value_sig6CAD));
+  }
+};
+Q = C([S(0, t.ICommandService), S(1, o.IMenuManagerService), S(2, o.IShortcutService), S(3, t.IUniverInstanceService), S(4, (0, t.Inject)(w))], Q);
+const me = [K];
+let $ = class extends t.Plugin {
+  constructor(var_core_value_sig8CF5 = j, var_core_value_sigDDD7, var_core_value_sigB2CE, var_core_value_sig443C) {
+    super(), this._config = var_core_value_sig8CF5, this._injector = var_core_value_sigDDD7, this._renderManagerService = var_core_value_sigB2CE, this._configService = var_core_value_sig443C;
+    let {
+      menu: var_core_value_sig39B1,
+      ...var_core_value_sig210D
+    } = (0, t.merge)({}, j, this._config);
+    var_core_value_sig39B1 && this._configService["setConfig"]("menu", var_core_value_sig39B1, {
+      merge: true
+    }), this._configService["setConfig"](A, var_core_value_sig210D), this._configService["setConfig"](c.SHAPE_EDITOR_UI_PLUGIN_CONFIG_KEY, var_core_value_sig210D, {
+      merge: true
+    });
+  }
+  onStarting() {
+    this._injector["add"]([W]), this._injector["add"]([w]), this._injector["add"]([P]), this._injector["add"]([Q]), this._injector["add"]([J]), (0, t.touchDependencies)(this._injector, [[W], [P], [Q], [J]]);
+  }
+  onRendered() {
+    this.disposeWithMe(this._renderManagerService["registerRenderModule"](t.UniverInstanceType["UNIVER_DOC"], me));
+  }
+};
+x($, "pluginName", e.DOC_FORMULA_PLUGIN + "_UI_PLUGIN"), x($, "packageName", N), x($, "version", re), x($, "type", t.UniverInstanceType["UNIVER_DOC"]), $ = C([(0, t.DependentOn)(s.UniverLicensePlugin, n.UniverDocsPlugin, i.UniverRenderEnginePlugin, r.UniverDocsUIPlugin, e.UniverDocsFormulaPlugin, c.UniverShapeEditorUIPlugin), S(1, (0, t.Inject)(t.Injector)), S(2, i.IRenderManagerService), S(3, t.IConfigService)], $), exports.CloseDocFormulaPopupOperation = D, exports.DOCS_FORMULA_UI_PLUGIN_CONFIG_KEY = A, exports.OpenDocFormulaEditorOperation = T, exports.OpenSelectedDocFormulaHoverOperation = E, exports.RemoveSelectedDocFormulaOperation = O, Object.defineProperty(exports, "UniverDocsFormulaUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return $;
+  }
+}), exports.docsFormulaRootMenuSchema = M;

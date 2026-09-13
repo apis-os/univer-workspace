@@ -1,0 +1,104 @@
+//#region src/locale/sk-SK.ts
+const locale = { "drawing-ui": {
+	"image-cropper": { error: "Nedá sa orezať neobrázkový objekt." },
+	objectListPanel: {
+		title: "Vrstvy",
+		empty: "Ziadne objekty",
+		showAll: "Zobrazit vsetko",
+		hideAll: "Skryt vsetko",
+		lockAll: "Zamknúť všetko",
+		unlockAll: "Odomknúť všetko",
+		moveForward: "Presunut dopredu",
+		moveBackward: "Presunut dozadu",
+		close: "Zavriet",
+		show: "Zobrazit",
+		hide: "Skryt",
+		lock: "Zamknut",
+		unlock: "Odomknut",
+		lockHint: "Zamknúť, aby sa zabránilo náhodnému výberu",
+		unlockHint: "Zamknuté. Kliknutím odomknete",
+		name: "Nazov",
+		nameInput: "Nazov objektu",
+		description: "Popis",
+		descriptionPlaceholder: "Pridat popis",
+		details: "Podrobnosti",
+		locate: "Nájsť",
+		expand: "Rozbaliť",
+		collapse: "Zbaliť",
+		dragToReorder: "Potiahnutím zmeňte poradie",
+		search: "Hľadať objekty",
+		filterAll: "Všetky",
+		filterHidden: "Skryté",
+		filterLocked: "Zamknuté",
+		sectionCanvas: "Vrstva plátna",
+		sectionFloating: "Plávajúca vrstva",
+		typeNames: {
+			object: "Objekt",
+			shape: "Tvar",
+			connector: "Spojnica",
+			image: "Obrázok",
+			chart: "Graf",
+			table: "Tabuľka",
+			smartArt: "SmartArt",
+			video: "Video",
+			group: "Skupina",
+			unit: "Jednotka",
+			dom: "DOM",
+			text: "Text",
+			placeholder: "Zástupný symbol",
+			container: "Kontajner"
+		},
+		noSelection: "Vyberte objekt na úpravu podrobností"
+	},
+	"image-panel": {
+		arrange: {
+			title: "Usporiadať",
+			forward: "Posunúť dopredu",
+			backward: "Posunúť dozadu",
+			front: "Presunúť do popredia",
+			back: "Presunúť do pozadia"
+		},
+		transform: {
+			title: "Transformovať",
+			rotate: "Otočiť (°)",
+			x: "X (px)",
+			y: "Y (px)",
+			width: "Šírka (px)",
+			height: "Výška (px)",
+			lock: "Uzamknúť pomer (%)"
+		},
+		crop: {
+			title: "Orezanie",
+			start: "Začať orezanie",
+			mode: "Voľne"
+		},
+		group: {
+			title: "Zoskupiť",
+			group: "Zoskupiť",
+			unGroup: "Zrušiť zoskupenie"
+		},
+		align: {
+			title: "Zarovnať",
+			default: "Vyberte typ zarovnania",
+			left: "Zarovnať doľava",
+			center: "Zarovnať na stred",
+			right: "Zarovnať doprava",
+			top: "Zarovnať hore",
+			middle: "Zarovnať na stred",
+			bottom: "Zarovnať dole",
+			horizon: "Rozložiť vodorovne",
+			vertical: "Rozložiť zvisle"
+		},
+		null: "Nie je vybraný žiadny objekt"
+	},
+	"image-text-wrap": {
+		square: "Obdĺžnikové",
+		topAndBottom: "Hore a dole",
+		inline: "V riadku s textom",
+		behindText: "Za textom",
+		inFrontText: "Pred textom"
+	}
+} };
+
+//#endregion
+export { locale as default };

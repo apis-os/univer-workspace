@@ -1,0 +1,183 @@
+import { ComponentManager, ContextMenuGroup, ContextMenuPosition, IDialogService, ILayoutService, IMenuManagerService, IMessageService, IShortcutService, IconManager, KeyCode, MenuItemType, MetaKeys, RibbonDataGroup, getMenuHiddenObservable, useDependency } from "@univerjs/ui";
+import { AddDimensionOutlineCommand, ClearDimensionOutlinesCommand, DimensionOutlineAxis, DimensionOutlineErrorReason, RemoveDimensionOutlineCommand, SHEET_OUTLINE_PLUGIN, SetDimensionOutlineCollapsedCommand, SheetsOutlineErrorService, SheetsOutlineModel, UniverSheetsOutlinePlugin, buildDimensionOutlineTree, canAddDimensionOutline, getDimensionOutlineViewPermission$, hasDimensionOutlineViewPermission } from "@univerjs-pro/sheets-outline";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, RANGE_TYPE, ThemeService, Tools, UniverInstanceType, fromCallback, merge, toDisposable } from "@univerjs/core";
+import { SetColHiddenMutation, SetColVisibleMutation, SetRowHiddenMutation, SetRowVisibleMutation, SetSelectionsOperation, SheetPermissionCheckController, SheetsSelectionsService, UniverSheetsPlugin, WorkbookViewPermission, WorksheetViewPermission, getSheetCommandTarget } from "@univerjs/sheets";
+import { combineLatest, filter, map, merge as mergeLocal, of, startWith, switchMap } from "rxjs";
+import { Button, MessageType } from "@univerjs/design";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { CURSOR_TYPE, DEFAULT_FONTFACE_PLANE, IRenderManagerService, Rect, Shape, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { HeaderUnhideRangeAxis, HeaderUnhideRangeService, SHEET_VIEW_KEY, SheetSkeletonManagerService, UniverSheetsUIPlugin, getTransformCoord, whenSheetEditorFocused } from "@univerjs/sheets-ui";
+import { GroupingDoubleIcon } from "@univerjs/icons";
+import { M, N, P, Qe, nt, rt, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 } from "./internal-core-endo.js";
+const ht = "sheet.toolbar.dimension-outline.group";
+function gt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46510) {
+  return {
+    id: ht,
+    type: MenuItemType.SELECTOR,
+    icon: "GroupingDoubleIcon",
+    tooltip: "sheets-outline-ui.group",
+    selections: fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46510),
+    hidden$: Ct(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46510),
+    disabled$: wt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46510)
+  };
+}
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512) {
+  return F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512).pipe(map(() => kt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46512)));
+}
+const vt = "sheet.contextMenu.dimension-outline";
+function yt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514) {
+  return xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46514, DimensionOutlineAxis.ROW);
+}
+function bt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516) {
+  return xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46516, DimensionOutlineAxis.COLUMN);
+}
+function xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46518, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46519) {
+  return {
+    id: vt,
+    type: MenuItemType.SELECTOR,
+    icon: "GroupingDoubleIcon",
+    title: "sheets-outline-ui.group",
+    tooltip: "sheets-outline-ui.group",
+    selections: St(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46518, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46519),
+    hidden$: Ct(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46518),
+    disabled$: wt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46518)
+  };
+}
+function St(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523) {
+  return F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522).pipe(map(() => At(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522, [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523])));
+}
+function Ct(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526) {
+  return combineLatest([getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526, UniverInstanceType.UNIVER_SHEET), F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526)]).pipe(map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670]) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670 || !Tt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526)));
+}
+function wt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528) {
+  return F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528).pipe(switchMap(() => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671 = getSheetCommandTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.get(IUniverInstanceService));
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671 ? getDimensionOutlineViewPermission$(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671.subUnitId).pipe(map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 => !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616)) : of(true);
+  }));
+}
+function Tt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530) {
+  return Et(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530) != null;
+}
+function Et(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.get(SheetsSelectionsService).getCurrentSelections();
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533.length) === 1 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533[0].range : null;
+}
+function F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536.get(SheetsSelectionsService),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536.get(SheetsOutlineModel);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536.get(IUniverInstanceService).getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).pipe(switchMap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673 ? mergeLocal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673.activeSheet$, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537.selectionChanged$, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538.change$).pipe(startWith(null)) : of(null)));
+}
+const Dt = {
+    [DimensionOutlineAxis.ROW]: Qe.id,
+    [DimensionOutlineAxis.COLUMN]: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.id
+  },
+  Ot = {
+    [DimensionOutlineAxis.ROW]: nt.id,
+    [DimensionOutlineAxis.COLUMN]: rt.id
+  };
+function kt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46542) {
+  return Tt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46542) ? [{
+    id: N.id,
+    commandId: N.id,
+    value: "group",
+    label: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46542.get(LocaleService).t("sheets-outline-ui.group"),
+    disabled: Rt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46542)
+  }, {
+    id: P.id,
+    commandId: P.id,
+    value: "ungroup",
+    label: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46542.get(LocaleService).t("sheets-outline-ui.ungroup"),
+    disabled: zt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46542)
+  }] : [];
+}
+function At(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46544, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46545, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546) {
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46545.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674 => jt(Dt[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674, Pt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46544, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674), I(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46544, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4674))),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46545.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675 => jt(Ot[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675, Ft(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46544, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675), L(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46544, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675)));
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546 === "group" ? var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546 === "ungroup" ? var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1 : [...var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A, ...var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A1];
+}
+function jt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46551, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46552, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46553) {
+  return {
+    id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550,
+    commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550,
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46551,
+    disabled: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46553,
+    label: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46552
+  };
+}
+const Mt = {
+    [DimensionOutlineAxis.ROW]: "sheets-outline-ui.groupRows",
+    [DimensionOutlineAxis.COLUMN]: "sheets-outline-ui.groupColumns"
+  },
+  Nt = {
+    [DimensionOutlineAxis.ROW]: "sheets-outline-ui.ungroupRows",
+    [DimensionOutlineAxis.COLUMN]: "sheets-outline-ui.ungroupColumns"
+  };
+function Pt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46558, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46559) {
+  return It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46558, Mt, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46559);
+}
+function Ft(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46562, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46563) {
+  return It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46562, Nt, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46563);
+}
+function It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46566, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46567, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46568) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46569 = M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46566.get(SheetsSelectionsService), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46568);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46569 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46566.get(LocaleService).t(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46567[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46569.axis], ...Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46569)) : "";
+}
+function Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574.axis === DimensionOutlineAxis.ROW ? ["" + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574.start + 1), "" + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574.end + 1)] : [Tools.chatAtABC(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574.start), Tools.chatAtABC(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46574.end)];
+}
+function I(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46576, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46577) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46578 = M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46576.get(SheetsSelectionsService), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46577),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579 = getSheetCommandTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46576.get(IUniverInstanceService));
+  return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46578 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579 || !hasDimensionOutlineViewPermission(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46576, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.subUnitId) || !canAddDimensionOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46576.get(SheetsOutlineModel).getOutlines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.subUnitId), {
+    id: "__menu_check__",
+    unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.unitId,
+    subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46579.subUnitId,
+    axis: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46578.axis,
+    start: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46578.start,
+    end: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46578.end,
+    collapsed: false
+  }).valid;
+}
+function L(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586 = M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584.get(SheetsSelectionsService), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587 = getSheetCommandTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584.get(IUniverInstanceService));
+  return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587 || !hasDimensionOutlineViewPermission(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.subUnitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584.get(SheetsOutlineModel).getOutlines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.subUnitId).some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676.axis === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586.axis && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676.start >= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586.start && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4676.end <= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586.end);
+}
+function Rt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46592) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593 = Et(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46592);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593.rangeType === RANGE_TYPE.ROW ? I(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46592, DimensionOutlineAxis.ROW) : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593.rangeType === RANGE_TYPE.COLUMN || I(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46592, DimensionOutlineAxis.ROW)) && I(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46592, DimensionOutlineAxis.COLUMN) : true;
+}
+function zt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46596) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597 = Et(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46596);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.rangeType === RANGE_TYPE.ROW ? L(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46596, DimensionOutlineAxis.ROW) : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46597.rangeType === RANGE_TYPE.COLUMN || L(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46596, DimensionOutlineAxis.ROW)) && L(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46596, DimensionOutlineAxis.COLUMN) : true;
+}
+const Bt = {
+  [RibbonDataGroup.ORGANIZATION]: {
+    [ht]: {
+      order: 20,
+      gridLayout: {
+        row: 2,
+        column: 3
+      },
+      menuItemFactory: gt
+    }
+  },
+  [ContextMenuPosition.ROW_HEADER]: {
+    [ContextMenuGroup.LAYOUT]: {
+      [vt]: {
+        order: 8,
+        menuItemFactory: yt
+      }
+    }
+  },
+  [ContextMenuPosition.COL_HEADER]: {
+    [ContextMenuGroup.LAYOUT]: {
+      [vt]: {
+        order: 8,
+        menuItemFactory: bt
+      }
+    }
+  }
+};
+export { Bt as SheetsOutlineUIMenuSchema };

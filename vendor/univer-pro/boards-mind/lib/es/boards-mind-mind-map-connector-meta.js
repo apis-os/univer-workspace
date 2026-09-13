@@ -1,0 +1,16 @@
+import { AddBoardElementMutation, BOARD_MIND_MAP_CONNECTOR_ROLE, BOARD_MIND_MAP_CONTAINER_ROLE, BOARD_MIND_MAP_DECORATION_ROLE, BOARD_MIND_MAP_MODE_ID, BOARD_MIND_MAP_NODE_ROLE, BoardElementType, IBoardElementService, RemoveBoardElementMutation, SetBoardElementOrderMutation, UniverBoardsPlugin, createAddBoardElementsMutationInfos, createBoardConnectorElement, createBoardContainerElement, createBoardTextBoxShapeElement, createBoardTextBoxShapeTextData, mergeBoardRichTextDocument, offsetBoardConnectorGeometry, resolveBoardElementLocalTransformForParent, resolveBoardElementWorldBounds, resolveBoardElementWorldTransform, shapeTextToBoardDocumentTextStyle } from "@univerjs-pro/boards";
+import { BooleanNumber, CommandType, DependentOn, Disposable, HorizontalAlign, ICommandService, IConfigService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createInternalEditorID, generateRandomId, merge, sequenceExecute } from "@univerjs/core";
+import { ShapeFillEnum, ShapeLineTypeEnum, ShapeModel, ShapeTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { j, k } from "./boards-mind-mind-map-mode-id.js";
+function U(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461139) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461140;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461141 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461139 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461139.custom;
+  return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461141 || ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461140 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461141.structured) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461140.modeId) !== k || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461141.structured["semanticRole"] !== j || typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461141.structured["structureScopeId"] != "string" ? null : {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461141.mindmap,
+    modeId: k,
+    structureScopeId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461141.structured["structureScopeId"],
+    semanticRole: j
+  };
+}
+export { U as getMindMapConnectorMeta };

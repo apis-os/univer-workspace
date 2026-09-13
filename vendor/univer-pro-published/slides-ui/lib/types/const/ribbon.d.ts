@@ -1,0 +1,12 @@
+export declare const SLIDE_SHAPE_FORMAT_RIBBON_TAB = "slides-ui.ribbon.shapeFormat";
+export declare const SLIDE_SHAPE_FORMAT_RIBBON_GROUP_QUICK_STYLES = "slides-ui.ribbon.shapeFormat.quickStyles";
+export declare const SLIDE_SHAPE_FORMAT_RIBBON_GROUP_SHAPE_STYLE = "slides-ui.ribbon.shapeFormat.shapeStyle";
+export declare const SLIDE_SHAPE_FORMAT_RIBBON_GROUP_TEXT = "slides-ui.ribbon.shapeFormat.text";
+export declare const SLIDE_SHAPE_FORMAT_RIBBON_GROUP_ARRANGE = "slides-ui.ribbon.shapeFormat.arrange";
+export declare const SLIDE_SHAPE_FORMAT_RIBBON_GROUP_FORMULA = "slides-ui.ribbon.shapeFormat.formula";
+export declare const SLIDE_SHAPE_FORMAT_RIBBON_GROUP_ADVANCED = "slides-ui.ribbon.shapeFormat.advanced";
+export declare const SLIDE_SMART_ART_RIBBON_TAB = "slides-ui.ribbon.smartArt";
+export declare const SLIDE_SMART_ART_RIBBON_GROUP_CREATE = "shape-editor-ui.smartArt.createGraphic";
+export declare const SLIDE_SMART_ART_RIBBON_GROUP_LAYOUT = "shape-editor-ui.smartArt.layoutGroup";
+export declare const SLIDE_SMART_ART_RIBBON_GROUP_STYLE = "shape-editor-ui.smartArt.styleGroup";
+export declare const SLIDE_SMART_ART_RIBBON_GROUP_RESET = "shape-editor-ui.smartArt.resetGroup";

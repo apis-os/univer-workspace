@@ -1,0 +1,14 @@
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, ThemeService, Tools, UniverInstanceType, generateRandomId, merge, sequenceExecute, touchDependencies } from '@univerjs/core';
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, UpdateSlideElementMutation, getSlideCommandTarget, plainTextToSlideDocumentData } from '@univerjs-pro/slides';
+import { Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { M, P, Xe } from "./internal-glue.js";
+function Te(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46707, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46708, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46709, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46710 = 1) {
+  if (!Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46709) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46707.rows["length"] < 2) return Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46707);
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46711 = P(M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46708), 0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46707.rows["length"] - 2),
+    var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46711 + 1,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46712 = Xe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46707.rows["map"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46112 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46112.height ?? 24), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46711, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46709, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46710),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46713 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46707);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46713.rows[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46711].height = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46712[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46711], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46713.rows[var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB].height = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46712[var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46713.rev += 1, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46713;
+}
+export { Te as resizeSlideTableRowBoundary };

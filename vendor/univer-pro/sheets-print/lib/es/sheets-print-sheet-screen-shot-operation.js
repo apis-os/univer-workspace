@@ -1,0 +1,63 @@
+import { LS_CONFIG_KEY, ReleaseType, UniverLicensePlugin, getLicenseInfo, getSheetFeatureLimit, isFeatureAuthorizedWithinTime, isLocalCheck } from '@univerjs-pro/license';
+import { IPrintPreparationService, PRINT_CANVAS_CLASS, PRINT_CONTAINER_CLASS, PaperMarginMap, PrintAlign, PrintDirection, PrintPaperMargin, PrintPreparationService, PrintScale, createPrintStyle } from '@univerjs-pro/print';
+import { BuildTextUtils, CommandType, CustomRangeType, DependentOn, Disposable, DisposableCollection, ICommandService, IConfigService, ILocalStorageService, IPermissionService, IUniverInstanceService, Inject, Injector, JSONX, LocaleService, PAGE_SIZE, PaperType, Plugin, Quantity, RichTextBuilder, Tools, UniverInstanceType, UserManagerService, awaitTime, createIdentifier, dateKit, generateRandomId, merge, registerDependencies, touchDependencies } from '@univerjs/core';
+import { RangeProtectionPermissionViewPoint, SheetsSelectionsService, UniverSheetsPlugin, WorkbookCopyPermission, WorkbookPrintPermission, WorkbookViewPermission, WorksheetCopyPermission, WorksheetViewPermission, getSheetCommandTarget } from '@univerjs/sheets';
+import { BuiltInUIPart, ComponentManager, ContextMenuGroup, ContextMenuPosition, IDialogService, IMenuManagerService, IMessageService, IShortcutService, ISidebarService, IUIPartsService, IconManager, KeyCode, MenuItemType, MetaKeys, RibbonStartGroup, connectInjector, getMenuHiddenObservable, useDependency, useEvent, useObservable, useVirtualList } from '@univerjs/ui';
+import { BehaviorSubject, debounceTime } from 'rxjs';
+import { CanvasRenderMode, DEFAULT_FONTFACE_PLANE, Engine, IRenderManagerService, IWatermarkTypeEnum, SHEET_VIEWPORT_KEY, Scene, SheetExtension, Spreadsheet, SpreadsheetColumnHeader, SpreadsheetRowHeader, UNIVER_WATERMARK_STORAGE_KEY, UniverRenderEnginePlugin, Viewport, fixLineWidthByScale, renderWatermark } from '@univerjs/engine-render';
+import { SheetPrintInterceptorService, SheetPrintingResourceCollector, SheetSkeletonManagerService, UniverSheetsUIPlugin, getCurrentRangeDisable$, whenSheetEditorFocused } from '@univerjs/sheets-ui';
+import { Button, Checkbox, CheckboxGroup, Dropdown, FormLayout, Input, MessageType, Radio, RadioGroup, Select, borderBottomClassName, borderClassName, clsx, scrollbarClassName } from '@univerjs/design';
+import { CalendarIcon, ClockIcon, DocSettingIcon, IncreaseIcon, LoadingMultiIcon, MoreDownIcon, PrintIcon, ReduceIcon, SheetIcon, TextIcon } from '@univerjs/icons';
+import { forwardRef, memo, useEffect, useMemo, useRef, useState } from 'react';
+import { jsx, jsxs } from 'react/jsx-runtime';
+import { RichTextEditingMutation } from '@univerjs/docs';
+import { IEditorService, RichTextEditor } from '@univerjs/docs-ui';
+import { pn } from "./sheets-print-sheet-print-client.js";
+function mn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46817, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46818) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46819 = atob(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46817.split(',')[1]),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A13 = new ArrayBuffer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46819.length),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A14 = new Uint8Array(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A13);
+  for (let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D81 = 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D81 < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46819.length; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D81++) var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A14[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D81] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46819.charCodeAt(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D81);
+  return new Blob([var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A13], {
+    'type': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46818
+  });
+}
+const hn = {
+    'type': CommandType.OPERATION,
+    'id': "sheet.operation.screenshot",
+    async 'handler'(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46823) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46824;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46825 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46823.get(ox38c9a4),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46826 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46824 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46825.getCurrentSelections()) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46824[0],
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46827 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46823.get(pn),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46828 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46825.getCurrentLastSelection(),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46829 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46823.get(oxd02acb),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46830 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46823.get(IUniverInstanceService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46831 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46823.get(LocaleService);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46826 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46828) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46832 = oxbe797d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46830);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46832) return false;
+      let {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46833,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46834
+        } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46832,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46835 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46827.getRangeImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46833, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46834, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46826.range);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46835) return false;
+      try {
+        return await navigator.clipboard['write']([new ClipboardItem({
+          'image/png': mn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46835, "image/png")
+        })]), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46829.show({
+          'type': ox3afb6e.Success,
+          'content': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46831.t('sheets-print.screenshot.success')
+        }), true;
+      } catch {
+        return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46829.show({
+          'type': ox3afb6e.Error,
+          'content': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46831.t("sheets-print.screenshot.fail")
+        }), false;
+      }
+    }
+  },
+  gn = createIdentifier('univer-pro.print-grid.service');
+export { hn as SheetScreenShotOperation };
+export { gn };

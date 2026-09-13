@@ -1,0 +1,31 @@
+import type { UnitModel } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { IConfigService, IUniverInstanceService, RxDisposable } from '@univerjs/core';
+import { BoardElementInsertService } from '../services/board-element-insert.service';
+import { IBoardUIStateService } from '../services/board-ui-state.service';
+export declare class BoardPendingInsertRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _instanceSrv;
+    private readonly _configService;
+    private readonly _stateService;
+    private readonly _insertService;
+    private _previewObject;
+    private _dragBoundsObject;
+    private _dragDimensionsObject;
+    private _lastPoint;
+    private _lastRect;
+    private _draftStart;
+    constructor(_renderContext: IRenderContext<UnitModel>, _instanceSrv: IUniverInstanceService, _configService: IConfigService, _stateService: IBoardUIStateService, _insertService: BoardElementInsertService);
+    private _init;
+    private _cancelPendingInsertDraft;
+    private _syncSceneInputMode;
+    private _syncPreviewObject;
+    private _ensurePreviewObject;
+    private _getPreviewAlpha;
+    private _removePreviewObject;
+    private _syncDragGuideObjects;
+    private _isCanvasDrag;
+    private _handlePointerMove;
+    private _handlePointerDown;
+    private _handlePointerUp;
+}

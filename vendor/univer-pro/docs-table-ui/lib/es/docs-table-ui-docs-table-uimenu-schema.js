@@ -1,0 +1,631 @@
+import { DOCS_TABLE_PLUGIN, DocsTableBorderPreset, DocsTableDeleteColumnsCommand, DocsTableDeleteRowsCommand, DocsTableDeleteTableCommand, DocsTableInsertColumnsCommand, DocsTableInsertRowsCommand, DocsTableInsertTableCommand, DocsTableInsertTablePosition, DocsTableInsertTitleRowCommand, DocsTableMergeCellsCommand, DocsTableMoveColumnsCommand, DocsTableMoveRowsCommand, DocsTableMoveTableCommand, DocsTableResizeColumnCommand, DocsTableResizeRowCommand, DocsTableSelectionKind, DocsTableSelectionService, DocsTableSelectionSource, DocsTableSetHeaderRowCountCommand, DocsTableSetTableBackgroundCommand, DocsTableSetTableBorderColorCommand, DocsTableSetTableBorderCommand, DocsTableSetTableBorderStyleCommand, DocsTableSetTableBorderWidthCommand, DocsTableSetTableVerticalAlignCommand, DocsTableSortDirection, DocsTableSortTableCommand, DocsTableUnmergeCellsCommand, UniverDocsTablePlugin, canMergeCells, canUnmergeCells, getTableRangeById } from "@univerjs-pro/docs-table";
+import { AlignMenuItemFactory, AlignOperationCommand, BackgroundColorSelectorMenuItemFactory, BoldMenuItemFactory, BulletListCommand, CheckListCommand, DOC_CONTENT_INSERT_MENU_ID, DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID, DOC_PARAGRAPH_T_INSERT_MENU_ID, DOC_TABLE_BLOCK_MENU_ID, DeleteLeftCommand, DocCanvasPopManagerService, DocCreateTableOperation, DocEventManagerService, DocFloatMenuService, DocParagraphMenuService, DocSelectAllCommand, DocSelectionRenderService, EMPTY_PARAGRAPH_MENU_ID, FloatTextStyleMenuItemFactory, FontFamilySelectorMenuItemFactory, FontSizeSelectorMenuItemFactory, INSERT_BELLOW_MENU_ID, ItalicMenuItemFactory, OrderListCommand, ParagraphMenuInsertBelowSubmenuItemFactory, SetDocZoomRatioOperation, SetInlineFormatBoldCommand, SetInlineFormatFontFamilyCommand, SetInlineFormatFontSizeCommand, SetInlineFormatItalicCommand, SetInlineFormatStrikethroughCommand, SetInlineFormatTextBackgroundColorCommand, SetInlineFormatTextColorCommand, SetInlineFormatUnderlineCommand, SetParagraphNamedStyleCommand, StrikeThroughMenuItemFactory, TextColorSelectorMenuItemFactory, UnderlineMenuItemFactory, UniverDocsUIPlugin } from "@univerjs/docs-ui";
+import { COLOR_PICKER_COMPONENT, ComponentManager, ContextMenuGroup, ContextMenuPosition, IContextMenuService, IMenuManagerService, IShortcutService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, RibbonInsertGroup, RibbonPosition, ToolbarButton, ToolbarItem, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { ColorKit, CommandType, DEFAULT_STYLES, DOC_RANGE_TYPE, DashStyleType, DependentOn, Disposable, DocumentBlockType, DocumentFlavor, EDITOR_ACTIVATED, FOCUSING_DOC, FOCUSING_UNIVER_EDITOR, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUniverInstanceService, Inject, Injector, LocaleService, NamedStyleType, Plugin, PresetListType, ThemeService, UniverInstanceType, VerticalAlignmentType, merge, toDisposable } from "@univerjs/core";
+import { Button, ColorPicker, Dropdown, InputNumber, Separator, Tooltip, borderClassName, clsx } from "@univerjs/design";
+import { useMemo, useState } from "react";
+import { BehaviorSubject, EMPTY, Observable, Subject, combineLatest, map, of, startWith, switchMap } from "rxjs";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DocSelectionManagerService, DocSkeletonManagerService, UniverDocsPlugin, canEditDocumentTargets, getDocumentEntityParentPermissionObjectIds, getDocumentEntityPermissionObjectId } from "@univerjs/docs";
+import { CURSOR_TYPE, DocumentSkeletonPageType, IRenderManagerService, UniverRenderEnginePlugin, Vector2, getTableIdAndSliceIndex, setDocsTableRenderViewportProvider } from "@univerjs/engine-render";
+import { AlignBottomIcon, AlignTextBothIcon, AlignTopIcon, AllBorderIcon, BoldIcon, CalendarIcon, CancelMergeIcon, DeleteColumnDoubleIcon, DeleteRowDoubleIcon, DownBorderDoubleIcon, FontColorDoubleIcon, HorizontalBorderDoubleIcon, HorizontallyIcon, InnerBorderDoubleIcon, ItalicIcon, LeftBorderDoubleIcon, LeftJustifyingIcon, MergeAllIcon, MoreDownIcon, NoBorderIcon, NoColorDoubleIcon, NumberIcon, OuterBorderDoubleIcon, PaintBucketDoubleIcon, RightBorderDoubleIcon, RightJustifyingIcon, StrikethroughIcon, TableBorderStyleDashedIcon, TableBorderStyleDottedIcon, TableBorderStyleIcon, TableBorderStyleSolidIcon, TableBorderWidthIcon, TableIcon, TextIcon, UnderlineIcon, UpBorderDoubleIcon, VerticalBorderDoubleIcon, VerticalCenterIcon } from "@univerjs/icons";
+import { documentSkeletonTableIterator } from "@univerjs-pro/docs-column";
+import { er, tr, var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB68, z } from "./internal-core-endo.js";
+function nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461469) {
+  return {
+    id: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB68,
+    commandId: z.id,
+    selectionsCommandId: z.id,
+    params: tr,
+    type: MenuItemType.SUBITEMS,
+    icon: "TableIcon",
+    tooltip: "docs-table-ui.table.main",
+    slot: true,
+    hidden$: ar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461469),
+    selections: [{
+      label: {
+        name: er,
+        hoverable: false,
+        selectable: false
+      }
+    }]
+  };
+}
+function rr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461471) {
+  return {
+    id: z.id,
+    commandId: z.id,
+    selectionsCommandId: z.id,
+    params: tr,
+    type: MenuItemType.BUTTON_SELECTOR,
+    icon: "TableIcon",
+    title: "docs-table-ui.insertTable",
+    hidden$: ar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461471),
+    selections: [{
+      label: {
+        name: er,
+        hoverable: false,
+        selectable: false
+      }
+    }]
+  };
+}
+function ir(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461473) {
+  return {
+    id: z.id,
+    commandId: z.id,
+    selectionsCommandId: z.id,
+    params: tr,
+    type: MenuItemType.BUTTON_SELECTOR,
+    icon: "TableIcon",
+    title: "docs-table-ui.insertTable",
+    hidden$: ar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461473),
+    selections: [{
+      label: {
+        name: er,
+        hoverable: false,
+        selectable: false
+      }
+    }]
+  };
+}
+function ar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461475) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461476 = getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461475, UniverInstanceType.UNIVER_DOC, undefined),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461477 = or(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461475);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461477 ? combineLatest([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461476, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461477.selectionChange$["pipe"](startWith(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461477.getCurrentSelection()), map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46188 => !!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46188 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46188.tableId)))]).pipe(map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190]) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190)) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461476;
+}
+function or(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461481) {
+  try {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461481.get(DocsTableSelectionService);
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.getCurrentSelection == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.selectionChange$) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191;
+  } catch {
+    return null;
+  }
+  return null;
+}
+const cr = "docs-table-ui.menu.insert",
+  lr = "docs-table-ui.menu.delete",
+  ur = "docs-table-ui.menu.border",
+  dr = "doc.menu.table-insert",
+  fr = "doc.menu.table-delete",
+  pr = "doc.operation.show-hyper-link-edit-popup",
+  mr = "docs.operation.start-add-comment",
+  hr = {
+    all: "AllBorderIcon",
+    bottom: "DownBorderDoubleIcon",
+    inner: "InnerBorderDoubleIcon",
+    innerHorizontal: "HorizontalBorderDoubleIcon",
+    innerVertical: "VerticalBorderDoubleIcon",
+    left: "LeftBorderDoubleIcon",
+    none: "NoBorderIcon",
+    outer: "OuterBorderDoubleIcon",
+    right: "RightBorderDoubleIcon",
+    top: "UpBorderDoubleIcon"
+  };
+function gr() {
+  return {
+    id: cr,
+    type: MenuItemType.SUBITEMS,
+    title: "docs-table-ui.insert"
+  };
+}
+function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461503) {
+  return {
+    id: lr,
+    type: MenuItemType.SUBITEMS,
+    title: "docs-table-ui.delete",
+    hidden$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461503 ? fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461503) : undefined
+  };
+}
+function vr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461505) {
+  return {
+    id: ur,
+    type: MenuItemType.SUBITEMS,
+    title: "docs-table-ui.borders",
+    icon: hr.all,
+    hidden$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461505 ? fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461505) : undefined
+  };
+}
+function yr() {
+  return Zr(dr, "docs-table-ui.table.insert");
+}
+function br() {
+  return Zr(fr, "docs-table-ui.table.delete");
+}
+function xr() {
+  return Qr(pr);
+}
+function Sr() {
+  return Qr(mr);
+}
+function Cr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461507) {
+  return {
+    ...B(DeleteLeftCommand.id, "docs-table-ui.clearContent", undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461507),
+    id: DeleteLeftCommand.id,
+    icon: "ClearFormatDoubleIcon"
+  };
+}
+function wr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461509) {
+  return {
+    ...B(DocsTableInsertRowsCommand.id, "docs-table-ui.insertRowAbove", {
+      position: "above"
+    }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461509),
+    icon: "InsertRowAboveDoubleIcon"
+  };
+}
+function Tr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511) {
+  return {
+    ...B(DocsTableInsertRowsCommand.id, "docs-table-ui.insertRowBelow", {
+      position: "below"
+    }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511),
+    icon: "InsertRowBelowDoubleIcon"
+  };
+}
+function Er(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461513) {
+  return {
+    ...B(DocsTableInsertColumnsCommand.id, "docs-table-ui.insertColumnLeft", {
+      position: "left"
+    }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461513),
+    icon: "LeftInsertColumnDoubleIcon"
+  };
+}
+function Dr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461515) {
+  return {
+    ...B(DocsTableInsertColumnsCommand.id, "docs-table-ui.insertColumnRight", {
+      position: "right"
+    }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461515),
+    icon: "RightInsertColumnDoubleIcon"
+  };
+}
+function Or(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461517) {
+  return B(DocsTableDeleteRowsCommand.id, "docs-table-ui.deleteRow", Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461517), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461517);
+}
+function kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461519) {
+  return B(DocsTableDeleteColumnsCommand.id, "docs-table-ui.deleteColumn", Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461519), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461519);
+}
+function Ar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461521) {
+  return B(DocsTableDeleteTableCommand.id, "docs-table-ui.deleteTable", Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461521), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461521);
+}
+function jr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461523) {
+  return B(DocsTableMergeCellsCommand.id, "docs-table-ui.mergeCells", undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461523, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461523 ? ni(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461523) : undefined);
+}
+function Mr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461525) {
+  return B(DocsTableUnmergeCellsCommand.id, "docs-table-ui.unmergeCells", undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461525, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461525 ? ri(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461525) : undefined);
+}
+function Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461527) {
+  return B(DocsTableInsertTitleRowCommand.id, "docs-table-ui.insertTitleRow", undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461527, undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461527 ? ei(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461527) : undefined);
+}
+function Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461529) {
+  return B(DocsTableSetHeaderRowCountCommand.id, "docs-table-ui.pinHeaderRows", undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461529, undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461529 ? ei(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461529) : undefined);
+}
+function Fr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461531) {
+  return V("docs-table-ui.borderAll", DocsTableBorderPreset.All, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461531);
+}
+function Ir(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533) {
+  return V("docs-table-ui.borderBottom", DocsTableBorderPreset.Bottom, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461533);
+}
+function Lr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461535) {
+  return V("docs-table-ui.borderInner", DocsTableBorderPreset.Inner, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461535);
+}
+function Rr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461537) {
+  return V("docs-table-ui.borderInnerHorizontal", DocsTableBorderPreset.InnerHorizontal, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461537);
+}
+function zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461539) {
+  return V("docs-table-ui.borderInnerVertical", DocsTableBorderPreset.InnerVertical, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461539);
+}
+function Br(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461541) {
+  return V("docs-table-ui.borderLeft", DocsTableBorderPreset.Left, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461541);
+}
+function Vr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461543) {
+  return V("docs-table-ui.borderOuter", DocsTableBorderPreset.Outer, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461543);
+}
+function Hr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461545) {
+  return V("docs-table-ui.borderNone", DocsTableBorderPreset.None, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461545);
+}
+function Ur(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461547) {
+  return V("docs-table-ui.borderRight", DocsTableBorderPreset.Right, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461547);
+}
+function Wr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461549) {
+  return V("docs-table-ui.borderTop", DocsTableBorderPreset.Top, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461549);
+}
+function Gr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461551) {
+  return Xr({
+    accessor: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461551,
+    commandId: DocsTableSetTableBackgroundCommand.id,
+    defaultColor: DEFAULT_STYLES.bg["rgb"],
+    icon: "PaintBucketDoubleIcon",
+    tooltip: "docs-table-ui.tableBackgroundColor"
+  });
+}
+function Kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461553) {
+  return Xr({
+    accessor: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461553,
+    commandId: DocsTableSetTableBorderColorCommand.id,
+    defaultColor: "#1f1f1f",
+    icon: "PaintBucketDoubleIcon",
+    tooltip: "docs-table-ui.borderColor"
+  });
+}
+function qr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555) {
+  return {
+    id: DocsTableSetTableBorderWidthCommand.id,
+    type: MenuItemType.SELECTOR,
+    icon: "TableBorderWidthIcon",
+    tooltip: "docs-table-ui.borderWidth",
+    selections: [0, 0.5, 0.75, 1, 1.5, 2.25, 3, 4.5, 6].map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202 => ({
+      value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202,
+      label: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202 + "pt"
+    })),
+    value$: of(1),
+    hidden$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555 ? fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555) : undefined
+  };
+}
+function Jr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461557) {
+  return {
+    id: DocsTableSetTableBorderStyleCommand.id,
+    type: MenuItemType.SELECTOR,
+    icon: "TableBorderStyleIcon",
+    tooltip: "docs-table-ui.borderStyle",
+    selections: [{
+      value: "solid",
+      label: "docs-table-ui.borderStyleSolid",
+      icon: "TableBorderStyleSolidIcon"
+    }, {
+      value: "dot",
+      label: "docs-table-ui.borderStyleDotted",
+      icon: "TableBorderStyleDottedIcon"
+    }, {
+      value: "dash",
+      label: "docs-table-ui.borderStyleDashed",
+      icon: "TableBorderStyleDashedIcon"
+    }],
+    value$: of("solid"),
+    hidden$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461557 ? fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461557) : undefined
+  };
+}
+function B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461559, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461560, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461561, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461562, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461563, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461564) {
+  return {
+    id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461559 + "." + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461560.split(".").pop(),
+    commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461559,
+    type: MenuItemType.BUTTON,
+    title: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461560,
+    params: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461561,
+    hidden$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461564 ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461562 ? fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461562) : undefined),
+    disabled$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461563
+  };
+}
+function Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461571) {
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461571) return;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461572 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461571.get(DocsTableSelectionService);
+  return () => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461572.getCurrentSelection();
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203 ? {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203
+    } : undefined;
+  };
+}
+function V(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461575, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461576, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461577) {
+  return {
+    ...B(DocsTableSetTableBorderCommand.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461575, {
+      preset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461576
+    }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461577),
+    icon: hr[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461576]
+  };
+}
+function Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581) {
+  let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB44 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581.defaultColor || "#1f1f1f";
+  return {
+    id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581.commandId,
+    tooltip: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581.tooltip,
+    type: MenuItemType.BUTTON_SELECTOR,
+    icon: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581.icon,
+    selections: [{
+      label: {
+        name: COLOR_PICKER_COMPONENT,
+        hoverable: false,
+        selectable: false
+      },
+      value$: of(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB44)
+    }],
+    value$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581.accessor ? new Observable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581.accessor["get"](IUniverInstanceService).focused$["subscribe"](() => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.next(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB44));
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.next(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB44), () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206.unsubscribe();
+    }) : of(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB44),
+    hidden$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581.accessor ? fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461581.accessor) : undefined
+  };
+}
+function Zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461583, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461584) {
+  return {
+    id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461583,
+    type: MenuItemType.SUBITEMS,
+    title: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461584,
+    hidden$: of(true)
+  };
+}
+function Qr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461587, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461588) {
+  return {
+    id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461587,
+    commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461587,
+    type: MenuItemType.BUTTON,
+    title: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461588,
+    hidden$: of(true)
+  };
+}
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461592 = ii(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591);
+  return combineLatest([getMenuHiddenObservable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591, UniverInstanceType.UNIVER_DOC), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461592.pipe(map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209 => !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209.tableId)))]).pipe(map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211]) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211));
+}
+function ei(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461595) {
+  return combineLatest([fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461595), ti(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461595)]).pipe(map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213]) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213));
+}
+function ti(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461597) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461598 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461597.get(IUniverInstanceService);
+  return new Observable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214 => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622 => {
+        var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623;
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461598.getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622, UniverInstanceType.UNIVER_DOC) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461598.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC),
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624.getSnapshot()) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.documentStyle) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.documentFlavor;
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214.next(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 !== DocumentFlavor.TRADITIONAL);
+      },
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461598.focused$["subscribe"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 ?? null));
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215(), () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216.unsubscribe();
+  });
+}
+function ni(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461601) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461602 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461601.get(IUniverInstanceService),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461603 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461601.get(DocsTableSelectionService);
+  return ii(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461601).pipe(map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46220 => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461602.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46220 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46220.tableId ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46220 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461603.getStableTableSelection();
+    return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221 || !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222.tableId) || !canMergeCells(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221.getSnapshot(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222.tableId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222);
+  }));
+}
+function ri(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461607) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461608 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461607.get(IUniverInstanceService),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461609 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461607.get(DocsTableSelectionService);
+  return ii(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461607).pipe(map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46226 => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461608.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46226 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46226.tableId ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46226 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461609.getStableTableSelection();
+    return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227 || !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228.tableId) || !canUnmergeCells(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.getSnapshot(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228.tableId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228);
+  }));
+}
+function ii(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461613) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461614 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461613.get(DocsTableSelectionService);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461614.selectionChange$["pipe"](startWith(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461614.getCurrentSelection()));
+}
+const ai = {
+    [RibbonInsertGroup.MEDIA]: {
+      [var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB68]: {
+        order: 2,
+        menuItemFactory: nr
+      }
+    }
+  },
+  oi = {
+    [MenuManagerPosition.RIBBON]: {
+      [RibbonPosition.INSERT]: ai,
+      [RibbonPosition.START]: {
+        "ribbon.start.docs-table-style": {
+          order: 20,
+          [DocsTableSetTableBackgroundCommand.id]: {
+            order: 0,
+            menuItemFactory: Gr
+          },
+          [DocsTableSetTableBorderColorCommand.id]: {
+            order: 1,
+            menuItemFactory: Kr
+          },
+          [DocsTableSetTableBorderWidthCommand.id]: {
+            order: 2,
+            menuItemFactory: qr
+          },
+          [DocsTableSetTableBorderStyleCommand.id]: {
+            order: 3,
+            menuItemFactory: Jr
+          }
+        }
+      }
+    }
+  },
+  si = {
+    ...ai,
+    [ContextMenuPosition.PARAGRAPH]: {
+      [ContextMenuGroup.LAYOUT]: {
+        [INSERT_BELLOW_MENU_ID]: {
+          [DocCreateTableOperation.id]: {
+            order: 4,
+            menuItemFactory: rr
+          }
+        }
+      },
+      [EMPTY_PARAGRAPH_MENU_ID]: {
+        [ContextMenuGroup.LAYOUT]: {
+          [DocCreateTableOperation.id]: {
+            order: 4,
+            menuItemFactory: rr
+          }
+        }
+      },
+      [DOC_CONTENT_INSERT_MENU_ID]: {
+        "docs-table-ui.menu.cell-style-context-group": {
+          order: -1,
+          tiny: true,
+          [DocsTableSetTableBackgroundCommand.id]: {
+            order: 0,
+            menuItemFactory: Gr
+          },
+          [DocsTableSetTableBorderColorCommand.id]: {
+            order: 1,
+            menuItemFactory: Kr
+          },
+          [DocsTableSetTableBorderWidthCommand.id]: {
+            order: 2,
+            menuItemFactory: qr
+          },
+          [DocsTableSetTableBorderStyleCommand.id]: {
+            order: 3,
+            menuItemFactory: Jr
+          }
+        },
+        [ContextMenuGroup.LAYOUT]: {
+          [DocCreateTableOperation.id]: {
+            order: 4,
+            menuItemFactory: rr
+          },
+          [ur]: {
+            order: 8,
+            menuItemFactory: vr,
+            "docs-table-ui.menu.border-all": {
+              order: 0,
+              menuItemFactory: Fr
+            },
+            "docs-table-ui.menu.border-inner": {
+              order: 1,
+              menuItemFactory: Lr
+            },
+            "docs-table-ui.menu.border-outer": {
+              order: 2,
+              menuItemFactory: Vr
+            },
+            "docs-table-ui.menu.border-top": {
+              order: 3,
+              menuItemFactory: Wr
+            },
+            "docs-table-ui.menu.border-bottom": {
+              order: 4,
+              menuItemFactory: Ir
+            },
+            "docs-table-ui.menu.border-left": {
+              order: 5,
+              menuItemFactory: Br
+            },
+            "docs-table-ui.menu.border-right": {
+              order: 6,
+              menuItemFactory: Ur
+            },
+            "docs-table-ui.menu.border-inner-horizontal": {
+              order: 7,
+              menuItemFactory: Rr
+            },
+            "docs-table-ui.menu.border-inner-vertical": {
+              order: 8,
+              menuItemFactory: zr
+            },
+            "docs-table-ui.menu.border-none": {
+              order: 9,
+              menuItemFactory: Hr
+            }
+          }
+        }
+      },
+      [DOC_PARAGRAPH_T_INSERT_MENU_ID]: {
+        insert: {
+          [DocCreateTableOperation.id]: {
+            order: 0,
+            menuItemFactory: ir
+          }
+        }
+      },
+      [DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID]: {
+        insert: {
+          [DocCreateTableOperation.id + ".below"]: {
+            order: 0,
+            menuItemFactory: rr
+          }
+        }
+      },
+      [DOC_TABLE_BLOCK_MENU_ID]: {
+        [ContextMenuGroup.LAYOUT]: {
+          [INSERT_BELLOW_MENU_ID]: {
+            order: 0,
+            menuItemFactory: ParagraphMenuInsertBelowSubmenuItemFactory
+          }
+        }
+      }
+    },
+    [ContextMenuPosition.MAIN_AREA]: {
+      [ContextMenuGroup.DATA]: {
+        [pr]: {
+          order: 0,
+          menuItemFactory: xr
+        },
+        [mr]: {
+          order: 1,
+          menuItemFactory: Sr
+        }
+      },
+      [ContextMenuGroup.FORMAT]: {
+        [DeleteLeftCommand.id]: {
+          order: 0,
+          menuItemFactory: Cr
+        }
+      },
+      [ContextMenuGroup.LAYOUT]: {
+        [dr]: {
+          order: 1,
+          menuItemFactory: yr
+        },
+        [fr]: {
+          order: 2,
+          menuItemFactory: br
+        },
+        [cr]: {
+          order: 20,
+          menuItemFactory: gr,
+          "docs-table-ui.menu.insert-row-above": {
+            order: 0,
+            menuItemFactory: wr
+          },
+          "docs-table-ui.menu.insert-row-below": {
+            order: 1,
+            menuItemFactory: Tr
+          },
+          "docs-table-ui.menu.insert-column-left": {
+            order: 2,
+            menuItemFactory: Er
+          },
+          "docs-table-ui.menu.insert-column-right": {
+            order: 3,
+            menuItemFactory: Dr
+          }
+        },
+        [lr]: {
+          order: 30,
+          menuItemFactory: fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1,
+          "docs-table-ui.menu.delete-rows": {
+            order: 0,
+            menuItemFactory: Or
+          },
+          "docs-table-ui.menu.delete-columns": {
+            order: 1,
+            menuItemFactory: kr
+          },
+          "docs-table-ui.menu.delete-table": {
+            order: 2,
+            menuItemFactory: Ar
+          }
+        },
+        "docs-table-ui.menu.merge-cells": {
+          order: 40,
+          menuItemFactory: jr
+        },
+        "docs-table-ui.menu.unmerge-cells": {
+          order: 41,
+          menuItemFactory: Mr
+        }
+      },
+      [ContextMenuGroup.OTHERS]: {
+        "docs-table-ui.menu.insert-title-row": {
+          order: 0,
+          menuItemFactory: Nr
+        },
+        "docs-table-ui.menu.pin-header": {
+          order: 1,
+          menuItemFactory: Pr
+        }
+      }
+    }
+  };
+export { si as DocsTableUIMenuSchema };
+export { oi };

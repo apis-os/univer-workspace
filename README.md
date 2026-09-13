@@ -120,7 +120,18 @@ pnpm exec wrangler dev --port 8790
 
 # 4. Deploy live to Cloudflare
 pnpm exec wrangler deploy
+
+# 5. Thin CLI proof against /uf (no local Chromium)
+pnpm exec tsx scripts/cli-edge-proof.mjs
+EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cli-edge-proof.mjs
+
+# 6. Live cell write, then Agent Fill in the browser
+pnpm --filter @univerjs/workspace-agent live-edit -- \
+  --origin https://univer-workspace.apisos.workers.dev \
+  --set E4=180
 ```
+
+CLI `DEFAULT_ORIGIN` stays `https://workspace.univer.plus/`. This fork’s live origin is [https://univer-workspace.apisos.workers.dev](https://univer-workspace.apisos.workers.dev).
 
 ## Quick start
 

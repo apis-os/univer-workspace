@@ -1,0 +1,56 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { IDropdownProps, ITooltipProps } from '@univerjs/design';
+import type { ReactNode } from 'react';
+import type { IMenuItem, IValueOption } from '../../../services/menu/menu';
+export interface ITooltipWrapperRef {
+    el: HTMLSpanElement | null;
+}
+export interface IToolbarTooltipProps extends Omit<ITooltipProps, 'visible' | 'onVisibleChange'> {
+    popupOpen: boolean;
+}
+/**
+ * Keeps toolbar tooltips controlled while a related popup opens and closes.
+ * The tooltip stays hidden after the popup closes until a new hover or focus interaction occurs.
+ */
+export declare function ToolbarTooltip(props: IToolbarTooltipProps): import("react").JSX.Element;
+export declare function ToolbarDropdownProvider(props: {
+    children: ReactNode;
+}): import("react").JSX.Element;
+export declare const TooltipWrapper: import("react").ForwardRefExoticComponent<ITooltipProps & {
+    dropdownKey?: string;
+} & import("react").RefAttributes<ITooltipWrapperRef>>;
+export declare function DropdownWrapper(props: Omit<Partial<IDropdownProps>, 'overlay'> & {
+    overlay: ReactNode;
+    align?: 'start' | 'end' | 'center';
+}): import("react").JSX.Element;
+export declare function DropdownMenuLabel({ icon, value, option, preserveStrokeWidth, onOptionSelect }: {
+    icon?: IMenuItem['icon'];
+    value?: string | number;
+    option: IValueOption;
+    preserveStrokeWidth?: boolean;
+    onOptionSelect?: (option: IValueOption) => void;
+}): import("react").JSX.Element;
+export declare function DropdownMenuWrapper({ menuId, slot, value, options, children, disabled, preserveStrokeWidth, onOptionSelect, }: {
+    menuId: string;
+    slot?: boolean;
+    value?: string | number;
+    options: IValueOption[];
+    children: ReactNode;
+    disabled?: boolean;
+    preserveStrokeWidth?: boolean;
+    onOptionSelect: (option: IValueOption) => void;
+}): import("react").JSX.Element;

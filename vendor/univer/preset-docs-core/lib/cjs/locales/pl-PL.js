@@ -1,0 +1,15 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_design_locale_pl_PL = require("@univerjs/design/locale/pl-PL");
+_univerjs_design_locale_pl_PL = require_rolldown_runtime.__toESM(_univerjs_design_locale_pl_PL);
+let _univerjs_docs_ui_locale_pl_PL = require("@univerjs/docs-ui/locale/pl-PL");
+_univerjs_docs_ui_locale_pl_PL = require_rolldown_runtime.__toESM(_univerjs_docs_ui_locale_pl_PL);
+let _univerjs_engine_formula_locale_pl_PL = require("@univerjs/engine-formula/locale/pl-PL");
+_univerjs_engine_formula_locale_pl_PL = require_rolldown_runtime.__toESM(_univerjs_engine_formula_locale_pl_PL);
+let _univerjs_ui_locale_pl_PL = require("@univerjs/ui/locale/pl-PL");
+_univerjs_ui_locale_pl_PL = require_rolldown_runtime.__toESM(_univerjs_ui_locale_pl_PL);
+
+//#region src/locales/pl-PL.ts
+var pl_PL_default = Object.assign({}, _univerjs_design_locale_pl_PL.default, _univerjs_docs_ui_locale_pl_PL.default, _univerjs_engine_formula_locale_pl_PL.default, _univerjs_ui_locale_pl_PL.default);
+
+//#endregion
+module.exports = pl_PL_default;

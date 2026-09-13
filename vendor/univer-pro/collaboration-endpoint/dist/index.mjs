@@ -1,0 +1,1 @@
+import v1 from"./index.cjs";const facadeExport0=v1.MemorySessionTicketStore,facadeExport1=v1.UniverCollabEndpoint;export{facadeExport0 as MemorySessionTicketStore,facadeExport1 as UniverCollabEndpoint};

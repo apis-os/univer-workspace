@@ -25,6 +25,7 @@ import {
   sessionQueryKey,
   sessionQueryOptions,
 } from "./auth.queries";
+import { shouldHideCreateAccount } from "../demo/demo-origin";
 
 interface AuthValues {
   readonly username: string;
@@ -49,6 +50,9 @@ export function AuthCard(props: {
   const session = useQuery(sessionQueryOptions);
   const navigate = useNavigate();
   const { t } = useI18n();
+  const hideCreateAccount = shouldHideCreateAccount(
+    typeof window === "undefined" ? "" : window.location.hostname
+  );
   const mutation = useMutation({
     mutationFn: async (values: AuthValues) => {
       if (mode === "register") {
@@ -121,6 +125,7 @@ export function AuthCard(props: {
         </div>
       </div>
 
+      {hideCreateAccount ? null : (
       <Segmented
         aria-label={mode === "login" ? t("signIn") : t("createAccount")}
         className="mb-6 grid w-full grid-cols-2"
@@ -135,6 +140,7 @@ export function AuthCard(props: {
           setMode(value);
         }}
       />
+      )}
 
       {error || props.oauthError ? (
         <Alert variant="destructive" className="mb-5">

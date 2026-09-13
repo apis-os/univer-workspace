@@ -1,0 +1,43 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-frame-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M1.8 1.8H18.2V18.2H1.8z",
+			"strokeWidth": 1.6
+		}
+	}, {
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M5.8 5.8H14.2V14.2H5.8z",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFrameIcon = (0, react.forwardRef)(function ShapeFrameIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-frame-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFrameIcon.displayName = "ShapeFrameIcon";
+//#endregion
+exports.ShapeFrameIcon = ShapeFrameIcon;
+exports.default = ShapeFrameIcon;

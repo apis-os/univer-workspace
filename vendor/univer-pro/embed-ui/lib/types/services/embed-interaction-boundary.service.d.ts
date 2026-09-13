@@ -1,0 +1,48 @@
+import type { IDisposable } from '@univerjs/core';
+export declare const EMBED_INTERACTION_BOUNDARY_OWNER_ATTRIBUTE = "data-embed-interaction-boundary-owner";
+export declare function getEmbedInteractionBoundaryOwnerId(element: HTMLElement | null | undefined): string | undefined;
+export declare function isEventTargetInSameEmbedInteractionBoundary(scopeElement: HTMLElement | null | undefined, target: EventTarget | null | undefined): boolean;
+export declare class EmbedInteractionBoundaryService {
+    private readonly _roots;
+    private readonly _childUnitIds;
+    private readonly _portalObservers;
+    private readonly _closedPortalInputGuards;
+    private readonly _activePortalOwners;
+    private _pendingPortalOwner;
+    registerRoot(embedId: string, root: HTMLElement, childUnitId?: string): IDisposable;
+    private _registerRootPopupDescendantFocusRoles;
+    registerOwnedElement(embedId: string, element: HTMLElement): IDisposable;
+    contains(embedId: string | undefined, target: EventTarget | null | undefined, event?: Event): boolean;
+    hasRecentInteraction(ownerDocument?: Document): boolean;
+    hasRecentInteractionFor(embedId: string | undefined, ownerDocument?: Document): boolean;
+    closeOwnedFloatingSurfaces(embedId: string | undefined, ownerDocument: Document | undefined): void;
+    activatePortalScope(embedId: string, ownerDocument: Document | undefined, options?: {
+        includeAppShellEditorPortal?: boolean;
+    }): IDisposable;
+    private _collectOwnedFloatingSurfaceRoots;
+    private _resolveFloatingSurfaceRoot;
+    private _dispatchEscapeToFloatingSurface;
+    private _isOwnedElement;
+    private _claimBodyPortals;
+    private _ensurePortalObserver;
+    private _markBodyPortalOwner;
+    private _markExistingBodyPortals;
+    private _isBodyPortalCandidate;
+    private _isAppShellEditorPortalCandidate;
+    private _isHostDocEditorPortal;
+    private _isUniverPortalCandidate;
+    private _isDetachedOffscreenPortalCandidate;
+    private _markRuntimeFocusRole;
+    private _syncClosedPortalInputGuard;
+    private _clearClosedPortalInputGuard;
+    private _markInteractionBoundaryOwnerTree;
+    private _isUniverPortalTreeElement;
+    private _getBodyPortalOwner;
+    private _getLatestActivePortalOwner;
+    private _cleanupOrdinaryBodyChromeClaims;
+    private _blurActiveElementBeforePortalReassignment;
+    private _releaseBodyPortalClaims;
+    private _focusDocumentBody;
+    private _focusTemporarySink;
+    private _removeRuntimeFocusRoleTree;
+}

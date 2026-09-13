@@ -1,0 +1,37 @@
+const e = {
+  "slides-print": {
+    menu: "In",
+    header: {
+      pages: "Tổng cộng {0} trang",
+      cancel: "Hủy",
+      next: "Tiếp theo",
+      printing: "Đang in…",
+    },
+    settings: {
+      range: "Phạm vi in",
+      rangePlaceholder: "Tất\x20cả\x20trang\x20chiếu\x20hoặc\x201-3,5",
+      rangeInvalid: "Nhập số trang chiếu có trong bản trình bày, ví dụ 1-3,5.",
+      layout: "Bố cục in",
+      fullPage: "Trang\x20chiếu\x20toàn\x20trang",
+      notesPage: "Trang ghi chú",
+      handout: "Bản phân phát",
+      slidesPerPage: "Số trang chiếu mỗi trang",
+      order: "Thứ tự trang",
+      horizontal: "Ngang",
+      vertical: "Dọc",
+      paperSize: "Khổ\x20giấy",
+      orientation: "Hướng\x20giấy",
+      portrait: "Dọc",
+      landscape: "Ngang",
+      margin: "Lề",
+      normal: "Bình thường",
+      narrow: "Hẹp",
+      wide: "Rộng",
+      none: "Không có",
+      formatting: "Định dạng",
+      frameSlides: "Tạo khung trang chiếu",
+      slideNumber: "In số trang chiếu",
+    },
+  },
+};
+module.exports = e;

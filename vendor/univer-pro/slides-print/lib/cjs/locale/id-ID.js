@@ -1,0 +1,37 @@
+const e = {
+  "slides-print": {
+    menu: "Cetak",
+    header: {
+      pages: "Total {0} halaman",
+      cancel: "Batal",
+      next: "Berikutnya",
+      printing: "Mencetak…",
+    },
+    settings: {
+      range: "Rentang cetak",
+      rangePlaceholder: "Semua slide, atau 1-3,5",
+      rangeInvalid: "Masukkan nomor slide dalam presentasi, misalnya 1-3,5.",
+      layout: "Tata letak cetak",
+      fullPage: "Slide satu halaman penuh",
+      notesPage: "Halaman catatan",
+      handout: "Handout",
+      slidesPerPage: "Slide per halaman",
+      order: "Urutan halaman",
+      horizontal: "Horizontal",
+      vertical: "Vertikal",
+      paperSize: "Ukuran kertas",
+      orientation: "Orientasi",
+      portrait: "Potret",
+      landscape: "Lanskap",
+      margin: "Margin",
+      normal: "Normal",
+      narrow: "Sempit",
+      wide: "Lebar",
+      none: "Tanpa margin",
+      formatting: "Pemformatan",
+      frameSlides: "Beri\x20bingkai\x20pada\x20slide",
+      slideNumber: "Cetak nomor slide",
+    },
+  },
+};
+module.exports = e;

@@ -1,0 +1,269 @@
+import { AddDocColumnCommand as var_core_value_sigBECE, ColumnPosition as var_core_value_sig1B22, DeleteDocColumnCommand as var_core_value_sig7F72, DeleteDocColumnGroupCommand as var_core_value_sig7B2A, InsertDocColumnGroupCommand as var_core_value_sig06CD, ResizeDocColumnGroupCommand as var_core_value_sigA5F1, getColumnGroupRangeById as var_core_value_sig97A2 } from '@univerjs-pro/docs-column';
+import { FEnum as var_core_value_sig07E9 } from '@univerjs/core/facade';
+import { DataStreamTreeTokenType as var_core_value_sig4F59, ICommandService as var_core_value_sigF564, containsStreamIndex as var_core_value_sig8CFA, generateRandomId as var_core_value_sig2E11, getColumnGroupRangeInterval as var_core_value_sig5B69 } from '@univerjs/core';
+import { FDocument as var_core_value_sigB098 } from '@univerjs/docs/facade';
+var m = class extends var_core_value_sig07E9 {
+  get DocsColumnPositionEnum() {
+    return var_core_value_sig1B22;
+  }
+};
+var_core_value_sig07E9.extend(m);
+var h = class extends Error {
+    constructor() {
+      super('ColumnGroup\x20APIs\x20are\x20supported\x20only\x20in\x20modern\x20documents.\x20Use\x20section\x20column\x20APIs\x20for\x20traditional\x20documents.'), this.name = "DocsColumnUnsupportedDocumentFlavorError";
+    }
+  },
+  g = class {
+    constructor(var_core_value_sigF0F9, var_core_value_sig1A0F, var_core_value_sigFBA4) {
+      this._document = var_core_value_sigF0F9, this._columnGroupId = var_core_value_sig1A0F, this._columnId = var_core_value_sigFBA4;
+    }
+    getId() {
+      return this._columnId;
+    }
+    getColumnGroupId() {
+      return this._columnGroupId;
+    }
+    getIndex() {
+      var var_core_value_sig4383;
+      return ((var_core_value_sig4383 = this.getRange()) == null ? undefined : var_core_value_sig4383.column) ?? -1;
+    }
+    getRange() {
+      if (!this._document['isModern']()) return null;
+      let var_core_value_sig186C = var_core_value_sig97A2(this._document["getDocumentDataModel"]().getSnapshot(), this._columnGroupId);
+      return (var_core_value_sig186C == null ? undefined : var_core_value_sig186C.columns["find"](var_core_value_sig2AD8 => var_core_value_sig2AD8.columnId === this._columnId)) ?? null;
+    }
+    getContentRange() {
+      let var_core_value_sigD955 = this.getRange(),
+        {
+          dataStream: var_core_value_sig48BD
+        } = this._document["getBody"]();
+      if (!var_core_value_sigD955 || !var_core_value_sig48BD) return null;
+      let var_core_value_sig429F = var_core_value_sigD955.startOffset + 1,
+        var_core_value_sigF62A = _(var_core_value_sig48BD, var_core_value_sigD955);
+      return {
+        'startOffset': var_core_value_sig429F,
+        'endOffset': Math.max(var_core_value_sig429F, var_core_value_sigF62A),
+        'segmentId': ''
+      };
+    }
+    getInsertOffset() {
+      var var_core_value_sig8178;
+      return ((var_core_value_sig8178 = this.getContentRange()) == null ? undefined : var_core_value_sig8178.endOffset) ?? null;
+    }
+    getText() {
+      let var_core_value_sigE9ED = this.getContentRange(),
+        {
+          dataStream: var_core_value_sigB577
+        } = this._document["getBody"]();
+      return !var_core_value_sigE9ED || !var_core_value_sigB577 ? '' : v(var_core_value_sigB577.slice(var_core_value_sigE9ED.startOffset, var_core_value_sigE9ED.endOffset));
+    }
+    getParagraphs() {
+      let var_core_value_sig9572 = this.getRange();
+      return var_core_value_sig9572 ? this._document['getParagraphs']().filter(var_core_value_sig2AD0 => {
+        let {
+          endOffset: var_core_value_sig3EEE
+        } = var_core_value_sig2AD0.getInfo();
+        return var_core_value_sig3EEE > var_core_value_sig9572.startOffset && var_core_value_sig3EEE < var_core_value_sig9572.endOffset;
+      }) : [];
+    }
+    insertParagraph(var_core_value_sigD873, var_core_value_sigA12B = '') {
+      this._assertModernDocument();
+      let var_core_value_sigF230 = this.getParagraphs();
+      if (!Number.isInteger(var_core_value_sigD873) || var_core_value_sigD873 < 0 || var_core_value_sigD873 > var_core_value_sigF230.length) throw RangeError("Column paragraph index " + var_core_value_sigD873 + " is out of range.");
+      let var_core_value_sig09B8 = this.getRange();
+      if (!var_core_value_sig09B8) throw Error("Cannot insert a paragraph because the column no longer exists.");
+      let var_core_value_sig6F91 = var_core_value_sigD873 < var_core_value_sigF230.length ? var_core_value_sigF230[var_core_value_sigD873].getInfo().startOffset : var_core_value_sig09B8.endOffset;
+      if (!this._document['insertText'](var_core_value_sig6F91, var_core_value_sigA12B + '\x0d')) throw Error("Failed to insert paragraph into the column.");
+      let var_core_value_sigF9C7 = this.getParagraphs()[var_core_value_sigD873];
+      if (!var_core_value_sigF9C7) throw Error('Failed\x20to\x20resolve\x20the\x20inserted\x20column\x20paragraph.');
+      return var_core_value_sigF9C7;
+    }
+    appendParagraph(var_core_value_sig8895 = '') {
+      return this.insertParagraph(this.getParagraphs().length, var_core_value_sig8895);
+    }
+    getTextRange() {
+      let var_core_value_sigC80B = this.getContentRange();
+      return var_core_value_sigC80B ? this._document["getTextRange"](var_core_value_sigC80B.startOffset, var_core_value_sigC80B.endOffset, var_core_value_sigC80B.segmentId) : null;
+    }
+    setText(var_core_value_sig284F) {
+      var var_core_value_sigE154;
+      return this._assertModernDocument(), ((var_core_value_sigE154 = this.getTextRange()) == null ? undefined : var_core_value_sigE154.setText(var_core_value_sig284F)) ?? false;
+    }
+    setTextStyle(var_core_value_sig4632) {
+      var var_core_value_sig12F2;
+      return this._assertModernDocument(), ((var_core_value_sig12F2 = this.getTextRange()) == null ? undefined : var_core_value_sig12F2.setTextStyle(var_core_value_sig4632)) ?? false;
+    }
+    _assertModernDocument() {
+      if (!this._document['isModern']()) throw new h();
+    }
+  };
+function _(var_core_value_sig2DAB, var_core_value_sig877E) {
+  let var_core_value_sig20C8 = var_core_value_sig877E.endOffset;
+  for (; var_core_value_sig20C8 > var_core_value_sig877E.startOffset + 1 && (var_core_value_sig2DAB[var_core_value_sig20C8 - 1] === var_core_value_sig4F59.PARAGRAPH || var_core_value_sig2DAB[var_core_value_sig20C8 - 1] === var_core_value_sig4F59.SECTION_BREAK);) --var_core_value_sig20C8;
+  return var_core_value_sig20C8;
+}
+;
+function v(var_core_value_sigE9A7) {
+  return var_core_value_sigE9A7.replaceAll(var_core_value_sig4F59.SECTION_BREAK, '').replaceAll(var_core_value_sig4F59.PARAGRAPH, '\x0a').replace(/\n+$/u, '');
+}
+var y = class {
+    constructor(var_core_value_sig2259, var_core_value_sig9E2F, var_core_value_sigD082) {
+      this._document = var_core_value_sig2259, this._columnGroupId = var_core_value_sig9E2F, this._injector = var_core_value_sigD082;
+    }
+    getId() {
+      return this._columnGroupId;
+    }
+    getConfig() {
+      if (!this._document["isModern"]()) return;
+      let {
+        columnGroups: var_core_value_sigDBB7 = []
+      } = this._document["getBody"]();
+      return var_core_value_sigDBB7.find(var_core_value_sigBC46 => var_core_value_sigBC46.columnGroupId === this._columnGroupId);
+    }
+    getRange() {
+      return this._document["isModern"]() ? var_core_value_sig97A2(this._document["getDocumentDataModel"]().getSnapshot(), this._columnGroupId) : null;
+    }
+    getColumnCount() {
+      var var_core_value_sigD0A8, var_core_value_sigF4B9;
+      return ((var_core_value_sigD0A8 = this.getRange()) == null ? undefined : var_core_value_sigD0A8.columns['length']) ?? ((var_core_value_sigF4B9 = this.getConfig()) == null || (var_core_value_sigF4B9 = var_core_value_sigF4B9.columns) == null ? undefined : var_core_value_sigF4B9.length) ?? 0;
+    }
+    getColumns() {
+      let var_core_value_sig5CEE = this.getRange();
+      if (!var_core_value_sig5CEE) return [];
+      let {
+        columns: var_core_value_sigE92A
+      } = var_core_value_sig5CEE;
+      return var_core_value_sigE92A.map(var_core_value_sig3D7D => this._createFDocumentColumn(var_core_value_sig3D7D.columnId));
+    }
+    getParagraphs() {
+      return this.getColumns().flatMap(var_core_value_sig27E5 => var_core_value_sig27E5.getParagraphs());
+    }
+    getColumn(var_core_value_sig362B) {
+      let var_core_value_sig5CA5 = this.getRange();
+      if (!var_core_value_sig5CA5) return null;
+      let {
+          columns: var_core_value_sigE90F
+        } = var_core_value_sig5CA5,
+        var_core_value_sigEFD4 = typeof var_core_value_sig362B == "number" ? var_core_value_sigE90F[var_core_value_sig362B] : var_core_value_sigE90F.find(var_core_value_sig8061 => var_core_value_sig8061.columnId === var_core_value_sig362B);
+      return var_core_value_sigEFD4 ? this._createFDocumentColumn(var_core_value_sigEFD4.columnId) : null;
+    }
+    getWidthRatios() {
+      var var_core_value_sig861B;
+      return ((var_core_value_sig861B = this.getConfig()) == null || (var_core_value_sig861B = var_core_value_sig861B.columns) == null ? undefined : var_core_value_sig861B.map(var_core_value_sig4D4C => var_core_value_sig4D4C.widthRatio ?? 1)) ?? [];
+    }
+    describe() {
+      var var_core_value_sig5237;
+      let var_core_value_sigBB00 = this.getConfig(),
+        var_core_value_sig7E54 = this.getColumns();
+      return {
+        'columnCount': var_core_value_sig7E54.length,
+        'columnGroupId': this._columnGroupId,
+        'columns': var_core_value_sig7E54.map((var_core_value_sigC9E0, var_core_value_sig76BA) => {
+          var var_core_value_sigFBFA;
+          return {
+            'columnId': var_core_value_sigC9E0.getId(),
+            'index': var_core_value_sig76BA,
+            'text': var_core_value_sigC9E0.getText(),
+            'widthRatio': var_core_value_sigBB00 == null || (var_core_value_sigFBFA = var_core_value_sigBB00.columns) == null || (var_core_value_sigFBFA = var_core_value_sigFBFA[var_core_value_sig76BA]) == null ? undefined : var_core_value_sigFBFA.widthRatio
+          };
+        }),
+        'gap': var_core_value_sigBB00 == null || (var_core_value_sig5237 = var_core_value_sigBB00.gap) == null ? undefined : var_core_value_sig5237.v,
+        'layout': var_core_value_sigBB00 == null ? undefined : var_core_value_sigBB00.layout,
+        'responsive': var_core_value_sigBB00 == null ? undefined : var_core_value_sigBB00.responsive,
+        'config': var_core_value_sigBB00
+      };
+    }
+    setWidthRatios(var_core_value_sig9A8D) {
+      return this._assertModernDocument(), this._injector["get"](var_core_value_sigF564).syncExecuteCommand(var_core_value_sigA5F1.id, {
+        'unitId': this._document['getId'](),
+        'columnGroupId': this._columnGroupId,
+        'widthRatios': var_core_value_sig9A8D
+      });
+    }
+    addColumn(var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA = var_core_value_sig2E11(6)) {
+      return this._assertModernDocument(), this._injector['get'](var_core_value_sigF564).syncExecuteCommand(var_core_value_sigBECE.id, {
+        'unitId': this._document["getId"](),
+        'columnGroupId': this._columnGroupId,
+        'targetColumnId': var_core_value_sigC259,
+        'position': var_core_value_sig9C9F,
+        'columnId': var_core_value_sigFDEA
+      }) ? this.getColumn(var_core_value_sigFDEA) : null;
+    }
+    deleteColumn(var_core_value_sig86D0) {
+      return this._assertModernDocument(), this._injector["get"](var_core_value_sigF564).syncExecuteCommand(var_core_value_sig7F72.id, {
+        'unitId': this._document["getId"](),
+        'columnGroupId': this._columnGroupId,
+        'columnId': var_core_value_sig86D0
+      });
+    }
+    remove() {
+      return this._assertModernDocument(), this._injector["get"](var_core_value_sigF564).syncExecuteCommand(var_core_value_sig7B2A.id, {
+        'unitId': this._document["getId"](),
+        'columnGroupId': this._columnGroupId
+      });
+    }
+    _createFDocumentColumn(var_core_value_sig4CD2) {
+      return this._injector["createInstance"](g, this._document, this._columnGroupId, var_core_value_sig4CD2);
+    }
+    _assertModernDocument() {
+      if (!this._document["isModern"]()) throw new h();
+    }
+  },
+  b = class extends var_core_value_sigB098 {
+    getColumnGroups() {
+      return this._getColumnGroups().map(var_core_value_sigF602 => this._createFDocumentColumnGroup(var_core_value_sigF602.columnGroupId));
+    }
+    getColumnGroup(var_core_value_sig48CA) {
+      return this._getColumnGroups().find(var_core_value_sig1BBD => var_core_value_sig1BBD.columnGroupId === var_core_value_sig48CA) ? this._createFDocumentColumnGroup(var_core_value_sig48CA) : null;
+    }
+    getColumnGroupAt(var_core_value_sig50AF) {
+      let var_core_value_sigA942 = this._getColumnGroups().find(var_core_value_sigF704 => var_core_value_sig8CFA(var_core_value_sig5B69(var_core_value_sigF704), var_core_value_sig50AF));
+      return var_core_value_sigA942 ? this._createFDocumentColumnGroup(var_core_value_sigA942.columnGroupId) : null;
+    }
+    findColumnGroupByText(var_core_value_sigA621) {
+      return this.findColumnGroups({
+        'text': var_core_value_sigA621
+      })[0] ?? null;
+    }
+    findColumnGroups(var_core_value_sigBBFF) {
+      let var_core_value_sig8889 = typeof var_core_value_sigBBFF == 'string' ? {
+        'text': var_core_value_sigBBFF
+      } : var_core_value_sigBBFF;
+      return this.getColumnGroups().filter(var_core_value_sig2BCF => !(var_core_value_sig8889.columnGroupId && var_core_value_sig2BCF.getId() !== var_core_value_sig8889.columnGroupId || var_core_value_sig8889.text && !var_core_value_sig2BCF.getColumns().some(var_core_value_sig7524 => var_core_value_sig7524.getText().includes(var_core_value_sig8889.text))));
+    }
+    insertColumnGroup(var_core_value_sig32F8, var_core_value_sig5B67 = {}) {
+      if (!this.isModern()) throw new h();
+      let var_core_value_sig1758 = this.save().body;
+      if (!(var_core_value_sig1758 != null && var_core_value_sig1758.dataStream)) return null;
+      let var_core_value_sig4805 = this._injector['get'](var_core_value_sigF564),
+        var_core_value_sigE67E = var_core_value_sig5B67.columnGroupId ?? var_core_value_sig2E11(6),
+        var_core_value_sig2902 = Array.from({
+          'length': Math.max(2, var_core_value_sig32F8)
+        }, (var_core_value_sig0D69, var_core_value_sig480E) => {
+          var var_core_value_sig26DB;
+          return ((var_core_value_sig26DB = var_core_value_sig5B67.columnIds) == null ? undefined : var_core_value_sig26DB[var_core_value_sig480E]) ?? var_core_value_sig2E11(6);
+        }),
+        var_core_value_sig9989 = var_core_value_sig5B67.offset ?? Math.max(0, var_core_value_sig1758.dataStream["length"] - 1);
+      return var_core_value_sig4805.syncExecuteCommand(var_core_value_sig06CD.id, {
+        'unitId': this.getId(),
+        'offset': var_core_value_sig9989,
+        'columnCount': var_core_value_sig32F8,
+        'columnGroupId': var_core_value_sigE67E,
+        'columnIds': var_core_value_sig2902,
+        'gap': var_core_value_sig5B67.gap,
+        'widthRatios': var_core_value_sig5B67.widthRatios
+      }) ? this.getColumnGroup(var_core_value_sigE67E) : null;
+    }
+    _getColumnGroups() {
+      if (!this.isModern()) return [];
+      let {
+        columnGroups: var_core_value_sig698E = []
+      } = this.getBody();
+      return var_core_value_sig698E;
+    }
+    _createFDocumentColumnGroup(var_core_value_sig2809) {
+      return this._injector["createInstance"](y, this, var_core_value_sig2809, this._injector);
+    }
+  };
+var_core_value_sigB098.extend(b);
+export { h as DocsColumnUnsupportedDocumentFlavorError, g as FDocumentColumn, y as FDocumentColumnGroup };

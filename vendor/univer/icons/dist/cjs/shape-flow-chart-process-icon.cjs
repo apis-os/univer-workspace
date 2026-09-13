@@ -1,0 +1,36 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-process-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M1.8 3.8H18.2V16.2H1.8z",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartProcessIcon = (0, react.forwardRef)(function ShapeFlowChartProcessIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-process-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartProcessIcon.displayName = "ShapeFlowChartProcessIcon";
+//#endregion
+exports.ShapeFlowChartProcessIcon = ShapeFlowChartProcessIcon;
+exports.default = ShapeFlowChartProcessIcon;

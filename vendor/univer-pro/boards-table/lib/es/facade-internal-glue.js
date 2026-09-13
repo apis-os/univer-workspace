@@ -1,0 +1,41 @@
+import { BoardElementType, InsertBoardTableOperation } from '@univerjs-pro/boards';
+import { BoardDiagramTablePreset, DeleteBoardTableColumnsCommand, DeleteBoardTableRowsCommand, InsertBoardTableColumnsCommand, InsertBoardTableRowsCommand, MergeBoardTableCellsCommand, MoveBoardTableColumnsCommand, MoveBoardTableRowsCommand, RemoveBoardTableCommand, ResizeBoardTableColumnsCommand, ResizeBoardTableRowsCommand, SetBoardTableBorderPresetCommand, SetBoardTableCellStyleCommand, SetBoardTableCellTextCommand, UnmergeBoardTableCellsCommand, UpdateBoardTableCommand } from '@univerjs-pro/boards-table';
+import { FBoard, createBoardFacadeRichTextValue } from '@univerjs-pro/boards/facade';
+import { SlideTableBorderDashEnum, SlideTableBorderPresetEnum, SlideTableFillTypeEnum, SlideTableGradientFillTypeEnum, SlideTablePictureFillModeEnum, SlideTableResourceService, SlideTableTextDirectionEnum, SlideTableVerticalAlignEnum } from '@univerjs-pro/slides-table';
+import { DocumentFlavor, ICommandService, Tools, createParagraphId, generateRandomId } from '@univerjs/core';
+import { FEnum } from '@univerjs/core/facade';
+import { F } from "./facade-boards-table-fboard-table.js";
+;
+;
+;
+;
+;
+;
+FBoard.extend(F);
+var U = class extends FEnum {
+  get BoardTableDiagramPreset() {
+    return BoardDiagramTablePreset;
+  }
+  get BoardTableFillTypeEnum() {
+    return SlideTableFillTypeEnum;
+  }
+  get BoardTableGradientFillTypeEnum() {
+    return SlideTableGradientFillTypeEnum;
+  }
+  get BoardTablePictureFillModeEnum() {
+    return SlideTablePictureFillModeEnum;
+  }
+  get BoardTableBorderDashEnum() {
+    return SlideTableBorderDashEnum;
+  }
+  get BoardTableBorderPresetEnum() {
+    return SlideTableBorderPresetEnum;
+  }
+  get BoardTableVerticalAlignEnum() {
+    return SlideTableVerticalAlignEnum;
+  }
+  get BoardTableTextDirectionEnum() {
+    return SlideTableTextDirectionEnum;
+  }
+};
+FEnum.extend(U);

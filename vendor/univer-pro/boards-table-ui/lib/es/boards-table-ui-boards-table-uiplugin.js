@@ -1,0 +1,11 @@
+export { UniverBoardsTableUIPlugin } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-boards-table-uiplugin.js";
+export { ii } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-ii.js";
+export { ai } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-ai.js";
+export { Ji } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-ji.js";
+export { Qi } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-qi.js";
+export { oa } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-oa.js";
+export { ea } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-ea.js";
+export { Sa } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-sa.js";
+export { Ha } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-ha.js";
+export { J } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-j.js";
+export { to } from "./boards-table-ui-boards-table-uiplugin-boards-table-ui-to.js";

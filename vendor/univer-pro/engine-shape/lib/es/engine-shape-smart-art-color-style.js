@@ -1,0 +1,48 @@
+import { combineDrawingEffectFilter, createDrawingEffectFilter, expandDrawingEffectBounds } from '@univerjs/engine-render';
+import { BooleanNumber, DependentOn, HorizontalAlign, IConfigService, ImageSourceType, Inject, Injector, JSONX, Plugin, RichTextBuilder, RichTextValue, TextX, Tools, UniverInstanceType, VerticalAlign, createIdentifier, generateRandomId, getSingleDataStreamChange, merge, toDisposable } from '@univerjs/core';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { HostExternalReferenceModel } from '@univerjs-pro/engine-formula';
+import { wg } from "./engine-shape-smart-art-color-style-catalog.js";
+function Tg(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612674) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612674 === 'node' || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612674 === 'image' || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612674 === 'decoration' || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612674 === 'connector';
+}
+function Eg(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612676, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612677) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612678 = wg.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466277 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466277.id === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612677);
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612678) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612676;
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2016 = 0,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612679 = Object.fromEntries(Object.entries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612676.presentationShapes).map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466278, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466279]) => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466280;
+      if (!Tg(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466279.role)) return [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466278, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466279];
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466281 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612678.colors[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2016++ % var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612678.colors["length"]],
+        var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A90 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466279.role === "connector",
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB119 = {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466279.shapeData,
+          'fill': var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A90 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612678.variant === 'outline' ? {
+            'fillType': 1
+          } : {
+            'fillType': 2,
+            'color': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466281,
+            'opacity': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612678.variant === "transparent" ? 0.58 : 1
+          },
+          'stroke': {
+            ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466279.shapeData["stroke"],
+            'lineStrokeType': 2,
+            'color': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466281,
+            'width': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612678.variant === "outline" ? 2 : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466280 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466279.shapeData["stroke"]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466280.width
+          }
+        };
+      return [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466278, {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466279,
+        'shapeData': var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB119
+      }];
+    }));
+  return {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612676,
+    'style': {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612676.style,
+      'colorStyleId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612677
+    },
+    'presentationShapes': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612679
+  };
+}
+export { Eg as applySmartArtColorStyle };

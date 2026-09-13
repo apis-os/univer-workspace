@@ -1,0 +1,49 @@
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { H } from "./pdfs-default-pdf-table-style-id.js";
+function vu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465588 = Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587, ["bg.white"], H.background),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465589 = Fu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587, "gray", H.neutral),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465590 = Pu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587);
+  return {
+    'background': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465588,
+    'border': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465589.border ?? H.border,
+    'primary': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465590.strong,
+    'primarySubtle': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465590.subtle,
+    'primarySubtleAlt': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465590.subtleAlt,
+    'neutral': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465589,
+    'blue': Fu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587, "blue", H.blue),
+    'cyan': Fu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587, 'cyan', H.cyan),
+    'green': Fu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587, "green", H.green),
+    'orange': Fu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587, 'orange', H.orange),
+    'purple': Fu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587, "purple", H.purple),
+    'pink': Fu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465587, "pink", H.pink)
+  };
+}
+function Pu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465683) {
+  return {
+    'strong': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465683, ['primary.600'], H.primary),
+    'medium': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465683, ['primary.100', 'primary.200', "primary.50"], H.primarySubtleAlt),
+    'subtle': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465683, ["primary.50"], H.primarySubtle),
+    'subtleAlt': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465683, ["primary.100", 'primary.50'], H.primarySubtleAlt)
+  };
+}
+function Fu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465685, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465687) {
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A285 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 === "gray" ? ["gray.300", "gray.200"] : [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + ".600"];
+  return {
+    'strong': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465685, [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + '.600', var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + ".700"], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465687.strong),
+    'medium': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465685, [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + ".100", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + ".200", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + ".50"], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465687.medium),
+    'subtle': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465685, [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + ".50", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + '.100'], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465687.subtle),
+    'subtleAlt': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465685, [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + ".100", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465686 + '.50'], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465687.subtleAlt),
+    'border': Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465685, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A285, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465687.border ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465687.strong)
+  };
+}
+function Iu(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465691, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465692, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465693) {
+  for (let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461143 of var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465692) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465691 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465691(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461143);
+    if (typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405 == "string" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405;
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465693;
+}
+export { vu as resolvePdfTableThemePalette };

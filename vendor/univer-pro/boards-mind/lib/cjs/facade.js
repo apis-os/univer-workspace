@@ -1,0 +1,431 @@
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/boards"),
+  t = require("@univerjs-pro/boards-mind"),
+  n = require("@univerjs-pro/boards/facade"),
+  r = require("@univerjs/core"),
+  i = require("@univerjs/core/facade");
+var a = class {
+    constructor(var_core_value_sig26DB, var_core_value_sigF0F9, var_core_value_sig1A0F, var_core_value_sigFBA4) {
+      this._board = var_core_value_sig26DB, this._pageId = var_core_value_sigF0F9, this._containerId = var_core_value_sig1A0F, this._commandService = var_core_value_sigFBA4;
+    }
+    getId() {
+      return this._containerId;
+    }
+    getRootNode() {
+      let var_core_value_sig4383 = (0, t.getMindMapContainerMeta)(this._board["getElement"](this._containerId));
+      return var_core_value_sig4383 ? this._createNode(var_core_value_sig4383.rootNodeId) : null;
+    }
+    getNodes() {
+      return this._board["findElements"]({
+        includeHidden: true,
+        includeLocked: true
+      }).filter(var_core_value_sig2AD8 => this._isNodeInScope(var_core_value_sig2AD8)).map(var_core_value_sig2AD0 => this._createNode(var_core_value_sig2AD0.id));
+    }
+    getNode(var_core_value_sig186C) {
+      let var_core_value_sigD955 = this._board["getElement"](var_core_value_sig186C);
+      return var_core_value_sigD955 && this._isNodeInScope(var_core_value_sigD955) ? this._createNode(var_core_value_sig186C) : null;
+    }
+    getDescendants() {
+      var var_core_value_sig48BD;
+      return ((var_core_value_sig48BD = this.getRootNode()) == null ? undefined : var_core_value_sig48BD.getDescendants()) ?? [];
+    }
+    getLayout() {
+      let var_core_value_sig429F = (0, t.getMindMapContainerMeta)(this._board["getElement"](this._containerId));
+      return var_core_value_sig429F ? r.Tools["deepClone"](var_core_value_sig429F.layout) : null;
+    }
+    getBounds() {
+      return this._board["getElementBounds"](this._containerId);
+    }
+    reflow(var_core_value_sigF62A) {
+      return this._commandService["syncExecuteCommand"](t.ReflowMindMapCommand["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        scopeId: this._containerId,
+        ...var_core_value_sigF62A
+      });
+    }
+    setLayout(var_core_value_sig8178) {
+      return this._commandService["syncExecuteCommand"](t.ChangeMindMapLayoutOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        scopeId: this._containerId,
+        ...var_core_value_sig8178
+      });
+    }
+    setBranchLineType(var_core_value_sigE9ED) {
+      return this._commandService["syncExecuteCommand"](t.ChangeMindMapBranchLineTypeOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        scopeId: this._containerId,
+        branchLineType: var_core_value_sigE9ED
+      });
+    }
+    remove() {
+      var var_core_value_sigB577;
+      return ((var_core_value_sigB577 = this.getRootNode()) == null ? undefined : var_core_value_sigB577.remove()) ?? false;
+    }
+    _createNode(var_core_value_sig9572) {
+      return new o(this, this._board, this._pageId, var_core_value_sig9572, this._commandService);
+    }
+    _isNodeInScope(var_core_value_sigD873) {
+      var var_core_value_sigA12B;
+      return ((var_core_value_sigA12B = (0, t.getMindMapNodeMeta)(var_core_value_sigD873)) == null ? undefined : var_core_value_sigA12B.structureScopeId) === this._containerId;
+    }
+  },
+  o = class {
+    constructor(var_core_value_sigF230, var_core_value_sig09B8, var_core_value_sig6F91, var_core_value_sigF9C7, var_core_value_sig8895) {
+      this._mindMap = var_core_value_sigF230, this._board = var_core_value_sig09B8, this._pageId = var_core_value_sig6F91, this._nodeId = var_core_value_sigF9C7, this._commandService = var_core_value_sig8895;
+    }
+    getId() {
+      return this._nodeId;
+    }
+    getText() {
+      let var_core_value_sigC80B = this._board["getElement"](this._nodeId),
+        var_core_value_sig284F = (var_core_value_sigC80B == null ? undefined : var_core_value_sigC80B.type) === e.BoardElementType["Shape"] ? var_core_value_sigC80B.shapeData["shapeText"] : undefined,
+        var_core_value_sigE154 = var_core_value_sig284F && typeof var_core_value_sig284F == "object" ? var_core_value_sig284F.text : undefined;
+      return typeof var_core_value_sigE154 == "string" ? var_core_value_sigE154 : "";
+    }
+    getRichText() {
+      return (0, n.createBoardFacadeRichTextValue)(u(c(this._board["getElement"](this._nodeId))));
+    }
+    getParent() {
+      var var_core_value_sig4632;
+      let var_core_value_sig12F2 = (var_core_value_sig4632 = this._getMeta()) == null ? undefined : var_core_value_sig4632.parentNodeId;
+      return var_core_value_sig12F2 ? this._mindMap["getNodes"]().find(var_core_value_sig3EEE => var_core_value_sig3EEE.getId() === var_core_value_sig12F2) ?? null : null;
+    }
+    getChildren() {
+      return this._mindMap["getNodes"]().map(var_core_value_sigBC46 => ({
+        node: var_core_value_sigBC46,
+        meta: var_core_value_sigBC46._getMeta()
+      })).filter(var_core_value_sig3D7D => {
+        var var_core_value_sig27E5;
+        return ((var_core_value_sig27E5 = var_core_value_sig3D7D.meta) == null ? undefined : var_core_value_sig27E5.parentNodeId) === this._nodeId;
+      }).sort((var_core_value_sig8061, var_core_value_sig4D4C) => (0, t.compareMindMapOrderKey)(var_core_value_sig8061.meta["orderKey"], var_core_value_sig4D4C.meta["orderKey"])).map(var_core_value_sigC9E0 => var_core_value_sigC9E0.node);
+    }
+    getDescendants() {
+      let var_core_value_sig2259 = [],
+        var_core_value_sig9E2F = var_core_value_sig76BA => {
+          var_core_value_sig76BA.getChildren().forEach(var_core_value_sig7524 => {
+            var_core_value_sig2259.push(var_core_value_sig7524), var_core_value_sig9E2F(var_core_value_sig7524);
+          });
+        };
+      return var_core_value_sig9E2F(this), var_core_value_sig2259;
+    }
+    getStyle() {
+      var var_core_value_sigD082, var_core_value_sigDBB7, var_core_value_sigD0A8;
+      let var_core_value_sigF4B9 = this._board["getElement"](this._nodeId);
+      if ((var_core_value_sigF4B9 == null ? undefined : var_core_value_sigF4B9.type) !== e.BoardElementType["Shape"]) return null;
+      let var_core_value_sig5CEE = c(var_core_value_sigF4B9);
+      return {
+        shapeType: var_core_value_sigF4B9.shapeData["shapeType"],
+        fillColor: (var_core_value_sigD082 = var_core_value_sigF4B9.shapeData["fill"]) == null ? undefined : var_core_value_sigD082.color,
+        strokeColor: (var_core_value_sigDBB7 = var_core_value_sigF4B9.shapeData["stroke"]) == null ? undefined : var_core_value_sigDBB7.color,
+        strokeWidth: (var_core_value_sigD0A8 = var_core_value_sigF4B9.shapeData["stroke"]) == null ? undefined : var_core_value_sigD0A8.width,
+        textStyle: l(var_core_value_sig5CEE)
+      };
+    }
+    getIncomingConnectorStyle() {
+      var var_core_value_sigE92A;
+      if (!((var_core_value_sigE92A = this._getMeta()) != null && var_core_value_sigE92A.parentNodeId)) return null;
+      let var_core_value_sig362B = this._board["findElements"]({
+        elementType: e.BoardElementType["Connector"],
+        includeHidden: true,
+        includeLocked: true
+      }).find(var_core_value_sigFBFA => {
+        var var_core_value_sigF602;
+        return ((var_core_value_sigF602 = (0, t.getMindMapConnectorMeta)(var_core_value_sigFBFA)) == null ? undefined : var_core_value_sigF602.childNodeId) === this._nodeId;
+      });
+      return (var_core_value_sig362B == null ? undefined : var_core_value_sig362B.type) === e.BoardElementType["Connector"] ? r.Tools["deepClone"](var_core_value_sig362B.connectorData["style"] ?? {}) : null;
+    }
+    setText(var_core_value_sig5CA5) {
+      let var_core_value_sigE90F = this._board["getElement"](this._nodeId);
+      if (!(0, t.getMindMapNodeMeta)(var_core_value_sigE90F)) return false;
+      let var_core_value_sigEFD4 = (0, n.normalizeBoardFacadeTextContent)(var_core_value_sig5CA5);
+      return p(c(var_core_value_sigE90F), var_core_value_sigEFD4) ? true : this._commandService["syncExecuteCommand"](t.UpdateMindMapNodeOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId,
+        text: var_core_value_sigEFD4.text,
+        textData: var_core_value_sigEFD4.documentData ?? null
+      });
+    }
+    addChild(var_core_value_sig861B) {
+      let var_core_value_sig5237 = var_core_value_sig861B.id ?? (0, r.generateRandomId)(8),
+        var_core_value_sigBB00 = var_core_value_sig861B.connectorId ?? (0, r.generateRandomId)(8);
+      if (this._board["getElement"](var_core_value_sig5237) || this._board["getElement"](var_core_value_sigBB00)) return null;
+      let var_core_value_sig7E54 = (0, n.normalizeBoardFacadeTextContent)(var_core_value_sig861B.text ?? "");
+      return this._commandService["syncExecuteCommand"](t.AddMindMapChildOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        parentNodeId: this._nodeId,
+        nodeId: var_core_value_sig5237,
+        connectorId: var_core_value_sigBB00,
+        text: var_core_value_sig7E54.text,
+        textData: var_core_value_sig7E54.documentData,
+        side: var_core_value_sig861B.side,
+        orderKey: var_core_value_sig861B.orderKey
+      }) ? this._mindMap["getNode"](var_core_value_sig5237) : null;
+    }
+    addSibling(var_core_value_sig9A8D) {
+      var var_core_value_sigC259;
+      let var_core_value_sig9C9F = var_core_value_sig9A8D.id ?? (0, r.generateRandomId)(8),
+        var_core_value_sigFDEA = var_core_value_sig9A8D.connectorId ?? (0, r.generateRandomId)(8);
+      if (!((var_core_value_sigC259 = this._getMeta()) != null && var_core_value_sigC259.parentNodeId) || this._board["getElement"](var_core_value_sig9C9F) || this._board["getElement"](var_core_value_sigFDEA)) return null;
+      let var_core_value_sig86D0 = (0, n.normalizeBoardFacadeTextContent)(var_core_value_sig9A8D.text ?? "");
+      return this._commandService["syncExecuteCommand"](t.AddMindMapSiblingOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId,
+        siblingNodeId: var_core_value_sig9C9F,
+        connectorId: var_core_value_sigFDEA,
+        text: var_core_value_sig86D0.text,
+        textData: var_core_value_sig86D0.documentData,
+        placement: var_core_value_sig9A8D.placement ?? "after"
+      }) ? this._mindMap["getNode"](var_core_value_sig9C9F) : null;
+    }
+    remove() {
+      return !!this._getMeta() && this._commandService["syncExecuteCommand"](t.DeleteMindMapNodeOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId
+      });
+    }
+    reparentTo(var_core_value_sig4CD2) {
+      let var_core_value_sig48CA = this._mindMap["getNode"](var_core_value_sig4CD2);
+      return !var_core_value_sig48CA || var_core_value_sig48CA.getId() === this._nodeId || !this._getMeta() ? false : this._commandService["syncExecuteCommand"](t.ReparentMindMapNodeOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId,
+        newParentNodeId: var_core_value_sig48CA.getId()
+      });
+    }
+    promote() {
+      let var_core_value_sig50AF = this.getParent();
+      return !!(var_core_value_sig50AF != null && var_core_value_sig50AF.getParent()) && this._commandService["syncExecuteCommand"](t.PromoteMindMapNodeOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId
+      });
+    }
+    detachAsMindMap(var_core_value_sigA942) {
+      var var_core_value_sigA621;
+      let var_core_value_sigBBFF = var_core_value_sigA942.id ?? (0, r.generateRandomId)(8);
+      return !((var_core_value_sigA621 = this._getMeta()) != null && var_core_value_sigA621.parentNodeId) || this._board["getElement"](var_core_value_sigBBFF) ? false : this._commandService["syncExecuteCommand"](t.DetachMindMapNodeOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId,
+        containerId: var_core_value_sigBBFF,
+        left: var_core_value_sigA942.left,
+        top: var_core_value_sigA942.top
+      });
+    }
+    moveBefore(var_core_value_sig8889) {
+      return this._moveRelativeTo(var_core_value_sig8889, "before");
+    }
+    moveAfter(var_core_value_sig32F8) {
+      return this._moveRelativeTo(var_core_value_sig32F8, "after");
+    }
+    setStyle(var_core_value_sig5B67) {
+      return !this._getMeta() || Object.values(var_core_value_sig5B67).every(var_core_value_sig1BBD => var_core_value_sig1BBD === undefined) ? false : this._commandService["syncExecuteCommand"](t.UpdateMindMapNodeOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId,
+        ...var_core_value_sig5B67
+      });
+    }
+    setIncomingConnectorStyle(var_core_value_sig1758) {
+      var var_core_value_sig4805;
+      return !((var_core_value_sig4805 = this._getMeta()) != null && var_core_value_sig4805.parentNodeId) || Object.values(var_core_value_sig1758).every(var_core_value_sigF704 => var_core_value_sigF704 === undefined) ? false : this._commandService["syncExecuteCommand"](t.UpdateMindMapIncomingConnectorOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId,
+        style: var_core_value_sig1758
+      });
+    }
+    isCollapsed() {
+      var var_core_value_sigE67E;
+      return ((var_core_value_sigE67E = (0, t.getMindMapNodeMeta)(this._board["getElement"](this._nodeId))) == null ? undefined : var_core_value_sigE67E.collapsed) ?? null;
+    }
+    setCollapsed(var_core_value_sig2902) {
+      let var_core_value_sig9989 = this.isCollapsed();
+      return var_core_value_sig9989 === null ? false : var_core_value_sig9989 === var_core_value_sig2902 || this._commandService["syncExecuteCommand"](t.ToggleMindMapNodeCollapseOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId,
+        collapsed: var_core_value_sig2902
+      });
+    }
+    _getMeta() {
+      return (0, t.getMindMapNodeMeta)(this._board["getElement"](this._nodeId));
+    }
+    _moveRelativeTo(var_core_value_sig698E, var_core_value_sig2809) {
+      let var_core_value_sig2DAB = this._getMeta(),
+        var_core_value_sig877E = this._mindMap["getNode"](var_core_value_sig698E),
+        var_core_value_sig20C8 = var_core_value_sig877E ? (0, t.getMindMapNodeMeta)(this._board["getElement"](var_core_value_sig877E.getId())) : null;
+      return !(var_core_value_sig2DAB != null && var_core_value_sig2DAB.parentNodeId) || !var_core_value_sig877E || var_core_value_sig877E.getId() === this._nodeId || (var_core_value_sig20C8 == null ? undefined : var_core_value_sig20C8.parentNodeId) !== var_core_value_sig2DAB.parentNodeId ? false : this._commandService["syncExecuteCommand"](t.ReparentMindMapNodeOperation["id"], {
+        unitId: this._board["getId"](),
+        subUnitId: this._pageId,
+        nodeId: this._nodeId,
+        newParentNodeId: var_core_value_sig2DAB.parentNodeId,
+        referenceNodeId: var_core_value_sig877E.getId(),
+        placement: var_core_value_sig2809
+      });
+    }
+  },
+  s = class extends n.FBoard {
+    insertMindMap(var_core_value_sigE9A7) {
+      let var_core_value_sigBECE = this.getData().activePageId,
+        var_core_value_sig1B22 = var_core_value_sigE9A7.id ?? (0, r.generateRandomId)(8);
+      if (this.getElement(var_core_value_sig1B22)) return null;
+      let var_core_value_sig7F72 = m(var_core_value_sigE9A7.root);
+      return this._injector["get"](r.ICommandService).syncExecuteCommand(t.InsertBoardMindMapOperation["id"], {
+        unitId: this.getId(),
+        subUnitId: var_core_value_sigBECE,
+        containerId: var_core_value_sig1B22,
+        rootNodeId: var_core_value_sig7F72.root["nodeId"],
+        left: var_core_value_sigE9A7.left,
+        top: var_core_value_sigE9A7.top,
+        blueprint: var_core_value_sig7F72,
+        structureKind: var_core_value_sigE9A7.structureKind,
+        branchLineType: var_core_value_sigE9A7.branchLineType,
+        insertIndex: var_core_value_sigE9A7.insertIndex
+      }) ? this._createMindMap(var_core_value_sig1B22, var_core_value_sigBECE) : null;
+    }
+    getMindMap(var_core_value_sig7B2A) {
+      let var_core_value_sig06CD = this.getData().activePageId,
+        var_core_value_sigA5F1 = this.getElement(var_core_value_sig7B2A);
+      return var_core_value_sigA5F1 && (0, t.getMindMapContainerMeta)(var_core_value_sigA5F1) ? this._createMindMap(var_core_value_sig7B2A, var_core_value_sig06CD) : null;
+    }
+    getMindMaps() {
+      let var_core_value_sig97A2 = this.getData().activePageId;
+      return this.findElements({
+        includeHidden: true,
+        includeLocked: true
+      }).filter(var_core_value_sig2BCF => !!(0, t.getMindMapContainerMeta)(var_core_value_sig2BCF)).map(var_core_value_sig0D69 => this._createMindMap(var_core_value_sig0D69.id, var_core_value_sig97A2));
+    }
+    _createMindMap(var_core_value_sig07E9, var_core_value_sig4F59) {
+      return new a(this, var_core_value_sig4F59, var_core_value_sig07E9, this._injector["get"](r.ICommandService));
+    }
+  };
+function c(var_core_value_sig24B9) {
+  let var_core_value_sigE627 = (var_core_value_sig24B9 == null ? undefined : var_core_value_sig24B9.type) === e.BoardElementType["Shape"] ? var_core_value_sig24B9.shapeData["shapeText"] : undefined;
+  return var_core_value_sigE627 && typeof var_core_value_sigE627 == "object" ? var_core_value_sigE627 : undefined;
+}
+function l(var_core_value_sigEF3E) {
+  return var_core_value_sigEF3E ? {
+    ...(typeof var_core_value_sigEF3E.color == "string" ? {
+      color: var_core_value_sigEF3E.color
+    } : null),
+    ...(typeof var_core_value_sigEF3E.fontFamily == "string" ? {
+      fontFamily: var_core_value_sigEF3E.fontFamily
+    } : null),
+    ...(typeof var_core_value_sigEF3E.fontSize == "number" ? {
+      fontSize: var_core_value_sigEF3E.fontSize
+    } : null),
+    ...(typeof var_core_value_sigEF3E.bold == "boolean" ? {
+      bold: var_core_value_sigEF3E.bold
+    } : null),
+    ...(typeof var_core_value_sigEF3E.italic == "boolean" ? {
+      italic: var_core_value_sigEF3E.italic
+    } : null),
+    ...(typeof var_core_value_sigEF3E.underline == "boolean" ? {
+      underline: var_core_value_sigEF3E.underline
+    } : null),
+    ...(typeof var_core_value_sigEF3E.strikethrough == "boolean" ? {
+      strikethrough: var_core_value_sigEF3E.strikethrough
+    } : null),
+    ...(var_core_value_sigEF3E.horizontalAlign === undefined ? null : {
+      horizontalAlign: var_core_value_sigEF3E.horizontalAlign
+    }),
+    ...(var_core_value_sigEF3E.verticalAlign === undefined ? null : {
+      verticalAlign: var_core_value_sigEF3E.verticalAlign
+    }),
+    ...(var_core_value_sigEF3E.textFill === undefined ? null : {
+      textFill: var_core_value_sigEF3E.textFill
+    })
+  } : {};
+}
+function u(var_core_value_sig273D) {
+  let var_core_value_sig9A0D = var_core_value_sig273D == null ? undefined : var_core_value_sig273D.dataModel;
+  if (!var_core_value_sig9A0D || typeof var_core_value_sig9A0D != "object") return;
+  let var_core_value_sigA319 = var_core_value_sig9A0D.doc;
+  return var_core_value_sigA319 && typeof var_core_value_sigA319 == "object" ? var_core_value_sigA319 : undefined;
+}
+function d(var_core_value_sig2D58, var_core_value_sig223F) {
+  if (Object.is(var_core_value_sig2D58, var_core_value_sig223F)) return true;
+  if (!var_core_value_sig2D58 || !var_core_value_sig223F || typeof var_core_value_sig2D58 != "object" || typeof var_core_value_sig223F != "object") return false;
+  if (Array.isArray(var_core_value_sig2D58) || Array.isArray(var_core_value_sig223F)) return Array.isArray(var_core_value_sig2D58) && Array.isArray(var_core_value_sig223F) && var_core_value_sig2D58.length === var_core_value_sig223F.length && var_core_value_sig2D58.every((var_core_value_sigF564, var_core_value_sig8CFA) => d(var_core_value_sigF564, var_core_value_sig223F[var_core_value_sig8CFA]));
+  let var_core_value_sigD749 = var_core_value_sig2D58,
+    var_core_value_sigCFFA = var_core_value_sig223F,
+    var_core_value_sig58C1 = Object.keys(var_core_value_sigD749),
+    var_core_value_sig5090 = Object.keys(var_core_value_sigCFFA);
+  return var_core_value_sig58C1.length === var_core_value_sig5090.length && var_core_value_sig58C1.every(var_core_value_sig2E11 => Object.prototype["hasOwnProperty"].call(var_core_value_sigCFFA, var_core_value_sig2E11) && d(var_core_value_sigD749[var_core_value_sig2E11], var_core_value_sigCFFA[var_core_value_sig2E11]));
+}
+function f(var_core_value_sigC368, var_core_value_sigAD56) {
+  if (Object.is(var_core_value_sigC368, var_core_value_sigAD56)) return true;
+  if (!var_core_value_sigC368 || !var_core_value_sigAD56 || typeof var_core_value_sigC368 != "object" || typeof var_core_value_sigAD56 != "object") return false;
+  if (Array.isArray(var_core_value_sigC368) || Array.isArray(var_core_value_sigAD56)) return Array.isArray(var_core_value_sigC368) && Array.isArray(var_core_value_sigAD56) && d(var_core_value_sigC368, var_core_value_sigAD56);
+  let var_core_value_sigDB4A = var_core_value_sigC368;
+  return Object.entries(var_core_value_sigAD56).every(([var_core_value_sig5B69, var_core_value_sigB098]) => Object.prototype["hasOwnProperty"].call(var_core_value_sigDB4A, var_core_value_sig5B69) && f(var_core_value_sigDB4A[var_core_value_sig5B69], var_core_value_sigB098));
+}
+function p(var_core_value_sig6418, var_core_value_sig1896) {
+  if ((var_core_value_sig6418 == null ? undefined : var_core_value_sig6418.text) !== var_core_value_sig1896.text) return false;
+  let var_core_value_sig0285 = u(var_core_value_sig6418);
+  return var_core_value_sig1896.documentData ? (var_core_value_sig6418 == null ? undefined : var_core_value_sig6418.isRichText) === true && f(var_core_value_sig0285, var_core_value_sig1896.documentData) : (var_core_value_sig6418 == null ? undefined : var_core_value_sig6418.isRichText) !== true;
+}
+function m(var_core_value_sig777D) {
+  function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig4F99(var_core_value_sigCE71, var_core_value_sig21D8) {
+    let var_core_value_sig2B65 = var_core_value_sigCE71.id ?? (0, r.generateRandomId)(8),
+      var_core_value_sigD7EA = var_core_value_sig21D8 ? undefined : var_core_value_sigCE71.connectorId ?? (0, r.generateRandomId)(8),
+      var_core_value_sigB33B = (0, n.normalizeBoardFacadeTextContent)(var_core_value_sigCE71.text);
+    return {
+      nodeId: var_core_value_sig2B65,
+      ...(var_core_value_sigD7EA ? {
+        connectorId: var_core_value_sigD7EA
+      } : {}),
+      text: var_core_value_sigB33B.text,
+      textData: var_core_value_sigB33B.documentData,
+      side: var_core_value_sigCE71.side,
+      collapsed: var_core_value_sigCE71.collapsed,
+      children: (var_core_value_sigCE71.children ?? []).map(var_core_value_sig480E => fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig4F99(var_core_value_sig480E, false))
+    };
+  }
+  return {
+    root: fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig4F99(var_core_value_sig777D, true)
+  };
+}
+n.FBoard["extend"](s);
+const h = {
+    MindMapHorizontal: "mindmap-horizontal",
+    MindMapVertical: "mindmap-vertical",
+    TreeRight: "tree-right",
+    TreeLeft: "tree-left",
+    TreeAlternate: "tree-alternate",
+    TimelineHorizontal: "timeline-horizontal",
+    TimelineVertical: "timeline-vertical"
+  },
+  g = {
+    RoundedOrthogonal: "rounded-orthogonal",
+    Curve: "curve",
+    Orthogonal: "orthogonal"
+  },
+  _ = {
+    Left: "left",
+    Right: "right",
+    Top: "top",
+    Bottom: "bottom"
+  };
+var v = class extends i.FEnum {
+  get BoardMindMapStructureKind() {
+    return h;
+  }
+  get BoardMindMapBranchLineType() {
+    return g;
+  }
+  get BoardMindMapNodeSide() {
+    return _;
+  }
+};
+i.FEnum["extend"](v), exports.FBoardMindMap = a, exports.FBoardMindMapNode = o;

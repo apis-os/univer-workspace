@@ -1,0 +1,11 @@
+import './global.css';
+export { UniverEmbedUIPlugin } from './plugin';
+export { EmbedActivationService } from './services/embed-activation.service';
+export { EmbedChildViewRegistryService } from './services/embed-child-view-registry.service';
+export { EmbedFullscreenService } from './services/embed-fullscreen.service';
+export { EmbedHostContainerRegistryService } from './services/embed-host-container-registry.service';
+export { EmbedHostMenuOverrideService } from './services/embed-host-menu-override.service';
+export { EmbedHostRestoreService } from './services/embed-host-restore.service';
+export { EmbedMountService } from './services/embed-mount.service';
+export { registerEmbedProductMenuContribution, } from './services/embed-product-menu-registry.service';
+export type { IEmbedFullscreenSession, IEmbedHostMenuOverride, IEmbedProductMenuContribution, } from './types/embed-ui';

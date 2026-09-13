@@ -1,9 +1,12 @@
 import type { ILanguagePack } from "@univerjs/core";
 import {
   CommandType,
+  ICommandService,
   LifecycleStages,
   LocaleType,
   LogLevel,
+  PluginService,
+  Univer,
   UserManagerService,
 } from "@univerjs/core";
 import {
@@ -18,7 +21,6 @@ import {
   type IUniverCollaborationClientConfig,
 } from "@univerjs-pro/collaboration-client";
 import {
-  BrowserCollaborationSocketService,
   DesktopCollaborationStatusDisplayController,
   UniverCollaborationClientUIPlugin,
 } from "@univerjs-pro/collaboration-client-ui";
@@ -33,6 +35,7 @@ import { UniverEmbedUIPlugin } from "@univerjs-pro/embed-ui";
 import ExchangeClientEnUS from "@univerjs-pro/exchange-client/locale/en-US";
 import ExchangeClientZhCN from "@univerjs-pro/exchange-client/locale/zh-CN";
 import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { UniverLiveSharePlugin } from "@univerjs-pro/live-share";
 
 // Suppress Univer Pro license watermark on canvas
 (UniverLicensePlugin.prototype as any).onRendered = function () {};
@@ -47,6 +50,7 @@ import type {
 } from "@univerjs/presets";
 import type { IMember, IUser } from "@univerjs/protocol";
 import type { Theme } from "@univerjs/themes";
+import { RenderUnit } from "@univerjs/engine-render";
 import { createUniver, mergeLocales } from "@univerjs/presets";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -58,11 +62,8 @@ import { useI18n } from "../../shared/i18n";
 import { syncUniverTheme, useTheme } from "../../shared/theme";
 import { Alert } from "../../shared/ui/alert";
 import { Spinner } from "../../shared/ui/spinner";
-import { cn } from "../../shared/utils/cn";
-import {
-  collaborationStatusMessageKey,
-  type CollaborationIssue,
-} from "./collaboration-status";
+import { toast } from "../../shared/ui";
+import { type CollaborationIssue } from "./collaboration-status";
 import {
   configureExchangePresetPlugins,
   createWorkspaceOutputPlugins,
@@ -74,6 +75,68 @@ import {
   withWorkspaceSnapshotServerOverride,
   type WorkspaceHostSnapshotScope,
 } from "./workspace-snapshot-server-adapter";
+import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
+import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
+import {
+  COMB_CHANGESET_EVENT,
+  bindExplainSelectionHost,
+  isCombNewChangesetsEvent,
+  readActiveRangeA1,
+  readCombChangesetActor,
+} from "./agent-panel";
+import { bindFormulaInspectorHost } from "../demo/formula-inspector";
+import {
+  AGENT_MEMBER_ID,
+  bindFollowAgentHost,
+  createFollowAgentEditorHost,
+  noteFollowAgentCue,
+} from "./follow-agent";
+import {
+  FollowAgentCollaborationSocketService,
+  sendCellIntent,
+} from "./follow-agent-collab-socket";
+import {
+  a1FromNameBoxValue,
+  CELL_INTENT_EVENT,
+  highlightIntent,
+  isSameCellConflict,
+  localEditA1AfterCommand,
+  remoteChangesetConflictsLocal,
+  readCellIntent,
+  shouldPostCellOverlapForLocalEdit,
+  shouldPublishIntent,
+  shouldToastRemoteCellOverlap,
+  type CellIntentKind,
+} from "./cell-presence-intent";
+import {
+  BLAME_HEAT_EVENT,
+  applyBlameHeat,
+  blameFromChangesets,
+  a1sFromCommandExecuted,
+  commandFromCollab,
+  type BlameCell,
+} from "./ot-blame-heat";
+import { presenceRingToken } from "./presence-roster";
+import { createCollabConflictToaster, shouldClearCollaborationIssueOnStatus } from "./collab-conflict-toast";
+import {
+  applyHistoryNameUsers,
+  historyDisplayName,
+  overlayHistoryAdministrator,
+} from "./history-names";
+import {
+  bindCollaborationStatusDisplay,
+  bindLiveShareFacade,
+  shouldBindCollaborationStatusDisplay,
+  shouldBindLiveShareFacade,
+} from "./live-share-bar";
+import { formatUnknownError } from "./collaboration-editor-error";
+import {
+  omitUnnamedPlugins,
+  omitUnnamedPresetPlugins,
+  withSafeUniverPluginRegistration,
+  installNamelessPluginServiceGuard,
+  installSafeSheetRenderGuard,
+} from "./preset-plugin-filter";
 
 import "@univerjs-pro/collaboration-client-ui/lib/index.css";
 import "@univerjs-pro/edit-history-ui/lib/index.css";
@@ -82,6 +145,8 @@ import "@univerjs-pro/embed/facade";
 import "@univerjs-pro/embed-ui/lib/index.css";
 import "@univerjs-pro/exchange-client/facade";
 import "@univerjs-pro/exchange-client/lib/index.css";
+import "@univerjs-pro/live-share/lib/index.css";
+import "@univerjs-pro/live-share/facade";
 
 installHistoryShapeFormulaSdkWorkaround();
 
@@ -167,8 +232,25 @@ export function createCollaborationEditor(
     const { resolvedTheme } = useTheme();
     const resolvedThemeRef = useRef(resolvedTheme);
     const univerAPIRef = useRef<FUniver | null>(null);
+    const collaborationStatusRef = useRef(collaborationStatus);
     const mappedUnitIdsKey = mappedUnitIds?.join("\u0000") ?? "";
     resolvedThemeRef.current = resolvedTheme;
+    collaborationStatusRef.current = collaborationStatus;
+
+    useEffect(() => {
+      bindCollaborationStatusDisplay(
+        shouldBindCollaborationStatusDisplay(
+          collaborationStatusPresentation.showCustom,
+          loading,
+          error
+        )
+          ? {
+              status: collaborationStatus,
+              issue: collaborationIssue,
+            }
+          : null
+      );
+    }, [collaborationStatus, collaborationIssue, loading, error]);
 
     useEffect(() => {
       if (univerAPIRef.current) {
@@ -191,7 +273,23 @@ export function createCollaborationEditor(
       let collaborationUIEventListener: { unsubscribe(): void } | null = null;
       let readOnlyListener: { dispose(): void } | null = null;
       let readOnlyLifecycleListener: { dispose(): void } | null = null;
+      let agentEditedListener: ((event: Event) => void) | null = null;
+      let intentHighlightHandle: { dispose(): void } | null = null;
+      let commandListener: { dispose(): void } | null = null;
+      let commandServiceListener: { dispose(): void } | null = null;
+      let cellIntentListener: ((event: Event) => void) | null = null;
+      let nameBoxListener: ((event: Event) => void) | null = null;
+      let overlapChannel: BroadcastChannel | null = null;
+      let blameHandle: { dispose(): void } | null = null;
+      let onChangesetForBlame: ((event: Event) => void) | null = null;
+      let onBlameToggle: ((event: Event) => void) | null = null;
       onCollaboratorsChange?.([]);
+      const restorePluginService = installNamelessPluginServiceGuard(
+        PluginService.prototype
+      );
+      const restoreSheetRender = installSafeSheetRenderGuard(
+        RenderUnit.prototype
+      );
 
       const mount = async () => {
         if (!element.id) {
@@ -207,6 +305,7 @@ export function createCollaborationEditor(
           definition.exchangeEnabled !== false;
         const collaborationConfig = {
           ...resolvedCollaboration.pluginConfig,
+          socketService: FollowAgentCollaborationSocketService,
           override: withWorkspaceSnapshotServerOverride(
             resolvedCollaboration.pluginConfig.override,
             {
@@ -263,8 +362,7 @@ export function createCollaborationEditor(
                 [
                   UniverCollaborationClientPlugin,
                   {
-                    socketService: BrowserCollaborationSocketService,
-                    enableOfflineEditing: true,
+                    enableOfflineEditing: false,
                     enableAuthServer: true,
                     wsSessionTicketUrl:
                       "/universer-api/user/session-ticket",
@@ -318,7 +416,10 @@ export function createCollaborationEditor(
         }
         const univerLocale =
           language === "zh-CN" ? LocaleType.ZH_CN : LocaleType.EN_US;
-        const { univer, univerAPI } = createUniver({
+        const { univer, univerAPI } = withSafeUniverPluginRegistration(
+          Univer.prototype,
+          () =>
+            createUniver({
           locale: univerLocale,
           locales: {
             [univerLocale]: mergeLocales(
@@ -343,9 +444,10 @@ export function createCollaborationEditor(
           darkMode: resolvedThemeRef.current === "dark",
           logLevel: LogLevel.WARN,
           collaboration: true,
-          presets,
-          plugins: [
+          presets: omitUnnamedPresetPlugins(presets),
+          plugins: omitUnnamedPlugins([
             ...collaborationPlugins,
+            UniverLiveSharePlugin,
             ...collaborationFeaturePlugins,
             ...historyFeaturePlugins,
             ...outputPlugins,
@@ -358,10 +460,113 @@ export function createCollaborationEditor(
               },
             ],
             UniverEmbedUIPlugin,
-          ],
-        });
+          ]),
+        })
+        );
         mountedUniver = univer;
         univerAPIRef.current = univerAPI;
+        bindAgentEditSpotlight({
+          getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
+        });
+        bindExplainSelectionHost({
+          getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
+        });
+        bindFormulaInspectorHost({
+          getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
+          unitId,
+          ...(collaborationScope.kind === "trunk"
+            ? {}
+            : { worktreeId: collaborationScope.worktreeId }),
+        });
+        bindFollowAgentHost(createFollowAgentEditorHost(univerAPI));
+        const notifyCollabConflict = createCollabConflictToaster({
+          warning: (message) => toast.warning(message),
+        });
+        const postCellOverlap = (a1s: readonly string[]) => {
+          if (a1s.length === 0) return;
+          void fetch("/universer-api/cell-overlap", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ unitId, a1s, userID: user.id }),
+          })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((body) => {
+              if (disposed || !body || body.conflict !== true) return;
+              setCollaborationIssue("conflict");
+              notifyCollabConflict(t("collabConflictToast"));
+            })
+            .catch(() => {});
+        };
+        let localEditA1: string | null = null;
+        let lastSelectedA1: string | null = null;
+        const recentLocalEdits = new Map<string, number>();
+        const rememberLocalA1s = (cells: readonly string[]) => {
+          const now = Date.now();
+          for (const cell of cells) {
+            const a1 = cell.replace(/\s/g, "").toUpperCase();
+            if (a1) recentLocalEdits.set(a1, now);
+          }
+        };
+        const recentLocalA1s = (now = Date.now()) =>
+          [...recentLocalEdits.entries()]
+            .filter(([, at]) => now - at < 30_000)
+            .map(([cell]) => cell);
+        const captureNameBoxA1 = (event: Event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLInputElement)) return;
+          if (!target.closest('[data-u-comp="defined-name"]')) return;
+          const a1 = a1FromNameBoxValue(target.value);
+          if (!a1) return;
+          lastSelectedA1 = a1;
+          rememberLocalA1s([a1]);
+          if (shouldPostCellOverlapForLocalEdit({ source: "name-box" })) {
+            overlapChannel?.postMessage({
+              userID: user.id,
+              a1s: recentLocalA1s(),
+            });
+            postCellOverlap(recentLocalA1s());
+          }
+        };
+        document.addEventListener("keydown", captureNameBoxA1, true);
+        document.addEventListener("change", captureNameBoxA1, true);
+        nameBoxListener = captureNameBoxA1;
+        overlapChannel =
+          typeof BroadcastChannel === "undefined"
+            ? null
+            : new BroadcastChannel("workspace-cell-overlap");
+        overlapChannel?.addEventListener("message", (event) => {
+          if (disposed) return;
+          const data =
+            event.data && typeof event.data === "object"
+              ? (event.data as {
+                  readonly userID?: string;
+                  readonly a1?: string;
+                  readonly a1s?: readonly string[];
+                })
+              : null;
+          const remoteUser = data?.userID?.trim() ?? "";
+          const remoteA1s = [
+            ...(typeof data?.a1 === "string" ? [data.a1] : []),
+            ...(Array.isArray(data?.a1s) ? data.a1s : []),
+          ];
+          if (
+            remoteChangesetConflictsLocal({
+              localA1s: [
+                ...recentLocalA1s(),
+                ...(localEditA1 ? [localEditA1] : []),
+                ...(lastSelectedA1 ? [lastSelectedA1] : []),
+              ],
+              remoteUserId: remoteUser,
+              currentUserId: user.id,
+              remoteA1s,
+              treatMissingActorAsRemote: true,
+            })
+          ) {
+            setCollaborationIssue("conflict");
+            notifyCollabConflict(t("collabConflictToast"));
+          }
+        });
         collaborationUIEventListener = univer
           .__getInjector()
           .get(CollaborationUIEventService)
@@ -369,8 +574,12 @@ export function createCollaborationEditor(
             if (disposed) return;
             if (event.id === CollaborationUIEventId.PERMISSION_DENIED) {
               setCollaborationIssue("permission");
-            } else if (event.id === CollaborationUIEventId.CONFLICT) {
+            } else if (
+              event.id === CollaborationUIEventId.CONFLICT ||
+              event.id === CollaborationUIEventId.OTHER_CLIENT_EDITING
+            ) {
               setCollaborationIssue("conflict");
+              notifyCollabConflict(t("collabConflictToast"));
             }
           });
         if (readOnly) {
@@ -417,7 +626,7 @@ export function createCollaborationEditor(
 
         const protocolUser: IUser = {
           userID: user.id,
-          name: user.displayName,
+          name: historyDisplayName(user.id, user.displayName),
           avatar: user.avatarUrl ?? "",
           anonymous: false,
           canBindAnonymous: false,
@@ -425,10 +634,9 @@ export function createCollaborationEditor(
           email: "",
           createTimestamp: 0,
         };
-        univer
-          .__getInjector()
-          .get(UserManagerService)
-          .setCurrentUser(protocolUser);
+        const userManager = univer.__getInjector().get(UserManagerService);
+        userManager.setCurrentUser(protocolUser);
+        applyHistoryNameUsers(userManager);
 
         const collaboration = univerAPI.getCollaboration();
         statusListener = univerAPI.addEvent(
@@ -439,7 +647,10 @@ export function createCollaborationEditor(
               onCollaboratorsChange?.(
                 event.status === CollaborationStatus.OFFLINE ? [] : collaborators
               );
-              if (event.status !== CollaborationStatus.CONFLICT) {
+              if (event.status === CollaborationStatus.CONFLICT) {
+                setCollaborationIssue("conflict");
+                notifyCollabConflict(t("collabConflictToast"));
+              } else if (shouldClearCollaborationIssueOnStatus(event.status)) {
                 setCollaborationIssue(null);
               }
             }
@@ -456,8 +667,283 @@ export function createCollaborationEditor(
               collaboration.getCollaborationStatus(unitId)
             );
             setLoading(false);
+            bindLiveShareFacade(
+              shouldBindLiveShareFacade(univerAPI) ? univerAPI : undefined
+            );
           }
         });
+        const applyAgentEdits = (event: Event) => {
+          if (disposed) return;
+          const result = applyWorkspaceAgentEdits(
+            univerAPI,
+            (event as CustomEvent<{
+              unitId?: string;
+              toolCalls?: Array<{ tool: string; args: Record<string, unknown> }>;
+            }>).detail,
+            unitId,
+            collaborationStatusRef.current
+          );
+          noteFollowAgentCue({
+            cursorMemberId: AGENT_MEMBER_ID,
+            ...(result.ranges[0]?.a1
+              ? { selection: result.ranges[0].a1 }
+              : {}),
+          });
+        };
+        agentEditedListener = applyAgentEdits;
+        window.addEventListener("workspace-agent-edited", applyAgentEdits);
+        const onCellIntent = (event: Event) => {
+          if (disposed) return;
+          const intent = readCellIntent(event);
+          if (!intent) return;
+          if (intent.memberID === user.id || intent.userID === user.id) return;
+          if (
+            isSameCellConflict(localEditA1, intent, user.id) ||
+            remoteChangesetConflictsLocal({
+              localA1s: recentLocalA1s(),
+              remoteUserId: intent.userID,
+              currentUserId: user.id,
+              remoteA1s: [intent.a1],
+            })
+          ) {
+            setCollaborationIssue("conflict");
+            notifyCollabConflict(t("collabConflictToast"));
+          }
+          const ringToken = presenceRingToken({ userID: intent.userID });
+          const reducedMotion =
+            typeof window !== "undefined" &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          intentHighlightHandle?.dispose();
+          intentHighlightHandle = highlightIntent(
+            { getActiveWorkbook: () => univerAPI.getActiveWorkbook?.() },
+            intent,
+            ringToken,
+            reducedMotion
+          );
+        };
+        cellIntentListener = onCellIntent;
+        window.addEventListener(CELL_INTENT_EVENT, onCellIntent);
+
+        const onLocalOrRemoteCommand = (commandEvent: unknown, options?: unknown) => {
+            if (disposed) return;
+            try {
+            const a1 = readActiveRangeA1({
+              getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
+            });
+            const commandA1s = a1sFromCommandExecuted(commandEvent);
+            if (
+              shouldToastRemoteCellOverlap({
+                command: commandEvent,
+                options,
+                localA1s: [
+                  ...recentLocalA1s(),
+                  ...(localEditA1 ? [localEditA1] : []),
+                  ...(lastSelectedA1 ? [lastSelectedA1] : []),
+                ],
+                currentUserId: user.id,
+              })
+            ) {
+              setCollaborationIssue("conflict");
+              notifyCollabConflict(t("collabConflictToast"));
+              return;
+            }
+            if (commandFromCollab(commandEvent, options, { currentUserId: user.id })) {
+              return;
+            }
+            const isMutation =
+              (commandEvent as { type?: number }).type === CommandType.MUTATION;
+            const intentKind: CellIntentKind =
+              isMutation || commandA1s.length > 0 ? "editing" : "selecting";
+            localEditA1 = localEditA1AfterCommand({
+              isMutation: intentKind === "editing",
+              commandA1s,
+              activeA1: a1,
+              previousLocalEditA1: localEditA1,
+              lastSelectedA1,
+            });
+            if (!isMutation && a1) {
+              lastSelectedA1 = a1;
+            }
+            const nameBox = document.querySelector(
+              '[data-u-comp="defined-name"] input'
+            );
+            const nameBoxA1 =
+              nameBox instanceof HTMLInputElement
+                ? a1FromNameBoxValue(nameBox.value)
+                : null;
+            const remembered = [
+              ...(localEditA1 ? [localEditA1] : []),
+              ...commandA1s,
+              ...(a1 ? [a1] : []),
+              ...(lastSelectedA1 ? [lastSelectedA1] : []),
+              ...(nameBoxA1 ? [nameBoxA1] : []),
+            ];
+            rememberLocalA1s(remembered);
+            const commandId = String(
+              (commandEvent as { id?: unknown }).id ??
+                (commandEvent as { command?: { id?: unknown } }).command?.id ??
+                ""
+            );
+            if (
+              shouldPostCellOverlapForLocalEdit({
+                source: "command",
+                isMutation,
+                commandId,
+              })
+            ) {
+              overlapChannel?.postMessage({
+                userID: user.id,
+                a1s: recentLocalA1s(),
+              });
+              if (collaborationStatusRef.current !== CollaborationStatus.SYNCED) {
+                postCellOverlap(recentLocalA1s());
+              }
+            }
+            const publishA1 = commandA1s[0] || localEditA1 || lastSelectedA1 || a1;
+            if (!publishA1 || !shouldPublishIntent({ kind: "member", a1: publishA1 })) {
+              return;
+            }
+            sendCellIntent(unitId, {
+              memberID: user.id,
+              userID: user.id,
+              a1: publishA1,
+              intent: intentKind,
+            });
+            } catch {
+              /* never break Univer command / Comb listeners */
+            }
+        };
+        commandListener = univerAPI.addEvent(
+          univerAPI.Event.CommandExecuted,
+          (commandEvent) => {
+            onLocalOrRemoteCommand(
+              commandEvent,
+              (commandEvent as { options?: unknown }).options
+            );
+          }
+        );
+        const commandService = univer.__getInjector().get(ICommandService) as {
+          onCommandExecuted: (
+            listener: (command: unknown, options?: unknown) => void
+          ) => { dispose(): void };
+          onMutationExecutedForCollab?: (
+            listener: (command: unknown, options?: unknown) => void
+          ) => { dispose(): void };
+        };
+        const executedListener = commandService.onCommandExecuted(
+          (commandInfo, options) => {
+            onLocalOrRemoteCommand(commandInfo, options);
+          }
+        );
+        const collabMutationListener = commandService.onMutationExecutedForCollab?.(
+          (commandInfo, options) => {
+            onLocalOrRemoteCommand(commandInfo, options);
+          }
+        );
+        commandServiceListener = {
+          dispose() {
+            executedListener.dispose();
+            collabMutationListener?.dispose();
+          },
+        };
+
+        let blameCells: readonly BlameCell[] = [];
+        let blameEnabled = false;
+
+        const refreshBlame = () => {
+          blameHandle?.dispose();
+          const reducedMotion =
+            typeof window !== "undefined" &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          blameHandle = applyBlameHeat(
+            { getActiveWorkbook: () => univerAPI.getActiveWorkbook?.() },
+            blameCells,
+            reducedMotion,
+            blameEnabled
+          );
+        };
+
+        void fetch(`/universer-api/history/${encodeURIComponent(unitId)}/cs`, {
+          credentials: "include",
+        })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((body) => {
+            if (
+              disposed ||
+              !body ||
+              !Array.isArray((body as { changesets?: unknown[] }).changesets)
+            ) {
+              return;
+            }
+            blameCells = blameFromChangesets(
+              (body as { changesets: readonly any[] }).changesets
+            );
+            refreshBlame();
+          })
+          .catch(() => {});
+
+        onChangesetForBlame = (event: Event) => {
+          if (disposed) return;
+          const detail = (event as CustomEvent).detail as
+            | Record<string, unknown>
+            | undefined;
+          const collaMsg = (detail?.collaMsg ?? detail) as
+            | Record<string, unknown>
+            | undefined;
+          const newCsEvent = (collaMsg?.newCsEvent ?? detail?.newCsEvent) as
+            | Record<string, unknown>
+            | undefined;
+          const cs = (newCsEvent?.cs ?? collaMsg?.cs ?? detail?.cs) as
+            | Record<string, unknown>
+            | undefined;
+          if (cs) {
+            const actor =
+              readCombChangesetActor({ type: event.type, detail }) ??
+              "";
+            const rev =
+              typeof cs.revision === "number"
+                ? cs.revision
+                : typeof cs.rev === "number"
+                  ? cs.rev
+                  : 0;
+            const next = blameFromChangesets([
+              { clientId: actor, rev, changeset: cs },
+            ]);
+            const remoteA1s = next.map((cell) => cell.a1);
+            const ownWrite = actor === user.id || (!actor && !isCombNewChangesetsEvent({ type: event.type, detail }));
+            if (ownWrite) {
+              rememberLocalA1s(remoteA1s);
+            } else if (
+              remoteChangesetConflictsLocal({
+                localA1s: recentLocalA1s(),
+                remoteUserId: actor,
+                currentUserId: user.id,
+                remoteA1s,
+                treatMissingActorAsRemote: isCombNewChangesetsEvent({ type: event.type, detail }),
+              })
+            ) {
+              setCollaborationIssue("conflict");
+              notifyCollabConflict(t("collabConflictToast"));
+            }
+            const cellMap = new Map(blameCells.map((c) => [c.a1, c]));
+            for (const c of next) cellMap.set(c.a1, c);
+            blameCells = Array.from(cellMap.values());
+            refreshBlame();
+          }
+        };
+        window.addEventListener(COMB_CHANGESET_EVENT, onChangesetForBlame);
+
+        onBlameToggle = (event: Event) => {
+          if (disposed) return;
+          const detail = (event as CustomEvent<{ enabled?: boolean }>).detail;
+          blameEnabled =
+            typeof detail?.enabled === "boolean"
+              ? detail.enabled
+              : !blameEnabled;
+          refreshBlame();
+        };
+        window.addEventListener(BLAME_HEAT_EVENT, onBlameToggle);
+
         if (
           !disposed &&
           onCollaboratorsChange &&
@@ -480,20 +966,50 @@ export function createCollaborationEditor(
         if (disposed) return;
         setLoading(false);
         setError(
-          reason instanceof Error
-            ? reason.message
-            : `The ${definition.label} could not be loaded.`
+          formatUnknownError(
+            reason,
+            `The ${definition.label} could not be loaded.`
+          )
         );
       });
 
       return () => {
         disposed = true;
+        restorePluginService();
+        restoreSheetRender();
+        blameHandle?.dispose();
+        if (onChangesetForBlame) {
+          window.removeEventListener(COMB_CHANGESET_EVENT, onChangesetForBlame);
+        }
+        if (onBlameToggle) {
+          window.removeEventListener(BLAME_HEAT_EVENT, onBlameToggle);
+        }
+        commandListener?.dispose();
+        commandServiceListener?.dispose();
+        intentHighlightHandle?.dispose();
+        if (cellIntentListener) {
+          window.removeEventListener(CELL_INTENT_EVENT, cellIntentListener);
+        }
+        if (nameBoxListener) {
+          document.removeEventListener("keydown", nameBoxListener, true);
+          document.removeEventListener("change", nameBoxListener, true);
+        }
+        overlapChannel?.close();
         collaboratorsListener?.dispose();
         onCollaboratorsChange?.([]);
         statusListener?.dispose();
         collaborationUIEventListener?.unsubscribe();
         readOnlyListener?.dispose();
         readOnlyLifecycleListener?.dispose();
+        if (agentEditedListener) {
+          window.removeEventListener("workspace-agent-edited", agentEditedListener);
+        }
+        bindAgentEditSpotlight(undefined);
+        bindExplainSelectionHost(undefined);
+        bindFormulaInspectorHost(undefined);
+        bindFollowAgentHost(undefined);
+        bindLiveShareFacade(undefined);
+        bindCollaborationStatusDisplay(null);
         mountedUniver?.dispose();
         univerAPIRef.current = null;
       };
@@ -513,48 +1029,7 @@ export function createCollaborationEditor(
     ]);
 
     return (
-      <div className="univer-editor-shell">
-        {!loading &&
-        !error &&
-        collaborationStatusPresentation.showCustom ? (
-          <div
-            className={cn(
-              "pointer-events-none absolute top-3 right-4 z-10 flex items-center gap-1.5 rounded-full border border-border bg-background/85 py-1 pr-2.5 pl-2 text-xs font-medium shadow-sm backdrop-blur-sm",
-              collaborationStatus === CollaborationStatus.SYNCED &&
-                "text-success-soft-foreground",
-              collaborationStatus === CollaborationStatus.CONFLICT &&
-                "text-destructive-soft-foreground",
-              collaborationStatus === CollaborationStatus.OFFLINE &&
-                "text-warning-soft-foreground",
-              collaborationStatus !== CollaborationStatus.SYNCED &&
-                collaborationStatus !== CollaborationStatus.CONFLICT &&
-                collaborationStatus !== CollaborationStatus.OFFLINE &&
-                "text-muted-foreground"
-            )}
-          >
-            <span
-              className={cn(
-                "size-1.5 rounded-full",
-                collaborationStatus === CollaborationStatus.SYNCED &&
-                  "bg-success",
-                collaborationStatus === CollaborationStatus.CONFLICT &&
-                  "bg-destructive",
-                collaborationStatus === CollaborationStatus.OFFLINE &&
-                  "bg-warning",
-                collaborationStatus !== CollaborationStatus.SYNCED &&
-                  collaborationStatus !== CollaborationStatus.CONFLICT &&
-                  collaborationStatus !== CollaborationStatus.OFFLINE &&
-                  "bg-subtle-foreground"
-              )}
-            />
-            {t(
-              collaborationStatusMessageKey(
-                collaborationStatus,
-                collaborationIssue
-              )
-            )}
-          </div>
-        ) : null}
+      <div className="univer-editor-shell relative h-full min-h-0 flex-1">
         {error ? (
           <Alert
             variant="destructive"
@@ -572,7 +1047,7 @@ export function createCollaborationEditor(
             </div>
           </div>
         ) : null}
-        <div ref={container} className="univer-editor-container" />
+        <div ref={container} className="univer-editor-container h-full min-h-0" />
       </div>
     );
   };
@@ -599,8 +1074,14 @@ function historyLocales(
   history: WorkspaceHistoryDefinition
 ): ILanguagePack[] {
   return language === "zh-CN"
-    ? [EditHistoryUIZhCN, history.locales[language]]
-    : [EditHistoryUIEnUS, history.locales[language]];
+    ? [
+        overlayHistoryAdministrator(EditHistoryUIZhCN),
+        overlayHistoryAdministrator(history.locales[language]),
+      ]
+    : [
+        overlayHistoryAdministrator(EditHistoryUIEnUS),
+        overlayHistoryAdministrator(history.locales[language]),
+      ];
 }
 
 function configurePresetCollaboration(
@@ -636,7 +1117,7 @@ function configurePresetCollaboration(
             PluginConstructor,
             {
               ...(pluginConfig as object),
-              enableOfflineEditing: true,
+              enableOfflineEditing: false,
               enableAuthServer: true,
               wsSessionTicketUrl: "/universer-api/user/session-ticket",
               authzUrl: "/universer-api/authz",

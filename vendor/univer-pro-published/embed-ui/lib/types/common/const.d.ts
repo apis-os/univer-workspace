@@ -1,0 +1,1 @@
+export declare const EMBED_UI_PLUGIN_NAME = "UNIVER_EMBED_UI_PLUGIN";

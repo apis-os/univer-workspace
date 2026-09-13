@@ -1,0 +1,46 @@
+import { BasesHistoryDiffService, UniverBasesHistoryPlugin } from "@univerjs-pro/bases-history";
+import { ActivateBaseTableOperation, ActivateBaseViewOperation, BASE_CANVAS_COMPONENT_KEY, BASE_TOOLBAR_EXTRA_ACTIONS, BaseCanvasRenderComponent, IBaseCanvasRootResolverService, IBaseUIStateService, UniverBasesUIPlugin, createScopedBaseCanvasRootResolverService } from "@univerjs-pro/bases-ui";
+import { AuthzIoHttpService, COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY, CollaborationController, DataLoaderService, SnapshotServerOverHTTPService, UniverCollaborationClientPlugin } from "@univerjs-pro/collaboration-client";
+import { LS_CONFIG_KEY, UniverLicensePlugin } from "@univerjs-pro/license";
+import { BaseViewType, CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, ILogService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, ThemeService, Univer, UniverInstanceType, merge, registerDependencies, toDisposable } from "@univerjs/core";
+import { HistoryRestoreService, HistoryUnitAdapterRegistryService, UniverEditHistoryPlugin, isHistoryRestoreAcknowledgement } from "@univerjs-pro/edit-history";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { ComponentManager, ICanvasPopupService, IUIPartsService, UI_PLUGIN_CONFIG_KEY, UniverUIPlugin, connectInjector, useDependency } from "@univerjs/ui";
+import { ApplyBaseJson1Mutation, BaseHistoryAction, BatchCreateBaseRecordsCommand, BatchDeleteBaseRecordsCommand, ChangeBaseFieldTypeCommand, CreateBaseChildRecordCommand, CreateBaseFieldCommand, CreateBaseRecordCommand, CreateBaseTableCommand, CreateBaseViewCommand, DeleteBaseFieldCommand, DeleteBaseRecordCommand, DeleteBaseTableCommand, DeleteBaseViewCommand, DuplicateBaseFieldCommand, DuplicateBaseRecordCommand, EnsureBaseTemporalViewDateFieldsCommand, MoveBaseFieldCommand, MoveBaseHierarchyRecordCommand, MoveBaseViewCommand, RenameBaseTableCommand, RenameBaseViewCommand, SetBaseKanbanGroupFieldCommand, SetBaseNameCommand, SetBaseRangeValuesCommand, SetBaseRecordValuesCommand, SetBaseTableHierarchyFieldCommand, SetBaseViewFieldOrderCommand, SetBaseViewFieldVisibleCommand, SetBaseViewFieldWidthCommand, SetBaseViewFilterCommand, SetBaseViewGroupCommand, SetBaseViewSortCommand, UniverBasesPlugin, UpdateBaseCellCommand, UpdateBaseFieldCommand, UpdateBaseFieldDescriptionCommand, UpdateBaseKanbanConfigCommand, UpdateBaseRecordOrderCommand, UpdateBaseViewConditionalColorRulesCommand, UpdateBaseViewConfigCommand } from "@univerjs-pro/bases";
+import { BaseDashboardHistoryAction, BaseDashboardWidgetType, CreateBaseDashboardCommand, DeleteBaseDashboardCommand, RemoveBaseDashboardWidgetCommand, UniverBaseDashboardPlugin, UpdateBaseDashboardCommand, UpdateBasePivotViewCommand, UpsertBaseDashboardWidgetCommand } from "@univerjs-pro/bases-dashboard";
+import { UniverBaseDashboardUIPlugin } from "@univerjs-pro/bases-dashboard-ui";
+import { CollaborationEvent, ISnapshotServerService, SnapshotService, UniverCollaborationPlugin } from "@univerjs-pro/collaboration";
+import { UniverProFormulaEnginePlugin } from "@univerjs-pro/engine-formula";
+import { IRenderManagerService, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { UniverNetworkPlugin } from "@univerjs/network";
+import { BehaviorSubject, Subject, distinctUntilChanged, filter, firstValueFrom, map, takeUntil, timeout } from "rxjs";
+import { HistoryActionSummaryService, HistoryCanvasHighlightService, HistoryRenderAdapterRegistryService, UniverEditHistoryUIPlugin } from "@univerjs-pro/edit-history-ui";
+import { Badge, Button, Tooltip } from "@univerjs/design";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { HistoryIcon } from "@univerjs/icons";
+import { B, J, Q, U, V, W, X, Y, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551, z } from "./bases-history-ui-history-uiplugin.js";
+var Bt = "@univerjs-pro/bases-history-ui",
+  Vt = "1.0.0-insiders.20260907-70fc579";
+function L(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46394) {
+  return function (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671) {
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46394(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393);
+  };
+}
+function R(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46397, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401 = arguments.length,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401 < 3 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398 : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400 === null ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400 = Object.getOwnPropertyDescriptor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46403;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402 = Reflect.decorate(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46397, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400);else {
+    for (var var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46397.length - 1; var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 >= 0; var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D3--) (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46403 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46397[var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D3]) && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401 < 3 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46403(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401 > 3 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46403(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46403(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399)) || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402);
+  }
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401 > 3 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402 && Object.defineProperty(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402;
+}
+z = R([L(0, Inject(HistoryUnitAdapterRegistryService)), L(1, IAuthzIoService), L(2, IBaseUIStateService), L(3, IUniverInstanceService)], z);
+B = R([L(0, Inject(ComponentManager))], B);
+V = R([L(0, Inject(HistoryActionSummaryService)), L(1, Inject(LocaleService))], V);
+W = R([L(0, IRenderManagerService), L(1, Inject(HistoryCanvasHighlightService)), L(2, IBaseCanvasRootResolverService), L(3, Inject(ICanvasPopupService))], W);
+J = R([L(0, Inject(BasesHistoryDiffService)), L(1, Inject(HistoryRenderAdapterRegistryService)), L(2, Inject(SnapshotService)), L(3, ICommandService), L(4, IUniverInstanceService), L(5, IBaseUIStateService), L(6, ILogService), L(7, Inject(W))], J);
+U(Y, "pluginName", "UNIVER_BASES_HISTORY_VIEWER_PLUGIN"), U(Y, "packageName", Bt), U(Y, "version", Vt), U(Y, "type", UniverInstanceType.UNIVER_UNKNOWN), Y = R([DependentOn(UniverLicensePlugin, UniverBasesHistoryPlugin, UniverBasesUIPlugin), L(1, Inject(Injector)), L(2, IConfigService), L(3, ILogService)], Y);
+X = R([L(0, IConfigService), L(1, Inject(HistoryRestoreService)), L(2, Inject(HistoryUnitAdapterRegistryService)), L(3, Inject(LocaleService)), L(4, Inject(ThemeService)), L(5, Inject(CollaborationController)), L(6, Inject(DataLoaderService)), L(7, IUniverInstanceService)], X);
+Q = R([L(0, ICommandService), L(1, Inject(Injector)), L(2, IUIPartsService)], Q);
+U(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551, "pluginName", "UNIVER_BASES_HISTORY_UI_PLUGIN"), U(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551, "packageName", Bt), U(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551, "version", Vt), U(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551, "type", UniverInstanceType.UNIVER_BASE), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551 = R([DependentOn(UniverLicensePlugin, UniverCollaborationClientPlugin, UniverBasesHistoryPlugin, UniverBasesUIPlugin), L(1, Inject(Injector)), L(2, IConfigService)], var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551);

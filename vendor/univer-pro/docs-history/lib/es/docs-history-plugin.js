@@ -1,0 +1,108 @@
+import { HistoryGatewayService, HistoryUnitAdapterRegistryService, UnitComparisonAdapterRegistryService, UnitComparisonEntityType, UniverEditHistoryPlugin, alignComparisonIdentities, arrayComparisonEntries, asRecord, buildSemanticComparisonItems, recordComparisonEntries, resourceComparisonEntries, withoutComparisonKeys } from "@univerjs-pro/edit-history";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { BlockType, BooleanNumber, ColorKit, DependentOn, Disposable, IAuthzIoService, IConfigService, IUniverInstanceService, Inject, Injector, Plugin, TextDecoration, TextX, TextXActionType, Tools, UniverInstanceType, merge, registerDependencies } from "@univerjs/core";
+import { DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin } from "@univerjs/docs";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { ITransformService, RevertRevisionMutation, isTransformMutationsSuccess, parseProtocolChangeset } from "@univerjs-pro/collaboration";
+import { ve, ye } from "./docs-history-plugin-config-key.js";
+import { M } from "./docs-history-diff.js";
+import { F } from "./docs-history-docs-unit-comparison-adapter.js";
+function Se(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389 = [...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388.paragraphs ?? [])].sort((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4686.startIndex - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687.startIndex),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389.findIndex(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688.paragraphId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387.paragraphId || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688.paragraphId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387.nextParagraphId),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390 = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 >= 0 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12] : undefined,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391 = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 > 0 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D12 - 1] : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46389.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689.paragraphId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387.previousParagraphId),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391 ? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391.startIndex) ?? -1) + 1 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387.absoluteOffset,
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14 = Math.max(0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388.dataStream["length"] - 1),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390.startIndex) ?? var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393 = Ce(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387.offsetInParagraph : 0), 0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392);
+  return {
+    startOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393,
+    endOffset: Ce(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D13 + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46390 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387.endOffsetInParagraph ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387.offsetInParagraph : 0), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392)
+  };
+}
+function Ce(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403) {
+  return Math.min(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403, Math.max(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46401));
+}
+let w = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4694, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4695, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4696, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4697) {
+    super(), this._authzIoService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4695, this._univerInstanceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4696, this._selectionManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4697, this.disposeWithMe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4694.register({
+      type: UniverInstanceType.UNIVER_DOC,
+      canView: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615 => this._hasPermission(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615, UnitAction.ViewHistory),
+      canRevert: async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 => {
+        var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617;
+        return !!this._getDocument(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616) && !((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 = this._getDocument(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616)) != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617.getSnapshot().disabled) && (await this._hasPermission(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616, UnitAction.RecoverHistory));
+      },
+      captureLocation: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620 => this._captureLocation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620),
+      restoreLocation: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622) => this._restoreLocation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621, we(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622 : undefined)
+    }));
+  }
+  _captureLocation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46102) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46104 = this._getDocument(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46102),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105 = this._selectionManagerService["getActiveTextRange"](),
+      var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105.segmentId) ?? "",
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46104 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46104.getSelfOrHeaderFooterModel(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103.getBody();
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46104 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106) return;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107 = [...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106.paragraphs ?? [])].sort((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.startIndex - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624.startIndex),
+      var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107.findIndex(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625.startIndex >= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105.startOffset),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46108 = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 >= 0 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6] : undefined,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109;
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 > 0 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 - 1] : var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 < 0 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107.length - 1]);
+    let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB5 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109.startIndex + 1 : 0,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110 = [...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46106.sectionBreaks ?? [])].sort((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.startIndex - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.startIndex).find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628.startIndex >= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105.startOffset);
+    return {
+      segmentId: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4,
+      sectionId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46110.sectionId,
+      paragraphId: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46108 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46108.paragraphId) ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109.paragraphId),
+      previousParagraphId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109.paragraphId,
+      nextParagraphId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46108 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46108.paragraphId,
+      absoluteOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105.startOffset,
+      offsetInParagraph: Math.max(0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105.startOffset - var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB5),
+      endOffsetInParagraph: Math.max(0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105.endOffset - var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB5),
+      affinity: "forward"
+    };
+  }
+  _restoreLocation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122 = this._getDocument(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120)) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122.getSelfOrHeaderFooterModel((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121.segmentId) ?? "")) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122.getBody();
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121) return;
+    let {
+      startOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46124,
+      endOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46125
+    } = Se(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123);
+    this._selectionManagerService["replaceDocRanges"]([{
+      startOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46124,
+      endOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46125,
+      segmentId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121.segmentId
+    }]);
+  }
+  _getDocument(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132) {
+    return this._univerInstanceService["getUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132, UniverInstanceType.UNIVER_DOC) ?? null;
+  }
+  async _hasPermission(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46134, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135) {
+    return (await this._authzIoService["allowed"]({
+      unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46134,
+      objectID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46134,
+      objectType: UnitObject.Document,
+      actions: [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135]
+    })).some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.action === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.allowed);
+  }
+};
+function we(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425) {
+  return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425 == "object" && !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425 && "segmentId" in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425 && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425.segmentId == "string" && "absoluteOffset" in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425 && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425.absoluteOffset == "number" && "offsetInParagraph" in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425 && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46425.offsetInParagraph == "number";
+}
+let q = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46313 = ye, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46313, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315;
+    let {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316
+    } = merge({}, ye, this._config);
+    this._configService["setConfig"](ve, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316);
+  }
+  onStarting() {
+    registerDependencies(this._injector, [[M], [w], [F]]), this.disposeWithMe(this._injector["get"](UnitComparisonAdapterRegistryService).register(this._injector["get"](F))), this._injector["get"](w);
+  }
+};
+export { q as UniverDocsHistoryPlugin };
+export { w };

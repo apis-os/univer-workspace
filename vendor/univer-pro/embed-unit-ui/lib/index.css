@@ -1,0 +1,156 @@
+.univer-absolute {
+  position: absolute;
+}
+
+.univer-relative {
+  position: relative;
+}
+
+.univer-inset-0 {
+  inset: 0;
+}
+
+.univer-mb-1 {
+  margin-bottom: .25rem;
+}
+
+.univer-mr-3 {
+  margin-right: .75rem;
+}
+
+.univer-flex {
+  display: flex;
+}
+
+.univer-size-full {
+  width: 100%;
+  height: 100%;
+}
+
+.univer-min-h-0 {
+  min-height: 0;
+}
+
+.univer-w-full {
+  width: 100%;
+}
+
+.univer-flex-1 {
+  flex: 1;
+}
+
+.univer-shrink-0 {
+  flex-shrink: 0;
+}
+
+.univer-items-center {
+  align-items: center;
+}
+
+.univer-justify-center {
+  justify-content: center;
+}
+
+.univer-overflow-auto {
+  overflow: auto;
+}
+
+.univer-overflow-hidden {
+  overflow: hidden;
+}
+
+.univer-overflow-y-auto {
+  overflow-y: auto;
+}
+
+.univer-truncate {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.univer-rounded {
+  border-radius: .25rem;
+}
+
+.univer-border {
+  border-width: 1px;
+}
+
+.univer-border-r {
+  border-right-width: 1px;
+}
+
+.univer-border-none {
+  border-style: none;
+}
+
+.univer-border-gray-200 {
+  border-color: var(--univer-gray-200);
+}
+
+.univer-border-gray-300 {
+  border-color: var(--univer-gray-300);
+}
+
+.univer-bg-primary-50 {
+  background-color: var(--univer-primary-50);
+}
+
+.univer-bg-transparent {
+  background-color: #0000;
+}
+
+.univer-bg-white\/90 {
+  background-color: #ffffffe6;
+}
+
+.univer-p-2 {
+  padding: .5rem;
+}
+
+.univer-p-6 {
+  padding: 1.5rem;
+}
+
+.univer-pr-2 {
+  padding-right: .5rem;
+}
+
+.univer-text-left {
+  text-align: left;
+}
+
+.univer-text-center {
+  text-align: center;
+}
+
+.univer-text-sm {
+  font-size: .875rem;
+  line-height: 1.25rem;
+}
+
+.univer-text-xs {
+  font-size: .75rem;
+  line-height: 1rem;
+}
+
+.univer-font-medium {
+  font-weight: 500;
+}
+
+.univer-text-gray-500 {
+  color: var(--univer-gray-500);
+}
+
+.univer-text-primary-700 {
+  color: var(--univer-primary-700);
+}
+
+.dark\:\!univer-border-gray-700:where(.univer-dark, .univer-dark *) {
+  border-color: var(--univer-gray-700) !important;
+}
+
+.dark\:\!univer-text-gray-400:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-400) !important;
+}

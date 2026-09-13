@@ -1,0 +1,36 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-diamond-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M10 1.41406L18.4854 9.89949L10 18.3848L1.51465 9.89949L10 1.41406Z",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeDiamondIcon = (0, react.forwardRef)(function ShapeDiamondIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-diamond-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeDiamondIcon.displayName = "ShapeDiamondIcon";
+//#endregion
+exports.ShapeDiamondIcon = ShapeDiamondIcon;
+exports.default = ShapeDiamondIcon;

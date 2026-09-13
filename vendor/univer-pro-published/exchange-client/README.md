@@ -1,0 +1,47 @@
+# @univerjs-pro/exchange-client
+
+[![npm version](https://img.shields.io/npm/v/@univerjs-pro/exchange-client?style=flat-square)](https://npmjs.com/package/@univerjs-pro/exchange-client)
+[![license](https://img.shields.io/npm/l/@univerjs-pro/exchange-client?style=flat-square)](https://npmjs.com/package/@univerjs-pro/exchange-client)
+[![downloads](https://img.shields.io/npm/dm/@univerjs-pro/exchange-client?style=flat-square)](https://npmjs.com/package/@univerjs-pro/exchange-client)
+
+`@univerjs-pro/exchange-client` is part of Univer Pro. Workbook import and export client integration for Univer Pro.
+
+## Package Overview
+
+| Package | UMD global | CSS | Locales | Facade entry |
+| --- | --- | :---: | :---: | :---: |
+| `@univerjs-pro/exchange-client` | `UniverProExchangeClient` | Yes | Yes | Yes |
+
+## Installation
+
+```sh
+pnpm add @univerjs-pro/exchange-client
+# or
+npm install @univerjs-pro/exchange-client
+```
+
+Keep all `@univerjs/*` and `@univerjs-pro/*` packages on the same version.
+
+## Usage
+
+```ts
+import '@univerjs-pro/exchange-client/lib/index.css';
+import EnUS from '@univerjs-pro/exchange-client/locale/en-US';
+import { UniverExchangeClientPlugin } from '@univerjs-pro/exchange-client';
+
+univer.registerPlugin(UniverExchangeClientPlugin);
+
+// Merge EnUS into your Univer locale map when this package contributes UI text.
+```
+
+## Integration Notes
+
+- Keep this package on the same version as the other `@univerjs/*` and `@univerjs-pro/*` packages in your application.
+- Import the package stylesheet once in the application entry before rendering Univer UI.
+- Import locale files only for the languages your application enables.
+- Use the facade entry when integrating through Univer Facade APIs.
+
+## Resources
+
+- [Documentation](https://docs.univer.ai/guides/pro)
+- [NPM package](https://npmjs.com/package/@univerjs-pro/exchange-client)

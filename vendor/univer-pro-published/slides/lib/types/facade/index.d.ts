@@ -1,0 +1,12 @@
+import '@univerjs-pro/engine-shape/facade';
+import './f-enum';
+import './f-univer';
+export { FGroup } from './f-group';
+export { FImage, FImageBuilder } from './f-image';
+export type { ISlideImageBuilderInfo } from './f-image';
+export { FPageElement } from './f-page-element';
+export { FPresentation } from './f-presentation';
+export type { ISetPresentationBackgroundGraphicsOptions } from './f-presentation';
+export { FSlide } from './f-slide';
+export type { FSlidePageElement, ISlideFacadeElementLayout, ISlideFacadePageLayout, ISlideImageInsertOptions, } from './f-slide';
+export { FPresentationPermission, FSlideObjectPermission } from './f-slide-permission';

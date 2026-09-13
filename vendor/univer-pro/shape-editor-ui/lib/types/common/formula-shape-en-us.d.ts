@@ -1,0 +1,25 @@
+export declare const formulaShapeEnUS: {
+    panelTitle: string;
+    editFormula: string;
+    numberFormat: string;
+    moreFormats: string;
+    customFormatPlaceholder: string;
+    formatTypes: string;
+    decimalPlaces: string;
+    currencySymbol: string;
+    negativeNumberType: string;
+    dateType: string;
+    preview: string;
+    generalDescription: string;
+    accountingDescription: string;
+    currencyDescription: string;
+    dateDescription: string;
+    numberDescription: string;
+    customFormatDescription: string;
+    formulaPlaceholder: string;
+    sheetUnit: string;
+    baseUnit: string;
+    confirm: string;
+    cancel: string;
+    animation: string;
+};

@@ -1,0 +1,291 @@
+import { ArrangeTypeEnum, BooleanNumber, ColorKit, CommandType, CustomRangeType, DEFAULT_STYLES, DependentOn, Direction, Disposable, DisposableCollection, DocumentDataModel, DocumentFlavor, EDITOR_ACTIVATED, FOCUSING_COMMON_DRAWINGS, FOCUSING_SHAPE_TEXT_EDITOR, FOCUSING_SLIDE, HorizontalAlign, ICommandService, IConfigService, IContextService, IImageIoService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, LifecycleService, LifecycleStages, LocaleService, Optional, Plugin, PresetListType, RedoCommand, Registry, RxDisposable, ThemeService, Tools, UndoCommand, UniverInstanceType, VerticalAlign, WrapStrategy, checkIfMove, createIdentifier, createInternalEditorID, createParagraphId, generateRandomId, isInternalEditorID, merge, toDisposable } from "@univerjs/core";
+import * as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614828 from "@univerjs-pro/slides";
+import { AddSlideElementCommand, AddSlideElementMutation, AddSlidePageCommand, CancelSlideGroupMutation, ConvertSlideSmartArtToShapesCommand, CreateSlideByLayoutCommand, DEFAULT_LAYOUT_ORDER, DEFAULT_MASTER_PAGE, DEFAULT_MASTER_PAGE_ID, ISlideDrawingService, InsertDrawingObjectMutation, LAYOUT_PAGE_IDS, MoveSlidePageCommand, PageElementTypeEnum, PageTypeEnum, PlaceholderTypeEnum, RemoveSlideElementCommand, RemoveSlideElementMutation, RemoveSlidePageCommand, ReorderSlideElementsCommand, SLIDE_INSERT_DEFAULT_SIZE, SLIDE_PLACEHOLDER_ICON_COMPONENT_NAME_BY_KEY, SLIDE_TEXT_BOX_DEFAULT_STYLE, SLIDE_THEME_PRESETS, SetPresentationBackgroundGraphicsCommand, SetSlideDrawingApplyMutation, SetSlideGroupMutation, SetSlidePageSizeCommand, SetSlidePageSizeMutation, SetSlideSpeakerNotesCommand, SetSlideSpeakerNotesMutation, SetSlideTransitionCommand, SetSlideZoomRatioOperation, SlideBackgroundTypeEnum, SlideDrawingApplyType, SlidePageLayoutTypeEnum, SlidePageSizePresetEnum, SlidePresentationBackgroundGraphicFitEnum, SlidePresentationBackgroundGraphicsTargetEnum, SlideSceneTypeEnum, SlideTransitionDirectionEnum, SlideTransitionTypeEnum, UniverSlidesPlugin, UpdateSlideDrawingCommand, UpdateSlideElementMutation, UpdateSlidePageBackgroundCommand, UpdateSlidePageBackgroundMutation, UpdateSlideSmartArtCommand, applySlideElementPlainText, applySlideElementTextDocument, buildResolvedSlideDrawingMap, canEditSlideTargets, getEmbedSlidesFloatingCustomData, getEmbedSlidesPageCustomData, getPlaceholderImageContent, getPresentationBackgroundGraphics, getSlideElementDisplayName, getSlideElementEditPermissionObjectIds, getSlideElementPermissionObjectId, getSlidePagePermissionObjectId, getSlidePermissionValue, getSlideThemePreset, isPresentationBackgroundGraphic, normalizeSlideDocumentDataStream, plainTextToSlideDocumentData, resolveDefaultPlaceholderTextKey, resolvePlaceholderActionIcons, resolveSlideElementTextDocument, resolveSlideTextBoxDefaultSize, resolveSlideThemePreviewColors, resolveSlideTransition, resolveThemeDefaultShapeText, setPlaceholderImageContent, slideDocumentDataToPlainText } from "@univerjs-pro/slides";
+import { AlignmentSnapSession, BaseObject, CURSOR_TYPE, DEFAULT_TRANSFORMER_CONFIG, DRAWING_OBJECT_LAYER_INDEX, DeviceType, DocumentSkeleton, DocumentViewModel, Documents, DrawingGroupObject, Group, IRenderManagerService, Image, MAIN_VIEW_PORT_KEY, PageLayoutType, RENDER_CLASS_TYPE, Rect, Scene, ScrollBar, Shape, Transform, UniverRenderEnginePlugin, UniverRenderingContext, VERTICAL_ROTATE_ANGLE, Vector2, Viewport, cancelRequestFrame, createCanvasElement, degToRad, getAlignmentRectXAnchors, getAlignmentRectYAnchors, getNextWheelZoomRatio, measureDocumentNoWrapTextWidth, pxToNum, requestNewFrame, resolveDrawingEffectMasks, resolveOuterShadowEffect } from "@univerjs/engine-render";
+import { BuiltInUIPart, ComponentContainer, ComponentManager, ContextMenuGroup, CopyCommand, CutCommand, EmojiPicker, FloatingObjectToolbarPosition, FontFamilyDropdown, ICanvasPopupService, IClipboardInterfaceService, IContextMenuService, IDialogService, ILayoutService, IMenuManagerService, IMessageService, IRibbonService, IShortcutService, ISidebarService, IUIPartsService, IUIRuntimeScopeService, IUnitPresenceUIAdapterRegistry, IWorkbenchService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, RectPopup, RibbonPosition, RibbonStartGroup, RibbonViewGroup, Slider, SymbolPicker, ToggleFullscreenOperation, UndoRedoGroupService, ZoomInput, connectInjector, getEmbedChildUnitId, getMenuHiddenObservable, useComponentsOfPart, useDependency, useObservable } from "@univerjs/ui";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
+import { InsertSlideTableCommand, SetSlideTableMutation, SlideTableBorderDashEnum, SlideTableFillTypeEnum, SlideTableResourceService, SlideTableTextDirectionEnum, UpdateSlideTableCommand, buildDefaultSlideTableThemes, buildSlideTableControls, buildSlideTableTriggers, hitTestSlideTableControl, hitTestSlideTableTrigger, normalizeSlideTableSnapshot, resizeSlideTableGrid, resolveSlideTableBuildOptions, resolveSlideTableCellBoundaryBorder, resolveSlideTableCellRect, resolveSlideTableCellTextMargins, resolveSlideTableRenderModel, resolveSlideTableThemePalette } from "@univerjs-pro/slides-table";
+import { BehaviorSubject, Observable, Subject, combineLatest, distinctUntilChanged, filter, fromEvent, map, merge as mergeLocal, of as of1, pairwise, startWith, switchMap, take, takeUntil } from "rxjs";
+import { DocParagraphTypeDropdown, FormulaShapeAnimationController, OpenShapeTextHyperLinkOperation, SHAPE_CHANGE_PICKER_COMPONENT, SHAPE_FLOATING_TOOLBAR_TOP_OFFSET, SMART_ART_LAYOUT_GALLERY_CATALOG, ShapeEffectsRibbonControl, ShapeFloatingToolbar, ShapeFloatingToolbarService, ShapeFloatingToolbarToggleFactory, ShapeFormulaRibbonControl, ShapeGroupEnum, ShapePickerPanel, ShapeQuickStyleGallery, ShapeStyleRibbonControl, ShapeTextBoxEditor, ShapeTextEditorContainer, ShapeTextEffectsRibbonControl, ShapeTextFloatMenuRenderControllerBase, ShapeTextFloatToolbar, ShapeTextHyperLinkInfo, ShapeTextHyperLinkPopupService, ShapeTextRibbonControl, SmartArtCreateGraphicRibbonControl, SmartArtLayoutGallery, SmartArtLayoutRibbonControl, SmartArtResetRibbonControl, SmartArtRibbonControl, SmartArtStyleRibbonControl, SmartArtTextPane, ToggleShapeFloatingToolbarOperation, UniverShapeEditorUIPlugin, buildShapeTextDataUpdate, createShapeTextPlaceholderDocumentData, drawFormulaShapeAnimationLayers, getShapeTextOpticalVerticalOffset, getTextModel, getTextStyle, isShapeTextOpticalVerticalAlignEnabled, normalizeShapeTextModel, normalizeShapeTextRect, prepareShapeTextDocumentData, resolveShapeContextualRibbonHostMode, resolveShapeTextBoxResizePolicy, resolveShapeTextDocumentAlignment, resolveShapeTextDocumentPageHeight, resolveShapeTextDocumentRenderLayout, resolveShapeTextEditorBehaviorShapeData, resolveShapeTextEditorFlowAxis, resolveShapeTextEditorWrapStrategy, resolveShapeTextNoWrapLayout, shapeTypeOptions, shouldAllowShapeTextEditorHostSizeShrink, shouldAutoFitShapeTextEditorNoWrap, shouldClipShapeTextDocument, useFormulaShapeToolbar } from "@univerjs-pro/shape-editor-ui";
+import { ConnectorCoordinateTransform, ImageFillModeEnum, ImageSourceTypeEnum, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeBevelPresetEnum, ShapeDefaultConfig, ShapeFillEnum, ShapeGradientTypeEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeMaterialPresetEnum, ShapeModel, ShapePresetShadowValEnum, ShapeRenderModeEnum, ShapeSketchTypeEnum, ShapeTextAutoFitType, ShapeTextWrapType, ShapeTypeEnum, SmartArtDirectionEnum, SmartArtInsertPositionEnum, SmartArtOperationTypeEnum, SmartArtPresentationShapeRoleEnum, computeConnectorRouteLayout, createDefaultInsertedShapeData, createSmartArtDataFromLayout, getBasicShapeRotateBound, getShape3DBounds, isConnectorShape, isCurvedConnectorShape, isShape3DProjectiveScene, isSmartArtShapeData, normalizeShapeTextData, parseSmartArtCategory, projectShape3DRect, resolveShape3DGlyphRenderPlan, resolveShapeBevelExtent, resolveShapeDefaultInsertSize, resolveShapeTextBodyBehavior, resolveSmartArtPresentationNodeIdAtTextOffset, resolveSmartArtPresentationShapeData, resolveSmartArtPresentationShapeIdForNode, resolveSmartArtPresentationTransform, routeConnectorLineShape } from "@univerjs-pro/engine-shape";
+import { ShapeFormulaService, UniverShapeEditorPlugin, createShapeFormulaDocument, createShapeTextBoxShapeData, getShapeQuickStylePreset, getShapeQuickStylePresets } from "@univerjs-pro/shape-editor";
+import { takeUntil as takeUntilLocal } from "rxjs/operators";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { AddImageIcon, AddNoteIcon, AlignBottomIcon, AlignTextBothIcon, AlignTopIcon, ArrowLeftIcon, ArrowRightIcon, BasesMultiIcon, BoardsMultiIcon, BoldIcon, BottomIcon, CatalogueIcon, ChartIcon, CloseIcon, ConnectionLineIcon, CopyIcon, CutIcon, DeleteIcon, DocsMultiIcon, ExpandIcon, FeatureSearchIcon, FlipHorizontalIcon, FlipVerticalIcon, FontColorDoubleIcon, FountainPenIcon, GroupIcon, HandIcon, HorizontallyIcon, ItalicIcon, LeftJustifyingIcon, LoadingMultiIcon, MindMapIcon, MoreDownIcon, MoreLeftIcon, MoveDownIcon, MoveUpIcon, ObjectLayersIcon, OneToOneIcon, PaintBucketDoubleIcon, PasteSpecialDoubleIcon, RecordIcon, RelationshipIcon, RightJustifyingIcon, RulerIcon, ShapeBackgroundColorDoubleIcon, ShapeFormatSettingIcon, ShapeStrokeColorDoubleIcon, SheetsMultiIcon, ShrinkIcon, SlidesMultiIcon, SlideshowPlayIcon, SlideshowThemeIcon, SmartArtIcon, SmileIcon, StickyNoteIcon, StrikethroughIcon, SymbolsIcon, TableIcon, TextIcon, TopmostIcon, TransitionsIcon, UnderlineIcon, UngroupIcon, VerticalCenterIcon } from "@univerjs/icons";
+import { Accordion, Button, Checkbox, ColorPicker, Dropdown, DropdownMenu, GradientColorPicker, Input, InputNumber, MessageType, Radio, RadioGroup, Segmented, Select, Separator, Textarea, borderClassName, clsx, scrollbarClassName } from "@univerjs/design";
+import { DocInterceptorService, DocSelectionManagerService, DocSkeletonManagerService, UniverDocsPlugin } from "@univerjs/docs";
+import { DeleteLeftCommand, DeleteRightCommand, DocCanvasPopManagerService, DocEventManagerService, DocRenderController, DocSelectAllCommand, DocSelectionRenderService, EnterCommand, IEditorService, SetInlineFormatBoldCommand, SetInlineFormatFontFamilyCommand, SetInlineFormatFontSizeCommand, SetInlineFormatItalicCommand, SetInlineFormatStrikethroughCommand, SetInlineFormatTextColorCommand, SetInlineFormatUnderlineCommand, UniverDocsUIPlugin, convertBodyToHtml, convertClipboardHtmlToDocumentData, convertClipboardRtfToPlainText, removeClipboardHtmlImages, useEditor, useKeyboardEvent, useLeftAndRightArrow, useOnChange } from "@univerjs/docs-ui";
+import { UnitAction } from "@univerjs/protocol";
+import { getImageSize } from "@univerjs/drawing";
+import { ImageCropperObject, ObjectListPanelBase, extractClipboardHtmlImageFiles, extractClipboardImageFiles, extractClipboardTextImageFile, getObjectListPanelLabels, getObjectListPanelTypeName, isClipboardTextImage, isImageOnlyClipboardHtml, normalizeClipboardImageFile, svgImageFileToDataUrl, writeImageSourceToClipboard } from "@univerjs/drawing-ui";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { convertPlainTextTableToHtml, parseHtmlTableClipboard } from "@univerjs-pro/docs-table";
+import { X, id } from "./internal-core-endo.js";
+import { Sy, by, dy, fy, gy, hy, my, py, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB286, vy, xy, yy } from "./slides-ui-slide-shape-ribbon-tab.js";
+function Ey(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612453) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612453 === PageTypeEnum.Master ? 0 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612453 === PageTypeEnum.Layout ? 1 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612453 === PageTypeEnum.Slide ? 2 : -1;
+}
+function Dy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612455) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612456 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612455.match(/^[^:]+:[^:]+:\d+:(.+)$/);
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612456 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612456[1] ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612456[1] : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612455;
+}
+function Oy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612459, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612460) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612461, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612462, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612463, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612464;
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612460 ? {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612459,
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612460,
+    fill: {
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612459.fill ?? {}),
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612460.fill ?? {})
+    },
+    stroke: {
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612459.stroke ?? {}),
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612460.stroke ?? {})
+    },
+    ln: {
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612459.ln ?? {}),
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612460.ln ?? {}),
+      startArrow: {
+        ...(((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612461 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612459.ln) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612461.startArrow) ?? {}),
+        ...(((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612462 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612460.ln) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612462.startArrow) ?? {})
+      },
+      endArrow: {
+        ...(((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612463 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612459.ln) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612463.endArrow) ?? {}),
+        ...(((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612464 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612460.ln) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612464.endArrow) ?? {})
+      }
+    }
+  } : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612459;
+}
+function ky(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612472, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612473, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612474, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612475, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612476, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612477, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612478;
+  return {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471,
+    fill: {
+      fillType: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612472 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.fill) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612472.fillType) ?? ShapeDefaultConfig.fillType,
+      color: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612473 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.fill) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612473.color) ?? ShapeDefaultConfig.fill,
+      opacity: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612474 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.fill) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612474.opacity) ?? ShapeDefaultConfig.fillOpacity,
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.fill ?? {})
+    },
+    stroke: {
+      lineStrokeType: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612475 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.stroke) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612475.lineStrokeType) ?? ShapeDefaultConfig.lineType,
+      color: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612476 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.stroke) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612476.color) ?? ShapeDefaultConfig.stroke,
+      width: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612477 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.stroke) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612477.width) ?? ShapeDefaultConfig.strokeWidth,
+      opacity: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612478 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.stroke) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612478.opacity) ?? ShapeDefaultConfig.strokeOpacity,
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612471.stroke ?? {})
+    }
+  };
+}
+function Ay(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612487, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612488) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612489 = Dy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612488),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612490 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612487.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464998 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464998.element["type"] === PageElementTypeEnum.Shape).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464999 => Dy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464999.drawingId) === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612489).sort((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465000, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465001) => Ey(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465000.sourcePageType) - Ey(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465001.sourcePageType)),
+    var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB252 = {};
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612490.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465002 => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465003 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465002.element;
+    var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB252 = Oy(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB252, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465003.shapeData);
+  }), ky(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB252);
+}
+let jy = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465006, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465007, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465008, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465009, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465010) {
+    super(), this._sidebarService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465006, this._slideDrawingService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465007, this._localeService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465008, this._sidebarStateService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465009, this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465010, X(this, "_sidebarDisposable", null), X(this, "_activeShapeInfo", null), X(this, "_isOpenedShapeEditPanel", false), X(this, "_activeBackgroundInfo", null), X(this, "_isOpenedBackgroundEditPanel", false), X(this, "_activeTransitionInfo", null), X(this, "_isOpenedTransitionPanel", false), X(this, "_activeObjectListInfo", null), this._registerPanelOperations(), this._listenFocusChanges();
+  }
+  _registerPanelOperations() {
+    this.disposeWithMe(this._commandService["onCommandExecuted"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985 => {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === hy.id) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46188 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.params;
+        this._activeShapeInfo = this._getPanelInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46188.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46188.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46188.drawingId), this._activeShapeInfo && this._openShapeEditPanel();
+        return;
+      }
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === gy.id) {
+        this._activeShapeInfo = null, this._closeShapeEditPanel();
+        return;
+      }
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === py.id) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.params;
+        if (!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189.unitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189.subUnitId) return;
+        this._activeBackgroundInfo = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189.unitId,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189.subUnitId
+        }, this._openBackgroundEditPanel();
+        return;
+      }
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === my.id) {
+        this._activeBackgroundInfo = null, this._closeBackgroundEditPanel();
+        return;
+      }
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB286.id) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.params;
+        if (!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.unitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.subUnitId) return;
+        this._activeTransitionInfo = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.unitId,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.subUnitId
+        }, this._openTransitionPanel();
+        return;
+      }
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === vy.id) {
+        this._activeTransitionInfo = null, this._closeTransitionPanel();
+        return;
+      }
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === dy.id) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.params;
+        if (!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.unitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.subUnitId) return;
+        this._activeObjectListInfo = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.unitId,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.subUnitId
+        }, this._openObjectListPanel();
+        return;
+      }
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === fy.id) {
+        this._activeObjectListInfo = null, this._closeObjectListPanel();
+        return;
+      }
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === UpdateSlideDrawingCommand.id && this._activeShapeInfo) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192 = this._getPanelInfo(this._activeShapeInfo["unitId"], this._activeShapeInfo["subUnitId"], this._activeShapeInfo["drawingId"]);
+        if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192) {
+          this._activeShapeInfo = null, this._closeShapeEditPanel();
+          return;
+        }
+        this._activeShapeInfo = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192, this._isOpenedShapeEditPanel && this._openShapeEditPanel({
+          preservePanel: true
+        });
+      }
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46985.id === UpdateSlidePageBackgroundCommand.id && this._activeBackgroundInfo && this._isOpenedBackgroundEditPanel && this._openBackgroundEditPanel();
+    }));
+  }
+  _listenFocusChanges() {
+    this.disposeWithMe(this._slideDrawingService["focus$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46987 => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46988;
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46987.length === 0) {
+        this._activeShapeInfo = null, this._closeShapeEditPanel();
+        return;
+      }
+      if (!this._isOpenedShapeEditPanel) return;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46989 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46987[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46987.length - 1],
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990 = this._getPanelInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46989.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46989.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46989.drawingId);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990) {
+        this._activeShapeInfo = null, this._closeShapeEditPanel();
+        return;
+      }
+      (((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46988 = this._activeShapeInfo) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46988.unitId) !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990.unitId || this._activeShapeInfo["subUnitId"] !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990.subUnitId || this._activeShapeInfo["drawingId"] !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990.drawingId) && (this._activeShapeInfo = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46990, this._openShapeEditPanel());
+    }));
+  }
+  _getPanelInfo(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465016, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465017, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465018) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019 = this._slideDrawingService["getDrawingByParam"]({
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465016,
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465017,
+      drawingId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465018
+    });
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.element["type"] !== PageElementTypeEnum.Shape && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.element["type"] !== PageElementTypeEnum.Image && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.element["type"] !== PageElementTypeEnum.Group) return null;
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.element["type"] === PageElementTypeEnum.Image || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.element["type"] === PageElementTypeEnum.Group) return {
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465016,
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465017,
+      drawingId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465018,
+      transform: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.transform,
+      element: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.element
+    };
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465020 = this._slideDrawingService["getDrawingData"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465016, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465017),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465021 = Ay(Object.values(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465020), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.drawingId),
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB98 = {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.element,
+        shapeData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465021
+      };
+    return {
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465016,
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465017,
+      drawingId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465018,
+      transform: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465019.transform,
+      element: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB98
+    };
+  }
+  _openShapeEditPanel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465028 = {}) {
+    if (!this._activeShapeInfo) return;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465029 = this._activeShapeInfo;
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465028.preservePanel) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465030;
+      (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465030 = this._sidebarDisposable) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465030.dispose(), this._activeShapeInfo = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465029;
+    }
+    this._sidebarDisposable = this._sidebarService["open"]({
+      id: yy,
+      header: {
+        title: this._localeService["t"]("slides-ui.shapePanel.title")
+      },
+      width: 388,
+      children: {
+        label: yy,
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465029
+      },
+      onClose: () => {
+        this._isOpenedShapeEditPanel = false, this._activeShapeInfo = null, this._sidebarDisposable = null, this._sidebarStateService["setShapePanelOpen"](false);
+      }
+    }), this._isOpenedShapeEditPanel = true, this._sidebarStateService["setShapePanelOpen"](true);
+  }
+  _closeShapeEditPanel() {
+    this._isOpenedShapeEditPanel = false, this._sidebarService["close"](yy), this._sidebarDisposable = null, this._sidebarStateService["setShapePanelOpen"](false);
+  }
+  _openBackgroundEditPanel() {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465034;
+    if (!this._activeBackgroundInfo) return;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465035 = this._activeBackgroundInfo;
+    (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465034 = this._sidebarDisposable) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465034.dispose(), this._activeBackgroundInfo = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465035, this._sidebarDisposable = this._sidebarService["open"]({
+      id: by,
+      header: {
+        title: this._localeService["t"]("slides-ui.backgroundPanel.title")
+      },
+      width: 388,
+      children: {
+        label: by,
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465035
+      },
+      onClose: () => {
+        this._isOpenedBackgroundEditPanel = false, this._activeBackgroundInfo = null, this._sidebarDisposable = null, this._sidebarStateService["setBackgroundPanelOpen"](false);
+      }
+    }), this._isOpenedBackgroundEditPanel = true, this._sidebarStateService["setBackgroundPanelOpen"](true);
+  }
+  _closeBackgroundEditPanel() {
+    this._isOpenedBackgroundEditPanel = false, this._sidebarService["close"](by), this._sidebarDisposable = null, this._sidebarStateService["setBackgroundPanelOpen"](false);
+  }
+  _openTransitionPanel() {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465038;
+    if (!this._activeTransitionInfo) return;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465039 = this._activeTransitionInfo;
+    (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465038 = this._sidebarDisposable) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465038.dispose(), this._activeTransitionInfo = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465039, this._sidebarDisposable = this._sidebarService["open"]({
+      id: xy,
+      header: {
+        title: this._localeService["t"]("slides-ui.transitionPanel.title")
+      },
+      width: 388,
+      children: {
+        label: xy,
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465039
+      },
+      onClose: () => {
+        this._isOpenedTransitionPanel = false, this._activeTransitionInfo = null, this._sidebarDisposable = null, this._sidebarStateService["setTransitionPanelOpen"](false);
+      }
+    }), this._isOpenedTransitionPanel = true, this._sidebarStateService["setTransitionPanelOpen"](true);
+  }
+  _closeTransitionPanel() {
+    this._isOpenedTransitionPanel = false, this._sidebarService["close"](xy), this._sidebarDisposable = null, this._sidebarStateService["setTransitionPanelOpen"](false);
+  }
+  _openObjectListPanel() {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465042;
+    if (!this._activeObjectListInfo) return;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465043 = this._activeObjectListInfo;
+    (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465042 = this._sidebarDisposable) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465042.dispose(), this._activeObjectListInfo = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465043, this._sidebarDisposable = this._sidebarService["open"]({
+      id: Sy,
+      header: {
+        title: this._localeService["t"]("slides-ui.objectListPanel.title")
+      },
+      width: 360,
+      children: {
+        label: Sy,
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465043
+      },
+      onClose: () => {
+        this._activeObjectListInfo = null, this._sidebarDisposable = null, this._sidebarStateService["setObjectListPanelOpen"](false);
+      }
+    }), this._sidebarStateService["setObjectListPanelOpen"](true);
+  }
+  _closeObjectListPanel() {
+    this._sidebarService["close"](Sy), this._sidebarDisposable = null, this._sidebarStateService["setObjectListPanelOpen"](false);
+  }
+};
+export { jy as SlideSidebarController };

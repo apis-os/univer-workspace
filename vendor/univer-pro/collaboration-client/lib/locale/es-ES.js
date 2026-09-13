@@ -1,0 +1,45 @@
+const e = {
+  "collaboration-client": {
+    collabClient: {
+      tooltip: {
+        reconnect: "Haga clic para reconectar"
+      }
+    },
+    collabStatus: {
+      fetchMiss: "Sincronizando datos del servidor...",
+      conflict: "Conflictos de edición",
+      notCollab: "Archivo\x20local",
+      synced: "Sincronizado",
+      syncing: "Sincronizando...",
+      offline: "Desconectado, los cambios se guardarán localmente"
+    },
+    session: {
+      "connection-failed": "Error\x20de\x20conexión.\x20Verifique\x20su\x20red.",
+      "will-retry": "Error\x20de\x20conexión.\x20Intentaremos\x20de\x20nuevo\x20en\x20un\x20momento.",
+      "room-full": "El\x20documento\x20ha\x20alcanzado\x20su\x20límite\x20de\x20colaboración.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
+      "join-failed": "No se pudo unir a la colaboración. Inténtelo de nuevo más tarde. Sus cambios se guardarán localmente.",
+      "room-not-exists": "No se pudo unir a la colaboración. Sus cambios se guardarán localmente.",
+      "room-permission-denied": "Sin permiso de colaboración. Sus cambios se guardarán localmente.",
+      "room-cnt-exceeds": "El\x20número\x20de\x20documentos\x20colaborativos\x20excede\x20el\x20límite.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
+      "collaboration-timeout": "El servidor no responde a su solicitud de colaboración. Sus cambios se guardarán localmente."
+    },
+    conflict: {
+      title: "Conflicto de colaboración",
+      content: "Hay\x20un\x20conflicto\x20entre\x20su\x20copia\x20local\x20y\x20la\x20copia\x20en\x20el\x20servidor.\x20Guarde\x20sus\x20cambios\x20locales,\x20ya\x20que\x20se\x20perderán\x20cuando\x20recargue\x20la\x20página."
+    },
+    permission: {
+      title: "Error\x20de\x20autenticación",
+      content: "Sus acciones entran en conflicto con los permisos del servidor. Guarde sus cambios locales en otro lugar, ya que se descartarán después de actualizar la página."
+    },
+    collaboration: {
+      "single-unit": {
+        warning: "Abrió el mismo archivo en otra pestaña. Para evitar pérdida de datos, no puede editar en esta pestaña."
+      },
+      closeRoom: "Los\x20privilegios\x20de\x20edición\x20fueron\x20revocados\x20porque\x20la\x20sala\x20de\x20colaboración\x20fue\x20cerrada."
+    },
+    auth: {
+      needGotoLoginAlert: "Su\x20sesión\x20ha\x20expirado.\x20Haga\x20clic\x20en\x20Aceptar\x20para\x20volver\x20a\x20iniciar\x20sesión,\x20o\x20en\x20Cancelar\x20para\x20guardar\x20sus\x20cambios\x20locales."
+    }
+  }
+};
+export { e as default };

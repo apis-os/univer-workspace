@@ -1,0 +1,16 @@
+import type { BaseEmbedRuntimeRegistryService, IUniverBaseUIConfig } from '@univerjs-pro/bases-ui';
+import type { EmbedDisplayTarget, IEmbedBaseDisplayTarget } from '@univerjs-pro/embed';
+import type { BaseDataModel, Injector } from '@univerjs/core';
+import type { IEmbedChildContainerContext, IEmbedChildViewContribution } from '../../types/embed-ui';
+import { BaseEditorService, BaseUIPopupService, BaseUIStateService, IBaseUIPopupService, IBaseViewWheelScrollService } from '@univerjs-pro/bases-ui';
+import { ICommandService } from '@univerjs/core';
+export type BaseEmbedChromeMode = 'workbench' | 'content-only' | 'fullscreen';
+export declare function createBasesEmbedChildViewContribution(commandService: ICommandService, runtimeRegistry: BaseEmbedRuntimeRegistryService): IEmbedChildViewContribution;
+export declare function isBaseCanvasRootReady(canvasRoot: HTMLElement | null): canvasRoot is HTMLElement;
+export declare function shouldActivateBasesEmbedRender(_context: Pick<IEmbedChildContainerContext, 'renderScope'>): boolean;
+export declare function createBasesEmbedChildUnitScopedInjector(context: IEmbedChildContainerContext, baseStateService: BaseUIStateService, basePopupService: IBaseUIPopupService, baseEditorService: BaseEditorService): Injector | undefined;
+export declare function initializeBasesEmbedState(stateService: BaseUIStateService, childUnit: BaseDataModel, chromeMode?: BaseEmbedChromeMode, displayTarget?: EmbedDisplayTarget, dashboardIds?: ReadonlySet<string>): void;
+export declare function resolveBasesDisplayTarget(childUnit: BaseDataModel, displayTarget?: EmbedDisplayTarget, dashboardIds?: ReadonlySet<string>): IEmbedBaseDisplayTarget;
+export declare function resolveBasesEmbedChromeMode(context: Pick<IEmbedChildContainerContext, 'renderScope'>): BaseEmbedChromeMode;
+export declare function createBasesEmbedScopedInjector(childScopedInjector: Injector, baseStateService: BaseUIStateService, basePopupService?: BaseUIPopupService, baseEditorService?: BaseEditorService, chromeMode?: BaseEmbedChromeMode, baseWheelScrollService?: IBaseViewWheelScrollService, readOnly?: boolean, globalPortalContainer?: HTMLElement | null): Injector;
+export declare function resolveEmbeddedBaseUIConfig(baseConfig: IUniverBaseUIConfig, chromeMode?: BaseEmbedChromeMode): IUniverBaseUIConfig;

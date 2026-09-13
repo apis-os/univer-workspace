@@ -1,0 +1,32 @@
+import { DataField, DataFieldManager, DateGroupField, FieldsCollection, GlobalConfig, PivotCallbackEnum, PivotCellStyleTypeEnum, PivotDataFieldDataTypeEnum, PivotDataFieldSortOperatorEnum, PivotDataFieldTypeEnum, PivotDateGroupFieldDateSystemEnum, PivotDateGroupFieldDateTypeEnum, PivotErrorTypeEnum, PivotFilterTypeEnum, PivotSubtotalTypeEnum, PivotTable, PivotTableChangeTypeEnum, PivotTableFiledAreaEnum, PivotTableValuePositionEnum, PivotView, PivotViewCellValueTypeEnum, createLabelField, createValueField, excelDateToUnixMilliseconds, generateHexNumber, getAutoDisplayName, isBaseGroupField, isDateGroupField, isDateGroupFieldJSON, isDateValue, isErrorValue, isPrefixValue, isValueFilterOperator, setDateSystem, setMaxLimitItemCount } from '@univerjs-pro/engine-pivot';
+import { AsyncInterceptorManager, CellValueType, CommandType, CustomCommandExecutionError, DEFAULT_WORKSHEET_COLUMN_COUNT, DEFAULT_WORKSHEET_ROW_COUNT, DateSystem, DependentOn, Disposable, DisposableCollection, HorizontalAlign, ICommandService, IConfigService, ILogService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, InterceptorEffectEnum, InterceptorManager, LOCALE_META, LifecycleService, LocaleService, ObjectMatrix, Optional, Plugin, RANGE_TYPE, Range, Rectangle, Tools, UniverInstanceType, cellToRange, createAsyncInterceptorKey, createInterceptorKey, generateRandomId, getIntersectRange, merge, mergeWorksheetSnapshotWithDefault, numberToABC, numfmt, sequenceExecute } from '@univerjs/core';
+import { ErrorType, GlobalComputingStatusService, IActiveDirtyManagerService, IFeatureCalculationManagerService, UniverFormulaEnginePlugin, serializeRangeWithSpreadsheet } from '@univerjs/engine-formula';
+import { ClearSelectionAllCommand, ClearSelectionContentCommand, IExclusiveRangeService, INTERCEPTOR_POINT, InsertColMutation, InsertRowMutation, InsertSheetCommand, InsertSheetMutation, InsertSheetUndoMutationFactory, MoveRangeCommand, MoveRangeMutation, RefRangeService, RemoveColMutation, RemoveRowMutation, RemoveSheetCommand, RemoveSheetMutation, SetRangeValuesMutation, SetRangeValuesUndoMutationFactory, SetWorksheetActiveOperation, SetWorksheetColWidthMutation, SheetInterceptorService, SheetsSelectionsService, UniverSheetsPlugin, generateNullCell, getSheetCommandTarget } from '@univerjs/sheets';
+import { BehaviorSubject, Subject, distinctUntilChanged, skip } from 'rxjs';
+import { LS_CONFIG_KEY, ReleaseType, UniverLicensePlugin, getLicenseInfo, getSheetFeatureLimit, isFeatureAuthorizedWithinTime } from '@univerjs-pro/license';
+import { FontCache, cjk, getFontStyleString } from '@univerjs/engine-render';
+import { RemoveSheetsFilterMutation, SetSheetsFilterRangeMutation } from '@univerjs/sheets-filter';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+function Nn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462695, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462696, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462697, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462698) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB107 = {
+      'subUnitId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462697,
+      'unitId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462696,
+      'cellValue': ox2e8d6d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462698)
+    },
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462699 = ox27fef9(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462695, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB107),
+    var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A16 = false;
+  return new ox286e14_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462699.cellValue).forValue((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461509, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461510, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511) => {
+    if (!var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A16 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511.custom || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511.f || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511.p || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511.s || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511.si || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511.t || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461511.v)) return var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A16 = true, false;
+  }), {
+    'setRangeValueUndoMutation': {
+      'id': ox104f54_1.id,
+      'params': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462699
+    },
+    'setRangeValueRedoMutation': {
+      'id': ox104f54_1.id,
+      'params': var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB107
+    },
+    'shouldClear': var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A16
+  };
+}
+export { Nn as generateSetRangeValueMutations };

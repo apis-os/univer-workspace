@@ -3,6 +3,7 @@
  */
 import { ControlPlaneDb } from "./control-plane/db.ts";
 import { initControlPlaneSchema, seedControlPlane } from "./control-plane/schema.ts";
+import { attachActorHeaders, stripClientActorHeaders } from "./control-plane/actor.ts";
 import { handleControlPlaneRoutes, resolveGatewayContext } from "./control-plane/gateway.ts";
 import { handleBlobRoutes, R2BlobStore } from "./integrations/r2-blob-store.ts";
 import {
@@ -10,6 +11,7 @@ import {
   WORKTREE_CHANGE_NOTIFY_PATH,
   isWorktreeMutation
 } from "./integrations/worktree-change-feed.ts";
+import { AI_GATEWAY_ID } from "./plugins/univer-agent.ts";
 
 // Re-export Durable Objects
 export { DshHost, DshHost as ChatAgent } from "./project/dsh-host.ts";
@@ -20,8 +22,30 @@ export interface Env {
   WorkspaceDO: DurableObjectNamespace;
   DB: D1Database;
   BLOB_BUCKET?: R2Bucket;
-  AI?: any;
+  AI?: {
+    run: (
+      model: string,
+      input: unknown,
+      options?: {
+        gateway: { id: string };
+        stream?: boolean;
+        skipCache?: boolean;
+        cacheKey?: string;
+        cacheTtl?: number;
+        metadata?: {
+          product: string;
+          unitId: string;
+          turnId: string;
+          actorUserId: string;
+          step: string;
+        };
+      }
+    ) => Promise<any>;
+    aiGatewayLogId?: string | null;
+  };
   ASSETS?: Fetcher;
+  BROWSER?: Fetcher;
+  LOADER?: WorkerLoader;
 }
 
 let dbBooted = false;
@@ -84,7 +108,26 @@ export default {
       if (pathname === "/healthz") {
         return applyCorsHeaders(
           request,
-          new Response(JSON.stringify({ status: "ok", edge: "cloudflare-workers", time: Date.now() }), {
+          new Response(
+            JSON.stringify({
+              status: "ok",
+              edge: "cloudflare-workers",
+              time: Date.now(),
+              ai: env.AI ? "ok" : "off",
+              browser: env.BROWSER ? "ok" : "off"
+            }),
+            {
+              status: 200,
+              headers: { "Content-Type": "application/json" }
+            }
+          )
+        );
+      }
+
+      if (pathname === "/healthz.ai") {
+        return applyCorsHeaders(
+          request,
+          new Response(JSON.stringify({ status: "ok", gateway: AI_GATEWAY_ID }), {
             status: 200,
             headers: { "Content-Type": "application/json" }
           })
@@ -112,7 +155,9 @@ export default {
       }
 
       // 5. WebSocket Mux & Realtime endpoints routed to ChatAgent Durable Object
+      const isUniverFile = pathname === "/uf" || pathname.startsWith("/uf/");
       if (
+        isUniverFile ||
         pathname === "/api/remote.mux" ||
         pathname === WORKTREE_CHANGE_FEED_PATH ||
         pathname.startsWith("/agents/") ||
@@ -121,9 +166,52 @@ export default {
         pathname === "/api/status" ||
         pathname.startsWith("/api/actions/")
       ) {
+        let forwarded = request;
+        const needsActor =
+          isUniverFile ||
+          pathname.startsWith("/universer-api/") ||
+          pathname.startsWith("/agents/");
+        const isWebSocket = request.headers.get("Upgrade")?.toLowerCase() === "websocket";
+        if (needsActor && env.DB) {
+          const cpDb = new ControlPlaneDb(env.DB);
+          const session = await resolveGatewayContext(request, cpDb);
+          if (isUniverFile && !session.currentUser) {
+            return applyCorsHeaders(
+              request,
+              new Response(JSON.stringify({ error: { message: "Authentication required" } }), {
+                status: 401,
+                headers: { "Content-Type": "application/json; charset=utf-8" }
+              })
+            );
+          }
+          if (isWebSocket) {
+            try {
+              stripClientActorHeaders(request.headers);
+              if (session.currentUser) {
+                request.headers.set("x-workspace-actor-id", session.currentUser.id);
+                request.headers.set("x-workspace-actor-name", session.currentUser.display_name);
+                request.headers.set("x-workspace-user-id", session.currentUser.id);
+                request.headers.set("x-workspace-user-name", session.currentUser.display_name);
+              }
+            } catch {
+              /* Request headers may be immutable; Comb identity comes from the session ticket. */
+            }
+            forwarded = request;
+          } else if (session.currentUser) {
+            forwarded = attachActorHeaders(request, session.currentUser);
+          }
+        } else if (isUniverFile && !env.DB) {
+          return applyCorsHeaders(
+            request,
+            new Response(JSON.stringify({ error: { message: "Authentication required" } }), {
+              status: 401,
+              headers: { "Content-Type": "application/json; charset=utf-8" }
+            })
+          );
+        }
         const id = env.ChatAgent.idFromName("univer_collab");
         const stub = env.ChatAgent.get(id);
-        const res = await stub.fetch(request);
+        const res = await stub.fetch(forwarded);
         return applyCorsHeaders(request, res);
       }
 
@@ -158,7 +246,9 @@ export default {
         pathname.startsWith("/api/") ||
         pathname.startsWith("/auth/") ||
         pathname.startsWith("/universer-api/") ||
-        pathname.startsWith("/agents/")
+        pathname.startsWith("/agents/") ||
+        pathname === "/uf" ||
+        pathname.startsWith("/uf/")
       ) {
         return applyCorsHeaders(
           request,

@@ -1,0 +1,43 @@
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { id } from "./internal-core-endo.js";
+import { Gs } from "./boards-board-connector-label-style.js";
+function Ks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464430) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464430 ? Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464430) : undefined;
+}
+const qs = {
+  id: "board.command.set-page-background",
+  type: CommandType.COMMAND,
+  handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464432, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433) => {
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.background && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.background["source"].trim().length === 0) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464434 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464432.get(IUniverInstanceService).getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.unitId, UniverInstanceType.UNIVER_BOARD),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464435 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464434 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464434.getPage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.subUnitId);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464434 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464435) return false;
+    let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB155 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.unitId,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.subUnitId,
+        background: Ks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.background)
+      },
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB156 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.unitId,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.subUnitId,
+        background: Ks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464435.background)
+      };
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464432.get(ICommandService).syncExecuteCommand(Gs.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB155) ? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464432.get(IUndoRedoService).pushUndoRedo({
+      unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464433.unitId,
+      redoMutations: [{
+        id: Gs.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB155
+      }],
+      undoMutations: [{
+        id: Gs.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB156
+      }]
+    }), true) : false;
+  }
+};
+export { qs as SetBoardPageBackgroundCommand };

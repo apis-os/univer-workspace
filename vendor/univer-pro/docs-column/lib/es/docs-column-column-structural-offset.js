@@ -1,0 +1,12 @@
+import { ColumnLayoutType, ColumnResponsiveType, CommandType, DataStreamTreeTokenType, DependentOn, DocumentFlavor, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, TableAlignmentType, TableRowHeightRule, TableSizeType, TableTextWrapType, TextX, Tools, UniverInstanceType, containsInteriorInsertionOffset, createParagraphId, createSectionId, generateRandomId, getBlockRangeInterval, getColumnGroupRangeInterval, getTableRangeInterval, merge, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, consumeContentInsertRange } from "@univerjs/docs";
+import { getDocsTableRenderViewport } from "@univerjs/engine-render";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { O } from "./docs-column-column-data-stream-tree-token-type.js";
+const tn = new Set([O.COLUMN_GROUP_START, O.COLUMN_START, O.COLUMN_END, O.COLUMN_GROUP_END]);
+function rn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461204, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461205) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461206;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461207 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461206 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461204.body) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461206 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461206.dataStream) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461206[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461205];
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461207 != null && tn.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461207);
+}
+export { rn as isColumnStructuralOffset };

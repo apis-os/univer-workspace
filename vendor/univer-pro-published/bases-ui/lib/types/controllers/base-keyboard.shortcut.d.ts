@@ -1,0 +1,11 @@
+import type { IContextService } from '@univerjs/core';
+import type { IShortcutItem } from '@univerjs/ui';
+import type { IBaseKeyboardOperationParams } from '../commands/operations/keyboard.operation';
+export declare const FOCUSING_BASE = "FOCUSING_BASE";
+export declare const BASE_KEYBOARD_INPUT_ACTIVE = "BASE_KEYBOARD_INPUT_ACTIVE";
+export declare function whenBaseFocused(contextService: IContextService): boolean;
+export declare const BASE_KEYBOARD_SHORTCUTS: IShortcutItem<IBaseKeyboardOperationParams>[];
+export declare const BASE_UNDO_REDO_SHORTCUTS: IShortcutItem[];
+export declare const BASE_SHORTCUTS: IShortcutItem[];
+export declare function resolveBaseKeyboardAction(event: Pick<KeyboardEvent, 'altKey' | 'ctrlKey' | 'isComposing' | 'key' | 'metaKey' | 'shiftKey'>): IBaseKeyboardOperationParams | null;
+export declare function whenBaseShortcutEvent(event: KeyboardEvent): boolean;

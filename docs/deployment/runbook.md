@@ -186,7 +186,16 @@ curl -s -I http://localhost:8790/
 To publish the entire edge stack live to Cloudflare:
 
 ```bash
-pnpm exec wrangler deploy
+pnpm --filter @univerjs/univer-workspace build:web
+npx wrangler@4.130.0 deploy
+```
+
+This tree does not pin `wrangler` in the workspace `package.json`. Use Wrangler **4.130.0** (same pin as leftover CI). Production origin: `https://univer-workspace.apisos.workers.dev`.
+
+Then smoke:
+
+```bash
+EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev node scripts/edge-smoke.mjs
 ```
 
 **Deployment Output:**
@@ -222,6 +231,22 @@ Monitor:
 - **DO Storage Operations** (`storage.sql` read/write latency)
 - **CPU Time per Invocation** (target: < 5ms average)
 
+### AI Gateway
+
+Workers AI inference is routed through AI Gateway id `default` (`AI_GATEWAY_ID`). Smoke can assert `GET /healthz.ai` JSON `{ "gateway": "default" }`.
+
+- Tool-calling runs use `stream: false` and `skipCache: true`. LLM tool writes go through the same `recordTool` path as regex edits so they `broadcastCollab`.
+- Final text streams with `stream: true` and **no** `tools` (never `stream` + `tools` together).
+- Prompt `Explain the Q3 forecast in one sentence` (and canned full-sheet explain) skips the uncached tool loop and runs cached non-stream inference (`skipCache: false`, `cacheKey: "demo:explain-q3"`, `cacheTtl: 3600`, `returnRawResponse: true`) so `/turns` can forward `cf-aig-cache-status`. Streaming is not cacheable on this Gateway.
+- Live models: `@cf/meta/llama-3.3-70b-instruct-fp8-fast`, then `@cf/meta/llama-3.1-8b-instruct`. Do not call `@cf/openai/gpt-oss-120b` on the live path.
+- Gateway metadata is at most five keys: `product` (`univer-workspace`), `unitId`, `turnId`, `actorUserId` (prompting human, not `agent_workspace`), `step` (`tool` | `text` | `explain`).
+- `Accept: text/event-stream` streams turn events immediately; JSON remains the default for CLI.
+
+```bash
+curl -s http://localhost:8790/healthz.ai
+curl -s https://univer-workspace.apisos.workers.dev/healthz.ai
+```
+
 ---
 
 ## 7. Disaster Recovery & Troubleshooting
@@ -236,3 +261,39 @@ Monitor:
 
 ### Issue: D1 Database Cold-Start Migration
 **Behavior**: On the first request to a newly deployed environment, `src/control-plane/schema.ts` initializes the schema and seeds the `admin` user automatically. No manual SQL migration files are required for bootstrapping.
+
+---
+
+## 8. Live origin proof (T9)
+
+Origin: `https://univer-workspace.apisos.workers.dev`  
+Worker version: `dfa0a416-0627-4a43-b1ef-d82c702f075e` (`npx wrangler@4.130.0 deploy`; `ai` + `browser` + `LOADER` bindings).
+
+```bash
+pnpm --filter @univerjs/univer-workspace build:web
+pnpm exec wrangler deploy
+EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev node scripts/edge-smoke.mjs
+EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cli-edge-proof.mjs
+```
+
+Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot PNG ≥4000B after `POST /uf/:fileKey`.
+
+Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9b-comb"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
+
+### Proved on this deploy
+
+- [x] `GET /healthz` → `{ status: "ok", ai: "ok", browser: "ok" }`
+- [x] `GET /healthz.ai` → `{ gateway: "default" }`
+- [x] Avery password login + `POST /agents/unit_welcome_sheet/turns` (`Set A1 to Hello from AI`) returns `rev`
+- [x] `POST /uf/d29ya3NwYWNlLnVuaXZlcg` then `GET .../units/unit_welcome_sheet/inspect?range=E2` → 200
+- [x] Explain cache: this deploy smoke `MISS` then `HIT` on `demo:explain-q3:t9b-comb` (not invented; not prior warm keys)
+- [x] `/uf` screenshot 200 PNG length 5791 (≥4000; real sheet capture)
+- [x] CLI proof execute → inspect E2 `f=SUM(B2:D2)` → screenshot 200 → worktree ready → curl `/uf` 200
+- [x] Headed `/demo` shows Q3 grid; `univer-sheet-main-canvas_unit_welcome_sheet` 806×651 (exact id `univer-sheet-main-canvas` is suffixed)
+- [x] 90-second two-user click-through — canvas, in-grid D3, Present/Follow, Fill PNG card, What-if Merge, History names, formula inspector, and same-cell conflict toast observed
+- [x] Present / Follow — clicked `[data-demo="live-share-present"]` label Present and `[data-demo="live-share-follow"]` label Follow
+- [x] Formula inspector — palette Inspect formula; dialog `f=SUM(B2:D2)`
+- [x] Same-cell conflict toast — both D3 typed in-grid via the name box (overlapping 181/182/183); sonner `Collaboration conflict: someone else edited the same cells.` on Avery and Jordan (Comb HUD `json`/`Synced`, observed on T9b headed Avery+Jordan)
+- [x] What-if comparison + Merge — palette What-if +10% Sep → `/worktrees?...&demo=what-if`; Confirm merge clicked twice (demo trunk execute, labeled not a worktree `/merge`)
+- [x] History overlay names Avery / Jordan / Workspace Agent — History vs Live Comb → `/worktrees?...&demo=history`; names mapped from writers, not Administrator
+- [x] `/render` screenshot card PNG on Fill — `img[alt="Q3 Forecast after agent fill"]` 1280×800 `srcLen` 7750

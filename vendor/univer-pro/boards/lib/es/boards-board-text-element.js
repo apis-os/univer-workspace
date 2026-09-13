@@ -1,0 +1,41 @@
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { ia } from "./boards-board-text-element-default-size.js";
+import { Qi, id } from "./internal-core-endo.js";
+import { M } from "./boards-board-element-type.js";
+import { mi } from "./boards-board-shape-text-document.js";
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F5(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554) {
+  let var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.horizontal ?? true,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463555 = ia(var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33),
+    var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB45 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.text ?? "",
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463556 = Qi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.textStyle),
+    var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB123 = {
+      id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.id ?? generateRandomId(6),
+      type: M.Text,
+      parentId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.parentId,
+      laneId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.laneId,
+      text: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB45,
+      textData: mi({
+        text: var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB45,
+        horizontalAlign: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.horizontalAlign ?? HorizontalAlign.LEFT,
+        textStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463556,
+        verticalAlign: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.verticalAlign ?? VerticalAlign.TOP,
+        wrapStrategy: WrapStrategy.CLIP
+      }),
+      transform: {
+        left: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.left,
+        top: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.top,
+        width: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.width ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463555.width,
+        height: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463554.height ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463555.height,
+        rotation: 0
+      }
+    };
+  return var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 || (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB123.custom = {
+    horizontal: var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33
+  }), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB123;
+}
+export { fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F5 as createBoardTextElement };

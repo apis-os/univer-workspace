@@ -1,0 +1,24 @@
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartResourceRuntimeService, DEFAULT_CHART_RESOURCE_HEADER_ROW, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, UniverChartPlugin, buildChartDataSetFromValues, buildChartPreviewData, buildOrientedChartDataSet, chartConfigInterpreter, describeChartModel, isInlineChartDataSource, isReferencedChartDataSource, toChartCreateConfigSnapshot, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, PositionedObjectLayoutType, Tools, UniverInstanceType, WrapTextType, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { IDocDrawingAdapterService, IDocDrawingService, InsertDocDrawingCommand, SetDocDrawingArrangeCommand, UniverDocsDrawingPlugin } from "@univerjs/docs-drawing";
+import { filter, firstValueFrom } from "rxjs";
+import { RichTextEditingMutation, buildDocTransform, normalizeTextRange } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { q } from "./docs-chart-valid-optional-doc-chart-size.js";
+import { J } from "./docs-chart-doc-chart-drawing.js";
+function Pe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463) {
+  q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463.width), q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463.height);
+  let {
+    chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464,
+    drawingId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465,
+    injector: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466,
+    unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467
+  } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462;
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466.get(ICommandService).syncExecuteCommand(J.id, {
+    unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467,
+    drawingId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465,
+    chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464,
+    layout: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463
+  })) throw Error('Failed to update document chart layout "' + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464 + "\x22.");
+}
+export { Pe as updateDocumentChartLayout };

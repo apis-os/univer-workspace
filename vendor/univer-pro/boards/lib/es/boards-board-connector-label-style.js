@@ -1,0 +1,118 @@
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { fs, id } from "./internal-core-endo.js";
+import { L } from "./boards-iboard-element.js";
+import { M } from "./boards-board-element-type.js";
+import { Ka, qa } from "./boards-board-connector-labels.js";
+import { Ja } from "./boards-board-connector-label.js";
+function Bs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464382, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464384 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464382 ?? {});
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.fill === null ? delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464384.fill : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.fill !== undefined && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464384.fill = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.fill)), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.stroke === null ? delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464384.stroke : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.stroke !== undefined && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464384.stroke = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.stroke)), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.interruptLine !== undefined && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464384.interruptLine = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.interruptLine), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.lineGap !== undefined && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464384.lineGap = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464383.lineGap), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464384;
+}
+const Vs = {
+    id: "board.command.set-connector-label-style",
+    type: CommandType.COMMAND,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464388, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389) => {
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.style || typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.style != "object" || Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.style) || "lineBreak" in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.style) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464390 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464388.get(L).getElementByParam(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464391 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464390 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464390.element;
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464391 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464391.type !== M.Connector) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464392 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.labelId === undefined ? Ka(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464391.connectorData)[0] : Ka(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464391.connectorData).find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461240 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461240.id === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.labelId);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464392) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464393 = Ja(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464391.connectorData, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464392.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461241 => ({
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461241,
+        style: Bs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461241.style, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.style)
+      }));
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464393 ? fs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464388, {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.unitId,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.subUnitId,
+        updates: [{
+          elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464389.elementId,
+          element: {
+            ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464391,
+            connectorData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464393
+          }
+        }]
+      }) : false;
+    }
+  },
+  Hs = {
+    id: "board.command.set-connector-label-text",
+    type: CommandType.COMMAND,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464400, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401) => {
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.content === undefined) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464402 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464400.get(L).getElementByParam(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464403 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464402 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464402.element;
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464403 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464403.type !== M.Connector) return false;
+      let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A182 = [...Ka(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464403.connectorData)],
+        var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D247 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.labelId === undefined ? 0 : var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A182.findIndex(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461242 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461242.id === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.labelId);
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.labelId !== undefined && var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D247 < 0) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464404 = var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A182[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D247],
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB149 = {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464404,
+          id: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464404 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464404.id) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.labelId ?? generateRandomId(6),
+          content: Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.content)
+        };
+      return var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D247 < var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A182.length ? var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A182[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D247] = var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB149 : var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A182.push(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB149), fs(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464400, {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.unitId,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.subUnitId,
+        updates: [{
+          elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464401.elementId,
+          element: {
+            ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464403,
+            connectorData: qa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464403.connectorData, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A182)
+          }
+        }]
+      });
+    }
+  },
+  Us = {
+    id: "board.mutation.set-name",
+    type: CommandType.MUTATION,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464410, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464411) => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464412 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464410.get(IUniverInstanceService).getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464411.unitId, UniverInstanceType.UNIVER_BOARD);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464412 ? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464412.setName(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464411.name), true) : false;
+    }
+  },
+  Ws = {
+    id: "board.command.set-name",
+    type: CommandType.COMMAND,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464416, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464417) => {
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464417) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464418 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464416.get(IUniverInstanceService).getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464417.unitId, UniverInstanceType.UNIVER_BOARD);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464418) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464419 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464416.get(ICommandService),
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB151 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464417.unitId,
+          name: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464417.name
+        },
+        var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB152 = {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464417.unitId,
+          name: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464418.getSnapshot().name
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464419.syncExecuteCommand(Us.id, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB151) ? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464416.get(IUndoRedoService).pushUndoRedo({
+        unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464417.unitId,
+        redoMutations: [{
+          id: Us.id,
+          params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB151
+        }],
+        undoMutations: [{
+          id: Us.id,
+          params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB152
+        }]
+      }), true) : false;
+    }
+  },
+  Gs = {
+    id: "board.mutation.set-page-background",
+    type: CommandType.MUTATION,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464424, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464425) => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464426 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464424.get(IUniverInstanceService).getUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464425.unitId, UniverInstanceType.UNIVER_BOARD);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464426 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464426.setPageBackground(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464425.subUnitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464425.background) : false;
+    }
+  };
+export { Vs as SetBoardConnectorLabelStyleCommand, Hs as SetBoardConnectorLabelTextCommand, Us as SetBoardNameMutation, Ws as SetBoardNameCommand, Gs as SetBoardPageBackgroundMutation };

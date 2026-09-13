@@ -1,0 +1,9 @@
+import { etc, hashes, verify } from "@noble/ed25519";
+import { sha512 } from "@noble/hashes/sha2.js";
+import { Disposable, IConfigService, IUniverInstanceService, Inject, Injector, LifecycleService, Plugin, SHEET_EDITOR_UNITS, UniverInstanceType, merge } from "@univerjs/core";
+import { IRenderManagerService } from "@univerjs/engine-render";
+import { take } from "rxjs";
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202 = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669.DEV = 1] = "DEV", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669.NO_COMMERCIAL = 2] = "NO_COMMERCIAL", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669.COMMERCIAL = 3] = "COMMERCIAL", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669;
+}({});
+export { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202 as ReleaseType };

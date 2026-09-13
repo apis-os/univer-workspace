@@ -44,7 +44,9 @@ describe("Univer history protocol helpers", () => {
     assert.equal(body.entities.datas[body.historyIds[0]].endRevision, 3);
     assert.equal(body.entities.datas[body.historyIds[0]].startRevision, 2);
     assert.equal(body.entities.datas[body.historyIds[1]].startRevision, 1);
-    assert.equal(body.entities.users.user_admin.name, "Administrator");
+    assert.equal(body.entities.users.user_admin.name, "Avery Chen");
+    assert.equal(body.entities.users.user_jordan.name, "Jordan Lee");
+    assert.equal(body.entities.users.agent_workspace.name, "Workspace Agent");
   });
 
   test("paginates with lastLabel and lists creators", () => {
@@ -60,7 +62,12 @@ describe("Univer history protocol helpers", () => {
 
     const creators = buildHistoryCreatorsBody(unit, []) as any;
     assert.equal(creators.error.code, 1);
-    assert.equal(creators.creators[0].userId, "user_admin");
+    const creatorNames = creators.creators.map((row: { userId: string; name: string }) => [row.userId, row.name]);
+    assert.deepEqual(creatorNames, [
+      ["user_admin", "Avery Chen"],
+      ["user_jordan", "Jordan Lee"],
+      ["agent_workspace", "Workspace Agent"]
+    ]);
   });
 
   test("returns changeset range for history details", () => {

@@ -43,6 +43,31 @@ describe("parseWorktreeDashboardSearch", () => {
       view: "comparison",
     });
   });
+
+  it("keeps the demo comparison overlay query", () => {
+    expect(
+      parseWorktreeDashboardSearch({
+        worktree: "wt_what_if_local",
+        unit: "unit_welcome_sheet",
+        view: "comparison",
+        demo: "what-if",
+      })
+    ).toEqual({
+      worktree: "wt_what_if_local",
+      unit: "unit_welcome_sheet",
+      view: "comparison",
+      demo: "what-if",
+    });
+    expect(
+      parseWorktreeDashboardSearch({
+        view: "comparison",
+        demo: "history",
+      })
+    ).toEqual({
+      view: "comparison",
+      demo: "history",
+    });
+  });
 });
 
 describe("reviewViewForOpenMode", () => {

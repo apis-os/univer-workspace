@@ -1,0 +1,470 @@
+import { BoardsHistoryDiffService as var_core_value_sigBB57, UniverBoardsHistoryPlugin as var_core_value_sig7C4A } from "@univerjs-pro/boards-history";
+import { BoardWorkbench as var_core_value_sigE799, IBoardSettingsMenuContributionService as var_core_value_sigB601, UniverBoardsUIPlugin as var_core_value_sig8B71, getBoardElementRenderObjectKey as var_core_value_sigAEFB } from "@univerjs-pro/boards-ui";
+import { AuthzIoHttpService as var_core_value_sig826B, COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as var_core_value_sigCF89, CollaborationController as var_core_value_sig00CB, CollaborationImageIoService as var_core_value_sig77EE, DataLoaderService as var_core_value_sig9F76, SnapshotServerOverHTTPService as var_core_value_sigB008, UniverCollaborationClientPlugin as var_core_value_sig8721 } from "@univerjs-pro/collaboration-client";
+import { LS_CONFIG_KEY as var_core_value_sig08BA, UniverLicensePlugin as var_core_value_sigDBB5 } from "@univerjs-pro/license";
+import { CommandType as var_core_value_sigCFAC, DependentOn as var_core_value_sig237B, Disposable as var_core_value_sigFEAB, DisposableCollection as var_core_value_sigE347, IAuthzIoService as var_core_value_sig3C5B, ICommandService as var_core_value_sig200B, IConfigService as var_core_value_sig3863, IImageIoService as var_core_value_sigC97C, ILogService as var_core_value_sigC4B1, IUniverInstanceService as var_core_value_sig1BD9, Inject as var_core_value_sigE43E, Injector as var_core_value_sigA937, LocaleService as var_core_value_sigCAD5, Plugin as var_core_value_sigE503, ThemeService as var_core_value_sig48DD, Univer as var_core_value_sig5E6A, UniverInstanceType as var_core_value_sigB7FC, merge as var_core_value_sig9CD9, registerDependencies as var_core_value_sigFD0C } from "@univerjs/core";
+import { HistoryIcon as var_core_value_sig849B } from "@univerjs/icons";
+import { AddBoardElementMutation as var_core_value_sig5F1A, AddBoardElementOperation as var_core_value_sigB455, AddBoardElementsOperation as var_core_value_sig5241, BeginBoardContainerOperation as var_core_value_sigC6E5, BeginBoardSwimlaneOperation as var_core_value_sigCEFB, BoardElementType as var_core_value_sig1537, CommitBoardContainerTransformOperation as var_core_value_sigE4C6, DisbandBoardContainerOperation as var_core_value_sig4313, FitBoardContainerToContentOperation as var_core_value_sigFC87, InsertBoardChartCommand as var_core_value_sig156F, InsertBoardTableOperation as var_core_value_sigDD51, NormalizeBoardConnectorRoutingCommand as var_core_value_sigF057, RemoveBoardConnectorLabelCommand as var_core_value_sig72F6, RemoveBoardElementCommand as var_core_value_sig9FBA, RemoveBoardElementMutation as var_core_value_sigFE01, RemoveBoardElementOperation as var_core_value_sigA2CE, RemoveBoardElementsOperation as var_core_value_sig1975, RemoveBoardSwimlaneLaneOperation as var_core_value_sig6EA1, ReorderBoardElementsOperation as var_core_value_sig029F, ReorderBoardObjectListElementOperation as var_core_value_sig3767, ReparentBoardElementsOperation as var_core_value_sig670B, SetBoardConnectorLabelStyleCommand as var_core_value_sig6912, SetBoardConnectorLabelTextCommand as var_core_value_sigE235, SetBoardContainerAutoResizeOperation as var_core_value_sig7664, SetBoardContainerMembershipLockOperation as var_core_value_sig2281, SetBoardElementsMetadataOperation as var_core_value_sig5E86, SetBoardNameCommand as var_core_value_sig6998, SetBoardPageBackgroundCommand as var_core_value_sigF639, SetBoardSwimlaneLaneSizeOperation as var_core_value_sigEAE5, SetBoardSwimlaneLanesOperation as var_core_value_sigE94C, SetBoardThemeOperation as var_core_value_sig6D47, UniverBoardsPlugin as var_core_value_sigCB82, UpdateBoardElementCommand as var_core_value_sigCF4E, UpdateBoardElementMutation as var_core_value_sig6CAD, UpdateBoardElementsCommand as var_core_value_sig8CF5, WrapBoardElementsInContainerOperation as var_core_value_sigDDD7, getBoardsEmptySnapshot as var_core_value_sigB2CE } from "@univerjs-pro/boards";
+import { ChangeBoardChartDataSourceCommand as var_core_value_sig443C, DuplicateBoardChartDataSourceCommand as var_core_value_sig39B1, UniverBoardsChartPlugin as var_core_value_sig210D, UpdateBoardChartConfigCommand as var_core_value_sigB4B4, UpdateBoardChartDataSourceCommand as var_core_value_sigD407 } from "@univerjs-pro/boards-chart";
+import { UniverBoardsChartUIPlugin as var_core_value_sig63F3 } from "@univerjs-pro/boards-chart-ui";
+import { AddMindMapChildOperation as var_core_value_sig6A71, AddMindMapSiblingOperation as var_core_value_sig3BF6, ChangeMindMapBranchLineTypeOperation as var_core_value_sig38CE, ChangeMindMapLayoutOperation as var_core_value_sig62B7, DeleteMindMapNodeOperation as var_core_value_sig37A8, DetachMindMapNodeOperation as var_core_value_sigA90D, ImportMindMapOpmlOperation as var_core_value_sig7A3C, InsertBoardMindMapOperation as var_core_value_sig0511, LayoutMindMapOperation as var_core_value_sig1F44, PasteMindMapAsNewMindMapOperation as var_core_value_sigCB04, PasteMindMapNodeOperation as var_core_value_sig947E, PromoteMindMapNodeOperation as var_core_value_sig4545, ReflowMindMapCommand as var_core_value_sigF39A, ReparentMindMapNodeOperation as var_core_value_sigF79C, SetMindMapElementMutation as var_core_value_sig2E54, ToggleMindMapNodeCollapseOperation as var_core_value_sig7658, TranslateMindMapOperation as var_core_value_sigDCF5, UniverBoardsMindPlugin as var_core_value_sigC786, UpdateMindMapIncomingConnectorOperation as var_core_value_sigC0D9, UpdateMindMapNodeOperation as var_core_value_sigF051, UpdateMindMapNodesOperation as var_core_value_sig5825, getMindMapContainerMeta as var_core_value_sig4EB7, getMindMapNodeMeta as var_core_value_sig73AF } from "@univerjs-pro/boards-mind";
+import { UniverBoardsMindUIPlugin as var_core_value_sig548A } from "@univerjs-pro/boards-mind-ui";
+import { DeleteBoardTableColumnsCommand as var_core_value_sigE026, DeleteBoardTableRowsCommand as var_core_value_sig339E, InsertBoardTableColumnsCommand as var_core_value_sig7550, InsertBoardTableRowsCommand as var_core_value_sig2983, MergeBoardTableCellsCommand as var_core_value_sigE1B0, MoveBoardTableColumnsCommand as var_core_value_sigD4FF, MoveBoardTableRowsCommand as var_core_value_sig1E5B, RemoveBoardTableCommand as var_core_value_sigB680, ResizeBoardTableColumnsCommand as var_core_value_sig1F64, ResizeBoardTableRowsCommand as var_core_value_sigDD1C, SetBoardTableBorderPresetCommand as var_core_value_sig2C39, SetBoardTableCellStyleCommand as var_core_value_sigB7D1, SetBoardTableCellTextCommand as var_core_value_sig64F0, UniverBoardsTablePlugin as var_core_value_sig85B1, UnmergeBoardTableCellsCommand as var_core_value_sig3141, UpdateBoardTableCommand as var_core_value_sig2162 } from "@univerjs-pro/boards-table";
+import { UniverBoardsTableUIPlugin as var_core_value_sig2EAD } from "@univerjs-pro/boards-table-ui";
+import { CollaborationEvent as var_core_value_sig6774, ISnapshotServerService as var_core_value_sig340D, SnapshotService as var_core_value_sig82D4, UniverCollaborationPlugin as var_core_value_sigBDE4 } from "@univerjs-pro/collaboration";
+import { UniverDocsLatexPlugin as var_core_value_sig7DF1 } from "@univerjs-pro/docs-latex";
+import { UniverDocsLatexUIPlugin as var_core_value_sigDC86 } from "@univerjs-pro/docs-latex-ui";
+import { HistoryRestoreService as var_core_value_sig0B0C, HistoryUnitAdapterRegistryService as var_core_value_sigA39E, UniverEditHistoryPlugin as var_core_value_sigBBEE, isHistoryRestoreAcknowledgement as var_core_value_sig011D } from "@univerjs-pro/edit-history";
+import { UniverInkPlugin as var_core_value_sig6167 } from "@univerjs-pro/ink";
+import { UniverInkUIPlugin as var_core_value_sig65A1 } from "@univerjs-pro/ink-ui";
+import { UniverDocsPlugin as var_core_value_sig7F19 } from "@univerjs/docs";
+import { UniverDocsUIPlugin as var_core_value_sig7827 } from "@univerjs/docs-ui";
+import { UniverDrawingPlugin as var_core_value_sig652C } from "@univerjs/drawing";
+import { UniverRenderEnginePlugin as var_core_value_sig7E32 } from "@univerjs/engine-render";
+import { UniverNetworkPlugin as var_core_value_sig4C07 } from "@univerjs/network";
+import { BuiltInUIPart as var_core_value_sig79AB, IUIPartsService as var_core_value_sig8E74, UI_PLUGIN_CONFIG_KEY as var_core_value_sig104C, UniverUIPlugin as var_core_value_sig841D, connectInjector as var_core_value_sig90CB } from "@univerjs/ui";
+import { Subject as var_core_value_sigBDF5, filter as var_core_value_sigACC6, firstValueFrom as var_core_value_sig1614, takeUntil as var_core_value_sig85C3, timeout as var_core_value_sigB996 } from "rxjs";
+import { HistoryActionSummaryService as var_core_value_sig4BBA, HistoryCanvasHighlightService as var_core_value_sig6201, HistoryRenderAdapterRegistryService as var_core_value_sig5151, UniverEditHistoryUIPlugin as var_core_value_sigB542 } from "@univerjs-pro/edit-history-ui";
+import { jsx as var_core_value_sigBB6C } from "react/jsx-runtime";
+const F = "boards-history-ui.config",
+  I = {
+    historyServerUrl: "/universer-api/history"
+  };
+var L = "@univerjs-pro/boards-history-ui",
+  R = "1.0.0-insiders.20260907-70fc579";
+function ln() {
+  return var_core_value_sigBB6C(var_core_value_sigE799, {
+    embedded: true,
+    fitOnMount: true
+  });
+}
+function z(var_core_value_sigB512, var_core_value_sigF2E6) {
+  return function (var_core_value_sig4383, var_core_value_sig186C) {
+    var_core_value_sigF2E6(var_core_value_sig4383, var_core_value_sig186C, var_core_value_sigB512);
+  };
+}
+function B(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A) {
+  var var_core_value_sig3E68 = arguments.length,
+    var_core_value_sigF4C5 = var_core_value_sig3E68 < 3 ? var_core_value_sigB744 : var_core_value_sigE68A === null ? var_core_value_sigE68A = Object.getOwnPropertyDescriptor(var_core_value_sigB744, var_core_value_sigEAE2) : var_core_value_sigE68A,
+    var_core_value_sig5410;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigF4C5 = Reflect.decorate(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A);else {
+    for (var var_core_value_sig492F = var_core_value_sig34C8.length - 1; var_core_value_sig492F >= 0; var_core_value_sig492F--) (var_core_value_sig5410 = var_core_value_sig34C8[var_core_value_sig492F]) && (var_core_value_sigF4C5 = (var_core_value_sig3E68 < 3 ? var_core_value_sig5410(var_core_value_sigF4C5) : var_core_value_sig3E68 > 3 ? var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5) : var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2)) || var_core_value_sigF4C5);
+  }
+  return var_core_value_sig3E68 > 3 && var_core_value_sigF4C5 && Object.defineProperty(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5), var_core_value_sigF4C5;
+}
+let V = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sigD955, var_core_value_sig48BD) {
+    super(), this.disposeWithMe(var_core_value_sig48BD.registerComponent(var_core_value_sig79AB.CONTENT, () => var_core_value_sig90CB(ln, var_core_value_sigD955)));
+  }
+};
+V = B([z(0, var_core_value_sigE43E(var_core_value_sigA937)), z(1, var_core_value_sig8E74)], V);
+const un = new Map([[var_core_value_sig6998.id, "boards-history-ui.action.renameBoard"], [var_core_value_sigF639.id, "boards-history-ui.action.updateBackground"], [var_core_value_sig6D47.id, "boards-history-ui.action.updateTheme"], [var_core_value_sigB455.id, "boards-history-ui.action.insertObject"], [var_core_value_sig5241.id, "boards-history-ui.action.insertObject"], [var_core_value_sig9FBA.id, "boards-history-ui.action.deleteObject"], [var_core_value_sig1975.id, "boards-history-ui.action.deleteObject"], [var_core_value_sigCF4E.id, "boards-history-ui.action.updateObject"], [var_core_value_sig8CF5.id, "boards-history-ui.action.updateObject"], [var_core_value_sig029F.id, "boards-history-ui.action.reorderObject"], [var_core_value_sig3767.id, "boards-history-ui.action.reorderObject"], [var_core_value_sig670B.id, "boards-history-ui.action.moveObject"], [var_core_value_sig5E86.id, "boards-history-ui.action.updateObject"], [var_core_value_sigE235.id, "boards-history-ui.action.updateConnector"], [var_core_value_sig6912.id, "boards-history-ui.action.updateConnector"], [var_core_value_sig72F6.id, "boards-history-ui.action.updateConnector"], [var_core_value_sigF057.id, "boards-history-ui.action.updateConnector"], [var_core_value_sigC6E5.id, "boards-history-ui.action.insertContainer"], [var_core_value_sigDDD7.id, "boards-history-ui.action.insertContainer"], [var_core_value_sig4313.id, "boards-history-ui.action.deleteContainer"], [var_core_value_sigE4C6.id, "boards-history-ui.action.updateContainer"], [var_core_value_sigFC87.id, "boards-history-ui.action.updateContainer"], [var_core_value_sig7664.id, "boards-history-ui.action.updateContainer"], [var_core_value_sig2281.id, "boards-history-ui.action.updateContainer"], [var_core_value_sigCEFB.id, "boards-history-ui.action.insertSwimlane"], [var_core_value_sigE94C.id, "boards-history-ui.action.updateSwimlane"], [var_core_value_sigEAE5.id, "boards-history-ui.action.updateSwimlane"], [var_core_value_sig6EA1.id, "boards-history-ui.action.updateSwimlane"], [var_core_value_sig0511.id, "boards-history-ui.action.insertMindMap"], [var_core_value_sig7A3C.id, "boards-history-ui.action.insertMindMap"], [var_core_value_sigCB04.id, "boards-history-ui.action.insertMindMap"], [var_core_value_sig6A71.id, "boards-history-ui.action.insertMindMapNode"], [var_core_value_sig3BF6.id, "boards-history-ui.action.insertMindMapNode"], [var_core_value_sig947E.id, "boards-history-ui.action.insertMindMapNode"], [var_core_value_sig37A8.id, "boards-history-ui.action.deleteMindMapNode"], [var_core_value_sigF051.id, "boards-history-ui.action.updateMindMap"], [var_core_value_sig5825.id, "boards-history-ui.action.updateMindMap"], [var_core_value_sigC0D9.id, "boards-history-ui.action.updateMindMap"], [var_core_value_sig62B7.id, "boards-history-ui.action.updateMindMapLayout"], [var_core_value_sig1F44.id, "boards-history-ui.action.updateMindMapLayout"], [var_core_value_sig38CE.id, "boards-history-ui.action.updateMindMapLayout"], [var_core_value_sigF39A.id, "boards-history-ui.action.updateMindMapLayout"], [var_core_value_sigF79C.id, "boards-history-ui.action.moveMindMapNode"], [var_core_value_sig4545.id, "boards-history-ui.action.moveMindMapNode"], [var_core_value_sigA90D.id, "boards-history-ui.action.moveMindMapNode"], [var_core_value_sigDCF5.id, "boards-history-ui.action.moveMindMapNode"], [var_core_value_sig7658.id, "boards-history-ui.action.updateMindMap"], [var_core_value_sigDD51.id, "boards-history-ui.action.insertTable"], [var_core_value_sigB680.id, "boards-history-ui.action.deleteTable"], [var_core_value_sig2983.id, "boards-history-ui.action.insertTableRows"], [var_core_value_sig339E.id, "boards-history-ui.action.deleteTableRows"], [var_core_value_sig1E5B.id, "boards-history-ui.action.moveTableRows"], [var_core_value_sigDD1C.id, "boards-history-ui.action.resizeTableRows"], [var_core_value_sig7550.id, "boards-history-ui.action.insertTableColumns"], [var_core_value_sigE026.id, "boards-history-ui.action.deleteTableColumns"], [var_core_value_sigD4FF.id, "boards-history-ui.action.moveTableColumns"], [var_core_value_sig1F64.id, "boards-history-ui.action.resizeTableColumns"], [var_core_value_sigE1B0.id, "boards-history-ui.action.mergeTableCells"], [var_core_value_sig3141.id, "boards-history-ui.action.unmergeTableCells"], [var_core_value_sig64F0.id, "boards-history-ui.action.editTableCell"], [var_core_value_sigB7D1.id, "boards-history-ui.action.formatTable"], [var_core_value_sig2C39.id, "boards-history-ui.action.formatTable"], [var_core_value_sig2162.id, "boards-history-ui.action.updateTable"], [var_core_value_sig156F.id, "boards-history-ui.action.insertChart"], [var_core_value_sig443C.id, "boards-history-ui.action.updateChart"], [var_core_value_sig39B1.id, "boards-history-ui.action.updateChart"], [var_core_value_sigD407.id, "boards-history-ui.action.updateChart"], [var_core_value_sigB4B4.id, "boards-history-ui.action.updateChart"]]),
+  H = new Map([[var_core_value_sig1537.Text, {
+    insert: "boards-history-ui.action.insertTextBox",
+    update: "boards-history-ui.action.updateTextBox",
+    delete: "boards-history-ui.action.deleteTextBox"
+  }], [var_core_value_sig1537.Shape, {
+    insert: "boards-history-ui.action.insertShape",
+    update: "boards-history-ui.action.updateShape",
+    delete: "boards-history-ui.action.deleteShape"
+  }], [var_core_value_sig1537.Image, {
+    insert: "boards-history-ui.action.insertImage",
+    update: "boards-history-ui.action.updateImage",
+    delete: "boards-history-ui.action.deleteImage"
+  }], [var_core_value_sig1537.Diagram, {
+    insert: "boards-history-ui.action.insertDiagram",
+    update: "boards-history-ui.action.updateDiagram",
+    delete: "boards-history-ui.action.deleteDiagram"
+  }], [var_core_value_sig1537.Media, {
+    insert: "boards-history-ui.action.insertMedia",
+    update: "boards-history-ui.action.updateMedia",
+    delete: "boards-history-ui.action.deleteMedia"
+  }], [var_core_value_sig1537.Group, {
+    insert: "boards-history-ui.action.insertGroup",
+    update: "boards-history-ui.action.updateGroup",
+    delete: "boards-history-ui.action.deleteGroup"
+  }], [var_core_value_sig1537.Connector, {
+    insert: "boards-history-ui.action.insertConnector",
+    update: "boards-history-ui.action.updateConnector",
+    delete: "boards-history-ui.action.deleteConnector"
+  }], [var_core_value_sig1537.Table, {
+    insert: "boards-history-ui.action.insertTable",
+    update: "boards-history-ui.action.updateTable",
+    delete: "boards-history-ui.action.deleteTable"
+  }], [var_core_value_sig1537.Chart, {
+    insert: "boards-history-ui.action.insertChart",
+    update: "boards-history-ui.action.updateChart",
+    delete: "boards-history-ui.action.deleteChart"
+  }]]),
+  dn = new Set([var_core_value_sig5F1A.id, var_core_value_sigB455.id, var_core_value_sig5241.id]),
+  fn = new Set([var_core_value_sigCF4E.id, var_core_value_sig6CAD.id, var_core_value_sig8CF5.id]),
+  pn = new Set([var_core_value_sig9FBA.id, var_core_value_sigFE01.id, var_core_value_sigA2CE.id, var_core_value_sig1975.id]);
+let U = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sig429F, var_core_value_sigF62A) {
+    super(), this._localeService = var_core_value_sigF62A, this.disposeWithMe(var_core_value_sig429F.register(var_core_value_sigB7FC.UNIVER_BOARD, this));
+  }
+  resolve(var_core_value_sig8178) {
+    let var_core_value_sigE9ED = new Set(W(var_core_value_sig8178, var_core_value_sig5F1A.id).map(var_core_value_sig7524 => var_core_value_sig7524.id)),
+      var_core_value_sigB577 = hn(var_core_value_sig8178),
+      var_core_value_sig9572 = gn(var_core_value_sig8178, var_core_value_sigE9ED),
+      var_core_value_sigD873 = mn(var_core_value_sig8178),
+      var_core_value_sigA12B = [...var_core_value_sigB577, ...var_core_value_sig9572, ...var_core_value_sigD873].map(var_core_value_sig2AD8 => this._localeService["t"](var_core_value_sig2AD8)),
+      var_core_value_sigF230 = [...var_core_value_sig8178.commandIds].flatMap(var_core_value_sig2AD0 => {
+        if (var_core_value_sigB577.length > 0 && dn.has(var_core_value_sig2AD0) || var_core_value_sig9572.length > 0 && fn.has(var_core_value_sig2AD0) || var_core_value_sigD873.length > 0 && pn.has(var_core_value_sig2AD0)) return [];
+        let var_core_value_sig3EEE = un.get(var_core_value_sig2AD0);
+        return var_core_value_sig3EEE ? [this._localeService["t"](var_core_value_sig3EEE)] : [];
+      }),
+      var_core_value_sig09B8 = [...new Set([...var_core_value_sigA12B, ...var_core_value_sigF230])];
+    return var_core_value_sig09B8.length > 0 ? var_core_value_sig09B8 : var_core_value_sig8178.commandIds["has"](var_core_value_sig2E54.id) ? [this._localeService["t"]("boards-history-ui.action.updateMindMap")] : var_core_value_sig8178.commandIds["has"](var_core_value_sig5F1A.id) ? [this._localeService["t"]("boards-history-ui.action.insertObject")] : var_core_value_sig8178.commandIds["has"](var_core_value_sigFE01.id) ? [this._localeService["t"]("boards-history-ui.action.deleteObject")] : var_core_value_sig8178.commandIds["has"](var_core_value_sig6CAD.id) ? [this._localeService["t"]("boards-history-ui.action.updateObject")] : [];
+  }
+};
+U = B([z(0, var_core_value_sigE43E(var_core_value_sig4BBA)), z(1, var_core_value_sigE43E(var_core_value_sigCAD5))], U);
+function mn(var_core_value_sig8EA0) {
+  let var_core_value_sigA6F6 = var_core_value_sig8EA0.mutations["flatMap"](var_core_value_sig6F91 => {
+    var var_core_value_sigF9C7;
+    if (var_core_value_sig6F91.id !== var_core_value_sigFE01.id || !G(var_core_value_sig6F91.params)) return [];
+    if (var_core_value_sig6F91.params["elementType"] === var_core_value_sig1537.Container) return var_core_value_sig6F91.params["containerKind"] === "swimlane" ? ["boards-history-ui.action.deleteSwimlane"] : ["boards-history-ui.action.deleteContainer"];
+    let var_core_value_sig8895 = vn(var_core_value_sig6F91.params["elementType"]) ? (var_core_value_sigF9C7 = H.get(var_core_value_sig6F91.params["elementType"])) == null ? undefined : var_core_value_sigF9C7.delete : undefined;
+    return var_core_value_sig8895 ? [var_core_value_sig8895] : [];
+  });
+  return [...new Set(var_core_value_sigA6F6)];
+}
+function hn(var_core_value_sigCDDA) {
+  let var_core_value_sigE243 = W(var_core_value_sigCDDA, var_core_value_sig5F1A.id).flatMap(var_core_value_sigC80B => {
+    var var_core_value_sig284F;
+    if (var_core_value_sig4EB7(var_core_value_sigC80B)) return ["boards-history-ui.action.insertMindMap"];
+    if (var_core_value_sig73AF(var_core_value_sigC80B)) return ["boards-history-ui.action.insertMindMapNode"];
+    if (var_core_value_sigC80B.type === var_core_value_sig1537.Container) return var_core_value_sigC80B.containerData["kind"] === "swimlane" ? ["boards-history-ui.action.insertSwimlane"] : ["boards-history-ui.action.insertContainer"];
+    let var_core_value_sigE154 = (var_core_value_sig284F = H.get(var_core_value_sigC80B.type)) == null ? undefined : var_core_value_sig284F.insert;
+    return var_core_value_sigE154 ? [var_core_value_sigE154] : [];
+  });
+  return [...new Set(var_core_value_sigE243)];
+}
+function gn(var_core_value_sig74A8, var_core_value_sig21B2) {
+  let var_core_value_sigDE08 = [...W(var_core_value_sig74A8, var_core_value_sig2E54.id), ...W(var_core_value_sig74A8, var_core_value_sig6CAD.id)].filter(var_core_value_sig4632 => !var_core_value_sig21B2.has(var_core_value_sig4632.id)).flatMap(var_core_value_sig12F2 => {
+    var var_core_value_sig2259;
+    if (var_core_value_sig4EB7(var_core_value_sig12F2) || var_core_value_sig73AF(var_core_value_sig12F2)) return ["boards-history-ui.action.updateMindMap"];
+    if (var_core_value_sig12F2.type === var_core_value_sig1537.Container) return var_core_value_sig12F2.containerData["kind"] === "swimlane" ? ["boards-history-ui.action.updateSwimlane"] : ["boards-history-ui.action.updateContainer"];
+    let var_core_value_sig9E2F = (var_core_value_sig2259 = H.get(var_core_value_sig12F2.type)) == null ? undefined : var_core_value_sig2259.update;
+    return var_core_value_sig9E2F ? [var_core_value_sig9E2F] : [];
+  });
+  return [...new Set(var_core_value_sigDE08)];
+}
+function W(var_core_value_sigACCB, var_core_value_sig7F33) {
+  return var_core_value_sigACCB.mutations["flatMap"](var_core_value_sigD082 => var_core_value_sigD082.id !== var_core_value_sig7F33 || !G(var_core_value_sigD082.params) || !_n(var_core_value_sigD082.params["element"]) ? [] : [var_core_value_sigD082.params["element"]]);
+}
+function _n(var_core_value_sig0C53) {
+  if (!G(var_core_value_sig0C53) || typeof var_core_value_sig0C53.id != "string" || !G(var_core_value_sig0C53.transform)) return false;
+  switch (var_core_value_sig0C53.type) {
+    case var_core_value_sig1537.Placeholder:
+    case var_core_value_sig1537.Text:
+    case var_core_value_sig1537.Shape:
+    case var_core_value_sig1537.Image:
+    case var_core_value_sig1537.Chart:
+    case var_core_value_sig1537.Table:
+    case var_core_value_sig1537.Diagram:
+    case var_core_value_sig1537.Media:
+    case var_core_value_sig1537.Group:
+    case var_core_value_sig1537.Connector:
+    case var_core_value_sig1537.Container:
+      return true;
+    default:
+      return false;
+  }
+}
+function vn(var_core_value_sigEA04) {
+  switch (var_core_value_sigEA04) {
+    case var_core_value_sig1537.Placeholder:
+    case var_core_value_sig1537.Text:
+    case var_core_value_sig1537.Shape:
+    case var_core_value_sig1537.Image:
+    case var_core_value_sig1537.Chart:
+    case var_core_value_sig1537.Table:
+    case var_core_value_sig1537.Diagram:
+    case var_core_value_sig1537.Media:
+    case var_core_value_sig1537.Group:
+    case var_core_value_sig1537.Connector:
+    case var_core_value_sig1537.Container:
+      return true;
+    default:
+      return false;
+  }
+}
+function G(var_core_value_sig7A62) {
+  return typeof var_core_value_sig7A62 == "object" && !!var_core_value_sig7A62;
+}
+function K(var_core_value_sig8109) {
+  "@babel/helpers - typeof";
+
+  return K = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigDBB7) {
+    return typeof var_core_value_sigDBB7;
+  } : function (var_core_value_sigD0A8) {
+    return var_core_value_sigD0A8 && typeof Symbol == "function" && var_core_value_sigD0A8.constructor === Symbol && var_core_value_sigD0A8 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigD0A8;
+  }, K(var_core_value_sig8109);
+}
+function yn(var_core_value_sig7565, var_core_value_sigD4FB) {
+  if (K(var_core_value_sig7565) != "object" || !var_core_value_sig7565) return var_core_value_sig7565;
+  var var_core_value_sig3E71 = var_core_value_sig7565[Symbol.toPrimitive];
+  if (var_core_value_sig3E71 !== undefined) {
+    var var_core_value_sig01B3 = var_core_value_sig3E71.call(var_core_value_sig7565, var_core_value_sigD4FB || "default");
+    if (K(var_core_value_sig01B3) != "object") return var_core_value_sig01B3;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigD4FB === "string" ? String : Number)(var_core_value_sig7565);
+}
+function bn(var_core_value_sig7442) {
+  var var_core_value_sigDF87 = yn(var_core_value_sig7442, "string");
+  return K(var_core_value_sigDF87) == "symbol" ? var_core_value_sigDF87 : var_core_value_sigDF87 + "";
+}
+function q(var_core_value_sig9EE0, var_core_value_sigF0511, var_core_value_sig0B45) {
+  return (var_core_value_sigF0511 = bn(var_core_value_sigF0511)) in var_core_value_sig9EE0 ? Object.defineProperty(var_core_value_sig9EE0, var_core_value_sigF0511, {
+    value: var_core_value_sig0B45,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig9EE0[var_core_value_sigF0511] = var_core_value_sig0B45, var_core_value_sig9EE0;
+}
+let J = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sigF4B9, var_core_value_sig5CEE, var_core_value_sigE92A, var_core_value_sig362B, var_core_value_sig5CA5) {
+    super(), this._diffService = var_core_value_sigF4B9, this._snapshotService = var_core_value_sigE92A, this._univerInstanceService = var_core_value_sig362B, this._highlightService = var_core_value_sig5CA5, q(this, "type", var_core_value_sigB7FC.UNIVER_BOARD), q(this, "_changes", new Map()), q(this, "_changesGeneration", 0), q(this, "_loadGeneration", 0), q(this, "_loadQueue", Promise.resolve()), q(this, "_unitId", ""), this.disposeWithMe(var_core_value_sig5CEE.register(this));
+  }
+  loadRevision(var_core_value_sigE90F, var_core_value_sigEFD4) {
+    let var_core_value_sig861B = ++this._loadGeneration,
+      var_core_value_sig5237 = this._loadQueue["catch"](() => undefined).then(async () => {
+        if (var_core_value_sig861B !== this._loadGeneration) return;
+        this._getBoard(var_core_value_sigE90F) && this._univerInstanceService["disposeUnit"](var_core_value_sigE90F);
+        let var_core_value_sigBC46 = await this._snapshotService["loadBoard"](var_core_value_sigE90F, var_core_value_sigEFD4.endRevision);
+        if (var_core_value_sig861B !== this._loadGeneration) {
+          this._getBoard(var_core_value_sigE90F) === var_core_value_sigBC46 && this._univerInstanceService["disposeUnit"](var_core_value_sigE90F);
+          return;
+        }
+        this._univerInstanceService["focusUnit"](var_core_value_sigE90F);
+      });
+    return this._loadQueue = var_core_value_sig5237, var_core_value_sig5237;
+  }
+  async loadChanges(var_core_value_sigBB00, var_core_value_sig7E54) {
+    this._unitId = var_core_value_sigBB00;
+    let var_core_value_sig9A8D = ++this._changesGeneration,
+      var_core_value_sigC259 = await this._diffService["compare"](var_core_value_sigBB00, var_core_value_sig7E54);
+    var_core_value_sig9A8D === this._changesGeneration && (this._changes["clear"](), var_core_value_sigC259.forEach(var_core_value_sig3D7D => this._changes["set"](var_core_value_sig3D7D.id, var_core_value_sig3D7D)), await this._renderHighlights(var_core_value_sigBB00));
+  }
+  close() {
+    ++this._changesGeneration, ++this._loadGeneration, this._changes["clear"](), this._unitId &&= (this._highlightService["clear"](this._unitId), "");
+  }
+  _getBoard(var_core_value_sig9C9F) {
+    return this._univerInstanceService["getUnit"](var_core_value_sig9C9F, var_core_value_sigB7FC.UNIVER_BOARD) ?? null;
+  }
+  _renderHighlights(var_core_value_sigFDEA) {
+    let var_core_value_sig86D0 = this._getBoard(var_core_value_sigFDEA);
+    if (!var_core_value_sig86D0) return Promise.resolve();
+    let var_core_value_sig4CD2 = var_core_value_sig86D0.getActivePageId(),
+      var_core_value_sig48CA = Array.from(this._changes["values"]()).filter(var_core_value_sig27E5 => var_core_value_sig27E5.pageId === var_core_value_sig4CD2).map(var_core_value_sig8061 => ({
+        id: var_core_value_sig8061.id,
+        kind: var_core_value_sig8061.kind,
+        objectKey: var_core_value_sig8061.elementId ? var_core_value_sigAEFB(var_core_value_sigFDEA, var_core_value_sig8061.elementId) : undefined,
+        outlineOnly: var_core_value_sig8061.kind === "delete" || !var_core_value_sig8061.elementId
+      }));
+    return this._highlightService["show"](var_core_value_sigFDEA, var_core_value_sig48CA);
+  }
+};
+J = B([z(0, var_core_value_sigE43E(var_core_value_sigBB57)), z(1, var_core_value_sigE43E(var_core_value_sig5151)), z(2, var_core_value_sigE43E(var_core_value_sig82D4)), z(3, var_core_value_sig1BD9), z(4, var_core_value_sigE43E(var_core_value_sig6201))], J);
+let Y = class extends var_core_value_sigB542 {
+  constructor(var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF) {
+    let {
+      collaborationClientConfig: var_core_value_sig8889,
+      ...var_core_value_sig32F8
+    } = var_core_value_sig50AF;
+    super(var_core_value_sig32F8, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF), this._injector = var_core_value_sigA942, var_core_value_sigA621.setConfig(var_core_value_sigCF89, var_core_value_sig8889);
+  }
+  onStarting() {
+    super.onStarting(), var_core_value_sigFD0C(this._injector, [[var_core_value_sig340D, {
+      useClass: var_core_value_sigB008
+    }], [U], [J], [V]]), this._injector["get"](U), this._injector["get"](J), this._injector["get"](V);
+  }
+};
+q(Y, "pluginName", "UNIVER_BOARDS_HISTORY_VIEWER_PLUGIN"), q(Y, "packageName", L), q(Y, "version", R), q(Y, "type", var_core_value_sigB7FC.UNIVER_UNKNOWN), Y = B([var_core_value_sig237B(var_core_value_sigDBB5, var_core_value_sig7C4A, var_core_value_sig8B71), z(1, var_core_value_sigE43E(var_core_value_sigA937)), z(2, var_core_value_sig3863), z(3, var_core_value_sigC4B1)], Y);
+let X = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sig5B67, var_core_value_sig1758, var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902, var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809) {
+    super(), this._configService = var_core_value_sig5B67, this._restoreService = var_core_value_sig1758, this._adapterRegistry = var_core_value_sig4805, this._localeService = var_core_value_sigE67E, this._themeService = var_core_value_sig2902, this._collaborationController = var_core_value_sig9989, this._dataLoaderService = var_core_value_sig698E, this._univerInstanceService = var_core_value_sig2809, q(this, "_historyUniver", null), q(this, "_opening", null), q(this, "_openGeneration", 0), q(this, "_sessionDisposables", new var_core_value_sigE347()), q(this, "_container", null), q(this, "_unitId", ""), q(this, "_location", undefined);
+  }
+  open(var_core_value_sig2DAB) {
+    if (this._historyUniver) return Promise.resolve();
+    if (this._opening) return this._opening;
+    let var_core_value_sig877E = ++this._openGeneration,
+      var_core_value_sig20C8 = this._open(var_core_value_sig2DAB, var_core_value_sig877E).finally(() => {
+        this._opening === var_core_value_sig20C8 && (this._opening = null);
+      });
+    return this._opening = var_core_value_sig20C8, var_core_value_sig20C8;
+  }
+  async _open(var_core_value_sigE9A7, var_core_value_sigBECE) {
+    let var_core_value_sig1B22 = this._adapterRegistry["get"](var_core_value_sigB7FC.UNIVER_BOARD);
+    if (!var_core_value_sig1B22) throw Error("[BoardsHistoryLoaderService]: Board history adapter is not registered.");
+    let var_core_value_sig7F72 = await Promise.all([var_core_value_sig1B22.canView(var_core_value_sigE9A7), var_core_value_sig1B22.canRevert(var_core_value_sigE9A7)]).catch(var_core_value_sig4D4C => {
+      if (var_core_value_sigBECE === this._openGeneration) throw var_core_value_sig4D4C;
+      return null;
+    });
+    if (!var_core_value_sig7F72 || var_core_value_sigBECE !== this._openGeneration) return;
+    let [var_core_value_sig7B2A, var_core_value_sig06CD] = var_core_value_sig7F72;
+    if (!var_core_value_sig7B2A) throw Error("[BoardsHistoryLoaderService]:\x20The\x20current\x20user\x20cannot\x20view\x20history\x20for\x20this\x20Board.");
+    this._unitId = var_core_value_sigE9A7, this._location = var_core_value_sig1B22.captureLocation(var_core_value_sigE9A7);
+    let var_core_value_sigA5F1 = this._ensureContainer();
+    var_core_value_sigA5F1.style["display"] = "block";
+    let var_core_value_sig97A2 = this._localeService["getCurrentLocale"](),
+      var_core_value_sig07E9 = this._localeService["getLocales"](),
+      var_core_value_sig4F59 = new var_core_value_sig5E6A({
+        theme: this._themeService["getCurrentTheme"](),
+        darkMode: this._themeService["darkMode"],
+        locale: var_core_value_sig97A2,
+        locales: var_core_value_sig07E9 ? {
+          [var_core_value_sig97A2]: var_core_value_sig07E9
+        } : undefined,
+        direction: this._localeService["getDirection"](),
+        override: [[var_core_value_sig3C5B, {
+          useClass: var_core_value_sig826B
+        }]]
+      });
+    this._historyUniver = var_core_value_sig4F59, this._syncViewerServices(var_core_value_sig4F59, var_core_value_sigA5F1);
+    try {
+      this._registerChildPlugins(var_core_value_sig4F59, var_core_value_sig06CD, var_core_value_sigA5F1), var_core_value_sig4F59.createUnit(var_core_value_sigB7FC.UNIVER_BOARD, var_core_value_sigB2CE(var_core_value_sigE9A7, ""));
+    } catch (var_core_value_sigC9E0) {
+      throw var_core_value_sigBECE === this._openGeneration ? this.close() : var_core_value_sig4F59.dispose(), var_core_value_sigC9E0;
+    }
+  }
+  close() {
+    ++this._openGeneration, this._opening = null, this._sessionDisposables["dispose"]();
+    let var_core_value_sigF564 = this._historyUniver;
+    this._historyUniver = null, var_core_value_sigF564 == null || var_core_value_sigF564.dispose(), this._unitId = "", this._location = undefined, this._container && (this._container["style"].display = "none");
+  }
+  _syncViewerServices(var_core_value_sig8CFA, var_core_value_sig2E11) {
+    let var_core_value_sig5B69 = var_core_value_sig8CFA.__getInjector(),
+      var_core_value_sigB098 = var_core_value_sig5B69.get(var_core_value_sigCAD5),
+      var_core_value_sigCE71 = var_core_value_sig5B69.get(var_core_value_sig48DD);
+    this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(var_core_value_sig76BA => {
+      var_core_value_sigCE71.setDarkMode(var_core_value_sig76BA);
+    })), this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(var_core_value_sigFBFA => {
+      var_core_value_sigCE71.setTheme(var_core_value_sigFBFA);
+    })), this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(var_core_value_sigF602 => {
+      let var_core_value_sig1BBD = this._localeService["getLocales"]();
+      var_core_value_sig1BBD && var_core_value_sigB098.load({
+        [var_core_value_sigF602]: var_core_value_sig1BBD
+      }), var_core_value_sigB098.setLocale(var_core_value_sigF602);
+    })), this._sessionDisposables["add"](this._localeService["direction$"].subscribe(var_core_value_sigF704 => {
+      var_core_value_sigB098.setDirection(var_core_value_sigF704), var_core_value_sig2E11.dir = var_core_value_sigF704, var_core_value_sig2E11.style["direction"] = var_core_value_sigF704;
+    }));
+  }
+  async restore(var_core_value_sig21D8) {
+    var var_core_value_sig2B65;
+    let var_core_value_sigD7EA = this._unitId,
+      var_core_value_sigB33B = this._location,
+      var_core_value_sig24B9 = this._collaborationController["getCollabEntity"](var_core_value_sigD7EA);
+    if (!var_core_value_sig24B9) throw Error("[BoardsHistoryLoaderService]: Collaboration is not ready for this Board.");
+    let var_core_value_sigE627 = new var_core_value_sigBDF5(),
+      var_core_value_sigEF3E = var_core_value_sig1614(var_core_value_sig24B9.session["event$"].pipe(var_core_value_sigACC6(var_core_value_sig2BCF => var_core_value_sig2BCF.eventID === var_core_value_sig6774.CHANGESET_ACK), var_core_value_sigACC6(var_core_value_sig0D69 => var_core_value_sig011D(var_core_value_sig0D69, var_core_value_sig21D8)), var_core_value_sig85C3(var_core_value_sigE627), var_core_value_sigB996(10000)));
+    try {
+      if (!(await this._restoreService["restore"](var_core_value_sigD7EA, var_core_value_sigB7FC.UNIVER_BOARD, var_core_value_sig21D8))) throw Error("[BoardsHistoryLoaderService]: The restore command was not accepted.");
+      await var_core_value_sigEF3E;
+    } catch (var_core_value_sig480E) {
+      throw var_core_value_sigE627.next(), await var_core_value_sigEF3E.catch(() => undefined), var_core_value_sig480E;
+    } finally {
+      var_core_value_sigE627.complete();
+    }
+    this.close(), this._univerInstanceService["disposeUnit"](var_core_value_sigD7EA), await this._dataLoaderService["loadUnit"](var_core_value_sigD7EA, var_core_value_sigB7FC.UNIVER_BOARD), await ((var_core_value_sig2B65 = this._adapterRegistry["get"](var_core_value_sigB7FC.UNIVER_BOARD)) == null ? undefined : var_core_value_sig2B65.restoreLocation(var_core_value_sigD7EA, var_core_value_sigB33B));
+  }
+  _ensureContainer() {
+    var var_core_value_sig273D;
+    if (this._container) return this._container;
+    let var_core_value_sig9A0D = this._configService["getConfig"](F),
+      var_core_value_sigA319 = (var_core_value_sig9A0D == null ? undefined : var_core_value_sig9A0D.univerContainerId) ?? ((var_core_value_sig273D = this._configService["getConfig"](var_core_value_sig104C)) == null ? undefined : var_core_value_sig273D.container),
+      var_core_value_sig2D58 = typeof var_core_value_sigA319 == "string" ? document.getElementById(var_core_value_sigA319) : var_core_value_sigA319;
+    if (!var_core_value_sig2D58) throw Error("[BoardsHistoryLoaderService]: Configure a valid Univer container before opening history.");
+    let var_core_value_sig223F = document.createElement("div");
+    return Object.assign(var_core_value_sig223F.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: "49",
+      display: "none"
+    }), var_core_value_sig2D58.appendChild(var_core_value_sig223F), this._container = var_core_value_sig223F, var_core_value_sig223F;
+  }
+  _registerChildPlugins(var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sig58C1) {
+    let var_core_value_sig5090 = this._configService["getConfig"](var_core_value_sig08BA),
+      var_core_value_sigC368 = this._configService["getConfig"](F),
+      var_core_value_sigAD56 = [[var_core_value_sigDBB5, {
+        license: var_core_value_sig5090 == null ? undefined : var_core_value_sig5090.ls
+      }], [var_core_value_sig7E32], [var_core_value_sig841D, {
+        container: var_core_value_sig58C1,
+        header: true,
+        toolbar: false,
+        footer: true,
+        contextMenu: false
+      }], [var_core_value_sig4C07], [var_core_value_sig652C, {
+        override: [[var_core_value_sigC97C, {
+          useClass: var_core_value_sig77EE
+        }]]
+      }], [var_core_value_sig7F19], [var_core_value_sig7827], [var_core_value_sig7DF1], [var_core_value_sigDC86], [var_core_value_sig6167], [var_core_value_sig65A1], [var_core_value_sigCB82], [var_core_value_sig8B71, {
+        showToolbar: false,
+        workbench: {
+          content: false
+        }
+      }], [var_core_value_sig210D], [var_core_value_sig63F3], [var_core_value_sigC786], [var_core_value_sig548A], [var_core_value_sig85B1], [var_core_value_sig2EAD], [var_core_value_sigBDE4], [var_core_value_sigBBEE, {
+        historyServerUrl: var_core_value_sigC368 == null ? undefined : var_core_value_sigC368.historyServerUrl
+      }], [var_core_value_sig7C4A]],
+      var_core_value_sigDB4A = new Set();
+    [...var_core_value_sigAD56, ...((var_core_value_sigC368 == null ? undefined : var_core_value_sigC368.viewerPlugins) ?? [])].forEach(([var_core_value_sig26DB, var_core_value_sigF0F9]) => {
+      if (var_core_value_sigDB4A.has(var_core_value_sig26DB.pluginName)) throw Error("[BoardsHistoryLoaderService]: Plugin " + var_core_value_sig26DB.pluginName + " has already been registered.");
+      var_core_value_sigDB4A.add(var_core_value_sig26DB.pluginName), var_core_value_sigD749.registerPlugin(var_core_value_sig26DB, var_core_value_sigF0F9);
+    }), var_core_value_sigD749.registerPlugin(Y, {
+      viewerMode: true,
+      descriptor: {
+        unitId: this._unitId,
+        type: var_core_value_sigB7FC.UNIVER_BOARD
+      },
+      canRestore: var_core_value_sigCFFA,
+      onClose: () => this.close(),
+      onRestore: var_core_value_sig1A0F => this.restore(var_core_value_sig1A0F),
+      collaborationClientConfig: this._configService["getConfig"](var_core_value_sigCF89)
+    });
+  }
+  dispose() {
+    var var_core_value_sig6418;
+    this.close(), (var_core_value_sig6418 = this._container) == null || var_core_value_sig6418.remove(), this._container = null, super.dispose();
+  }
+};
+X = B([z(0, var_core_value_sig3863), z(1, var_core_value_sigE43E(var_core_value_sig0B0C)), z(2, var_core_value_sigE43E(var_core_value_sigA39E)), z(3, var_core_value_sigE43E(var_core_value_sigCAD5)), z(4, var_core_value_sigE43E(var_core_value_sig48DD)), z(5, var_core_value_sigE43E(var_core_value_sig00CB)), z(6, var_core_value_sigE43E(var_core_value_sig9F76)), z(7, var_core_value_sig1BD9)], X);
+const Z = {
+  id: "boards-history-ui.operation.open",
+  type: var_core_value_sigCFAC.OPERATION,
+  handler: var_core_value_sig36F8 => {
+    let var_core_value_sig03E1 = var_core_value_sig36F8.get(var_core_value_sig1BD9).getCurrentUnitOfType(var_core_value_sigB7FC.UNIVER_BOARD);
+    return var_core_value_sig03E1 ? (var_core_value_sig36F8.get(X).open(var_core_value_sig03E1.getUnitId()).catch(var_core_value_sig1896 => {
+      var_core_value_sig36F8.get(var_core_value_sigC4B1).error("[OpenBoardsHistoryOperation]: Failed to open Board history.", var_core_value_sig1896);
+    }), true) : false;
+  }
+};
+let Q = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sig0285, var_core_value_sig777D, var_core_value_sig3F4C) {
+    super(), this.disposeWithMe(var_core_value_sig0285.registerCommand(Z)), this.disposeWithMe(var_core_value_sig777D.register({
+      id: Z.id,
+      menuItemId: Z.id,
+      group: "action",
+      order: 100,
+      icon: var_core_value_sig849B,
+      label: () => var_core_value_sig3F4C.t("boards-history-ui.menu.history"),
+      onClick: var_core_value_sigFBA4 => var_core_value_sigFBA4.executeCommand(Z.id)
+    }));
+  }
+};
+Q = B([z(0, var_core_value_sig200B), z(1, var_core_value_sigE43E(var_core_value_sigB601)), z(2, var_core_value_sigE43E(var_core_value_sigCAD5))], Q);
+let $ = class extends var_core_value_sigE503 {
+  constructor(var_core_value_sigD65A = I, var_core_value_sig5A13, var_core_value_sigF593) {
+    super(), this._config = var_core_value_sigD65A, this._injector = var_core_value_sig5A13, this._configService = var_core_value_sigF593;
+    let {
+      ...var_core_value_sig3607
+    } = var_core_value_sig9CD9({}, I, this._config);
+    this._configService["setConfig"](F, var_core_value_sig3607);
+  }
+  onStarting() {
+    var_core_value_sigFD0C(this._injector, [[X], [Q]]), this._injector["get"](Q);
+  }
+};
+q($, "pluginName", "UNIVER_BOARDS_HISTORY_UI_PLUGIN"), q($, "packageName", L), q($, "version", R), q($, "type", var_core_value_sigB7FC.UNIVER_BOARD), $ = B([var_core_value_sig237B(var_core_value_sigDBB5, var_core_value_sig8721, var_core_value_sig7C4A, var_core_value_sig8B71), z(1, var_core_value_sigE43E(var_core_value_sigA937)), z(2, var_core_value_sig3863)], $);
+export { F as BOARDS_HISTORY_UI_PLUGIN_CONFIG_KEY, $ as UniverBoardsHistoryUIPlugin };

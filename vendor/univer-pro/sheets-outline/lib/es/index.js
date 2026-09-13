@@ -1,0 +1,10 @@
+export { AddDimensionOutlineCommand, AddDimensionOutlineMutation, ClearDimensionOutlinesCommand, ClearDimensionOutlinesMutation, RemoveDimensionOutlineCommand, RemoveDimensionOutlineMutation, SetDimensionOutlineCollapsedMutation, canAddDimensionOutline } from "./sheets-outline-add-dimension-outline.js";
+export { DimensionOutlineAxis, DimensionOutlineErrorReason } from "./sheets-outline-dimension-outline-axis.js";
+export { SHEET_OUTLINE_PLUGIN } from "./sheets-outline-sheet-outline-plugin.js";
+export { SetDimensionOutlineCollapsedCommand, TransformDimensionOutlinesMutation } from "./sheets-outline-dimension-outline-collapsed.js";
+export { SheetsOutlineErrorService, SheetsOutlineModel } from "./sheets-outline-model.js";
+export { UniverSheetsOutlinePlugin } from "./sheets-outline-plugin.js";
+export { buildDimensionOutlineTree } from "./sheets-outline-dimension-outline-tree.js";
+export { getDimensionOutlineViewPermission$, hasDimensionOutlineViewPermission } from "./sheets-outline-dimension-outline-view-permission.js";
+export { transformOutlinesByDelete, transformOutlinesByMove } from "./sheets-outline-transform-outlines-by.js";
+export { transformOutlinesByInsert } from "./sheets-outline-transform-outlines-by-insert.js";

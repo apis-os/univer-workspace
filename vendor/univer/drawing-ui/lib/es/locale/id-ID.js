@@ -1,0 +1,104 @@
+//#region src/locale/id-ID.ts
+const locale = { "drawing-ui": {
+	"image-cropper": { error: "Tidak dapat memangkas objek non-gambar." },
+	objectListPanel: {
+		title: "Lapisan",
+		empty: "Tidak ada objek",
+		showAll: "Tampilkan semua",
+		hideAll: "Sembunyikan semua",
+		lockAll: "Kunci semua",
+		unlockAll: "Buka kunci semua",
+		moveForward: "Bawa ke depan",
+		moveBackward: "Kirim ke belakang",
+		close: "Tutup",
+		show: "Tampilkan",
+		hide: "Sembunyikan",
+		lock: "Kunci",
+		unlock: "Buka kunci",
+		lockHint: "Kunci untuk mencegah pemilihan tidak sengaja",
+		unlockHint: "Terkunci. Klik untuk membuka kunci",
+		name: "Nama",
+		nameInput: "Nama objek",
+		description: "Deskripsi",
+		descriptionPlaceholder: "Tambahkan deskripsi",
+		details: "Detail",
+		locate: "Temukan",
+		expand: "Bentangkan",
+		collapse: "Ciutkan",
+		dragToReorder: "Seret untuk mengurutkan",
+		search: "Cari objek",
+		filterAll: "Semua",
+		filterHidden: "Tersembunyi",
+		filterLocked: "Terkunci",
+		sectionCanvas: "Lapisan kanvas",
+		sectionFloating: "Lapisan mengambang",
+		typeNames: {
+			object: "Objek",
+			shape: "Bentuk",
+			connector: "Konektor",
+			image: "Gambar",
+			chart: "Bagan",
+			table: "Tabel",
+			smartArt: "SmartArt",
+			video: "Video",
+			group: "Grup",
+			unit: "Unit",
+			dom: "DOM",
+			text: "Teks",
+			placeholder: "Placeholder",
+			container: "Kontainer"
+		},
+		noSelection: "Pilih objek untuk mengedit detailnya"
+	},
+	"image-panel": {
+		arrange: {
+			title: "Atur",
+			forward: "Bawa ke Depan",
+			backward: "Kirim ke Belakang",
+			front: "Bawa ke Paling Depan",
+			back: "Kirim ke Paling Belakang"
+		},
+		transform: {
+			title: "Transformasi",
+			rotate: "Putar (°)",
+			x: "X (px)",
+			y: "Y (px)",
+			width: "Lebar (px)",
+			height: "Tinggi (px)",
+			lock: "Kunci Rasio (%)"
+		},
+		crop: {
+			title: "Pangkas",
+			start: "Mulai Pangkas",
+			mode: "Bebas"
+		},
+		group: {
+			title: "Grup",
+			group: "Grupkan",
+			unGroup: "Pisahkan Grup"
+		},
+		align: {
+			title: "Ratakan",
+			default: "Pilih Jenis Perataan",
+			left: "Rata Kiri",
+			center: "Rata Tengah",
+			right: "Rata Kanan",
+			top: "Rata Atas",
+			middle: "Rata Tengah",
+			bottom: "Rata Bawah",
+			horizon: "Distribusikan Secara Horizontal",
+			vertical: "Distribusikan Secara Vertikal"
+		},
+		null: "Tidak Ada Objek yang Dipilih"
+	},
+	"image-text-wrap": {
+		square: "Kotak",
+		topAndBottom: "Atas dan Bawah",
+		inline: "Sejajar dengan teks",
+		behindText: "Di belakang teks",
+		inFrontText: "Di depan teks"
+	}
+} };
+
+//#endregion
+export { locale as default };

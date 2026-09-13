@@ -1,0 +1,18 @@
+import { BooleanNumber, CommandType, DOC_RANGE_TYPE, DashStyleType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentFlavor, ICommandService, IConfigService, IResourceManagerService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, TableAlignmentType, TableRowHeightRule, TableSizeType, TableTextWrapType, TextX, Tools, UniverInstanceType, containsInteriorInsertionOffset, createParagraphId, createSectionId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getCustomBlockIdsInSelections, getParagraphContentStartOffset, getTableCellTokenInterval, getTableRangeInterval, getTableRowTokenInterval, merge } from "@univerjs/core";
+import { DocHistoryAction, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { E } from "./internal-core-endo.js";
+function tn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461672) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461673;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461674 = E(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461672.documentData, {
+      cloneBody: false,
+      tableIds: [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461672.tableId]
+    }),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461675 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461673 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461674.tableSource) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461673 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461673[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461672.tableId]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461673.tableColumns[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461672.column];
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461675) throw Error("[DocsTable]:\x20Column\x20" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461672.column + " is not found.");
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461675.size["width"].v = Math.max(1, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461672.width), {
+    nextDocumentData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461674
+  };
+}
+export { tn as buildResizeColumnActions };

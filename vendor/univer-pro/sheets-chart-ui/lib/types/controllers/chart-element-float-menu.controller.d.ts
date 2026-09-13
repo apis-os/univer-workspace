@@ -1,0 +1,33 @@
+import { ChartElementFloatMenuAdapterRegistry } from '@univerjs-pro/chart-ui';
+import { ChartModelService } from '@univerjs-pro/sheets-chart';
+import { Disposable, ICommandService, IContextService, Injector } from '@univerjs/core';
+import { SheetCanvasFloatDomManagerService } from '@univerjs/sheets-drawing-ui';
+import { SheetCanvasPopManagerService } from '@univerjs/sheets-ui';
+import { ChartRenderService } from '../services/chart-render.service';
+import { IChartHostProviderService } from '../services/sheets-chart-host-provider.service';
+import { ISheetsChartUIService } from '../services/sheets-chart-ui.service';
+export declare class SheetsChartElementFloatMenuController extends Disposable {
+    private readonly _chartModelService;
+    private readonly _chartRenderService;
+    private readonly _chartHostProvider;
+    private readonly _sheetCanvasPopManagerService;
+    private readonly _sheetCanvasFloatDomManagerService;
+    private readonly _chartUIService;
+    private readonly _adapterRegistry;
+    private readonly _commandService;
+    private readonly _injector;
+    private readonly _contextService;
+    private _popupDisposable;
+    private _popupChartId;
+    private _popupSessionKey;
+    constructor(_chartModelService: ChartModelService, _chartRenderService: ChartRenderService, _chartHostProvider: IChartHostProviderService, _sheetCanvasPopManagerService: SheetCanvasPopManagerService, _sheetCanvasFloatDomManagerService: SheetCanvasFloatDomManagerService, _chartUIService: ISheetsChartUIService, _adapterRegistry: ChartElementFloatMenuAdapterRegistry, _commandService: ICommandService, _injector: Injector, _contextService: IContextService);
+    dispose(): void;
+    private _registerAdapter;
+    private _subscribeChartEvents;
+    private _openEditPanelByDoubleClick;
+    private _openFloatMenu;
+    private _closePopup;
+    private _isMobileRuntime;
+    private _clearSelectedTarget;
+    private _clearHiddenSelectedTarget;
+}

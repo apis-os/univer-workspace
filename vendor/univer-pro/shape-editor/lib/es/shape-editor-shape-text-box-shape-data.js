@@ -1,0 +1,57 @@
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineDashEnum, ShapeLineTypeEnum, ShapeModel, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, isConnectorShape, isShapeHostType } from "@univerjs-pro/engine-shape";
+import { DependentOn, Disposable, HorizontalAlign, IConfigService, IUniverInstanceService, Inject, Injector, Plugin, UniverInstanceType, VerticalAlign, createParagraphId, merge, touchDependencies } from "@univerjs/core";
+import { FormulaCacheEligibilityService, FormulaLastValuePersistenceService, HostExternalReferenceModel, UniverProFormulaEnginePlugin, getScalarFormulaResultCell, resolveFormulaResultPresentation, toFormulaLastValue } from "@univerjs-pro/engine-formula";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { OtherFormulaBizType, RegisterOtherFormulaService } from "@univerjs/engine-formula";
+import { Subject } from "rxjs";
+function T(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167) {
+  return {
+    id: "shape-text-document",
+    body: {
+      dataStream: "\x0d\x0a",
+      paragraphs: [{
+        startIndex: 0,
+        paragraphId: createParagraphId(new Set()),
+        paragraphStyle: {
+          horizontalAlign: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165
+        }
+      }],
+      textRuns: []
+    },
+    documentStyle: {
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167 ? {
+        textStyle: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167
+      } : null),
+      renderConfig: {
+        horizontalAlign: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165,
+        verticalAlign: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166
+      }
+    }
+  };
+}
+function E(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172 = HorizontalAlign.LEFT,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.verticalAlign ?? VerticalAlign.TOP;
+  return {
+    fill: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.fill ?? {
+      fillType: ShapeFillEnum.NoFill
+    },
+    isTextBox: true,
+    shapeText: {
+      isHorizontal: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.isHorizontal,
+      textDirection: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.isHorizontal ? ShapeTextDirection.Horz : ShapeTextDirection.Vert,
+      text: "",
+      autoFitType: ShapeTextAutoFitType.SpAutoFit,
+      textWrap: ShapeTextWrapType.None,
+      dataModel: {
+        ha: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172,
+        va: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173,
+        doc: T(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.textStyle)
+      }
+    },
+    stroke: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.stroke ?? {
+      lineStrokeType: ShapeLineTypeEnum.NoLine
+    }
+  };
+}
+export { E as createShapeTextBoxShapeData };

@@ -1,0 +1,15 @@
+export { DocShapeHostAdapter } from './adapters/doc-shape-host.adapter';
+export { InsertDocShapeCommand } from './commands/command/insert-doc-shape.command';
+export type { IInsertDocShapeCommandParams } from './commands/command/insert-doc-shape.command';
+export { UpdateDocDrawingMetadataCommand } from './commands/command/update-doc-drawing-metadata.command';
+export type { IUpdateDocDrawingMetadataCommandParams, IUpdateDocDrawingMetadataPatch, } from './commands/command/update-doc-drawing-metadata.command';
+export { UpdateDocShapeDataCommand } from './commands/command/update-doc-shape-data.command';
+export type { IUpdateDocShapeDataCommandParams } from './commands/command/update-doc-shape-data.command';
+export { InsertDocShapeMutation } from './commands/mutation/insert-doc-shape.mutation';
+export { UpdateDocShapeDataMutation } from './commands/mutation/update-doc-shape-data.mutation';
+export type { IUpdateDocShapeDataMutationParams } from './commands/mutation/update-doc-shape-data.mutation';
+export { DEFAULT_DOC_SHAPE_HEIGHT, DEFAULT_DOC_SHAPE_WIDTH, } from './common/const';
+export { DocShapeAnchorPosition } from './common/types';
+export type { DocShapeFloatingWrappingStyle, IDocShapeAnchor, IDocShapeCreateInput, IDocShapeDrawingParam, IDocShapePlacement, IDocShapePosition, IDocShapeTransform, } from './common/types';
+export { UniverDocsShapePlugin } from './plugin';
+export { DOCS_SHAPE_PLUGIN, DocsShapeService, } from './services/doc-shape.service';

@@ -1,0 +1,31 @@
+import type { ILocalUnitPresenceState, IRemoteUnitPresenceState, IUnitPresenceUIAdapter } from '@univerjs/ui';
+import type { Observable } from 'rxjs';
+import type { ISlideDrawingStateSnapshot } from './slide-drawing-state.service';
+import type { ISlidePointerStateSnapshot } from './slide-pointer-state.service';
+import { IUniverInstanceService, RxDisposable, UniverInstanceType } from '@univerjs/core';
+import { ISlideDrawingStateService } from './slide-drawing-state.service';
+import { ISlidePointerStateService } from './slide-pointer-state.service';
+export declare function resolveSlideLocalPresence(state: ISlideDrawingStateSnapshot, pointerState: ISlidePointerStateSnapshot | null, unitId?: string): ILocalUnitPresenceState | null;
+export declare class SlideUnitPresenceUIAdapter extends RxDisposable implements IUnitPresenceUIAdapter {
+    private readonly _slideDrawingStateService;
+    private readonly _slidePointerStateService;
+    private readonly _univerInstanceService;
+    readonly unitType = UniverInstanceType.UNIVER_SLIDE;
+    readonly presenceKind = "slide-element-selection";
+    private readonly _active$;
+    private _activationCount;
+    readonly active$: Observable<boolean>;
+    readonly localPresence$: Observable<ILocalUnitPresenceState>;
+    private readonly _remotePresences;
+    constructor(_slideDrawingStateService: ISlideDrawingStateService, _slidePointerStateService: ISlidePointerStateService, _univerInstanceService: IUniverInstanceService);
+    dispose(): void;
+    activate(): import("@wendellhu/redi").IDisposable;
+    isActive(): boolean;
+    getLocalPresence(unitId: string): ILocalUnitPresenceState | null;
+    getRemotePresences$(unitId: string): Observable<ReadonlyMap<string, IRemoteUnitPresenceState>>;
+    setRemotePresence(state: IRemoteUnitPresenceState): void;
+    removeRemotePresence(unitId: string, memberId: string): void;
+    clearRemotePresences(unitId: string): void;
+    private _getOrCreateRemotePresenceSubject;
+    private _disposeRemotePresenceSubject;
+}

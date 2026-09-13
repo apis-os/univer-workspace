@@ -1,0 +1,14 @@
+{
+  "name": "@univerjs-pro/exchange-node-binding-darwin-arm64",
+  "version": "0.1.1",
+  "cpu": [
+    "arm64"
+  ],
+  "main": "univer-exchange-node.darwin-arm64.node",
+  "files": [
+    "univer-exchange-node.darwin-arm64.node"
+  ],
+  "os": [
+    "darwin"
+  ]
+}

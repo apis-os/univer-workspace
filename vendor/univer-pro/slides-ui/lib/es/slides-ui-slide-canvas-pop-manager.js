@@ -1,0 +1,122 @@
+import { ArrangeTypeEnum, BooleanNumber, ColorKit, CommandType, CustomRangeType, DEFAULT_STYLES, DependentOn, Direction, Disposable, DisposableCollection, DocumentDataModel, DocumentFlavor, EDITOR_ACTIVATED, FOCUSING_COMMON_DRAWINGS, FOCUSING_SHAPE_TEXT_EDITOR, FOCUSING_SLIDE, HorizontalAlign, ICommandService, IConfigService, IContextService, IImageIoService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, LifecycleService, LifecycleStages, LocaleService, Optional, Plugin, PresetListType, RedoCommand, Registry, RxDisposable, ThemeService, Tools, UndoCommand, UniverInstanceType, VerticalAlign, WrapStrategy, checkIfMove, createIdentifier, createInternalEditorID, createParagraphId, generateRandomId, isInternalEditorID, merge, toDisposable } from "@univerjs/core";
+import * as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614828 from "@univerjs-pro/slides";
+import { AddSlideElementCommand, AddSlideElementMutation, AddSlidePageCommand, CancelSlideGroupMutation, ConvertSlideSmartArtToShapesCommand, CreateSlideByLayoutCommand, DEFAULT_LAYOUT_ORDER, DEFAULT_MASTER_PAGE, DEFAULT_MASTER_PAGE_ID, ISlideDrawingService, InsertDrawingObjectMutation, LAYOUT_PAGE_IDS, MoveSlidePageCommand, PageElementTypeEnum, PageTypeEnum, PlaceholderTypeEnum, RemoveSlideElementCommand, RemoveSlideElementMutation, RemoveSlidePageCommand, ReorderSlideElementsCommand, SLIDE_INSERT_DEFAULT_SIZE, SLIDE_PLACEHOLDER_ICON_COMPONENT_NAME_BY_KEY, SLIDE_TEXT_BOX_DEFAULT_STYLE, SLIDE_THEME_PRESETS, SetPresentationBackgroundGraphicsCommand, SetSlideDrawingApplyMutation, SetSlideGroupMutation, SetSlidePageSizeCommand, SetSlidePageSizeMutation, SetSlideSpeakerNotesCommand, SetSlideSpeakerNotesMutation, SetSlideTransitionCommand, SetSlideZoomRatioOperation, SlideBackgroundTypeEnum, SlideDrawingApplyType, SlidePageLayoutTypeEnum, SlidePageSizePresetEnum, SlidePresentationBackgroundGraphicFitEnum, SlidePresentationBackgroundGraphicsTargetEnum, SlideSceneTypeEnum, SlideTransitionDirectionEnum, SlideTransitionTypeEnum, UniverSlidesPlugin, UpdateSlideDrawingCommand, UpdateSlideElementMutation, UpdateSlidePageBackgroundCommand, UpdateSlidePageBackgroundMutation, UpdateSlideSmartArtCommand, applySlideElementPlainText, applySlideElementTextDocument, buildResolvedSlideDrawingMap, canEditSlideTargets, getEmbedSlidesFloatingCustomData, getEmbedSlidesPageCustomData, getPlaceholderImageContent, getPresentationBackgroundGraphics, getSlideElementDisplayName, getSlideElementEditPermissionObjectIds, getSlideElementPermissionObjectId, getSlidePagePermissionObjectId, getSlidePermissionValue, getSlideThemePreset, isPresentationBackgroundGraphic, normalizeSlideDocumentDataStream, plainTextToSlideDocumentData, resolveDefaultPlaceholderTextKey, resolvePlaceholderActionIcons, resolveSlideElementTextDocument, resolveSlideTextBoxDefaultSize, resolveSlideThemePreviewColors, resolveSlideTransition, resolveThemeDefaultShapeText, setPlaceholderImageContent, slideDocumentDataToPlainText } from "@univerjs-pro/slides";
+import { AlignmentSnapSession, BaseObject, CURSOR_TYPE, DEFAULT_TRANSFORMER_CONFIG, DRAWING_OBJECT_LAYER_INDEX, DeviceType, DocumentSkeleton, DocumentViewModel, Documents, DrawingGroupObject, Group, IRenderManagerService, Image, MAIN_VIEW_PORT_KEY, PageLayoutType, RENDER_CLASS_TYPE, Rect, Scene, ScrollBar, Shape, Transform, UniverRenderEnginePlugin, UniverRenderingContext, VERTICAL_ROTATE_ANGLE, Vector2, Viewport, cancelRequestFrame, createCanvasElement, degToRad, getAlignmentRectXAnchors, getAlignmentRectYAnchors, getNextWheelZoomRatio, measureDocumentNoWrapTextWidth, pxToNum, requestNewFrame, resolveDrawingEffectMasks, resolveOuterShadowEffect } from "@univerjs/engine-render";
+import { BuiltInUIPart, ComponentContainer, ComponentManager, ContextMenuGroup, CopyCommand, CutCommand, EmojiPicker, FloatingObjectToolbarPosition, FontFamilyDropdown, ICanvasPopupService, IClipboardInterfaceService, IContextMenuService, IDialogService, ILayoutService, IMenuManagerService, IMessageService, IRibbonService, IShortcutService, ISidebarService, IUIPartsService, IUIRuntimeScopeService, IUnitPresenceUIAdapterRegistry, IWorkbenchService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, RectPopup, RibbonPosition, RibbonStartGroup, RibbonViewGroup, Slider, SymbolPicker, ToggleFullscreenOperation, UndoRedoGroupService, ZoomInput, connectInjector, getEmbedChildUnitId, getMenuHiddenObservable, useComponentsOfPart, useDependency, useObservable } from "@univerjs/ui";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from "react";
+import { InsertSlideTableCommand, SetSlideTableMutation, SlideTableBorderDashEnum, SlideTableFillTypeEnum, SlideTableResourceService, SlideTableTextDirectionEnum, UpdateSlideTableCommand, buildDefaultSlideTableThemes, buildSlideTableControls, buildSlideTableTriggers, hitTestSlideTableControl, hitTestSlideTableTrigger, normalizeSlideTableSnapshot, resizeSlideTableGrid, resolveSlideTableBuildOptions, resolveSlideTableCellBoundaryBorder, resolveSlideTableCellRect, resolveSlideTableCellTextMargins, resolveSlideTableRenderModel, resolveSlideTableThemePalette } from "@univerjs-pro/slides-table";
+import { BehaviorSubject, Observable, Subject, combineLatest, distinctUntilChanged, filter, fromEvent, map, merge as mergeLocal, of as of1, pairwise, startWith, switchMap, take, takeUntil } from "rxjs";
+import { DocParagraphTypeDropdown, FormulaShapeAnimationController, OpenShapeTextHyperLinkOperation, SHAPE_CHANGE_PICKER_COMPONENT, SHAPE_FLOATING_TOOLBAR_TOP_OFFSET, SMART_ART_LAYOUT_GALLERY_CATALOG, ShapeEffectsRibbonControl, ShapeFloatingToolbar, ShapeFloatingToolbarService, ShapeFloatingToolbarToggleFactory, ShapeFormulaRibbonControl, ShapeGroupEnum, ShapePickerPanel, ShapeQuickStyleGallery, ShapeStyleRibbonControl, ShapeTextBoxEditor, ShapeTextEditorContainer, ShapeTextEffectsRibbonControl, ShapeTextFloatMenuRenderControllerBase, ShapeTextFloatToolbar, ShapeTextHyperLinkInfo, ShapeTextHyperLinkPopupService, ShapeTextRibbonControl, SmartArtCreateGraphicRibbonControl, SmartArtLayoutGallery, SmartArtLayoutRibbonControl, SmartArtResetRibbonControl, SmartArtRibbonControl, SmartArtStyleRibbonControl, SmartArtTextPane, ToggleShapeFloatingToolbarOperation, UniverShapeEditorUIPlugin, buildShapeTextDataUpdate, createShapeTextPlaceholderDocumentData, drawFormulaShapeAnimationLayers, getShapeTextOpticalVerticalOffset, getTextModel, getTextStyle, isShapeTextOpticalVerticalAlignEnabled, normalizeShapeTextModel, normalizeShapeTextRect, prepareShapeTextDocumentData, resolveShapeContextualRibbonHostMode, resolveShapeTextBoxResizePolicy, resolveShapeTextDocumentAlignment, resolveShapeTextDocumentPageHeight, resolveShapeTextDocumentRenderLayout, resolveShapeTextEditorBehaviorShapeData, resolveShapeTextEditorFlowAxis, resolveShapeTextEditorWrapStrategy, resolveShapeTextNoWrapLayout, shapeTypeOptions, shouldAllowShapeTextEditorHostSizeShrink, shouldAutoFitShapeTextEditorNoWrap, shouldClipShapeTextDocument, useFormulaShapeToolbar } from "@univerjs-pro/shape-editor-ui";
+import { ConnectorCoordinateTransform, ImageFillModeEnum, ImageSourceTypeEnum, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeBevelPresetEnum, ShapeDefaultConfig, ShapeFillEnum, ShapeGradientTypeEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeMaterialPresetEnum, ShapeModel, ShapePresetShadowValEnum, ShapeRenderModeEnum, ShapeSketchTypeEnum, ShapeTextAutoFitType, ShapeTextWrapType, ShapeTypeEnum, SmartArtDirectionEnum, SmartArtInsertPositionEnum, SmartArtOperationTypeEnum, SmartArtPresentationShapeRoleEnum, computeConnectorRouteLayout, createDefaultInsertedShapeData, createSmartArtDataFromLayout, getBasicShapeRotateBound, getShape3DBounds, isConnectorShape, isCurvedConnectorShape, isShape3DProjectiveScene, isSmartArtShapeData, normalizeShapeTextData, parseSmartArtCategory, projectShape3DRect, resolveShape3DGlyphRenderPlan, resolveShapeBevelExtent, resolveShapeDefaultInsertSize, resolveShapeTextBodyBehavior, resolveSmartArtPresentationNodeIdAtTextOffset, resolveSmartArtPresentationShapeData, resolveSmartArtPresentationShapeIdForNode, resolveSmartArtPresentationTransform, routeConnectorLineShape } from "@univerjs-pro/engine-shape";
+import { ShapeFormulaService, UniverShapeEditorPlugin, createShapeFormulaDocument, createShapeTextBoxShapeData, getShapeQuickStylePreset, getShapeQuickStylePresets } from "@univerjs-pro/shape-editor";
+import { takeUntil as takeUntilLocal } from "rxjs/operators";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { AddImageIcon, AddNoteIcon, AlignBottomIcon, AlignTextBothIcon, AlignTopIcon, ArrowLeftIcon, ArrowRightIcon, BasesMultiIcon, BoardsMultiIcon, BoldIcon, BottomIcon, CatalogueIcon, ChartIcon, CloseIcon, ConnectionLineIcon, CopyIcon, CutIcon, DeleteIcon, DocsMultiIcon, ExpandIcon, FeatureSearchIcon, FlipHorizontalIcon, FlipVerticalIcon, FontColorDoubleIcon, FountainPenIcon, GroupIcon, HandIcon, HorizontallyIcon, ItalicIcon, LeftJustifyingIcon, LoadingMultiIcon, MindMapIcon, MoreDownIcon, MoreLeftIcon, MoveDownIcon, MoveUpIcon, ObjectLayersIcon, OneToOneIcon, PaintBucketDoubleIcon, PasteSpecialDoubleIcon, RecordIcon, RelationshipIcon, RightJustifyingIcon, RulerIcon, ShapeBackgroundColorDoubleIcon, ShapeFormatSettingIcon, ShapeStrokeColorDoubleIcon, SheetsMultiIcon, ShrinkIcon, SlidesMultiIcon, SlideshowPlayIcon, SlideshowThemeIcon, SmartArtIcon, SmileIcon, StickyNoteIcon, StrikethroughIcon, SymbolsIcon, TableIcon, TextIcon, TopmostIcon, TransitionsIcon, UnderlineIcon, UngroupIcon, VerticalCenterIcon } from "@univerjs/icons";
+import { Accordion, Button, Checkbox, ColorPicker, Dropdown, DropdownMenu, GradientColorPicker, Input, InputNumber, MessageType, Radio, RadioGroup, Segmented, Select, Separator, Textarea, borderClassName, clsx, scrollbarClassName } from "@univerjs/design";
+import { DocInterceptorService, DocSelectionManagerService, DocSkeletonManagerService, UniverDocsPlugin } from "@univerjs/docs";
+import { DeleteLeftCommand, DeleteRightCommand, DocCanvasPopManagerService, DocEventManagerService, DocRenderController, DocSelectAllCommand, DocSelectionRenderService, EnterCommand, IEditorService, SetInlineFormatBoldCommand, SetInlineFormatFontFamilyCommand, SetInlineFormatFontSizeCommand, SetInlineFormatItalicCommand, SetInlineFormatStrikethroughCommand, SetInlineFormatTextColorCommand, SetInlineFormatUnderlineCommand, UniverDocsUIPlugin, convertBodyToHtml, convertClipboardHtmlToDocumentData, convertClipboardRtfToPlainText, removeClipboardHtmlImages, useEditor, useKeyboardEvent, useLeftAndRightArrow, useOnChange } from "@univerjs/docs-ui";
+import { UnitAction } from "@univerjs/protocol";
+import { getImageSize } from "@univerjs/drawing";
+import { ImageCropperObject, ObjectListPanelBase, extractClipboardHtmlImageFiles, extractClipboardImageFiles, extractClipboardTextImageFile, getObjectListPanelLabels, getObjectListPanelTypeName, isClipboardTextImage, isImageOnlyClipboardHtml, normalizeClipboardImageFile, svgImageFileToDataUrl, writeImageSourceToClipboard } from "@univerjs/drawing-ui";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { convertPlainTextTableToHtml, parseHtmlTableClipboard } from "@univerjs-pro/docs-table";
+import { sm } from "./slides-ui-slide-main-viewport-key.js";
+function BE(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614772, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614773) {
+  let {
+      scene: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614774,
+      engine: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614775
+    } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614773,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614776 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614774.getViewport(sm),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D897 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614776 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614776.viewportScrollX) ?? 0,
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D898 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614776 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614776.viewportScrollY) ?? 0,
+    {
+      scaleX: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614777,
+      scaleY: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614778
+    } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614774.getAncestorScale(),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614779 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614775.getCanvasElement(),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614780 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614779.getBoundingClientRect(),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614781 = pxToNum(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614779.style["width"]),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D899 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614781 > 0 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614780.width / var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614781 : 1;
+  return {
+    left: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614772.left - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D897) * var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614777 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D899 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614780.left,
+    right: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614772.right - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D897) * var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614777 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D899 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614780.left,
+    top: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614772.top - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D898) * var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614778 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D899 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614780.top,
+    bottom: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614772.bottom - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D898) * var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614778 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D899 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614780.top
+  };
+}
+let VE = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468158, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468159) {
+    super(), this._globalPopupManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468158, this._renderManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468159;
+  }
+  _createObjectPositionObserver(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468163, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468164) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468165 = () => BE((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468164 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468164(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162)) ?? {
+        left: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162.left,
+        right: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162.left + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162.width,
+        top: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162.top,
+        bottom: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162.top + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162.height
+      }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468163),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468166 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468165(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468167 = new BehaviorSubject(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468166),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468168 = new DisposableCollection(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468169 = () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468167.next(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468165()),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468170 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468163.scene["getViewport"](sm);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468170 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468168.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468170.onScrollAfter$["subscribeEvent"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468169)), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468168.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468163.engine["onTransformChange$"].subscribeEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468169)), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468168.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468163.scene["onTransformChange$"].subscribeEvent(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468169)), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468168.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468162.onTransformChange$["subscribeEvent"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468169)), {
+      position: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468166,
+      position$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468167,
+      disposable: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468168
+    };
+  }
+  attachPopupToObject(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468180, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468181, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468182, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468183) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468184;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468185 = this._renderManagerService["getRenderUnitById"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468180);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468185) return {
+      dispose: () => {}
+    };
+    let {
+        anchorBoundResolver: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468186,
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468187
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468183,
+      {
+        position: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468188,
+        position$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468189,
+        disposable: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468190
+      } = this._createObjectPositionObserver(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468182, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468185, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468186),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468191 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468184 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468185.getInjector) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468184.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468185),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468192 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468185.engine["getCanvasElement"](),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468193 = this._globalPopupManagerService["addPopup"]({
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468187,
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468180,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468181,
+        connectorInjector: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468191,
+        anchorRect: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468188,
+        anchorRect$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468189,
+        canvasElement: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468192
+      });
+    return {
+      dispose: () => {
+        this._globalPopupManagerService["removePopup"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468193), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468189.complete(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468190.dispose();
+      }
+    };
+  }
+  attachPopupToClientRect(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468208, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468209, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468210, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468211) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468212 = this._renderManagerService["getRenderUnitById"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468208);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468212) return {
+      dispose: () => {}
+    };
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468213 = new BehaviorSubject(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468210),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468214 = this._globalPopupManagerService["addPopup"]({
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468211,
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468208,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468209,
+        anchorRect: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468210,
+        anchorRect$: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468213,
+        canvasElement: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468212.engine["getCanvasElement"]()
+      });
+    return {
+      dispose: () => {
+        this._globalPopupManagerService["removePopup"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468214), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468213.complete();
+      }
+    };
+  }
+};
+export { VE as SlideCanvasPopManagerService };

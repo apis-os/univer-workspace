@@ -1,0 +1,80 @@
+import { BoardElementType, BoardToolType, IBoardElementService, InsertBoardChartCommand, UniverBoardsPlugin, resolveBoardElementWorldBounds } from "@univerjs-pro/boards";
+import { BOARDS_UI_PLUGIN_CONFIG_KEY, BOARD_INSERT_CHART_PANEL_COMPONENT, BoardCanvasPopManagerService, BoardDeleteSelectionOperation, BoardDomLayerService, BoardInteractionSurfaceService, IBoardClipboardResourceAdapterService, IBoardElementStateService, IBoardSidePanelService, IBoardUIStateService, UniverBoardsUIPlugin, getBoardElementRenderObjectKey, resolveRotatedBoardObjectAnchorBound } from "@univerjs-pro/boards-ui";
+import { CommandType, DependentOn, Disposable, DisposableCollection, ICommandService, IConfigService, IUniverInstanceService, Inject, Injector, LocaleService, Optional, Plugin, RxDisposable, ThemeService, Tools, UniverInstanceType, createIdentifier, generateRandomId, merge, toDisposable, touchDependencies } from "@univerjs/core";
+import { BehaviorSubject, auditTime, combineLatest, filter, fromEvent, merge as mergeLocal, skip, takeUntil, throttleTime } from "rxjs";
+import { BoardChartConfigAdapter, BoardChartModelService, BoardChartResourceService, ChangeBoardChartDataSourceCommand, DEFAULT_BOARD_CHART_VALUES, RemoveBoardChartDataSourceMutation, RemoveBoardChartSnapshotMutation, SetBoardChartDataSourceMutation, SetBoardChartSnapshotMutation, UniverBoardsChartPlugin, UpdateBoardChartConfigCommand } from "@univerjs-pro/boards-chart";
+import { CHART_ELEMENT_FLOAT_MENU_COMPONENT, CHART_TYPE_CATALOG, ChartAxisSection, ChartCommonDataMappingSection, ChartEditBlockTitle, ChartEditPanel, ChartEditPanelSection, ChartEditPanelTab, ChartEditPanelTabs, ChartEditorCapability, ChartEditorProvider, ChartElementFloatMenuAdapterRegistry, ChartFunnelStyleSection, ChartGradientFillField, ChartGridlinesAndTicksSection, ChartHeatmapStyleSection, ChartHostAdapter, ChartImageExportService, ChartIndicatorLineSection, ChartInlineTableEditor, ChartLegendSection, ChartLineAndAreaSection, ChartNumberFormatTextField, ChartParetoSeriesSection, ChartPieStyleSection, ChartRadarStyleSection, ChartReferencedDataSourceEditor, ChartRelationStyleSection, ChartSectionAccordion, ChartSectionAccordionContent, ChartSectionAccordionItem, ChartSectionAccordionTrigger, ChartSeriesBorderFields, ChartSeriesDataLabelFields, ChartSeriesDataPointFields, ChartSeriesFillFields, ChartSeriesPointFields, ChartSeriesRightAxisField, ChartSeriesRoot, ChartSeriesSelector, ChartSeriesTypeField, ChartSnapshotQueue, ChartStackField, ChartStyleSection, ChartThemeField, ChartTitlesSection, ChartTrendlineSection, ChartTypeField, ChartTypeSpecificDataSection, ChartTypeSpecificSetupSection, ChartTypeSpecificStyleSection, ChartUIService, ChartViewStateRegistry, ChartWaterfallSetupFields, ChartWaterfallStyleSection, ChartWordCloudMaskImageIdField, ChartWordCloudRepeatField, ChartWordCloudRoot, ChartWordCloudShapeField, DEFAULT_CHART_AXIS_VALUES, DEFAULT_CHART_FUNNEL_VALUES, DEFAULT_CHART_HEATMAP_VALUES, DEFAULT_CHART_INDICATOR_LINE_VALUES, DEFAULT_CHART_LEGEND_VALUES, DEFAULT_CHART_LINE_AND_AREA_VALUES, DEFAULT_CHART_PARETO_VALUES, DEFAULT_CHART_PIE_VALUES, DEFAULT_CHART_RADAR_VALUES, DEFAULT_CHART_RELATION_VALUES, DEFAULT_CHART_SERIES_VALUES, DEFAULT_CHART_STYLE_VALUES, DEFAULT_CHART_TITLE_VALUES, DEFAULT_CHART_TRENDLINE_VALUES, DEFAULT_CHART_WATERFALL_SETUP_VALUES, DEFAULT_CHART_WATERFALL_STYLE_VALUES, DEFAULT_CHART_WORD_CLOUD_VALUES, InlineChartCreationIssueCode, UniverChartUIPlugin, buildChartTypeSelectOptions, chartTypeSupportsCapability, chartTypeSupportsLineAndAreaStyle, createChartElementFloatMenuAdapter, createChartInlineStarterData, getChartInlineTableMinColumns, resolveChartEditPanelRoute, resolveChartElementSelection, tryBuildInlineChartCreationPlan, tryPrepareInlineChartData, useChartEditorChartType, useChartEditorHasRightAxis, useChartTypeFieldState } from "@univerjs-pro/chart-ui";
+import { ShapeFloatingToolbarMenuActions } from "@univerjs-pro/shape-editor-ui";
+import { Button, Select, Separator, borderClassName, clsx } from "@univerjs/design";
+import { DeleteIcon, PenIcon } from "@univerjs/icons";
+import { ComponentManager, FloatingObjectToolbarPosition, ICanvasPopupService, IDialogService, useDependency, useObservable } from "@univerjs/ui";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { CHART_HOST_DEFAULT_BORDER_COLOR, CHART_HOST_DEFAULT_BORDER_RADIUS, ChartDataSourceRuntimeStatus, ChartImageExportFormat, ChartRenderMode, ChartThemeService, ChartTypeBits, DataUrlImageChartHost, IChartRenderModelManagerService, chartBitsUtils, chartTypeCanUseTrendLine, defaultChartConfig, isInlineChartDataSource, isReferencedChartDataSource, parseInlineChartTable, resolveChartRuntimeStyle, resolveDefaultChartHostFrameStyle } from "@univerjs-pro/engine-chart";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { IRenderManagerService, Image, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { V } from "./internal-core-endo.js";
+let ir = class extends RxDisposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263) {
+    super(), this._renderContext = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, this._instanceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, this._boardElementService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260, this._elementStateService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261, this._uiStateService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262, this._editSessionService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263, V(this, "_attachScheduled", false), V(this, "_objectDblclickDisposables", null), this._init();
+  }
+  _init() {
+    let {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270
+      } = this._renderContext,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271 = this._instanceService["getUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270, UniverInstanceType.UNIVER_BOARD);
+    this.disposeWithMe(toDisposable(() => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626;
+      return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 = this._objectDblclickDisposables) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.dispose();
+    })), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271 && (this._scheduleAttachObjectDoubleClicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271), this.disposeWithMe(this._boardElementService["elementAdd$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 => {
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464.unitId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270) && this._scheduleAttachObjectDoubleClicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271);
+    })), this.disposeWithMe(this._boardElementService["elementUpdate$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 => {
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465.unitId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270) && this._scheduleAttachObjectDoubleClicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271);
+    })), this.disposeWithMe(this._boardElementService["elementRemove$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 => {
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.unitId === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270) && this._scheduleAttachObjectDoubleClicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271);
+    })), this.disposeWithMe(this._elementStateService["state$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634 => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635;
+      ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634.context) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635.unitId) === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270 && this._scheduleAttachObjectDoubleClicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271);
+    })));
+  }
+  _scheduleAttachObjectDoubleClicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274) {
+    this._attachScheduled || (this._attachScheduled = true, Promise.resolve().then(() => this._attachObjectDoubleClicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46274)));
+  }
+  _attachObjectDoubleClicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46276) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277;
+    this._attachScheduled = false;
+    let {
+        scene: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46278,
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279
+      } = this._renderContext,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46276.getActivePageId(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281 = this._boardElementService["getElementOrder"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282 = new DisposableCollection();
+    (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277 = this._objectDblclickDisposables) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277.dispose(), this._objectDblclickDisposables = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638 => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640 = this._boardElementService["getElementById"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46280, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640.element["type"] !== BoardElementType.Chart) return;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 = getBoardElementRenderObjectKey(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642 = ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46278.getObjectIncludeInGroup) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46278, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641)) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46278.getObject(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641);
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282.add(toDisposable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642.onDblclick$["subscribeEvent"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468) => {
+        this._openEditSession(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468);
+      })));
+    });
+  }
+  _openEditSession(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46292) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293;
+    if (this._uiStateService["getState"]().interactionMode === "viewing" || this._uiStateService["getState"]().pendingInsert || this._elementStateService["getSnapshot"]().isTransforming || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.element["type"] !== BoardElementType.Chart) return;
+    let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 = {
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.unitId,
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.subUnitId
+    };
+    this._elementStateService["selectElements"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2, [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.elementId], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.elementId), this._elementStateService["setFocusedSwimlaneLane"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2, null), this._editSessionService["open"]({
+      chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.element["chartId"],
+      elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.elementId,
+      source: "doubleClick",
+      subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.subUnitId,
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46290.unitId
+    }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46292 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46292.skipNextObservers = true), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291.preventDefault) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291);
+  }
+};
+export { ir as BoardChartOpenEditController };

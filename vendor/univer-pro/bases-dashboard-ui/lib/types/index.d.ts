@@ -1,0 +1,1 @@
+export { UniverBaseDashboardUIPlugin } from './plugin';

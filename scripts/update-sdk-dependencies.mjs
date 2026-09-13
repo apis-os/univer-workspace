@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import { readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -56,6 +57,9 @@ export function alignManifestSdkDependencies(
       if (!isSdkPackage(name) || INDEPENDENTLY_VERSIONED_PACKAGES.has(name)) {
         continue;
       }
+      if (isVendorFileSpecifier(specifier)) {
+        continue;
+      }
       assertExactDependency(manifest.name, field, name, specifier);
       if (specifier !== version) {
         manifest[field][name] = version;
@@ -66,13 +70,33 @@ export function alignManifestSdkDependencies(
   return changed;
 }
 
+const VENDOR_FILE_RE = /^file:.*vendor\/univer(-pro|-cli)?\//;
+
+export function isVendorFileSpecifier(specifier) {
+  return typeof specifier === "string" && VENDOR_FILE_RE.test(specifier);
+}
+
+export function resolveVendorFileVersion(specifier, packagePath) {
+  const rel = specifier.replace(/^file:/, "");
+  const vendorManifest = resolve(dirname(packagePath), rel, "package.json");
+  const version = JSON.parse(readFileSync(vendorManifest, "utf8")).version;
+  if (typeof version !== "string") {
+    throw new Error(`Vendor package at ${vendorManifest} is missing version`);
+  }
+  return version;
+}
+
 export function resolveWorkspaceSdkBaseline(packages) {
   const versions = new Set();
-  for (const { manifest } of packages) {
+  for (const { manifest, packagePath } of packages) {
     for (const field of DEPENDENCY_FIELDS) {
       const version = manifest[field]?.["@univerjs/core"];
       if (version !== undefined) {
-        versions.add(version);
+        versions.add(
+          isVendorFileSpecifier(version) && packagePath
+            ? resolveVendorFileVersion(version, packagePath)
+            : version
+        );
       }
     }
   }
@@ -109,6 +133,10 @@ export function validateWorkspaceSdkDependencies(packages, baselineVersion) {
           continue;
         }
         if (!isSdkPackage(name) || INDEPENDENTLY_VERSIONED_PACKAGES.has(name)) {
+          continue;
+        }
+        if (isVendorFileSpecifier(specifier)) {
+          declarations += 1;
           continue;
         }
         assertExactDependency(manifest.name, field, name, specifier);
@@ -182,6 +210,7 @@ function isSdkPackage(name) {
 }
 
 function assertExactDependency(packageName, field, name, specifier) {
+  if (isVendorFileSpecifier(specifier)) return;
   if (typeof specifier !== "string" || !EXACT_SEMVER_PATTERN.test(specifier)) {
     throw new Error(`${packageName} ${field}.${name} must use an exact SemVer version.`);
   }

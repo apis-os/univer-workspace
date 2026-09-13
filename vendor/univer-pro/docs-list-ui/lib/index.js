@@ -1,0 +1,687 @@
+import { DOCS_LIST_MORE_BULLETS as var_core_value_sigFE01, DOCS_LIST_PLUGIN as var_core_value_sigA2CE, DocsListDemoteCommand as var_core_value_sig1975, DocsListPromoteCommand as var_core_value_sig6EA1, DocsListSelectionMode as var_core_value_sig029F, DocsListSetGlyphSymbolCommand as var_core_value_sig3767, DocsListSetGlyphTypeCommand as var_core_value_sig670B, DocsListSetPrefixSuffixCommand as var_core_value_sig6912, DocsListSetStartNumberCommand as var_core_value_sigE235, UniverDocsListPlugin as var_core_value_sig7664 } from "@univerjs-pro/docs-list";
+import { UniverLicensePlugin as var_core_value_sig2281 } from "@univerjs-pro/license";
+import { DependentOn as var_core_value_sig5E86, Disposable as var_core_value_sig6998, ICommandService as var_core_value_sigF639, IConfigService as var_core_value_sigEAE5, IPermissionService as var_core_value_sigE94C, Inject as var_core_value_sig6D47, Injector as var_core_value_sigCB82, ListGlyphType as var_core_value_sigCF4E, LocaleService as var_core_value_sig6CAD, PRESET_LIST_TYPE as var_core_value_sig8CF5, Plugin as var_core_value_sigDDD7, PresetListType as var_core_value_sigB2CE, UniverInstanceType as var_core_value_sig443C, merge as var_core_value_sig39B1 } from "@univerjs/core";
+import { DocSelectionManagerService as var_core_value_sig210D, UniverDocsPlugin as var_core_value_sigB4B4, canEditDocumentTargets as var_core_value_sigD407 } from "@univerjs/docs";
+import { DocCanvasPopManagerService as var_core_value_sig63F3, DocEventManagerService as var_core_value_sig6A71, UniverDocsUIPlugin as var_core_value_sig3BF6, getListMarkerFallbackBound as var_core_value_sig38CE } from "@univerjs/docs-ui";
+import { IRenderManagerService as var_core_value_sig62B7, UniverRenderEnginePlugin as var_core_value_sig37A8 } from "@univerjs/engine-render";
+import { ComponentManager as var_core_value_sigA90D, IContextMenuService as var_core_value_sig7A3C, useDependency as var_core_value_sig0511 } from "@univerjs/ui";
+import { Button as var_core_value_sig1F44, Checkbox as var_core_value_sigCB04, Input as var_core_value_sig947E, InputNumber as var_core_value_sig4545, Separator as var_core_value_sigF39A } from "@univerjs/design";
+import { Fragment as var_core_value_sigF79C, jsx as var_core_value_sig2E54, jsxs as var_core_value_sig7658 } from "react/jsx-runtime";
+import { useMemo as var_core_value_sigDCF5, useState as var_core_value_sigC786 } from "react";
+import { BehaviorSubject as var_core_value_sigC0D9 } from "rxjs";
+var j = "@univerjs-pro/docs-list-ui",
+  M = "1.0.0-insiders.20260907-70fc579";
+const N = {},
+  P = "docs-list-ui.context-menu",
+  F = [{
+    label: "1",
+    type: var_core_value_sigCF4E.DECIMAL
+  }, {
+    label: "A",
+    type: var_core_value_sigCF4E.UPPER_LETTER
+  }, {
+    label: "a",
+    type: var_core_value_sigCF4E.LOWER_LETTER
+  }, {
+    label: "I",
+    type: var_core_value_sigCF4E.UPPER_ROMAN
+  }, {
+    label: "i",
+    type: var_core_value_sigCF4E.LOWER_ROMAN
+  }],
+  I = ["●", "○", "■", "➢", "★"];
+function L(var_core_value_sig0C53) {
+  var var_core_value_sigEA04;
+  let var_core_value_sig7A62 = (var_core_value_sigEA04 = var_core_value_sig0C53.popup) == null ? undefined : var_core_value_sigEA04.extraProps,
+    var_core_value_sig8109 = var_core_value_sig0511(var_core_value_sig6CAD);
+  return var_core_value_sig7658("section", {
+    className: "univer-box-border\x20univer-w-48\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-py-1.5\x20univer-text-xs\x20univer-shadow-lg",
+    "data-u-comp": P,
+    children: [var_core_value_sig2E54("div", {
+      className: "univer-grid univer-grid-cols-5 univer-justify-items-center univer-gap-1 univer-px-2.5 univer-py-1",
+      children: F.map(var_core_value_sigD873 => var_core_value_sig2E54(var_core_value_sig1F44, {
+        size: "small",
+        type: "button",
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sig7524;
+          return var_core_value_sig7A62 == null || (var_core_value_sig7524 = var_core_value_sig7A62.onSetGlyphType) == null ? undefined : var_core_value_sig7524.call(var_core_value_sig7A62, var_core_value_sigD873.type);
+        },
+        children: var_core_value_sigD873.label
+      }, var_core_value_sigD873.label))
+    }), var_core_value_sig2E54(var_core_value_sigF39A, {}), var_core_value_sig2E54("div", {
+      className: "univer-grid\x20univer-grid-cols-5\x20univer-justify-items-center\x20univer-gap-1\x20univer-px-2.5\x20univer-py-1",
+      children: I.map(var_core_value_sigA12B => var_core_value_sig2E54(var_core_value_sig1F44, {
+        size: "small",
+        type: "button",
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sig2AD8;
+          return var_core_value_sig7A62 == null || (var_core_value_sig2AD8 = var_core_value_sig7A62.onSetGlyphSymbol) == null ? undefined : var_core_value_sig2AD8.call(var_core_value_sig7A62, var_core_value_sigA12B);
+        },
+        children: var_core_value_sigA12B
+      }, var_core_value_sigA12B))
+    }), var_core_value_sig2E54(var_core_value_sigF39A, {}), var_core_value_sig2E54(R, {
+      disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onMoreBullets,
+      children: var_core_value_sig8109.t("docs-list-ui.moreBullets")
+    }), (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.showNumberingControls) && var_core_value_sig7658(var_core_value_sigF79C, {
+      children: [var_core_value_sig2E54(R, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onEditPrefixSuffix,
+        children: var_core_value_sig8109.t("docs-list-ui.editPrefixSuffix")
+      }), var_core_value_sig2E54(R, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sigF230;
+          return var_core_value_sig7A62 == null || (var_core_value_sigF230 = var_core_value_sig7A62.onSetStartNumber) == null ? undefined : var_core_value_sigF230.call(var_core_value_sig7A62, 1);
+        },
+        children: var_core_value_sig8109.t("docs-list-ui.restartNumbering")
+      }), var_core_value_sig2E54(R, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onRestartAt,
+        children: var_core_value_sig8109.t("docs-list-ui.restartAt")
+      })]
+    }), var_core_value_sig2E54(R, {
+      disabled: (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly) || !(var_core_value_sig7A62 != null && var_core_value_sig7A62.canPromote),
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onPromote,
+      children: var_core_value_sig8109.t("docs-list-ui.promote")
+    }), var_core_value_sig2E54(R, {
+      disabled: (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly) || !(var_core_value_sig7A62 != null && var_core_value_sig7A62.canDemote),
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onDemote,
+      children: var_core_value_sig8109.t("docs-list-ui.demote")
+    }), var_core_value_sig2E54(var_core_value_sigF39A, {}), var_core_value_sig2E54(R, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectItem,
+      children: var_core_value_sig8109.t("docs-list-ui.selectListItem")
+    }), var_core_value_sig2E54(R, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectCurrentLevel,
+      children: var_core_value_sig8109.t("docs-list-ui.selectCurrentLevel")
+    }), var_core_value_sig2E54(R, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectCurrentList,
+      children: var_core_value_sig8109.t("docs-list-ui.selectCurrentList")
+    })]
+  });
+}
+function R(var_core_value_sig7565) {
+  return var_core_value_sig2E54(var_core_value_sig1F44, {
+    size: "small",
+    variant: "ghost",
+    type: "button",
+    className: "univer-w-full univer-justify-start",
+    disabled: var_core_value_sig7565.disabled,
+    onClick: var_core_value_sig09B8 => {
+      var var_core_value_sig6F91;
+      var_core_value_sig09B8.preventDefault(), (var_core_value_sig6F91 = var_core_value_sig7565.onClick) == null || var_core_value_sig6F91.call(var_core_value_sig7565);
+    },
+    children: var_core_value_sig7565.children
+  });
+}
+const z = "docs-list-ui.more-bullets-dialog";
+function _e(var_core_value_sigD4FB) {
+  var var_core_value_sig3E71;
+  let var_core_value_sig01B3 = (var_core_value_sig3E71 = var_core_value_sigD4FB.popup) == null ? undefined : var_core_value_sig3E71.extraProps,
+    var_core_value_sig7442 = var_core_value_sig0511(var_core_value_sig6CAD),
+    var_core_value_sigDF87 = var_core_value_sigDCF5(() => var_core_value_sigFE01.map((var_core_value_sig2AD0, var_core_value_sig3EEE) => ({
+      id: var_core_value_sig2AD0 + "-" + var_core_value_sig3EEE,
+      symbol: var_core_value_sig2AD0
+    })), []);
+  return var_core_value_sig7658("section", {
+    className: "univer-box-border\x20univer-w-[420px]\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-p-4\x20univer-text-sm\x20univer-shadow-lg",
+    "data-u-comp": z,
+    children: [var_core_value_sig7658("header", {
+      className: "univer-mb-3 univer-flex univer-items-center univer-justify-between",
+      children: [var_core_value_sig2E54("h2", {
+        className: "univer-m-0\x20univer-text-lg\x20univer-font-medium\x20univer-text-gray-900",
+        children: var_core_value_sig7442.t("docs-list-ui.moreBullets")
+      }), var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        size: "icon",
+        variant: "ghost",
+        className: "univer-text-xl",
+        onClick: var_core_value_sig01B3 == null ? undefined : var_core_value_sig01B3.onClose,
+        "aria-label": var_core_value_sig7442.t("docs-list-ui.close"),
+        children: "×"
+      })]
+    }), var_core_value_sig2E54("div", {
+      className: "univer-grid univer-max-h-[260px] univer-grid-cols-10 univer-gap-1 univer-overflow-y-auto univer-pr-1",
+      children: var_core_value_sigDF87.map(({
+        id: var_core_value_sigF9C7,
+        symbol: var_core_value_sig8895
+      }) => var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        size: "icon",
+        className: "univer-text-base",
+        onClick: () => {
+          var var_core_value_sigBC46;
+          return var_core_value_sig01B3 == null || (var_core_value_sigBC46 = var_core_value_sig01B3.onSelect) == null ? undefined : var_core_value_sigBC46.call(var_core_value_sig01B3, var_core_value_sig8895);
+        },
+        children: var_core_value_sig8895
+      }, var_core_value_sigF9C7))
+    })]
+  });
+}
+const B = "docs-list-ui.prefix-suffix-dialog";
+function ve(var_core_value_sig9EE0) {
+  var var_core_value_sigF051;
+  let var_core_value_sig0B45 = (var_core_value_sigF051 = var_core_value_sig9EE0.popup) == null ? undefined : var_core_value_sigF051.extraProps,
+    var_core_value_sig36F8 = var_core_value_sig0511(var_core_value_sig6CAD),
+    [var_core_value_sig03E1, var_core_value_sigBB57] = var_core_value_sigC786(""),
+    [var_core_value_sig7C4A, var_core_value_sigE799] = var_core_value_sigC786("."),
+    [var_core_value_sigB601, var_core_value_sig8B71] = var_core_value_sigC786(true);
+  return var_core_value_sig7658("form", {
+    className: "univer-box-border univer-w-[456px] univer-rounded-xl univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-6 univer-text-sm univer-shadow-xl",
+    onSubmit: var_core_value_sigC80B => {
+      var var_core_value_sig284F;
+      var_core_value_sigC80B.preventDefault(), var_core_value_sig0B45 == null || (var_core_value_sig284F = var_core_value_sig0B45.onApply) == null || var_core_value_sig284F.call(var_core_value_sig0B45, var_core_value_sig03E1, var_core_value_sig7C4A, var_core_value_sigB601 ? var_core_value_sig029F.List : var_core_value_sig029F.Level);
+    },
+    children: [var_core_value_sig2E54("h2", {
+      className: "univer-m-0\x20univer-mb-6\x20univer-text-3xl\x20univer-font-medium\x20univer-text-gray-900",
+      children: var_core_value_sig36F8.t("docs-list-ui.prefixAndSuffix")
+    }), var_core_value_sig7658("div", {
+      className: "univer-flex univer-items-end univer-gap-4",
+      children: [var_core_value_sig7658("label", {
+        className: "univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",
+        children: [var_core_value_sig2E54("span", {
+          children: var_core_value_sig36F8.t("docs-list-ui.prefix")
+        }), var_core_value_sig2E54(var_core_value_sig947E, {
+          size: "large",
+          inputClass: "univer-h-16\x20univer-text-xl",
+          value: var_core_value_sig03E1,
+          onChange: var_core_value_sigBB57,
+          placeholder: var_core_value_sig36F8.t("docs-list-ui.noPrefix")
+        })]
+      }), var_core_value_sig2E54("span", {
+        className: "univer-w-6 univer-flex-none univer-pb-5 univer-text-center univer-text-xl univer-text-gray-700",
+        children: "A"
+      }), var_core_value_sig7658("label", {
+        className: "univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",
+        children: [var_core_value_sig2E54("span", {
+          children: var_core_value_sig36F8.t("docs-list-ui.suffix")
+        }), var_core_value_sig2E54(var_core_value_sig947E, {
+          size: "large",
+          inputClass: "univer-h-16 univer-text-xl",
+          value: var_core_value_sig7C4A,
+          onChange: var_core_value_sigE799
+        })]
+      })]
+    }), var_core_value_sig2E54(var_core_value_sigCB04, {
+      className: "univer-mt-6 univer-text-xl",
+      checked: var_core_value_sigB601,
+      onChange: var_core_value_sigE154 => var_core_value_sig8B71(!!var_core_value_sigE154),
+      children: var_core_value_sig36F8.t("docs-list-ui.applyToEntireList")
+    }), var_core_value_sig7658("footer", {
+      className: "univer-mt-10 univer-flex univer-items-center univer-justify-end univer-gap-4",
+      children: [var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        variant: "default",
+        onClick: var_core_value_sig0B45 == null ? undefined : var_core_value_sig0B45.onClose,
+        children: var_core_value_sig36F8.t("docs-list-ui.cancel")
+      }), var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "submit",
+        variant: "primary",
+        children: var_core_value_sig36F8.t("docs-list-ui.ok")
+      })]
+    })]
+  });
+}
+const V = "docs-list-ui.start-number-dialog";
+function ye(var_core_value_sigAEFB) {
+  var var_core_value_sig826B;
+  let var_core_value_sigCF89 = (var_core_value_sig826B = var_core_value_sigAEFB.popup) == null ? undefined : var_core_value_sig826B.extraProps,
+    var_core_value_sig00CB = var_core_value_sig0511(var_core_value_sig6CAD),
+    [var_core_value_sig77EE, var_core_value_sig9F76] = var_core_value_sigC786(1);
+  return var_core_value_sig7658("section", {
+    className: "univer-box-border univer-w-[260px] univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-4 univer-text-sm univer-shadow-lg",
+    "data-u-comp": V,
+    children: [var_core_value_sig2E54("h2", {
+      className: "univer-m-0 univer-mb-3 univer-text-lg univer-font-medium univer-text-gray-900",
+      children: var_core_value_sig00CB.t("docs-list-ui.restartAt")
+    }), var_core_value_sig2E54(var_core_value_sig4545, {
+      className: "univer-w-full",
+      min: 1,
+      step: 1,
+      precision: 0,
+      value: var_core_value_sig77EE,
+      onChange: var_core_value_sig9F76
+    }), var_core_value_sig7658("footer", {
+      className: "univer-mt-4 univer-flex univer-justify-end univer-gap-2",
+      children: [var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        variant: "default",
+        onClick: var_core_value_sigCF89 == null ? undefined : var_core_value_sigCF89.onClose,
+        children: var_core_value_sig00CB.t("docs-list-ui.cancel")
+      }), var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        variant: "primary",
+        onClick: () => {
+          var var_core_value_sig4632;
+          return var_core_value_sigCF89 == null || (var_core_value_sig4632 = var_core_value_sigCF89.onApply) == null ? undefined : var_core_value_sig4632.call(var_core_value_sigCF89, Math.max(1, var_core_value_sig77EE ?? 1));
+        },
+        children: var_core_value_sig00CB.t("docs-list-ui.ok")
+      })]
+    })]
+  });
+}
+function H(var_core_value_sigB008, var_core_value_sig8721) {
+  return function (var_core_value_sig12F2, var_core_value_sig2259) {
+    var_core_value_sig8721(var_core_value_sig12F2, var_core_value_sig2259, var_core_value_sigB008);
+  };
+}
+function U(var_core_value_sig08BA, var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sig237B) {
+  var var_core_value_sigFEAB = arguments.length,
+    var_core_value_sigE347 = var_core_value_sigFEAB < 3 ? var_core_value_sigDBB5 : var_core_value_sig237B === null ? var_core_value_sig237B = Object.getOwnPropertyDescriptor(var_core_value_sigDBB5, var_core_value_sigCFAC) : var_core_value_sig237B,
+    var_core_value_sig3C5B;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigE347 = Reflect.decorate(var_core_value_sig08BA, var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sig237B);else {
+    for (var var_core_value_sig200B = var_core_value_sig08BA.length - 1; var_core_value_sig200B >= 0; var_core_value_sig200B--) (var_core_value_sig3C5B = var_core_value_sig08BA[var_core_value_sig200B]) && (var_core_value_sigE347 = (var_core_value_sigFEAB < 3 ? var_core_value_sig3C5B(var_core_value_sigE347) : var_core_value_sigFEAB > 3 ? var_core_value_sig3C5B(var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sigE347) : var_core_value_sig3C5B(var_core_value_sigDBB5, var_core_value_sigCFAC)) || var_core_value_sigE347);
+  }
+  return var_core_value_sigFEAB > 3 && var_core_value_sigE347 && Object.defineProperty(var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sigE347), var_core_value_sigE347;
+}
+let W = class extends var_core_value_sig6998 {
+  constructor(var_core_value_sig9E2F) {
+    super(), this._componentManager = var_core_value_sig9E2F, this._registerComponents();
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](P, L)), this.disposeWithMe(this._componentManager["register"](z, _e)), this.disposeWithMe(this._componentManager["register"](B, ve)), this.disposeWithMe(this._componentManager["register"](V, ye));
+  }
+};
+W = U([H(0, var_core_value_sig6D47(var_core_value_sigA90D))], W);
+function G(var_core_value_sig3863) {
+  "@babel/helpers - typeof";
+
+  return G = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigD082) {
+    return typeof var_core_value_sigD082;
+  } : function (var_core_value_sigDBB7) {
+    return var_core_value_sigDBB7 && typeof Symbol == "function" && var_core_value_sigDBB7.constructor === Symbol && var_core_value_sigDBB7 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigDBB7;
+  }, G(var_core_value_sig3863);
+}
+function be(var_core_value_sigC97C, var_core_value_sigC4B1) {
+  if (G(var_core_value_sigC97C) != "object" || !var_core_value_sigC97C) return var_core_value_sigC97C;
+  var var_core_value_sig1BD9 = var_core_value_sigC97C[Symbol.toPrimitive];
+  if (var_core_value_sig1BD9 !== undefined) {
+    var var_core_value_sigE43E = var_core_value_sig1BD9.call(var_core_value_sigC97C, var_core_value_sigC4B1 || "default");
+    if (G(var_core_value_sigE43E) != "object") return var_core_value_sigE43E;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigC4B1 === "string" ? String : Number)(var_core_value_sigC97C);
+}
+function xe(var_core_value_sigA937) {
+  var var_core_value_sigCAD5 = be(var_core_value_sigA937, "string");
+  return G(var_core_value_sigCAD5) == "symbol" ? var_core_value_sigCAD5 : var_core_value_sigCAD5 + "";
+}
+function K(var_core_value_sigE503, var_core_value_sig48DD, var_core_value_sig5E6A) {
+  return (var_core_value_sig48DD = xe(var_core_value_sig48DD)) in var_core_value_sigE503 ? Object.defineProperty(var_core_value_sigE503, var_core_value_sig48DD, {
+    value: var_core_value_sig5E6A,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigE503[var_core_value_sig48DD] = var_core_value_sig5E6A, var_core_value_sigE503;
+}
+const q = {
+  marker: null,
+  anchor: null,
+  open: false
+};
+var J = class {
+  constructor() {
+    K(this, "_menuState$", new var_core_value_sigC0D9(q)), K(this, "_markerSelection$", new var_core_value_sigC0D9(null)), K(this, "menuState$", this._menuState$["asObservable"]()), K(this, "markerSelection$", this._markerSelection$["asObservable"]());
+  }
+  get menuState() {
+    return this._menuState$["value"];
+  }
+  get markerSelection() {
+    return this._markerSelection$["value"];
+  }
+  nextClickMode(var_core_value_sigD0A8) {
+    let var_core_value_sigF4B9 = this.markerSelection;
+    return var_core_value_sigF4B9 && this._getMarkerGroupKey(var_core_value_sigF4B9.marker) === this._getMarkerGroupKey(var_core_value_sigD0A8) ? var_core_value_sig029F.Item : var_core_value_sig029F.Level;
+  }
+  contextMenuMode(var_core_value_sig5CEE) {
+    let var_core_value_sigE92A = this.markerSelection;
+    return !var_core_value_sigE92A || this._getMarkerListKey(var_core_value_sigE92A.marker) !== this._getMarkerListKey(var_core_value_sig5CEE) ? var_core_value_sig029F.Level : var_core_value_sigE92A.mode === "list" ? var_core_value_sig029F.List : this._getMarkerGroupKey(var_core_value_sigE92A.marker) === this._getMarkerGroupKey(var_core_value_sig5CEE) ? var_core_value_sigE92A.mode : var_core_value_sig029F.Level;
+  }
+  openMenu(var_core_value_sig362B, var_core_value_sig5CA5) {
+    this._menuState$["next"]({
+      marker: var_core_value_sig362B,
+      anchor: var_core_value_sig5CA5,
+      open: true
+    });
+  }
+  closeMenu() {
+    this._menuState$["next"](q);
+  }
+  setMarkerSelection(var_core_value_sigE90F, var_core_value_sigEFD4) {
+    this._markerSelection$["next"]({
+      marker: var_core_value_sigE90F,
+      mode: var_core_value_sigEFD4
+    });
+  }
+  clearMarkerSelection() {
+    this._markerSelection$["next"](null);
+  }
+  _getMarkerGroupKey(var_core_value_sig861B) {
+    return (var_core_value_sig861B.segmentId ?? "") + ":" + var_core_value_sig861B.listId + ":" + var_core_value_sig861B.nestingLevel;
+  }
+  _getMarkerListKey(var_core_value_sig5237) {
+    return (var_core_value_sig5237.segmentId ?? "") + ":" + var_core_value_sig5237.listId;
+  }
+};
+let Y = class extends var_core_value_sig6998 {
+  constructor(var_core_value_sigBB00, var_core_value_sig7E54, var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2) {
+    super(), this._context = var_core_value_sigBB00, this._commandService = var_core_value_sig7E54, this._docSelectionManagerService = var_core_value_sig9A8D, this._docEventManagerService = var_core_value_sigC259, this._docCanvasPopManagerService = var_core_value_sig9C9F, this._contextMenuService = var_core_value_sigFDEA, this._selectionService = var_core_value_sig86D0, this._permissionService = var_core_value_sig4CD2, K(this, "_menuDisposable", null), K(this, "_docRangesBeforeMarkerPointer", null), K(this, "_ignoreTextSelectionBefore", 0), K(this, "_openContextMenuTimer", null), this._initMarkerPointerSelectionPreserve(), this._initMarkerClick(), this._initMarkerContextMenu(), this._initMarkerSelectionRender(), this._initTextSelectionClear(), this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(() => this._closeContextMenu()));
+  }
+  _initMarkerPointerSelectionPreserve() {
+    let var_core_value_sig48CA = this._context["mainComponent"] ?? this._context["scene"];
+    this.disposeWithMe(var_core_value_sig48CA.onPointerDown$["subscribeEvent"]({
+      next: ([var_core_value_sig3D7D]) => {
+        this._docEventManagerService["isPointerOnBullet"](var_core_value_sig3D7D.offsetX, var_core_value_sig3D7D.offsetY) ? this._docRangesBeforeMarkerPointer = [...(this._docSelectionManagerService["getDocRanges"]() ?? [])] : this._docRangesBeforeMarkerPointer = null;
+      },
+      priority: -12000
+    }));
+  }
+  _initMarkerClick() {
+    this.disposeWithMe(this._docEventManagerService["clickBullets$"].subscribe(var_core_value_sig27E5 => {
+      let var_core_value_sig8061 = this._toMarkerInfo(var_core_value_sig27E5);
+      if (!Z(var_core_value_sig8061.listType)) return;
+      let var_core_value_sig4D4C = this._selectionService["nextClickMode"](var_core_value_sig8061);
+      this._selectMarker(var_core_value_sig8061, var_core_value_sig4D4C);
+    }));
+  }
+  _initMarkerContextMenu() {
+    this.disposeWithMe(this._docEventManagerService["contextMenuBullets$"].subscribe(var_core_value_sigC9E0 => {
+      let var_core_value_sig76BA = this._toMarkerInfo(var_core_value_sigC9E0);
+      Z(var_core_value_sig76BA.listType) && this._openMarkerContextMenuFromOffset(var_core_value_sig76BA, var_core_value_sigC9E0.x, var_core_value_sigC9E0.y);
+    }));
+  }
+  _openMarkerContextMenuFromOffset(var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621) {
+    let var_core_value_sigBBFF = Ce(var_core_value_sigA942, var_core_value_sigA621, this._context["scene"]),
+      var_core_value_sig8889 = this._selectionService["contextMenuMode"](var_core_value_sig50AF);
+    this._selectionService["openMenu"](var_core_value_sig50AF, var_core_value_sigBBFF), this._selectMarker(var_core_value_sig50AF, var_core_value_sig8889), this._scheduleOpenContextMenu(var_core_value_sig50AF, var_core_value_sigBBFF.x, var_core_value_sigBBFF.y);
+  }
+  _scheduleOpenContextMenu(var_core_value_sig32F8, var_core_value_sig5B67, var_core_value_sig1758) {
+    this._clearOpenContextMenuTimer(), this._openContextMenuTimer = setTimeout(() => {
+      this._openContextMenuTimer = null, this._openContextMenu(var_core_value_sig32F8, var_core_value_sig5B67, var_core_value_sig1758);
+    }, 0);
+  }
+  _initMarkerSelectionRender() {
+    this.disposeWithMe(this._selectionService["markerSelection$"].subscribe(() => this._makeDirty())), this.disposeWithMe(this._context["scene"].afterRender$["subscribe"](var_core_value_sigFBFA => {
+      let var_core_value_sigF602 = this._selectionService["markerSelection"];
+      if (!var_core_value_sigFBFA || !var_core_value_sigF602) return;
+      let var_core_value_sig1BBD = var_core_value_sigFBFA.getContext();
+      var_core_value_sig1BBD && this._drawMarkerSelection(var_core_value_sig1BBD);
+    }));
+  }
+  _initTextSelectionClear() {
+    this.disposeWithMe(this._docSelectionManagerService["textSelection$"].subscribe(var_core_value_sigF704 => {
+      Date.now() < this._ignoreTextSelectionBefore || this._selectionService["markerSelection"] && (var_core_value_sigF704.textRanges["length"] || var_core_value_sigF704.rectRanges["length"]) && this._selectionService["clearMarkerSelection"]();
+    }));
+  }
+  _openContextMenu(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902) {
+    this._contextMenuService["hideContextMenu"](), this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"]({
+      bottom: var_core_value_sig2902,
+      left: var_core_value_sigE67E,
+      right: var_core_value_sigE67E,
+      top: var_core_value_sig2902
+    }, {
+      componentKey: P,
+      direction: "bottom-left",
+      extraProps: {
+        marker: var_core_value_sig4805,
+        readOnly: !this._canEditDocument(),
+        canDemote: var_core_value_sig4805.nestingLevel < 8,
+        canPromote: var_core_value_sig4805.nestingLevel > 0,
+        showNumberingControls: this._isOrderedMarker(var_core_value_sig4805),
+        onClose: () => this._closeContextMenu(),
+        onDemote: () => this._executeMarkerCommand(var_core_value_sig1975.id, var_core_value_sig4805),
+        onEditPrefixSuffix: () => this._openPrefixSuffixDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onMoreBullets: () => this._openMoreBulletsDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onPromote: () => this._executeMarkerCommand(var_core_value_sig6EA1.id, var_core_value_sig4805),
+        onRestartAt: () => this._openStartNumberDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onSelectCurrentLevel: () => this._selectMarkerAndClose(var_core_value_sig4805, var_core_value_sig029F.Level),
+        onSelectCurrentList: () => this._selectMarkerAndClose(var_core_value_sig4805, var_core_value_sig029F.List),
+        onSelectItem: () => this._selectMarkerAndClose(var_core_value_sig4805, var_core_value_sig029F.Item),
+        onSetGlyphSymbol: var_core_value_sig2BCF => this._executeMarkerCommand(var_core_value_sig3767.id, var_core_value_sig4805, {
+          symbol: var_core_value_sig2BCF
+        }),
+        onSetGlyphType: var_core_value_sig0D69 => this._executeMarkerCommand(var_core_value_sig670B.id, var_core_value_sig4805, {
+          glyphType: var_core_value_sig0D69
+        }),
+        onSetPrefixSuffix: (var_core_value_sig480E, var_core_value_sig26DB) => this._executeMarkerCommand(var_core_value_sig6912.id, var_core_value_sig4805, {
+          prefix: var_core_value_sig480E,
+          suffix: var_core_value_sig26DB
+        }),
+        onSetStartNumber: var_core_value_sigF0F9 => this._executeMarkerCommand(var_core_value_sigE235.id, var_core_value_sig4805, var_core_value_sigF0F9 === 1 ? {
+          restartFromPrevious: true,
+          startNumber: var_core_value_sigF0F9
+        } : {
+          startNumber: var_core_value_sigF0F9
+        })
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _openMoreBulletsDialog(var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809) {
+    this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sig698E, var_core_value_sig2809), {
+      componentKey: z,
+      direction: "bottom-left",
+      extraProps: {
+        onClose: () => this._closeContextMenu(),
+        onSelect: var_core_value_sig1A0F => this._executeMarkerCommand(var_core_value_sig3767.id, var_core_value_sig9989, {
+          symbol: var_core_value_sig1A0F
+        })
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _openPrefixSuffixDialog(var_core_value_sig2DAB, var_core_value_sig877E, var_core_value_sig20C8) {
+    this._isOrderedMarker(var_core_value_sig2DAB) && (this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sig877E, var_core_value_sig20C8), {
+      componentKey: B,
+      direction: "bottom-left",
+      extraProps: {
+        onApply: (var_core_value_sigFBA4, var_core_value_sig4383, var_core_value_sig186C) => this._executeMarkerCommand(var_core_value_sig6912.id, var_core_value_sig2DAB, {
+          prefix: var_core_value_sigFBA4,
+          suffix: var_core_value_sig4383,
+          mode: var_core_value_sig186C
+        }),
+        onClose: () => this._closeContextMenu()
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]));
+  }
+  _openStartNumberDialog(var_core_value_sigE9A7, var_core_value_sigBECE, var_core_value_sig1B22) {
+    this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sigBECE, var_core_value_sig1B22), {
+      componentKey: V,
+      direction: "bottom-left",
+      extraProps: {
+        onApply: var_core_value_sigD955 => this._executeMarkerCommand(var_core_value_sigE235.id, var_core_value_sigE9A7, {
+          startNumber: var_core_value_sigD955
+        }),
+        onClose: () => this._closeContextMenu()
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _closeContextMenu() {
+    var var_core_value_sig7F72;
+    this._clearOpenContextMenuTimer(), (var_core_value_sig7F72 = this._menuDisposable) == null || var_core_value_sig7F72.dispose(), this._menuDisposable = null, this._selectionService["closeMenu"]();
+  }
+  _canEditDocument() {
+    return var_core_value_sigD407(this._permissionService, this._context["unitId"], []);
+  }
+  _clearOpenContextMenuTimer() {
+    this._openContextMenuTimer != null && (clearTimeout(this._openContextMenuTimer), this._openContextMenuTimer = null);
+  }
+  _executeMarkerCommand(var_core_value_sig7B2A, var_core_value_sig06CD, var_core_value_sigA5F1 = {}) {
+    this._commandService["executeCommand"](var_core_value_sig7B2A, {
+      paragraphStartIndex: var_core_value_sig06CD.paragraphStartIndex,
+      segmentId: var_core_value_sig06CD.segmentId,
+      mode: this._getCommandMode(var_core_value_sig06CD, var_core_value_sigA5F1.mode),
+      ...var_core_value_sigA5F1
+    }), this._closeContextMenu();
+  }
+  _getCommandMode(var_core_value_sig97A2, var_core_value_sig07E9) {
+    if (var_core_value_sig07E9 === var_core_value_sig029F.Item || var_core_value_sig07E9 === var_core_value_sig029F.Level || var_core_value_sig07E9 === var_core_value_sig029F.List) return var_core_value_sig07E9;
+    let var_core_value_sig4F59 = this._selectionService["markerSelection"];
+    return !var_core_value_sig4F59 || var_core_value_sig4F59.marker["listId"] !== var_core_value_sig97A2.listId || (var_core_value_sig4F59.marker["segmentId"] ?? "") !== (var_core_value_sig97A2.segmentId ?? "") ? var_core_value_sig029F.Level : var_core_value_sig4F59.mode;
+  }
+  _selectMarker(var_core_value_sigF564, var_core_value_sig8CFA) {
+    let var_core_value_sig2E11 = this._docRangesBeforeMarkerPointer ?? [...(this._docSelectionManagerService["getDocRanges"]() ?? [])];
+    this._ignoreTextSelectionBefore = Date.now() + 400, this._selectionService["setMarkerSelection"](var_core_value_sigF564, var_core_value_sig8CFA), this._makeDirty(), this._docRangesBeforeMarkerPointer = null, var_core_value_sig2E11.length && queueMicrotask(() => {
+      this._docSelectionManagerService["replaceDocRanges"](var_core_value_sig2E11, {
+        unitId: this._context["unitId"],
+        subUnitId: this._context["unitId"]
+      }, false, {
+        forceFocus: false
+      });
+    });
+  }
+  _selectMarkerAndClose(var_core_value_sig5B69, var_core_value_sigB098) {
+    this._selectMarker(var_core_value_sig5B69, var_core_value_sigB098), this._closeContextMenu();
+  }
+  _drawMarkerSelection(var_core_value_sigCE71) {
+    let var_core_value_sig21D8 = this._getSelectedBulletBounds();
+    var_core_value_sig21D8.length && (var_core_value_sigCE71.save(), var_core_value_sigCE71.fillStyle = "#8ab4f8", var_core_value_sigCE71.globalAlpha = 0.45, var_core_value_sig21D8.forEach(var_core_value_sig48BD => {
+      let var_core_value_sig429F = this._getMarkerSelectionRect(var_core_value_sig48BD);
+      var_core_value_sigCE71.fillRect(var_core_value_sig429F.x, var_core_value_sig429F.y, var_core_value_sig429F.width, var_core_value_sig429F.height);
+    }), var_core_value_sigCE71.restore());
+  }
+  _getMarkerSelectionRect(var_core_value_sig2B65) {
+    let var_core_value_sigD7EA = Se(var_core_value_sig2B65.rect, this._context["scene"]),
+      var_core_value_sigB33B = this._isBulletMarker(var_core_value_sig2B65) ? var_core_value_sigD7EA.height * 0.72 : var_core_value_sigD7EA.height * 1.15;
+    return {
+      ...var_core_value_sigD7EA,
+      width: Math.min(var_core_value_sigD7EA.width, Math.max(8, var_core_value_sigB33B))
+    };
+  }
+  _isBulletMarker(var_core_value_sig24B9) {
+    var var_core_value_sigE627, var_core_value_sigEF3E, var_core_value_sig273D, var_core_value_sig9A0D;
+    let var_core_value_sigA319 = (var_core_value_sigE627 = var_core_value_sig24B9.paragraph["bullet"]) == null ? undefined : var_core_value_sigE627.listType,
+      var_core_value_sig2D58 = ((var_core_value_sigEF3E = var_core_value_sig24B9.paragraph["bullet"]) == null ? undefined : var_core_value_sigEF3E.nestingLevel) ?? 0,
+      var_core_value_sig223F = var_core_value_sigA319 && (((var_core_value_sig273D = this._context["unit"].lists) == null ? undefined : var_core_value_sig273D[var_core_value_sigA319]) ?? var_core_value_sig8CF5[var_core_value_sigA319]) || null,
+      var_core_value_sigD749 = var_core_value_sig223F == null || (var_core_value_sig9A0D = var_core_value_sig223F.nestingLevel) == null ? undefined : var_core_value_sig9A0D[var_core_value_sig2D58];
+    return (var_core_value_sigD749 == null ? undefined : var_core_value_sigD749.glyphType) === var_core_value_sigCF4E.BULLET || !!(var_core_value_sigD749 != null && var_core_value_sigD749.glyphSymbol);
+  }
+  _isOrderedMarker(var_core_value_sigCFFA) {
+    var var_core_value_sig58C1, var_core_value_sig5090;
+    let var_core_value_sigC368 = ((var_core_value_sig58C1 = this._context["unit"].lists) == null ? undefined : var_core_value_sig58C1[var_core_value_sigCFFA.listType]) ?? var_core_value_sig8CF5[var_core_value_sigCFFA.listType],
+      var_core_value_sigAD56 = var_core_value_sigC368 == null || (var_core_value_sig5090 = var_core_value_sigC368.nestingLevel) == null ? undefined : var_core_value_sig5090[var_core_value_sigCFFA.nestingLevel];
+    return !!(var_core_value_sigAD56 && var_core_value_sigAD56.glyphType !== var_core_value_sigCF4E.BULLET && !var_core_value_sigAD56.glyphSymbol);
+  }
+  _getSelectedBulletBounds() {
+    let var_core_value_sigDB4A = this._selectionService["markerSelection"];
+    if (!var_core_value_sigDB4A) return [];
+    let {
+      marker: var_core_value_sig6418,
+      mode: var_core_value_sig1896
+    } = var_core_value_sigDB4A;
+    return Z(var_core_value_sig6418.listType) ? this._getSelectedFallbackBulletBounds(var_core_value_sig6418, var_core_value_sig1896).concat(this._docEventManagerService["getBulletBounds"]().filter(var_core_value_sigF62A => this._isMarkerBoundSelected(var_core_value_sigF62A, var_core_value_sig6418, var_core_value_sig1896) && !this._hasFallbackBoundForMarker(var_core_value_sigF62A.paragraph["startIndex"], var_core_value_sigF62A.segmentId))) : [];
+  }
+  _getSelectedFallbackBulletBounds(var_core_value_sig0285, var_core_value_sig777D) {
+    var var_core_value_sig3F4C;
+    return (((var_core_value_sig3F4C = this._context["unit"].getBody()) == null ? undefined : var_core_value_sig3F4C.paragraphs) ?? []).filter(var_core_value_sig8178 => this._isParagraphSelected(var_core_value_sig8178, var_core_value_sig0285, var_core_value_sig777D)).map(var_core_value_sigE9ED => {
+      let var_core_value_sigB577 = this._docEventManagerService["findParagraphBoundByIndex"](var_core_value_sigE9ED.startIndex);
+      return X(var_core_value_sigB577) ? var_core_value_sig38CE(var_core_value_sigB577, var_core_value_sigE9ED) : null;
+    }).filter(var_core_value_sig9572 => var_core_value_sig9572 != null);
+  }
+  _hasFallbackBoundForMarker(var_core_value_sigD65A, var_core_value_sig5A13) {
+    let var_core_value_sigF593 = this._docEventManagerService["findParagraphBoundByIndex"](var_core_value_sigD65A);
+    return X(var_core_value_sigF593) && (var_core_value_sigF593.segmentId ?? "") === (var_core_value_sig5A13 ?? "");
+  }
+  _isMarkerBoundSelected(var_core_value_sig3607, var_core_value_sigB512, var_core_value_sigF2E6) {
+    return this._isParagraphSelected(var_core_value_sig3607.paragraph, var_core_value_sigB512, var_core_value_sigF2E6) && (var_core_value_sig3607.segmentId ?? "") === (var_core_value_sigB512.segmentId ?? "");
+  }
+  _isParagraphSelected(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2) {
+    let var_core_value_sigE68A = var_core_value_sig34C8.bullet;
+    return !var_core_value_sigE68A || var_core_value_sigE68A.listId !== var_core_value_sigB744.listId || !Z(var_core_value_sigE68A.listType) ? false : var_core_value_sigEAE2 === "item" ? var_core_value_sig34C8.startIndex === var_core_value_sigB744.paragraphStartIndex : var_core_value_sigEAE2 === "list" || var_core_value_sigE68A.nestingLevel === var_core_value_sigB744.nestingLevel;
+  }
+  _makeDirty() {
+    var var_core_value_sig3E68;
+    (var_core_value_sig3E68 = this._context["mainComponent"]) == null || var_core_value_sig3E68.makeDirty(true), this._context["scene"].makeDirty();
+  }
+  _getAnchorRect(var_core_value_sigF4C5, var_core_value_sig5410) {
+    return {
+      bottom: var_core_value_sig5410,
+      left: var_core_value_sigF4C5,
+      right: var_core_value_sigF4C5,
+      top: var_core_value_sig5410
+    };
+  }
+  _toMarkerInfo(var_core_value_sig492F) {
+    var var_core_value_sig8EA0, var_core_value_sigA6F6, var_core_value_sigCDDA;
+    return {
+      paragraphStartIndex: var_core_value_sig492F.paragraph["startIndex"],
+      listId: ((var_core_value_sig8EA0 = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sig8EA0.listId) ?? "",
+      listType: ((var_core_value_sigA6F6 = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sigA6F6.listType) ?? "",
+      nestingLevel: ((var_core_value_sigCDDA = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sigCDDA.nestingLevel) ?? 0,
+      segmentId: var_core_value_sig492F.segmentId
+    };
+  }
+};
+Y = U([H(1, var_core_value_sigF639), H(2, var_core_value_sig6D47(var_core_value_sig210D)), H(3, var_core_value_sig6D47(var_core_value_sig6A71)), H(4, var_core_value_sig6D47(var_core_value_sig63F3)), H(5, var_core_value_sig7A3C), H(6, var_core_value_sig6D47(J)), H(7, var_core_value_sigE94C)], Y);
+function X(var_core_value_sigB7FC) {
+  return !!(var_core_value_sigB7FC && typeof var_core_value_sigB7FC == "object" && "tableId" in var_core_value_sigB7FC);
+}
+function Z(var_core_value_sig9CD9) {
+  return var_core_value_sig9CD9 !== var_core_value_sigB2CE.CHECK_LIST && var_core_value_sig9CD9 !== var_core_value_sigB2CE.CHECK_LIST_CHECKED;
+}
+function Se(var_core_value_sigFD0C, var_core_value_sig849B) {
+  let var_core_value_sig5F1A = Q(var_core_value_sigFD0C.left, var_core_value_sigFD0C.top, var_core_value_sig849B),
+    var_core_value_sigB455 = Q(var_core_value_sigFD0C.right, var_core_value_sigFD0C.bottom, var_core_value_sig849B);
+  return {
+    height: var_core_value_sigB455.y - var_core_value_sig5F1A.y,
+    width: var_core_value_sigB455.x - var_core_value_sig5F1A.x,
+    x: var_core_value_sig5F1A.x,
+    y: var_core_value_sig5F1A.y
+  };
+}
+function Q(var_core_value_sig5241, var_core_value_sigC6E5, var_core_value_sigCEFB) {
+  let {
+      scaleX: var_core_value_sig1537,
+      scaleY: var_core_value_sigE4C6
+    } = var_core_value_sigCEFB.getAncestorScale(),
+    var_core_value_sig4313 = var_core_value_sigCEFB.getViewport("viewMain");
+  return var_core_value_sig4313 ? {
+    x: (var_core_value_sig5241 - var_core_value_sig4313.viewportScrollX) * var_core_value_sig1537,
+    y: (var_core_value_sigC6E5 - var_core_value_sig4313.viewportScrollY) * var_core_value_sigE4C6
+  } : {
+    x: var_core_value_sig5241,
+    y: var_core_value_sigC6E5
+  };
+}
+function Ce(var_core_value_sigFC87, var_core_value_sig156F, var_core_value_sigDD51) {
+  let {
+      scaleX: var_core_value_sigF057,
+      scaleY: var_core_value_sig72F6
+    } = var_core_value_sigDD51.getAncestorScale(),
+    var_core_value_sig9FBA = var_core_value_sigDD51.getViewport("viewMain");
+  return var_core_value_sig9FBA ? {
+    x: var_core_value_sigFC87 / var_core_value_sigF057 + var_core_value_sig9FBA.viewportScrollX,
+    y: var_core_value_sig156F / var_core_value_sig72F6 + var_core_value_sig9FBA.viewportScrollY
+  } : {
+    x: var_core_value_sigFC87,
+    y: var_core_value_sig156F
+  };
+}
+let $ = class extends var_core_value_sigDDD7 {
+  constructor(var_core_value_sigE243 = N, var_core_value_sig74A8, var_core_value_sig21B2, var_core_value_sigDE08) {
+    super(), this._config = var_core_value_sigE243, this._injector = var_core_value_sig74A8, this._renderManagerService = var_core_value_sig21B2, this._configService = var_core_value_sigDE08;
+    let {
+      menu: var_core_value_sigACCB,
+      ...var_core_value_sig7F33
+    } = var_core_value_sig39B1({}, N, this._config);
+    var_core_value_sigACCB && this._configService["setConfig"]("menu", var_core_value_sigACCB, {
+      merge: true
+    }), this._configService["setConfig"]("docs-list-ui.config", var_core_value_sig7F33);
+  }
+  onStarting() {
+    this._injector["add"]([W]), this._injector["add"]([J]), this._injector["get"](J), this._injector["get"](W);
+  }
+  onRendered() {
+    this.disposeWithMe(this._renderManagerService["registerRenderModule"](var_core_value_sig443C.UNIVER_DOC, [Y]));
+  }
+};
+K($, "pluginName", var_core_value_sigA2CE + "_UI_PLUGIN"), K($, "packageName", j), K($, "version", M), K($, "type", var_core_value_sig443C.UNIVER_DOC), $ = U([var_core_value_sig5E86(var_core_value_sig2281, var_core_value_sigB4B4, var_core_value_sig37A8, var_core_value_sig3BF6, var_core_value_sig7664), H(1, var_core_value_sig6D47(var_core_value_sigCB82)), H(2, var_core_value_sig62B7), H(3, var_core_value_sigEAE5)], $);
+export { $ as UniverDocsListUIPlugin };

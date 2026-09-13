@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@univer/unit-comparison-viewer/styles.css";
+@source "../../../../../../packages/unit-comparison-viewer/src";
 
 @custom-variant dark (&:where(.dark, .dark *));
 

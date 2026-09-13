@@ -1,0 +1,39 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-ellipse-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "ellipse",
+		"attrs": {
+			"cx": 10,
+			"cy": 10,
+			"stroke": "currentColor",
+			"rx": 8.2,
+			"ry": 6.2,
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeEllipseIcon = (0, react.forwardRef)(function ShapeEllipseIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-ellipse-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeEllipseIcon.displayName = "ShapeEllipseIcon";
+//#endregion
+exports.ShapeEllipseIcon = ShapeEllipseIcon;
+exports.default = ShapeEllipseIcon;

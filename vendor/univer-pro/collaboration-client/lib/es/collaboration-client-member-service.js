@@ -1,0 +1,71 @@
+import { CollaborationEvent, CompressMutationService, EmptyMutationInfo, ISnapshotServerService, ITransformService, RevisionService, SnapshotService, UniverCollaborationPlugin, b64DecodeUnicode, isTransformChangesetsSuccess, isTransformMutationsWithChangesetFailure, isTransformMutationsWithChangesetSuccess, mapDocumentTypeToUniverInstanceType, parseChangesetToProtocol, parseProtocolChangeset, textEncoder, uuidv4 } from "@univerjs-pro/collaboration";
+import { CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, IContextService, IImageIoService, ILogService, IMentionIOService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, ImageUploadStatusType, Inject, Injector, JSONX, LocalUndoRedoService, LocaleService, MentionType, Optional, Plugin, Quantity, Rectangle, RxDisposable, Tools, UniverInstanceType, UserManagerService, Workbook, createIdentifier, generateRandomId, isInternalEditorID, merge, mergeOverrideWithDependencies, registerDependencies, resolveWithBasePath, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { DocStateChangeManagerService, RichTextEditingMutation } from "@univerjs/docs";
+import { InsertSheetMutation, SetSelectionsOperation, SheetPermissionInitController, SheetsSelectionsService, WorkbookEditablePermission } from "@univerjs/sheets";
+import { BehaviorSubject, ReplaySubject, Subject, concatMap, firstValueFrom, map, merge as mergeLocal, of, shareReplay, take, takeUntil } from "rxjs";
+import { CmdRspCode, CombCmd, ErrorCode, FileSource, UnitAction, UnitObject } from "@univerjs/protocol";
+import { ITelemetryService } from "@univerjs/telemetry";
+import { delay, filter, map as mapLocal, take as takeLocal, takeUntil as takeUntilLocal } from "rxjs/operators";
+import { AddSlidePageMutation, EnsureSlideMasterPageMutation, MoveSlidePageMutation, RemoveSlidePageMutation } from "@univerjs-pro/slides";
+import { HTTPRequest, HTTPService, ISocketService, MergeInterceptorFactory, ThresholdInterceptorFactory, UniverNetworkPlugin } from "@univerjs/network";
+import { UniverLicensePlugin, getGlobalObject } from "@univerjs-pro/license";
+import { cbc } from "@noble/ciphers/aes.js";
+import { concatBytes, randomBytes, utf8ToBytes } from "@noble/ciphers/utils.js";
+import { DRAWING_IMAGE_ALLOW_IMAGE_LIST, getDrawingImageAllowSize } from "@univerjs/drawing";
+import { z } from "./internal-glue.js";
+let At = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459) {
+    super(), this._univerInstanceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459, z(this, "_roomMembers", new Map()), z(this, "_roomCreated$", new Subject()), this.disposeWithMe(mergeLocal(this._univerInstanceService["getTypeOfUnitDisposed$"](UniverInstanceType.UNIVER_SHEET).pipe(mapLocal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119.getUnitId())), this._univerInstanceService["getTypeOfUnitDisposed$"](UniverInstanceType.UNIVER_DOC).pipe(mapLocal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120.getUnitId())), this._univerInstanceService["getTypeOfUnitDisposed$"](UniverInstanceType.UNIVER_BOARD).pipe(mapLocal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121.getUnitId())), this._univerInstanceService["getTypeOfUnitDisposed$"](UniverInstanceType.UNIVER_BASE).pipe(mapLocal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122.getUnitId()))).subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123 => this._removeRoom(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123)));
+  }
+  waitForRoom$(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461) {
+    return this._roomMembers["has"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461) ? of(this._roomMembers["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461)) : this._roomCreated$["pipe"](mapLocal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46124 => {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46124 === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461) return this._roomMembers["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46124);
+    }));
+  }
+  updateMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465 = this._roomMembers["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463);
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465 || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465 = new jt(), this._roomMembers["set"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465), this._roomCreated$["next"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463)), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465.updateMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464);
+  }
+  removeMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46470) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46471 = this._roomMembers["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46469);
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46471 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46471.removeMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46470);
+  }
+  getRoom(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475) {
+    return this._roomMembers["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475);
+  }
+  getMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46477, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46478) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46479 = this._roomMembers["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46477);
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46479) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46479.getMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46478);
+  }
+  _removeRoom(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46483) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46484 = this._roomMembers["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46483);
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46484 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46484.dispose(), this._roomMembers["delete"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46483));
+  }
+  dispose() {
+    this._roomMembers["forEach"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126.dispose()), this._roomMembers["clear"](), this._roomCreated$["complete"]();
+  }
+};
+var jt = class extends Disposable {
+  constructor(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46487) {
+    super(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46487), z(this, "_members", new Map()), z(this, "_members$", new BehaviorSubject(this._members)), z(this, "members$", this._members$["asObservable"]());
+  }
+  dispose() {
+    this._members["clear"](), this._members$["complete"]();
+  }
+  updateMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46489) {
+    this._members["set"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46489.memberID, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46489), this._emitMembers();
+  }
+  removeMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46491) {
+    this._members["delete"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46491), this._emitMembers();
+  }
+  getMember(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46493) {
+    return this._members["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46493);
+  }
+  getAllMembers() {
+    return Array.from(this._members["values"]());
+  }
+  _emitMembers() {
+    this._members$["next"](this._members);
+  }
+};
+export { At as MemberService };

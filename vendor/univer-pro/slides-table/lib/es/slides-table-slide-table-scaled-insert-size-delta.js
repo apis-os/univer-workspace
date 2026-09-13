@@ -1,0 +1,17 @@
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, ThemeService, Tools, UniverInstanceType, generateRandomId, merge, sequenceExecute, touchDependencies } from '@univerjs/core';
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, UpdateSlideElementMutation, getSlideCommandTarget, plainTextToSlideDocumentData } from '@univerjs-pro/slides';
+import { Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+function Oe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46747) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46747.columns["reduce"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46116 + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117.width ?? 96), 0);
+}
+function ke(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46749) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46749.rows["reduce"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118 + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119.height ?? 24), 0);
+}
+function Ae(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46751, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46752, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46753, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46754) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46755 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46754 === "row" ? ke(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46751) : Oe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46751),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46754 === "row" ? ke(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46752) : Oe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46752),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D24 = Math.max(0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756 - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46755);
+  return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46753 != "number" || !Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46753) || !Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46755) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46755 <= 0 ? var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D24 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46753 / var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46755 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D24;
+}
+export { Ae as resolveSlideTableScaledInsertSizeDelta };

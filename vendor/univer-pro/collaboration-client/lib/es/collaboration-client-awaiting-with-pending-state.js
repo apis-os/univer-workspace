@@ -1,0 +1,101 @@
+import { CollaborationEvent, CompressMutationService, EmptyMutationInfo, ISnapshotServerService, ITransformService, RevisionService, SnapshotService, UniverCollaborationPlugin, b64DecodeUnicode, isTransformChangesetsSuccess, isTransformMutationsWithChangesetFailure, isTransformMutationsWithChangesetSuccess, mapDocumentTypeToUniverInstanceType, parseChangesetToProtocol, parseProtocolChangeset, textEncoder, uuidv4 } from "@univerjs-pro/collaboration";
+import { CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, IContextService, IImageIoService, ILogService, IMentionIOService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, ImageUploadStatusType, Inject, Injector, JSONX, LocalUndoRedoService, LocaleService, MentionType, Optional, Plugin, Quantity, Rectangle, RxDisposable, Tools, UniverInstanceType, UserManagerService, Workbook, createIdentifier, generateRandomId, isInternalEditorID, merge, mergeOverrideWithDependencies, registerDependencies, resolveWithBasePath, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { DocStateChangeManagerService, RichTextEditingMutation } from "@univerjs/docs";
+import { InsertSheetMutation, SetSelectionsOperation, SheetPermissionInitController, SheetsSelectionsService, WorkbookEditablePermission } from "@univerjs/sheets";
+import { BehaviorSubject, ReplaySubject, Subject, concatMap, firstValueFrom, map, merge as mergeLocal, of, shareReplay, take, takeUntil } from "rxjs";
+import { CmdRspCode, CombCmd, ErrorCode, FileSource, UnitAction, UnitObject } from "@univerjs/protocol";
+import { ITelemetryService } from "@univerjs/telemetry";
+import { delay, filter, map as mapLocal, take as takeLocal, takeUntil as takeUntilLocal } from "rxjs/operators";
+import { AddSlidePageMutation, EnsureSlideMasterPageMutation, MoveSlidePageMutation, RemoveSlidePageMutation } from "@univerjs-pro/slides";
+import { HTTPRequest, HTTPService, ISocketService, MergeInterceptorFactory, ThresholdInterceptorFactory, UniverNetworkPlugin } from "@univerjs/network";
+import { UniverLicensePlugin, getGlobalObject } from "@univerjs-pro/license";
+import { cbc } from "@noble/ciphers/aes.js";
+import { concatBytes, randomBytes, utf8ToBytes } from "@noble/ciphers/utils.js";
+import { DRAWING_IMAGE_ALLOW_IMAGE_LIST, getDrawingImageAllowSize } from "@univerjs/drawing";
+import { G, dn, mn, z } from "./internal-glue.js";
+import { Q } from "./collaboration-client-fetching-miss-state.js";
+import { q } from "./collaboration-client-pending-state.js";
+import { gn, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14 } from "./internal-core-endo.js";
+import { Z } from "./collaboration-client-offline-state.js";
+import { X } from "./collaboration-client-conflict-state.js";
+let Y = mn = class extends G {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46794, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46795, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46796, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46797, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46798, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46799, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46800, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46801, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46802, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46803, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46804, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46805, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46806) {
+    super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46794, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46795, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46796, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46797, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46798, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46802, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46805, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46801, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46806), this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46800, this._logService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46803, this._transformService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46804, this.localCacheService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46806, z(this, "status", "awaiting_with_pending"), z(this, "_resendTimeout", 0), z(this, "_maxTotalRetryTimeout", 0), z(this, "_resendTimer", undefined), z(this, "_sender", undefined), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46799 && (this._resendTimer = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46799, this._sender = this._resendTimer["subscribe"](({
+      reqId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153,
+      timeout: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154
+    }) => {
+      this._resendWithTimeout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154);
+    }));
+  }
+  appendMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46820) {
+    return this._pendingMutations["push"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46820), this;
+  }
+  onRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46822) {
+    if (this._checkMissing(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46822)) return this._clearScheduledTask(), this._injector["createInstance"](Q, this.unitID, this.type, this._awaitingChangeset, this._pendingMutations, null, [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46822], this._handler);
+    try {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157 = this._transformService["transformChangesets"]([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46822], [this._awaitingChangeset], false);
+      if (isTransformChangesetsSuccess(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157)) {
+        let {
+            c1Prime: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643,
+            c2Prime: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157,
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645 = this._transformService["transformMutationsWithChangeset"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643[0], this._pendingMutations);
+        if (isTransformMutationsWithChangesetSuccess(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645)) {
+          let {
+            c1Prime: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615,
+            m2Prime: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616
+          } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645;
+          return this._executeRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644[0].baseRev = this._getCurrentRevision(), this._clearScheduledTask(), this._injector["createInstance"](mn, this.unitID, this.type, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644[0], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616, this._handler, undefined);
+        }
+        throw var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645.error;
+      }
+      throw var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157.error;
+    } catch (var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC512) {
+      return this._logService["error"](var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC512), this._onConflict(false);
+    }
+  }
+  onRemoteAck(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46824) {
+    this._clearScheduledTask();
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46825 = this._getCurrentRevision();
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46824.revision <= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46825) return this;
+    if (this._checkMissing(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46824)) return this._injector["createInstance"](Q, this.unitID, this.type, this._awaitingChangeset, this._pendingMutations, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46824.revision, [], this._handler);
+    this._incrementRevisionNumber();
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46826 = this._injector["createInstance"](q, this.unitID, this.type, this._pendingMutations, this._handler);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46826._schedule(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46826._updateLocalCache(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46826;
+  }
+  onRemoteRej(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46830) {
+    return this._onConflict(!!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46830 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46830.isPermissionRej));
+  }
+  onRemoteRetry(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46832) {
+    return this._maxTotalRetryTimeout > var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D14 ? this.toggleOffline() : (this._resendTimer = dn(this._resendTimeout, {
+      timeout: this._resendTimeout,
+      reqId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46832.reqId
+    }), this._sender = this._resendTimer["subscribe"](({
+      reqId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46158,
+      timeout: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159
+    }) => {
+      this._resendWithTimeout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46158, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159);
+    }), this);
+  }
+  toggleOffline() {
+    return this._clearScheduledTask(), this._injector["createInstance"](Z, this.unitID, this.type, this._awaitingChangeset, this._pendingMutations, this._handler);
+  }
+  toggleOnline() {
+    return this;
+  }
+  resend() {
+    this._handler["onSendChangeset"](this._awaitingChangeset);
+  }
+  _onConflict(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46834) {
+    return this._clearScheduledTask(), this._injector["createInstance"](X, this.unitID, this.type, null, this._pendingMutations, this._handler, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46834);
+  }
+  _resendWithTimeout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46836, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46837) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46838;
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46836 === ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46838 = this._awaitingChangeset) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46838.reqId) && (this.resend(), this._resendTimeout = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46837 === 0 ? 1000 : Math.min(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46837 * 2, gn), this._maxTotalRetryTimeout += this._resendTimeout);
+  }
+  _clearScheduledTask() {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46842;
+    (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46842 = this._sender) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46842.unsubscribe(), this._resendTimeout = 0, this._maxTotalRetryTimeout = 0;
+  }
+};
+export { Y as AwaitingWithPendingState };

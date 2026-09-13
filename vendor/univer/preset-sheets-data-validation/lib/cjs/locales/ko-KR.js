@@ -1,0 +1,13 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_data_validation_locale_ko_KR = require("@univerjs/data-validation/locale/ko-KR");
+_univerjs_data_validation_locale_ko_KR = require_rolldown_runtime.__toESM(_univerjs_data_validation_locale_ko_KR);
+let _univerjs_sheets_data_validation_locale_ko_KR = require("@univerjs/sheets-data-validation/locale/ko-KR");
+_univerjs_sheets_data_validation_locale_ko_KR = require_rolldown_runtime.__toESM(_univerjs_sheets_data_validation_locale_ko_KR);
+let _univerjs_sheets_data_validation_ui_locale_ko_KR = require("@univerjs/sheets-data-validation-ui/locale/ko-KR");
+_univerjs_sheets_data_validation_ui_locale_ko_KR = require_rolldown_runtime.__toESM(_univerjs_sheets_data_validation_ui_locale_ko_KR);
+
+//#region src/locales/ko-KR.ts
+var ko_KR_default = Object.assign({}, _univerjs_data_validation_locale_ko_KR.default, _univerjs_sheets_data_validation_locale_ko_KR.default, _univerjs_sheets_data_validation_ui_locale_ko_KR.default);
+
+//#endregion
+module.exports = ko_KR_default;

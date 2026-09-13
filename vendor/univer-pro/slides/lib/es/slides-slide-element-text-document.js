@@ -1,0 +1,75 @@
+import { ArrangeTypeEnum, BooleanNumber, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, LocaleType, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, createIdentifier, createParagraphId, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, shallowEqual } from '@univerjs/core';
+import { UnitDrawingService } from '@univerjs/drawing';
+import { IShapeHostAdapterRegistry, ShapeFillEnum, ShapeLineTypeEnum, ShapeModel, ShapeTextAutoFitType, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, applyDocumentToShapeText, applySmartArtOperation, canApplyShapeFormulaLastValue, convertSmartArtToShapes, createDefaultInsertedShapeData, createUniqueShapeName, isConnectorShape, isSmartArtShapeData, normalizeShapeTextData } from '@univerjs-pro/engine-shape';
+import { transformObjectOutOfGroup } from '@univerjs/engine-render';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11 } from "./slides-plain-text-to-slide-document-data.js";
+import { na } from "./internal-core-endo.js";
+import { it } from "./slides-theme-default-shape-text.js";
+import { Yi } from "./slides-slide-document-data-to-plain-text.js";
+function Xi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462573 = {}) {
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.type === "text") return fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F4(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.textData) ?? fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.text ?? '', {
+    'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.id,
+    'textStyle': na(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.textStyle)
+  });
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.type === "shape") {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462574;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46860 = normalizeShapeTextData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.shapeData["shapeText"]);
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46860 != null && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462574 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46860.dataModel) != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462574.doc) return Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46860.dataModel["doc"]);
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46861 = it(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462573.themeData);
+    return fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46861.text ?? '', {
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.id,
+      'textStyle': na(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46861),
+      'horizontalAlign': HorizontalAlign.CENTER,
+      'verticalAlign': VerticalAlign.MIDDLE
+    });
+  }
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.type === 'placeholder') {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462575;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46862 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.placeholder["textConfig"];
+    return fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F4((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462573.placeholderLevel ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46862 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462575 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46862.textDataByLevel) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462575[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462573.placeholderLevel] : undefined) ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46862 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46862.textData)) ?? fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.text ?? '', {
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462572.id
+    });
+  }
+  return null;
+}
+function Zi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462581) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462582 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462581),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462583 = Yi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462582);
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580.type === "text") return {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580,
+    'text': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462583,
+    'textData': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462582
+  };
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580.type === 'shape') {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46863 = applyDocumentToShapeText(normalizeShapeTextData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580.shapeData['shapeText']) ?? undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462582);
+    return {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580,
+      'shapeData': {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580.shapeData,
+        'shapeText': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46863
+      }
+    };
+  }
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580.type === "placeholder") {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46864 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462580;
+    return {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46864,
+      'text': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462583,
+      'placeholder': {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46864.placeholder,
+        'textConfig': {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46864.placeholder["textConfig"],
+          'textData': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462582
+        }
+      }
+    };
+  }
+  return null;
+}
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F4(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462594) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462594 ? Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462594) : null;
+}
+export { Xi as resolveSlideElementTextDocument, Zi as applySlideElementTextDocument };

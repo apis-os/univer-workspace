@@ -1,0 +1,38 @@
+import { IReferencedUnitCatalogService, UniverEmbedPlugin, fromResourceRefUnitType, getResourceRefUnitKey } from "@univerjs-pro/embed";
+import { AuthzIoLocalService, BaseDataModel, DependentOn, Disposable, DisposableCollection, IAuthzIoService, IConfigService, IContextService, IMentionIOService, IUndoRedoService, IUniverInstanceService, Inject, Injector, LocaleService, MentionIOLocalService, Plugin, ThemeService, Tools, Univer, UniverInstanceType, Workbook, createIdentifier, merge, toDisposable } from "@univerjs/core";
+import { UniverUIPlugin, useDependency, useObservable } from "@univerjs/ui";
+import { createContext, useContext, useEffect, useMemo, useRef } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { LS_CONFIG_KEY, UniverLicensePlugin } from "@univerjs-pro/license";
+import { BehaviorSubject, Subject } from "rxjs";
+import { IBasePermissionService, UniverBasesPlugin } from "@univerjs-pro/bases";
+import { IBaseCanvasRootResolverService, IBaseUIStateService, UniverBasesUIPlugin, createScopedBaseCanvasRootResolverService } from "@univerjs-pro/bases-ui";
+import { IAttachmentIoService, UniverCollaborationClientPlugin } from "@univerjs-pro/collaboration-client";
+import { UniverProFormulaEnginePlugin } from "@univerjs-pro/engine-formula";
+import { UniverDocsPlugin } from "@univerjs/docs";
+import { UniverDocsUIPlugin } from "@univerjs/docs-ui";
+import { IRenderManagerService, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { UniverRPCMainThreadPlugin } from "@univerjs/rpc";
+import { IRefSelectionsService, REF_SELECTIONS_ENABLED, UniverSheetsPlugin } from "@univerjs/sheets";
+import { UniverSheetsFormulaPlugin } from "@univerjs/sheets-formula";
+import { RefSelectionsRenderService, UniverSheetsFormulaUIPlugin } from "@univerjs/sheets-formula-ui";
+import { UniverSheetsUIPlugin } from "@univerjs/sheets-ui";
+import { Q, q, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275 } from "./embed-unit-ui-embed-unit-uiplugin.js";
+var Ee = "@univerjs-pro/embed-unit-ui",
+  De = "1.0.0-insiders.20260907-70fc579";
+function Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254) {
+  return function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253);
+  };
+}
+function X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261 = arguments.length,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260 === null ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260 = Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262 = Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260);else {
+    for (var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2 >= 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2--) (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2]) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261 > 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259)) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262);
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261 > 3 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262 && Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262;
+}
+Q = X([Y(0, Inject(IReferencedUnitCatalogService)), Y(1, IConfigService), Y(2, Inject(LocaleService)), Y(3, Inject(ThemeService))], Q);
+q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275, "pluginName", "UNIVER_EMBED_UNIT_UI_PLUGIN"), q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275, "packageName", Ee), q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275, "version", De), q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275, "type", UniverInstanceType.UNIVER_UNKNOWN), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275 = X([DependentOn(UniverLicensePlugin, UniverEmbedPlugin), Y(1, Inject(Injector)), Y(2, IConfigService)], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275);

@@ -1,0 +1,46 @@
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
+import { ot } from "./internal-db-endo.js";
+let at = 0;
+function F(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463170, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463171, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463172) {
+  if (!ot()) return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463171();
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463173 = ct(),
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB62 = "base-perf-" + at++;
+  lt(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB62 + ":start");
+  try {
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463171();
+  } finally {
+    let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D29 = ct() - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463173;
+    lt(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB62 + ":end"), ut(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463170, var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB62 + ":start", var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB62 + ':end'), st(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463170, var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D29, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463172);
+  }
+}
+function st(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463178, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463179, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463180) {
+  if (!ot()) return;
+  let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D48 = Math.round(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463179 * 100) / 100,
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB64 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463180 && Object.keys(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463180).length ? '\x20' + JSON.stringify(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463180) : '';
+  console.info('[BasePerf]\x20' + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463178 + ':\x20' + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D48 + 'ms' + var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB64);
+}
+function ct() {
+  return typeof performance < 'u' && typeof performance.now == 'function' ? performance.now() : Date.now();
+}
+function lt(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463184) {
+  try {
+    if (typeof performance < 'u') {
+      var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463185, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463186;
+      (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463185 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463186 = performance).mark) == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463185.call(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463186, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463184);
+    }
+  } catch {}
+}
+function ut(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463190, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463191, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463192) {
+  try {
+    if (typeof performance < 'u') {
+      var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463193, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463194;
+      (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463193 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463194 = performance).measure) == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463193.call(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463194, "[BasePerf] " + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463190, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463191, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463192);
+    }
+  } catch {}
+}
+export { F as traceBasePerformance };

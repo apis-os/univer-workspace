@@ -1,0 +1,6 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<clipPath id="shape-down-arrow-icon-clip">
+<path d="M10 19.001L2 10.001H6.00098V1.00098L14.001 1.00098V10.001H18L10 19.001Z"/>
+</clipPath>
+<path d="M10 19.001L2 10.001H6.00098V1.00098L14.001 1.00098V10.001H18L10 19.001Z" stroke="black" stroke-width="3.2" clip-path="url(#shape-down-arrow-icon-clip)"/>
+</svg>

@@ -1,0 +1,25 @@
+import { AddBoardElementMutation, BOARD_MIND_MAP_CONNECTOR_ROLE, BOARD_MIND_MAP_CONTAINER_ROLE, BOARD_MIND_MAP_DECORATION_ROLE, BOARD_MIND_MAP_MODE_ID, BOARD_MIND_MAP_NODE_ROLE, BoardElementType, IBoardElementService, RemoveBoardElementMutation, SetBoardElementOrderMutation, UniverBoardsPlugin, createAddBoardElementsMutationInfos, createBoardConnectorElement, createBoardContainerElement, createBoardTextBoxShapeElement, createBoardTextBoxShapeTextData, mergeBoardRichTextDocument, offsetBoardConnectorGeometry, resolveBoardElementLocalTransformForParent, resolveBoardElementWorldBounds, resolveBoardElementWorldTransform, shapeTextToBoardDocumentTextStyle } from "@univerjs-pro/boards";
+import { BooleanNumber, CommandType, DependentOn, Disposable, HorizontalAlign, ICommandService, IConfigService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createInternalEditorID, generateRandomId, merge, sequenceExecute } from "@univerjs/core";
+import { ShapeFillEnum, ShapeLineTypeEnum, ShapeModel, ShapeTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { A, k } from "./boards-mind-mind-map-mode-id.js";
+import { Ve } from "./internal-core-endo.js";
+function Fe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46727) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46728;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46729 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46727.custom;
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46729 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46728 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46729.structured) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46728.modeId) === k && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46729.structured["semanticRole"] === A ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46729.mindmap ?? null : null;
+}
+function Ge(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46793, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46794) {
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46793.element["type"] !== BoardElementType.Shape) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46795 = Fe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46793.element);
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46795) return null;
+  let {
+    minHeight: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46796,
+    minWidth: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46797
+  } = Ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46795);
+  return {
+    width: Math.max(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46797, Math.ceil(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46794.width)),
+    height: Math.max(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46796, Math.ceil(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46794.height))
+  };
+}
+export { Ge as resolveMindMapNodeHostSize };

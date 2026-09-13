@@ -1,0 +1,4 @@
+export declare const BASES_DASHBOARD_PLUGIN = "BASE_DASHBOARD_PLUGIN";
+export declare const BASES_DASHBOARD_RESOURCE_VERSION = 1;
+export declare const BASES_DASHBOARD_GRID_COLUMNS = 12;
+export declare const BASES_DASHBOARD_DEFAULT_ROW_HEIGHT = 32;

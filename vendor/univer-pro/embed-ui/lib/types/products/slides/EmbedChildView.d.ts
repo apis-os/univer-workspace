@@ -1,0 +1,10 @@
+import type { EmbedDisplayTarget } from '@univerjs-pro/embed';
+import type { SlideModel } from '@univerjs-pro/slides';
+import type { ICommandService, IDisposable } from '@univerjs/core';
+import type { IEmbedChildContainerContext, IEmbedChildViewContribution } from '../../types/embed-ui';
+import { ISlideDrawingStateService } from '@univerjs-pro/slides-ui';
+import { IContextService } from '@univerjs/core';
+export declare function createSlidesEmbedChildViewContribution(commandService: ICommandService): IEmbedChildViewContribution;
+export declare function registerSlideEmbedDrawingContext(childUnitId: string, drawingStateService: Pick<ISlideDrawingStateService, 'state$'>, contextService: Pick<IContextService, 'setContextValue'>): IDisposable;
+export declare function applySlideDisplayTarget(slide: SlideModel, target: EmbedDisplayTarget | undefined): void;
+export declare function shouldUseSlideEmbedFloatingPreview(context: Pick<IEmbedChildContainerContext, 'layout' | 'renderScope'>): boolean;

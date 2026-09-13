@@ -1,0 +1,52 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { IAccessor } from '@univerjs/core';
+import type { IMenuButtonItem, IMenuSelectorItem } from '@univerjs/ui';
+import type { LocaleKey } from '../locale/types';
+export declare const MENU_OPTIONS: (currencySymbol: string) => Array<{
+    label: LocaleKey;
+    pattern: string | null;
+} | "|">;
+export interface IMobileNumberFormatMenuConfig {
+    kind: 'number-format';
+    title: LocaleKey;
+    commandId: string;
+    detailTitle: LocaleKey;
+    customTitle: LocaleKey;
+    quickOptions: Array<{
+        label: LocaleKey;
+        commandId: string;
+        value?: string;
+    }>;
+    decimalOptions: Array<{
+        label: LocaleKey;
+        commandId: string;
+    }>;
+    detailOptions: Array<{
+        label?: LocaleKey;
+        value?: string | null;
+        divider?: boolean;
+        custom?: boolean;
+    }>;
+    customPatterns: string[];
+}
+export declare function CurrencySymbolIconMenuItem(accessor: IAccessor): IMenuButtonItem<LocaleKey>;
+export declare function AddDecimalMenuItem(accessor: IAccessor): IMenuButtonItem<LocaleKey>;
+export declare function SubtractDecimalMenuItem(accessor: IAccessor): IMenuButtonItem<LocaleKey>;
+export declare function PercentMenuItem(accessor: IAccessor): IMenuButtonItem<LocaleKey>;
+export declare function FactoryOtherMenuItem(accessor: IAccessor): IMenuSelectorItem<LocaleKey, string> & {
+    mobileStyle: IMobileNumberFormatMenuConfig;
+};

@@ -1,0 +1,9 @@
+import { RangePreprocessController } from "@univerjs-pro/range-preprocess";
+import { FWorkbook } from "@univerjs/sheets/facade";
+var n = class extends FWorkbook {
+  getPreprocessRanges(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46) {
+    return this._injector["get"](RangePreprocessController).getAllTableJson(this._workbook, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46);
+  }
+};
+FWorkbook.extend(n);
+export {};

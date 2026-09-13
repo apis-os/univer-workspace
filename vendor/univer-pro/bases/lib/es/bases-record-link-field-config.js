@@ -1,0 +1,27 @@
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
+function M(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463018) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463019 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463018.config["targetTableId"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463020 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463018.config["multiple"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463021 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463018.config["displayFieldId"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463022 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463018.config['pickerFieldIds'],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463023 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463018.config['relationRole'];
+  return typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463019 != "string" || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463019 || typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463020 != 'boolean' || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463021 !== undefined && (typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463021 != 'string' || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463021) || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463023 !== undefined && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463023 !== BaseRecordLinkRole.Parent || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463022 !== undefined && (!Array.isArray(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463022) || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463022.some(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46778 => typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46778 != "string" || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46778) || new Set(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463022).size !== var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463022.length) ? null : {
+    'targetTableId': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463019,
+    'multiple': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463020,
+    ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463021 ? {
+      'displayFieldId': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463021
+    } : {}),
+    ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463022 ? {
+      'pickerFieldIds': [...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463022]
+    } : {}),
+    ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463023 ? {
+      'relationRole': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463023
+    } : {})
+  };
+}
+export { M as getRecordLinkFieldConfig };

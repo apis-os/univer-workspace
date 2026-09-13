@@ -1,0 +1,109 @@
+import { DOCS_TABLE_PLUGIN, DocsTableBorderPreset, DocsTableDeleteColumnsCommand, DocsTableDeleteRowsCommand, DocsTableDeleteTableCommand, DocsTableInsertColumnsCommand, DocsTableInsertRowsCommand, DocsTableInsertTableCommand, DocsTableInsertTablePosition, DocsTableInsertTitleRowCommand, DocsTableMergeCellsCommand, DocsTableMoveColumnsCommand, DocsTableMoveRowsCommand, DocsTableMoveTableCommand, DocsTableResizeColumnCommand, DocsTableResizeRowCommand, DocsTableSelectionKind, DocsTableSelectionService, DocsTableSelectionSource, DocsTableSetHeaderRowCountCommand, DocsTableSetTableBackgroundCommand, DocsTableSetTableBorderColorCommand, DocsTableSetTableBorderCommand, DocsTableSetTableBorderStyleCommand, DocsTableSetTableBorderWidthCommand, DocsTableSetTableVerticalAlignCommand, DocsTableSortDirection, DocsTableSortTableCommand, DocsTableUnmergeCellsCommand, UniverDocsTablePlugin, canMergeCells, canUnmergeCells, getTableRangeById } from "@univerjs-pro/docs-table";
+import { AlignMenuItemFactory, AlignOperationCommand, BackgroundColorSelectorMenuItemFactory, BoldMenuItemFactory, BulletListCommand, CheckListCommand, DOC_CONTENT_INSERT_MENU_ID, DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID, DOC_PARAGRAPH_T_INSERT_MENU_ID, DOC_TABLE_BLOCK_MENU_ID, DeleteLeftCommand, DocCanvasPopManagerService, DocCreateTableOperation, DocEventManagerService, DocFloatMenuService, DocParagraphMenuService, DocSelectAllCommand, DocSelectionRenderService, EMPTY_PARAGRAPH_MENU_ID, FloatTextStyleMenuItemFactory, FontFamilySelectorMenuItemFactory, FontSizeSelectorMenuItemFactory, INSERT_BELLOW_MENU_ID, ItalicMenuItemFactory, OrderListCommand, ParagraphMenuInsertBelowSubmenuItemFactory, SetDocZoomRatioOperation, SetInlineFormatBoldCommand, SetInlineFormatFontFamilyCommand, SetInlineFormatFontSizeCommand, SetInlineFormatItalicCommand, SetInlineFormatStrikethroughCommand, SetInlineFormatTextBackgroundColorCommand, SetInlineFormatTextColorCommand, SetInlineFormatUnderlineCommand, SetParagraphNamedStyleCommand, StrikeThroughMenuItemFactory, TextColorSelectorMenuItemFactory, UnderlineMenuItemFactory, UniverDocsUIPlugin } from "@univerjs/docs-ui";
+import { COLOR_PICKER_COMPONENT, ComponentManager, ContextMenuGroup, ContextMenuPosition, IContextMenuService, IMenuManagerService, IShortcutService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, RibbonInsertGroup, RibbonPosition, ToolbarButton, ToolbarItem, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { ColorKit, CommandType, DEFAULT_STYLES, DOC_RANGE_TYPE, DashStyleType, DependentOn, Disposable, DocumentBlockType, DocumentFlavor, EDITOR_ACTIVATED, FOCUSING_DOC, FOCUSING_UNIVER_EDITOR, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUniverInstanceService, Inject, Injector, LocaleService, NamedStyleType, Plugin, PresetListType, ThemeService, UniverInstanceType, VerticalAlignmentType, merge, toDisposable } from "@univerjs/core";
+import { Button, ColorPicker, Dropdown, InputNumber, Separator, Tooltip, borderClassName, clsx } from "@univerjs/design";
+import { useMemo, useState } from "react";
+import { BehaviorSubject, EMPTY, Observable, Subject, combineLatest, map, of, startWith, switchMap } from "rxjs";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DocSelectionManagerService, DocSkeletonManagerService, UniverDocsPlugin, canEditDocumentTargets, getDocumentEntityParentPermissionObjectIds, getDocumentEntityPermissionObjectId } from "@univerjs/docs";
+import { CURSOR_TYPE, DocumentSkeletonPageType, IRenderManagerService, UniverRenderEnginePlugin, Vector2, getTableIdAndSliceIndex, setDocsTableRenderViewportProvider } from "@univerjs/engine-render";
+import { AlignBottomIcon, AlignTextBothIcon, AlignTopIcon, AllBorderIcon, BoldIcon, CalendarIcon, CancelMergeIcon, DeleteColumnDoubleIcon, DeleteRowDoubleIcon, DownBorderDoubleIcon, FontColorDoubleIcon, HorizontalBorderDoubleIcon, HorizontallyIcon, InnerBorderDoubleIcon, ItalicIcon, LeftBorderDoubleIcon, LeftJustifyingIcon, MergeAllIcon, MoreDownIcon, NoBorderIcon, NoColorDoubleIcon, NumberIcon, OuterBorderDoubleIcon, PaintBucketDoubleIcon, RightBorderDoubleIcon, RightJustifyingIcon, StrikethroughIcon, TableBorderStyleDashedIcon, TableBorderStyleDottedIcon, TableBorderStyleIcon, TableBorderStyleSolidIcon, TableBorderWidthIcon, TableIcon, TextIcon, UnderlineIcon, UpBorderDoubleIcon, VerticalBorderDoubleIcon, VerticalCenterIcon } from "@univerjs/icons";
+import { documentSkeletonTableIterator } from "@univerjs-pro/docs-column";
+import { As, Gi, Lo, hs, js, ms, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462655, ya } from "./docs-table-ui-docs-table-uiplugin.js";
+import { ba, xa } from "./docs-table-ui-docs-table-passive-wheel.js";
+function Xn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461453) {
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461453) return null;
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D144 = Number(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461453.rowCount),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D145 = Number(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461453.colCount);
+  if (Qn(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D144, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D145)) return {
+    colCount: var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D145,
+    rowCount: var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D144
+  };
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461453.value == null) return null;
+  let [var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7] = String(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461453.value).split(":").map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187 => Number(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187));
+  return Qn(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7) ? {
+    colCount: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7,
+    rowCount: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6
+  } : null;
+}
+function Qn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461457, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461458) {
+  let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D150 = Number(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461457),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D151 = Number(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461458);
+  return Number.isInteger(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D150) && Number.isInteger(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D151) && var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D150 >= 1 && var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D150 <= 20 && var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D151 >= 1 && var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D151 <= 20;
+}
+const z = {
+    id: "docs-table-ui.operation.create-table",
+    type: CommandType.COMMAND,
+    handler: async (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461461, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461462) => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461463 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461461.get(ICommandService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461464 = Xn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461462);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461464 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461463.executeCommand(DocsTableInsertTableCommand.id, {
+        rows: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461464.rowCount,
+        columns: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461464.colCount,
+        position: DocsTableInsertTablePosition.Selection
+      }) : false;
+    }
+  },
+  var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB68 = "doc.menu.table",
+  er = "docs-table-ui.insert-table-picker",
+  tr = {
+    rowCount: 3,
+    colCount: 5
+  };
+var ci = "@univerjs-pro/docs-table-ui",
+  li = "1.0.0-insiders.20260907-70fc579";
+function Vi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461728) {
+  "@babel/helpers - typeof";
+
+  return Vi = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253;
+  }, Vi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461728);
+}
+function Hi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461730, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461731) {
+  if (Vi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461730) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461730) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461730;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461732 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461730[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461732 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461733 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461732.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461730, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461731 || "default");
+    if (Vi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461733) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461733;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461731 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461730);
+}
+function Ui(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461738) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461739 = Hi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461738, "string");
+  return Vi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461739) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461739 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461739 + "";
+}
+function U(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461742, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461744) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743 = Ui(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461742 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461742, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461744,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461742[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461744, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461742;
+}
+function K(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462032, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462033) {
+  return function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46337, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46338) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462033(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46337, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46338, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462032);
+  };
+}
+function va(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462036, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462039) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462040 = arguments.length,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462040 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462037 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462039 === null ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462039 = Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462038) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462039,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462042;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041 = Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462036, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462039);else {
+    for (var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D172 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462036.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D172 >= 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D172--) (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462042 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462036[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D172]) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462040 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462042(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462040 > 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462042(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462042(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462038)) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041);
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462040 > 3 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041 && Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462041;
+}
+ya = va([K(0, Inject(ComponentManager)), K(1, Inject(IconManager))], ya);
+Lo = va([K(1, Inject(DocSkeletonManagerService)), K(2, Inject(DocSelectionManagerService)), K(3, Inject(DocEventManagerService)), K(4, Inject(DocParagraphMenuService)), K(5, Inject(DocCanvasPopManagerService)), K(6, Inject(DocFloatMenuService)), K(7, Inject(DocSelectionRenderService)), K(8, Inject(DocsTableSelectionService)), K(9, Inject(Gi)), K(10, Inject(xa)), K(11, Inject(LocaleService)), K(12, Inject(ThemeService)), K(13, IContextMenuService), K(14, ICommandService), K(15, Inject(ba)), K(16, IPermissionService)], Lo);
+ms = va([K(0, ICommandService)], ms);
+hs = va([K(0, ICommandService)], hs);
+As = va([K(0, ICommandService), K(1, IShortcutService)], As);
+js = va([K(0, IMenuManagerService), K(1, Inject(DocsTableSelectionService))], js);
+U(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462655, "pluginName", DOCS_TABLE_PLUGIN + "_UI_PLUGIN"), U(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462655, "packageName", ci), U(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462655, "version", li), U(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462655, "type", UniverInstanceType.UNIVER_DOC), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462655 = va([DependentOn(UniverLicensePlugin, UniverDocsPlugin, UniverRenderEnginePlugin, UniverDocsUIPlugin, UniverDocsTablePlugin), K(1, Inject(Injector)), K(2, IRenderManagerService), K(3, IConfigService)], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462655);
+export { er, U, z, var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB68, tr };

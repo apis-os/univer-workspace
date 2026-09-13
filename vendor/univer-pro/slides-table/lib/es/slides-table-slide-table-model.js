@@ -1,0 +1,45 @@
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, ThemeService, Tools, UniverInstanceType, generateRandomId, merge, sequenceExecute, touchDependencies } from '@univerjs/core';
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, UpdateSlideElementMutation, getSlideCommandTarget, plainTextToSlideDocumentData } from '@univerjs-pro/slides';
+import { Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { K } from "./internal-glue.js";
+let Y = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259) {
+    super(), this._resourceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, K(this, "_tableChange$", new Subject()), K(this, "_tableRemoval$", new Subject()), K(this, "_lastTableChange", null), K(this, "_lastTableRemoval", null);
+  }
+  get tableChange$() {
+    return this._tableChange$["asObservable"]();
+  }
+  get tableRemoval$() {
+    return this._tableRemoval$["asObservable"]();
+  }
+  getTable(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262) {
+    return this._resourceService["getTable"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262);
+  }
+  getLastTableChange() {
+    return this._lastTableChange;
+  }
+  getLastTableRemoval() {
+    return this._lastTableRemoval;
+  }
+  notifyTableChanged(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46266) {
+    let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB12 = {
+        'unitId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265,
+        'tableId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46266
+      },
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267 = this._resourceService["getTable"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46266);
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267 && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB12.table = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267), this._lastTableChange = var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB12, this._tableChange$["next"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB12);
+  }
+  notifyTableRemoved(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46272) {
+    let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB14 = {
+      'unitId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271,
+      'tableId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46272
+    };
+    this._lastTableRemoval = var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB14, this._tableRemoval$['next'](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB14);
+  }
+  removeUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275) {}
+  dispose() {
+    this._lastTableChange = null, this._lastTableRemoval = null, this._tableChange$["complete"](), this._tableRemoval$["complete"](), super.dispose();
+  }
+};
+export { Y as SlideTableModelService };

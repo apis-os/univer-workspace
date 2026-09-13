@@ -1,0 +1,48 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/header-footer-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 16 16",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "rect",
+		"attrs": {
+			"width": 12.2,
+			"height": 13,
+			"x": 1.9,
+			"y": 1.5,
+			"stroke": "currentColor",
+			"rx": 1.4,
+			"strokeWidth": 1.2
+		}
+	}, {
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M4.9999 4.50137H10.9999M4.9999 11.4987H10.9999",
+			"strokeLinecap": "round",
+			"strokeWidth": 1.2
+		}
+	}]
+};
+const HeaderFooterIcon = (0, react.forwardRef)(function HeaderFooterIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "header-footer-icon",
+		ref,
+		icon: element
+	}));
+});
+HeaderFooterIcon.displayName = "HeaderFooterIcon";
+//#endregion
+exports.HeaderFooterIcon = HeaderFooterIcon;
+exports.default = HeaderFooterIcon;

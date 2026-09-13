@@ -1,0 +1,33 @@
+import { DOCS_QUOTE_LINE_COLOR_TOKEN, DOCS_QUOTE_LINE_WIDTH, DOCS_QUOTE_PLUGIN, DocsQuoteCancelEmptyParagraphCommand, DocsQuoteExitCommand, DocsQuoteInsertBelowCommand, DocsQuoteInsertCommand, DocsQuoteRemoveCommand, DocsQuoteUnwrapCommand, DocsQuoteUpdateStyleCommand, UniverDocsQuotePlugin, buildCancelEmptyQuoteParagraphActions, buildExitQuoteActions } from "@univerjs-pro/docs-quote";
+import { DOC_CONTENT_INSERT_MENU_ID, DOC_PARAGRAPH_T_EDIT_MENU_ID, DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID, DOC_PARAGRAPH_T_INSERT_MENU_ID, DeleteCurrentParagraphCommand, DeleteLeftCommand, DeleteRightCommand, DocAutoFormatService, DocCanvasPopManagerService, EMPTY_PARAGRAPH_MENU_ID, EnterCommand, FLOAT_TEXT_STYLE_MENU_ID, FLOAT_TOOLBAR_MENU_POSITION, INSERT_BELLOW_MENU_ID, UniverDocsUIPlugin, disableMenuWhenHeaderFooterEditing, hideMenuWhenSelectionInBlockRange } from "@univerjs/docs-ui";
+import { COLOR_PICKER_COMPONENT, ComponentManager, ContextMenuGroup, ContextMenuPosition, IMenuManagerService, IconManager, MenuItemType, MenuManagerPosition, RibbonInsertGroup, RibbonPosition, ToolbarButton, getMenuHiddenObservable, useDependency } from "@univerjs/ui";
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, DocumentBlockRangeType, ICommandService, IConfigService, IPermissionService, Inject, Injector, LocaleService, Plugin, ThemeService, UniverInstanceType, merge } from "@univerjs/core";
+import { combineLatest, map } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DocSkeletonManagerService, UniverDocsPlugin, canEditDocumentTargets, getDocumentEntityParentPermissionObjectIds, getDocumentEntityPermissionObjectId } from "@univerjs/docs";
+import { Documents, IRenderManagerService, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { FontColorDoubleIcon, LeftBorderDoubleIcon, QuoteIcon, TextIcon } from "@univerjs/icons";
+import { useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { documentSkeletonLineIterator } from "@univerjs-pro/docs-column";
+import { K, Q, X, Y, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309 } from "./docs-quote-ui-docs-quote-uiplugin.js";
+var Ve = "@univerjs-pro/docs-quote-ui",
+  He = "1.0.0-insiders.20260907-70fc579";
+function W(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204) {
+  return function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4658) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4658, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203);
+  };
+}
+function G(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46208, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211 = arguments.length,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46208 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210 === null ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210 = Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46208, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212 = Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46208, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46210);else {
+    for (var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10 >= 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10--) (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D10]) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211 > 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46208, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46208, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209)) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212);
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211 > 3 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212 && Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46208, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46212;
+}
+K = G([W(0, Inject(ComponentManager)), W(1, Inject(IconManager))], K);
+X = G([W(1, Inject(DocSkeletonManagerService)), W(2, Inject(DocCanvasPopManagerService)), W(3, Inject(ThemeService)), W(4, IPermissionService)], X);
+Q = G([W(0, Inject(DocAutoFormatService)), W(1, IMenuManagerService), W(2, ICommandService)], Q);
+Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309, "pluginName", DOCS_QUOTE_PLUGIN + "_UI_PLUGIN"), Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309, "packageName", Ve), Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309, "version", He), Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309, "type", UniverInstanceType.UNIVER_DOC), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309 = G([DependentOn(UniverLicensePlugin, UniverDocsPlugin, UniverRenderEnginePlugin, UniverDocsUIPlugin, UniverDocsQuotePlugin), W(1, Inject(Injector)), W(2, IRenderManagerService), W(3, IConfigService)], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309);

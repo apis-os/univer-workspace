@@ -1,0 +1,155 @@
+import { IConfigService, ILogService, LifecycleService, LifecycleStages, debounce } from "@univerjs/core";
+import { FormulaDataModel, IRegisterFunctionService, SetTriggerFormulaCalculationStartMutation, extractFormulaError } from "@univerjs/engine-formula";
+import { FFormula } from "@univerjs/engine-formula/facade";
+import { CalculationMode, PLUGIN_CONFIG_KEY_BASE } from "@univerjs/sheets-formula";
+import { FEnum } from "@univerjs/core/facade";
+import { FRange, FWorkbook } from "@univerjs/sheets/facade";
+
+//#region src/facade/f-formula.ts
+var FFormulaSheetsMixin = class extends FFormula {
+	/**
+	* Initialize the FUniver instance.
+	* @ignore
+	*/
+	_initialize() {
+		this._debouncedFormulaCalculation = debounce(() => {
+			this._commandService.executeCommand(SetTriggerFormulaCalculationStartMutation.id, {
+				commands: [],
+				forceCalculation: true
+			}, { onlyLocal: true });
+		}, 10);
+	}
+	setInitialFormulaComputing(calculationMode) {
+		const lifecycleStage = this._injector.get(LifecycleService).stage;
+		const logService = this._injector.get(ILogService);
+		const configService = this._injector.get(IConfigService);
+		if (lifecycleStage > LifecycleStages.Starting) logService.warn("[FFormula]", "CalculationMode is called after the Starting lifecycle and will take effect the next time the Univer Sheet is constructed. If you want it to take effect when the Univer Sheet is initialized this time, consider calling it before the Ready lifecycle or using configuration.");
+		const config = configService.getConfig(PLUGIN_CONFIG_KEY_BASE);
+		if (!config) {
+			configService.setConfig(PLUGIN_CONFIG_KEY_BASE, { initialFormulaComputing: calculationMode });
+			return;
+		}
+		config.initialFormulaComputing = calculationMode;
+	}
+	registerFunction(name, func, options) {
+		const registerFunctionService = this._injector.get(IRegisterFunctionService);
+		const params = {
+			name,
+			func,
+			description: typeof options === "string" ? options : (options === null || options === void 0 ? void 0 : options.description) ?? "",
+			locales: typeof options === "object" ? options.locales : void 0
+		};
+		const functionsDisposable = registerFunctionService.registerFunction(params);
+		this._debouncedFormulaCalculation();
+		return functionsDisposable;
+	}
+	registerAsyncFunction(name, func, options) {
+		const registerFunctionService = this._injector.get(IRegisterFunctionService);
+		const params = {
+			name,
+			func,
+			description: typeof options === "string" ? options : (options === null || options === void 0 ? void 0 : options.description) ?? "",
+			locales: typeof options === "object" ? options.locales : void 0
+		};
+		const functionsDisposable = registerFunctionService.registerAsyncFunction(params);
+		this._debouncedFormulaCalculation();
+		return functionsDisposable;
+	}
+};
+FFormula.extend(FFormulaSheetsMixin);
+
+//#endregion
+//#region src/facade/f-enum.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var FSheetsFormulaEnumMixin = class extends FEnum {
+	get CalculationMode() {
+		return CalculationMode;
+	}
+};
+FEnum.extend(FSheetsFormulaEnumMixin);
+
+//#endregion
+//#region src/facade/f-workbook.ts
+var FWorkbookEngineFormulaMixin = class extends FWorkbook {
+	getAllFormulaError() {
+		const errors = [];
+		const workbook = this._workbook;
+		const unitId = workbook.getUnitId();
+		const worksheets = workbook.getSheets();
+		const arrayFormula = this._injector.get(FormulaDataModel).getArrayFormulaCellData();
+		worksheets.forEach((worksheet) => {
+			var _arrayFormula$unitId;
+			const sheetName = worksheet.getName();
+			const sheetId = worksheet.getSheetId();
+			const cellMatrix = worksheet.getCellMatrix();
+			const arrayFormulaSheet = (arrayFormula === null || arrayFormula === void 0 || (_arrayFormula$unitId = arrayFormula[unitId]) === null || _arrayFormula$unitId === void 0 ? void 0 : _arrayFormula$unitId[sheetId]) || {};
+			cellMatrix.forValue((row, column, cell) => {
+				var _arrayFormulaSheet$ro;
+				if (!cell) return;
+				const errorType = extractFormulaError(cell, !!(arrayFormulaSheet === null || arrayFormulaSheet === void 0 || (_arrayFormulaSheet$ro = arrayFormulaSheet[row]) === null || _arrayFormulaSheet$ro === void 0 ? void 0 : _arrayFormulaSheet$ro[column]));
+				if (errorType) errors.push({
+					sheetName,
+					row,
+					column,
+					formula: cell.f || "",
+					errorType
+				});
+			});
+		});
+		return errors;
+	}
+};
+FWorkbook.extend(FWorkbookEngineFormulaMixin);
+
+//#endregion
+//#region src/facade/f-range.ts
+/**
+* @ignore
+*/
+var FRangeEngineFormulaMixin = class extends FRange {
+	getFormulaError() {
+		var _arrayFormula$unitId;
+		const errors = [];
+		const unitId = this._workbook.getUnitId();
+		const sheetId = this._worksheet.getSheetId();
+		const sheetName = this._worksheet.getName();
+		const worksheet = this._workbook.getSheetBySheetId(sheetId);
+		if (!worksheet) return errors;
+		const arrayFormula = this._injector.get(FormulaDataModel).getArrayFormulaCellData();
+		const arrayFormulaSheet = (arrayFormula === null || arrayFormula === void 0 || (_arrayFormula$unitId = arrayFormula[unitId]) === null || _arrayFormula$unitId === void 0 ? void 0 : _arrayFormula$unitId[sheetId]) || {};
+		const cellMatrix = worksheet.getCellMatrix();
+		const { startRow, endRow, startColumn, endColumn } = this._range;
+		for (let row = startRow; row <= endRow; row++) for (let column = startColumn; column <= endColumn; column++) {
+			var _arrayFormulaSheet$ro;
+			const cell = cellMatrix.getValue(row, column);
+			if (!cell) continue;
+			const errorType = extractFormulaError(cell, !!(arrayFormulaSheet === null || arrayFormulaSheet === void 0 || (_arrayFormulaSheet$ro = arrayFormulaSheet[row]) === null || _arrayFormulaSheet$ro === void 0 ? void 0 : _arrayFormulaSheet$ro[column]));
+			if (errorType) errors.push({
+				sheetName,
+				row,
+				column,
+				formula: cell.f || "",
+				errorType
+			});
+		}
+		return errors;
+	}
+};
+FRange.extend(FRangeEngineFormulaMixin);
+
+//#endregion
+export {  };

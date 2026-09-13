@@ -140,7 +140,7 @@ export function createSheetEditorPresets({
     UniverSheetsSortPreset(),
     UniverSheetsTablePreset(),
     ...(threadCommentsEnabled && collaborationEnabled
-      ? [UniverSheetsThreadCommentPreset()]
+      ? [UniverSheetsThreadCommentPreset({ collaboration: true })]
       : []),
     UniverSheetsAdvancedPreset({
       license: license ?? "",

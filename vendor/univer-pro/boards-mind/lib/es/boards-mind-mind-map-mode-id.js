@@ -1,0 +1,80 @@
+import { AddBoardElementMutation, BOARD_MIND_MAP_CONNECTOR_ROLE, BOARD_MIND_MAP_CONTAINER_ROLE, BOARD_MIND_MAP_DECORATION_ROLE, BOARD_MIND_MAP_MODE_ID, BOARD_MIND_MAP_NODE_ROLE, BoardElementType, IBoardElementService, RemoveBoardElementMutation, SetBoardElementOrderMutation, UniverBoardsPlugin, createAddBoardElementsMutationInfos, createBoardConnectorElement, createBoardContainerElement, createBoardTextBoxShapeElement, createBoardTextBoxShapeTextData, mergeBoardRichTextDocument, offsetBoardConnectorGeometry, resolveBoardElementLocalTransformForParent, resolveBoardElementWorldBounds, resolveBoardElementWorldTransform, shapeTextToBoardDocumentTextStyle } from "@univerjs-pro/boards";
+import { BooleanNumber, CommandType, DependentOn, Disposable, HorizontalAlign, ICommandService, IConfigService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createInternalEditorID, generateRandomId, merge, sequenceExecute } from "@univerjs/core";
+import { ShapeFillEnum, ShapeLineTypeEnum, ShapeModel, ShapeTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+const k = BOARD_MIND_MAP_MODE_ID,
+  ye = BOARD_MIND_MAP_CONTAINER_ROLE,
+  A = BOARD_MIND_MAP_NODE_ROLE,
+  j = BOARD_MIND_MAP_CONNECTOR_ROLE,
+  be = BOARD_MIND_MAP_DECORATION_ROLE,
+  xe = "Add\x20text",
+  M = {
+    root: {
+      fillColor: "#4f7bcf",
+      strokeColor: "#4f7bcf",
+      textColor: "#ffffff",
+      fontSize: 24
+    },
+    child: {
+      fillColor: "#ffffff",
+      strokeColor: "#4f7bcf",
+      textColor: "#111827",
+      fontSize: 18
+    },
+    connector: {
+      strokeColor: "#4f7bcf"
+    },
+    container: {
+      fillColor: "rgba(255, 255, 255, 0)",
+      strokeColor: "rgba(0, 0, 0, 0)"
+    }
+  },
+  Se = {
+    root: {
+      paddingX: 56,
+      paddingY: 34
+    },
+    child: {
+      paddingX: 40,
+      paddingY: 22
+    },
+    lineHeightRatio: 1.35
+  },
+  Ce = {
+    left: 8,
+    top: 8,
+    right: 8,
+    bottom: 8
+  },
+  N = {
+    direction: "both",
+    structureKind: "mindmap-horizontal",
+    branchLineType: "rounded-orthogonal",
+    horizontalGap: 96,
+    timelineAxisGap: 144,
+    siblingGap: 24,
+    branchGap: 40
+  },
+  P = {
+    horizontalGap: {
+      min: 80,
+      max: 320
+    },
+    siblingGap: {
+      min: 16,
+      max: 120
+    },
+    branchGap: {
+      min: 24,
+      max: 180
+    }
+  },
+  F = {
+    rootWidth: 220,
+    rootHeight: 72,
+    nodeWidth: 160,
+    nodeHeight: 48,
+    containerPadding: 48
+  };
+export { k as MIND_MAP_MODE_ID, A as MIND_MAP_NODE_ROLE, j as MIND_MAP_CONNECTOR_ROLE, xe as MIND_MAP_DEFAULT_NODE_TEXT, N as MIND_MAP_DEFAULT_LAYOUT, P as MIND_MAP_LAYOUT_SPACING_LIMITS, F as MIND_MAP_DEFAULT_NODE_SIZE };
+export { Se, M, ye, Ce, be };

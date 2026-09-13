@@ -1,0 +1,1 @@
+import{ChartImageExportService as v2}from"@univerjs-pro/chart-ui";import{FChart as v3}from"@univerjs-pro/engine-chart/facade";var n=class extends v3{exportImage(v1){return this._injector["get"](v2).exportImage(this,v1);}};v3.extend(n);export{};

@@ -1,0 +1,43 @@
+.univer-flex {
+  display: flex;
+}
+
+.univer-items-center {
+  align-items: center;
+}
+
+.univer-gap-1 {
+  gap: .25rem;
+}
+
+.univer-rounded-lg {
+  border-radius: .5rem;
+}
+
+.univer-border {
+  border-width: 1px;
+}
+
+.univer-border-solid {
+  border-style: solid;
+}
+
+.univer-border-gray-200 {
+  border-color: var(--univer-gray-200);
+}
+
+.univer-bg-gray-0 {
+  background-color: var(--univer-gray-0);
+}
+
+.univer-p-1 {
+  padding: .25rem;
+}
+
+.dark\:\!univer-border-gray-600:where(.univer-dark, .univer-dark *) {
+  border-color: var(--univer-gray-600) !important;
+}
+
+.dark\:\!univer-bg-gray-900:where(.univer-dark, .univer-dark *) {
+  background-color: var(--univer-gray-900) !important;
+}
