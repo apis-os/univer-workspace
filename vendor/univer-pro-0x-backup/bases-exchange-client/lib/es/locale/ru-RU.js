@@ -1,0 +1,8 @@
+const e = {
+  "bases-exchange-client": {
+    file: "Файл",
+    upload: "Открыть(Файл)",
+    download: "Сохранить как",
+  },
+};
+export { e as default };

@@ -1,0 +1,66 @@
+const e = {
+  bases: {
+    fieldType: {
+      text: "Text",
+      singleSelect: "Opció\x20única",
+      multiSelect: "Opcions\x20múltiples",
+      person: "Persona",
+      group: "Grup",
+      date: "Data",
+      attachment: "Adjunt",
+      number: "Número",
+      checkbox: "Casella de verificació",
+      link: "Enllaç",
+      formula: "Fórmula",
+      lookup: "Cerca",
+      flow: "Flux",
+      button: "Botó",
+      numbering: "Numeració",
+      phone: "Número de telèfon",
+      email: "Correu electrònic",
+      location: "Ubicació",
+      barcode: "Codi\x20de\x20barres",
+      progress: "Progrés",
+      currency: "Moneda",
+      rating: "Valoració",
+      recordLink: "Enllaç\x20a\x20registre",
+      recordId: "ID del registre",
+      createdBy: "Creat\x20per",
+      updatedBy: "Actualitzat per",
+      createdAt: "Data\x20de\x20creació",
+      updatedAt: "Data d'actualització",
+      summary: "Resum",
+    },
+    fieldConfig: {
+      textPlaceholder: "Introdueix\x20contingut",
+      linkPlaceholder:
+        "Introdueix un URL (p. ex. univer.ai o https://univer.ai/skills).",
+    },
+    viewType: {
+      grid: "Graella",
+      kanban: "Kanban",
+      calendar: "Calendari",
+      gantt: "Gantt",
+      gallery: "Galeria",
+    },
+    error: {
+      fieldNameRequired: "El títol del camp és obligatori",
+      invalidFieldType: "Tipus de camp no vàlid",
+      invalidCellValue: "Valor de cel·la no vàlid",
+      invalidKanbanGroupField: "Kanban requereix un camp agrupable",
+      invalidCalendarDateField:
+        "El\x20calendari\x20requereix\x20un\x20camp\x20de\x20data",
+      invalidGanttDateField:
+        "Gantt requereix camps de data d'inici i finalització",
+    },
+    command: {
+      updateCell: "Actualitzar cel·la",
+      createField: "Crear\x20camp",
+      deleteField: "Eliminar\x20camp",
+      createRecord: "Crear registre",
+      deleteRecord: "Eliminar registre",
+      updateViewConfig: "Actualitzar configuració de la vista",
+    },
+  },
+};
+module.exports = e;

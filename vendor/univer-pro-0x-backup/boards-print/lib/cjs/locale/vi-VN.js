@@ -1,0 +1,11 @@
+const e = {
+  "boards-print": {
+    menu: { print: "In", exportPng: "PNG", exportJpeg: "JPEG" },
+    loading: { print: "Đang chuẩn bị in…", image: "Đang xuất hình ảnh…" },
+    errors: {
+      printFailed: "Không\x20thể\x20in\x20bảng\x20này.",
+      exportFailed: "Không thể xuất hình ảnh của bảng này.",
+    },
+  },
+};
+module.exports = e;

@@ -13,7 +13,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { healForParse } from "./rename-univer-pro-0x-idents.mjs";
+import { healForParse, uniqueifyCollidingInferredNames } from "./rename-univer-pro-0x-idents.mjs";
+export { uniqueifyCollidingInferredNames };
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const AST_REFACTOR = "/home/gabriel/Documentos/ast-refactor";
@@ -364,76 +365,6 @@ function readDeclIdent(src, i) {
     return readIdentAt(src, skipWs(src, i + word.length));
   }
   return null;
-}
-
-/**
- * Duplicate `function fn_…sigD23F` / `const var_…sig0D46` decls from loc-slice
- * Bloom collisions make Babel throw before leftover vNNNN can infer. Rename 2nd+
- * same-scope function/class/const/let names only (skip strings/comments).
- */
-export function uniqueifyCollidingInferredNames(src) {
-  const used = new Set();
-  const jobs = [];
-  let i = 0;
-  let brace = 0;
-  let paren = 0;
-  while (i < src.length) {
-    const next = skipStringOrComment(src, i);
-    if (next !== i) {
-      i = next;
-      continue;
-    }
-    const c = src[i];
-    if (c === "{") {
-      brace += 1;
-      i += 1;
-      continue;
-    }
-    if (c === "}") {
-      brace -= 1;
-      i += 1;
-      continue;
-    }
-    if (c === "(") {
-      paren += 1;
-      i += 1;
-      continue;
-    }
-    if (c === ")") {
-      paren -= 1;
-      i += 1;
-      continue;
-    }
-    if (brace === 0 && paren <= 0) {
-      const ident = readDeclIdent(src, i);
-      if (ident) {
-        const isFn = keywordAt(src, i, "function") || keywordAt(src, i, "class");
-        if (isFn || /^(?:fn_|var_)/.test(ident.name)) {
-          if (used.has(ident.name)) {
-            let n = 1;
-            let to;
-            do {
-              to = `${ident.name}_${n}`;
-              n += 1;
-            } while (used.has(to));
-            jobs.push({ start: ident.start, end: ident.end, to });
-            used.add(to);
-          } else {
-            used.add(ident.name);
-          }
-          i = ident.end;
-          continue;
-        }
-      }
-    }
-    i += 1;
-  }
-  if (jobs.length === 0) return { src, changed: false };
-  let out = src;
-  for (const job of jobs.sort((a, b) => b.start - a.start)) {
-    out = `${out.slice(0, job.start)}${job.to}${out.slice(job.end)}`;
-  }
-  return { src: out, changed: true, renamed: jobs.length };
 }
 
 function scanCrypticIdentSpans(src) {

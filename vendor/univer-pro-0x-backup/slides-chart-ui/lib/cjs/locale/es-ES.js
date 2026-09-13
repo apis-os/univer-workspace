@@ -1,0 +1,148 @@
+const e = {
+  "slides-chart-ui": {
+    border: "Borde",
+    common: {
+      insertChartFailed: "No se pudo insertar el gráfico",
+      inlineData: "Datos en línea",
+      cancel: "Cancelar",
+      insert: "Insertar",
+      editData: "Editar datos",
+      editChart: "Editor de gráficos",
+      tableDataEmpty: "Los datos de la tabla están vacíos",
+      duplicate: "Duplicar",
+      apply: "Aplicar",
+      data: "Datos",
+      series: "Serie",
+      horizontalAxis: "Eje\x20horizontal",
+      verticalAxis: "Eje vertical",
+      setup: "Configurar",
+      customize: "Personalizar",
+      switchRowColumn: "Cambiar\x20a\x20fila/columna",
+      chartAndAxisTitles: "Títulos\x20del\x20gráfico\x20y\x20ejes",
+      chartStyle: "Estilo de gráfico",
+      heatmap: "Mapa de calor",
+      legend: "Leyenda",
+      rightVerticalAxis: "Eje vertical derecho",
+      trendline: "Línea\x20de\x20tendencia",
+      category: "Categoría",
+      label: "Etiqueta",
+      value: "Valor",
+      valueField: "Campo de valor",
+      chartType: "Tipo\x20de\x20gráfico",
+    },
+    editor: { defaultColor: "Color predeterminado" },
+    chartTypes: {
+      line: "Gráfico de líneas",
+      column: "Gráfico\x20de\x20columnas",
+      columnStacked: "Apilar · Gráfico de columnas",
+      columnPercentStacked:
+        "Apilar\x20porcentaje\x20·\x20Gráfico\x20de\x20columnas",
+      bar: "Gráfico de barras",
+      barStacked: "Gráfico\x20de\x20barras\x20apiladas",
+      barPercentStacked: "Gráfico de barras apiladas porcentual",
+      pie: "Gráfico circular",
+      donut: "Gráfico de dona",
+      pieOfPie: "Gráfico circular con subgráfico circular",
+      barOfPie: "Gráfico circular con subgráfico de barras",
+      area: "Gráfico de área",
+      areaStacked: "Gráfico de área apilada",
+      areaPercentStacked: "Gráfico de área apilada porcentual",
+      radar: "Gráfico de radar",
+      scatter: "Gráfico de dispersión",
+      combination: "Gráfico combinado",
+      wordCloud: "Nube de palabras",
+      funnel: "Gráfico de embudo",
+      bubble: "Gráfico de burbujas",
+      relation: "Gráfico\x20de\x20relación",
+      waterfall: "Gráfico de cascada",
+      pareto: "Gráfico\x20de\x20Pareto",
+      sankey: "Gráfico de Sankey",
+      heatmap: "Mapa de calor",
+      boxplot: "Diagrama\x20de\x20caja",
+      candlestick: "Gráfico de velas",
+      histogram: "Histograma",
+      treemap: "Mapa de árbol",
+      sunburst: "Diagrama de rayos solares",
+      gauge: "Gráfico de indicador",
+      chord: "Diagrama de cuerdas",
+    },
+    section: {
+      candlestick: "gráfico\x20de\x20velas",
+      chord: "tabla\x20de\x20acordes",
+      funnel: "Gráfico de embudo",
+      gauge: "Tabla\x20de\x20calibres",
+      gridlinesAndTicks: "Líneas de cuadrícula y marcas",
+      histogram: "gráfico de histograma",
+      indicatorLine: "Línea indicadora",
+      lineAndArea: "Gráfico\x20de\x20líneas\x20/\x20Gráfico\x20de\x20área",
+      paretoBar: "Serie\x20de\x20gráfico\x20de\x20barras",
+      paretoLine: "Serie de porcentaje acumulado",
+      pie: "Gráfico circular",
+      radar: "Gráfico de radar",
+      relation: "Gráfico de relación",
+      sunburst: "gráfico de rayos solares",
+      treemap: "Gráfico de mapa de árbol",
+      waterfall: "Gráfico de cascada",
+      wordCloud: "Nube de palabras",
+    },
+    candlestick: {
+      columnsError:
+        "Los datos del gráfico de velas requieren las columnas Categoría, Apertura, Máximo, Mínimo y Cierre.",
+      close: "Cierre",
+      high: "Máximo",
+      low: "Mínimo",
+      open: "Apertura",
+      series: "Serie OHLC",
+    },
+    chord: {
+      source: "Fuente",
+      target: "Objetivo",
+      emptyDiagnostic:
+        "El diagrama de cuerdas requiere al menos una relación con peso positivo entre dos nodos distintos.",
+      mappingDiagnostic:
+        "El\x20diagrama\x20de\x20cuerdas\x20requiere\x20campos\x20de\x20origen\x20y\x20destino\x20distintos\x20y,\x20opcionalmente,\x20un\x20campo\x20de\x20valor\x20diferente.",
+      configDiagnostic:
+        "La\x20configuración\x20del\x20diagrama\x20de\x20cuerdas\x20no\x20es\x20válida.\x20Compruebe\x20los\x20ángulos,\x20los\x20radios,\x20la\x20opacidad\x20y\x20los\x20tamaños.",
+      count: "recuento de relaciones",
+      associatedValue: "Valor asociado",
+    },
+    sunburst: {
+      hierarchy: "Jerarquía",
+      ownValue: "Valor propio",
+      children: "Elementos secundarios",
+      diagnostic:
+        "El\x20gráfico\x20radial\x20jerárquico\x20requiere\x20al\x20menos\x20un\x20campo\x20de\x20jerarquía\x20y\x20un\x20campo\x20de\x20valor\x20numérico.",
+    },
+    histogram: { frequency: "Frecuencia" },
+    pie: { aggregateOther: "Otro", aggregateMembers: "Elementos" },
+    treemap: {
+      hierarchy: "Campos de jerarquía",
+      ownValue: "Valor propio",
+      children: "Elementos secundarios",
+      diagnostic:
+        "El mapa de árbol requiere al menos un campo de jerarquía y un campo de valor numérico.",
+    },
+    gauge: {
+      emptyDiagnostic:
+        "El gráfico de indicador requiere al menos un valor numérico finito.",
+      mappingDiagnostic:
+        "El\x20gráfico\x20de\x20indicador\x20requiere\x20un\x20campo\x20de\x20etiqueta\x20y\x20exactamente\x20un\x20campo\x20de\x20valor.",
+      configDiagnostic:
+        "La configuración del gráfico de indicador no es válida. Compruebe la escala, los intervalos, las proporciones y los tamaños.",
+    },
+    chartField: {
+      missingCategoryFields: "Este gráfico requiere más campos de etiquetas.",
+      missingSeriesFields:
+        "Este gráfico requiere más campos de valores numéricos.",
+      invalidFieldIndex:
+        "Uno\x20de\x20los\x20campos\x20seleccionados\x20para\x20el\x20gráfico\x20ya\x20no\x20está\x20disponible.",
+      invalidValueFieldType:
+        "El\x20campo\x20de\x20valores\x20seleccionado\x20no\x20contiene\x20datos\x20numéricos.",
+      invalidDataStructure:
+        "Los\x20campos\x20seleccionados\x20no\x20forman\x20una\x20estructura\x20de\x20datos\x20válida\x20para\x20este\x20gráfico.",
+      unsupportedChartType:
+        "Este tipo de gráfico no tiene una política de consumo de campos.",
+    },
+  },
+};
+module.exports = e;

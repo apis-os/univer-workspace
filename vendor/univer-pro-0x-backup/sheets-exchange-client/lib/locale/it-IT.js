@@ -1,0 +1,8 @@
+const e = {
+  "sheets-exchange-client": {
+    file: "File",
+    upload: "Apri (File)",
+    download: "Salva con nome",
+  },
+};
+export { e as default };

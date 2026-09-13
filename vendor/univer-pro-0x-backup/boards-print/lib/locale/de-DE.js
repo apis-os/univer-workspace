@@ -1,0 +1,14 @@
+const e = {
+  "boards-print": {
+    menu: { print: "Drucken", exportPng: "PNG", exportJpeg: "JPEG" },
+    loading: {
+      print: "Druck wird vorbereitet…",
+      image: "Bild\x20wird\x20exportiert…",
+    },
+    errors: {
+      printFailed: "Dieses Board kann nicht gedruckt werden.",
+      exportFailed: "Das Bild dieses Boards kann nicht exportiert werden.",
+    },
+  },
+};
+export { e as default };

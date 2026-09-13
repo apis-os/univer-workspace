@@ -1,0 +1,22 @@
+const e = {
+  "exchange-client": {
+    uploading: "Wird hochgeladen",
+    uploadSuccess: "Datei\x20erfolgreich\x20hochgeladen",
+    uploadSuccessTip: "{0} Datei(en) erfolgreich hochgeladen",
+    downloading: "Wird heruntergeladen",
+    downloadSuccess: "Download\x20erfolgreich",
+    unknownMistake: "Unbekannter Fehler",
+    networkError: "Netzwerkfehler",
+    tooLarge: "Daten\x20sind\x20zu\x20groß",
+    internalError: "Interner unbekannter Fehler",
+    interrupt:
+      "Die Netzwerkverbindung wurde unterbrochen und der Datei-Upload ist fehlgeschlagen",
+    fileTypeError:
+      "Die ausgewählte Datei [{0}] wird für den Upload nicht unterstützt",
+    wait: "Bitte warten...",
+    cancel: "Abbrechen",
+    confirm: "Bestätigen",
+    uploadAgain: "Erneut hochladen",
+  },
+};
+export { e as default };

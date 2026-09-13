@@ -1,0 +1,37 @@
+const e = {
+  "slides-print": {
+    menu: "طباعة",
+    header: {
+      pages: "الإجمالي: {0} صفحة",
+      cancel: "إلغاء",
+      next: "التالي",
+      printing: "جارٍ الطباعة…",
+    },
+    settings: {
+      range: "نطاق الطباعة",
+      rangePlaceholder: "كل الشرائح، أو 1-3,5",
+      rangeInvalid: "أدخل أرقام شرائح ضمن العرض التقديمي، مثل 1-3,5.",
+      layout: "تخطيط\x20الطباعة",
+      fullPage: "شرائح بصفحة كاملة",
+      notesPage: "صفحات الملاحظات",
+      handout: "نشرات",
+      slidesPerPage: "الشرائح في كل صفحة",
+      order: "ترتيب الصفحات",
+      horizontal: "أفقي",
+      vertical: "عمودي",
+      paperSize: "حجم الورق",
+      orientation: "الاتجاه",
+      portrait: "عمودي",
+      landscape: "أفقي",
+      margin: "الهوامش",
+      normal: "عادي",
+      narrow: "ضيق",
+      wide: "واسع",
+      none: "بلا",
+      formatting: "التنسيق",
+      frameSlides: "إطار الشرائح",
+      slideNumber: "طباعة أرقام الشرائح",
+    },
+  },
+};
+module.exports = e;

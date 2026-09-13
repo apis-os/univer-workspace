@@ -1,0 +1,66 @@
+const e = {
+  bases: {
+    fieldType: {
+      text: "Texto",
+      singleSelect: "Opção única",
+      multiSelect: "Múltiplas\x20opções",
+      person: "Pessoa",
+      group: "Grupo",
+      date: "Data",
+      attachment: "Anexo",
+      number: "Número",
+      checkbox: "Caixa\x20de\x20seleção",
+      link: "Link",
+      formula: "Fórmula",
+      lookup: "Consulta",
+      flow: "Fluxo",
+      button: "Botão",
+      numbering: "Numeração",
+      phone: "Número de telefone",
+      email: "E-mail",
+      location: "Localização",
+      barcode: "Código\x20de\x20barras",
+      progress: "Progresso",
+      currency: "Moeda",
+      rating: "Avaliação",
+      recordLink: "Link de registro",
+      recordId: "ID do registro",
+      createdBy: "Criado por",
+      updatedBy: "Atualizado por",
+      createdAt: "Data\x20de\x20criação",
+      updatedAt: "Data de atualização",
+      summary: "Resumo",
+    },
+    fieldConfig: {
+      textPlaceholder: "Insira conteúdo",
+      linkPlaceholder:
+        "Insira uma URL (ex.: univer.ai ou https://univer.ai/skills).",
+    },
+    viewType: {
+      grid: "Grade",
+      kanban: "Kanban",
+      calendar: "Calendário",
+      gantt: "Gantt",
+      gallery: "Galeria",
+    },
+    error: {
+      fieldNameRequired: "O título do campo é obrigatório",
+      invalidFieldType: "Tipo de campo inválido",
+      invalidCellValue: "Valor da célula inválido",
+      invalidKanbanGroupField:
+        "O\x20Kanban\x20requer\x20um\x20campo\x20agrupável",
+      invalidCalendarDateField: "O calendário requer um campo de data",
+      invalidGanttDateField:
+        "O Gantt requer campos de data de início e término",
+    },
+    command: {
+      updateCell: "Atualizar\x20célula",
+      createField: "Criar campo",
+      deleteField: "Excluir\x20campo",
+      createRecord: "Criar registro",
+      deleteRecord: "Excluir\x20registro",
+      updateViewConfig: "Atualizar configurações de visualização",
+    },
+  },
+};
+export { e as default };

@@ -1,0 +1,38 @@
+const e = {
+  "slides-print": {
+    menu: "Print",
+    header: {
+      pages: "Total {0} pages",
+      cancel: "Cancel",
+      next: "Next",
+      printing: "Printing…",
+    },
+    settings: {
+      range: "Print range",
+      rangePlaceholder: "All slides, or 1-3,5",
+      rangeInvalid:
+        "Enter slide numbers within the presentation, for example 1-3,5.",
+      layout: "Print\x20layout",
+      fullPage: "Full page slides",
+      notesPage: "Notes pages",
+      handout: "Handouts",
+      slidesPerPage: "Slides per page",
+      order: "Page\x20order",
+      horizontal: "Horizontal",
+      vertical: "Vertical",
+      paperSize: "Paper size",
+      orientation: "Orientation",
+      portrait: "Portrait",
+      landscape: "Landscape",
+      margin: "Margins",
+      normal: "Normal",
+      narrow: "Narrow",
+      wide: "Wide",
+      none: "None",
+      formatting: "Formatting",
+      frameSlides: "Frame slides",
+      slideNumber: "Print slide numbers",
+    },
+  },
+};
+export { e as default };

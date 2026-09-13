@@ -437,8 +437,130 @@ function healLeftoverElseAfterCall(src) {
   return out;
 }
 
+function skipStringOrCommentForUnique(src, i) {
+  const c = src[i];
+  const n = src[i + 1];
+  if (c === "/" && n === "/") {
+    let j = i + 2;
+    while (j < src.length && src[j] !== "\n") j += 1;
+    return j;
+  }
+  if (c === "/" && n === "*") {
+    const j = src.indexOf("*/", i + 2);
+    return j < 0 ? src.length : j + 2;
+  }
+  if (c === "/" && n !== "/" && n !== "*" && canStartRegex(src, i)) {
+    return skipRegexLiteral(src, i);
+  }
+  if (c === "'" || c === '"' || c === "`") {
+    const q = c;
+    let j = i + 1;
+    while (j < src.length) {
+      if (src[j] === "\\") {
+        j += 2;
+        continue;
+      }
+      if (src[j] === q) return j + 1;
+      j += 1;
+    }
+    return src.length;
+  }
+  return i;
+}
+
+function readDeclIdentForUnique(src, i) {
+  if (isKeywordAt(src, i, "function")) {
+    let j = skipWs(src, i + 8);
+    if (src[j] === "*") j = skipWs(src, j + 1);
+    const name = readIdent(src, j);
+    return name ? { name, start: j, end: j + name.length } : null;
+  }
+  if (isKeywordAt(src, i, "class")) {
+    const j = skipWs(src, i + 5);
+    if (src[j] === "{" || isKeywordAt(src, j, "extends")) return null;
+    const name = readIdent(src, j);
+    return name ? { name, start: j, end: j + name.length } : null;
+  }
+  if (isKeywordAt(src, i, "const") || isKeywordAt(src, i, "let")) {
+    const word = src.startsWith("const", i) ? "const" : "let";
+    const j = skipWs(src, i + word.length);
+    const name = readIdent(src, j);
+    return name ? { name, start: j, end: j + name.length } : null;
+  }
+  return null;
+}
+
+/**
+ * Duplicate top-level `function fn_…` / `const var_…` decls from leftover
+ * flatten. Rename 2nd+ same-scope names only (skip strings/comments).
+ */
+export function uniqueifyCollidingInferredNames(src) {
+  const used = new Set();
+  const jobs = [];
+  let i = 0;
+  let brace = 0;
+  let paren = 0;
+  while (i < src.length) {
+    const next = skipStringOrCommentForUnique(src, i);
+    if (next !== i) {
+      i = next;
+      continue;
+    }
+    const c = src[i];
+    if (c === "{") {
+      brace += 1;
+      i += 1;
+      continue;
+    }
+    if (c === "}") {
+      brace -= 1;
+      i += 1;
+      continue;
+    }
+    if (c === "(") {
+      paren += 1;
+      i += 1;
+      continue;
+    }
+    if (c === ")") {
+      paren -= 1;
+      i += 1;
+      continue;
+    }
+    if (brace === 0 && paren <= 0) {
+      const ident = readDeclIdentForUnique(src, i);
+      if (ident) {
+        const isFn = isKeywordAt(src, i, "function") || isKeywordAt(src, i, "class");
+        if (isFn || /^(?:fn_|var_)/.test(ident.name)) {
+          if (used.has(ident.name)) {
+            let n = 1;
+            let to;
+            do {
+              to = `${ident.name}_${n}`;
+              n += 1;
+            } while (used.has(to));
+            jobs.push({ start: ident.start, end: ident.end, to });
+            used.add(to);
+          } else {
+            used.add(ident.name);
+          }
+          i = ident.end;
+          continue;
+        }
+      }
+    }
+    i += 1;
+  }
+  if (jobs.length === 0) return { src, changed: false };
+  let out = src;
+  for (const job of jobs.sort((a, b) => b.start - a.start)) {
+    out = `${out.slice(0, job.start)}${job.to}${out.slice(job.end)}`;
+  }
+  return { src: out, changed: true, renamed: jobs.length };
+}
+
 export function healForParse(src) {
-  return closeUpdateInnerText(healLeftoverElseAfterCall(healEmptyForIfBreak(
+  return uniqueifyCollidingInferredNames(closeUpdateInnerText(healLeftoverElseAfterCall(healEmptyForIfBreak(
     healIifeCommaAndExtraBrace(
     src
       .replace(/\bas\s+delete\s+([A-Z][A-Za-z0-9_]*)/g, "as delete$1")
@@ -629,7 +751,7 @@ export function healForParse(src) {
       .replace(/\}function\b/g, "};function")
       .replace(/\}async\s+function\b/g, "};async function")
     )
-  )));
+  )))).src;
 }
 
 function closeUpdateInnerText(src) {
@@ -782,6 +904,29 @@ function closeUpdateInnerText(src) {
     .replace(
       /\[ox6170fa\(x\),ox6170fa\(y\)\];function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigA4C5\b/g,
       "[ox6170fa(x),ox6170fa(y)];};function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigA4C5"
+    )
+    // Unique leftover: BA=function(parent){R(sig2A64,parent);function
+    // sig2A64(){..._api=FA(F835);} is still open. Sibling TA=ox30ef83
+    // must not stay nested. Return the Child and invoke like yA —
+    // not at ooe's ternary Child, and not as barrel/EOF braces.
+    .replace(
+      /FA\(var_core_value_sigF835\);}TA=ox30ef83/g,
+      "FA(var_core_value_sigF835);}return fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig2A64;}(rd);TA=ox30ef83"
+    )
+    // Unique leftover: BA flatten leaves `return chart;}` before sibling
+    // `$A`. The extra `}` is the old init-wrapper close. Drop it so `$A`
+    // is a sibling. Do not dump barrel/EOF braces.
+    .replace(
+      /,var_core_value_sig77FF;\}*;function \$A\b/g,
+      ",var_core_value_sig77FF;function $A"
+    )
+    // Unique leftover: rue=function(ox25805d){R(ox26cade,ox25805d);
+    // function aue(){...}} is still open. Sibling `var oue=le({` must
+    // not stay nested. Return R's first arg and invoke like yA/BA —
+    // do not rename ox*, and do not touch ooe's ternary Child.
+    .replace(
+      /var_core_value_sig8278;}\);\}var oue=le\(/g,
+      "var_core_value_sig8278;});}return ox26cade;}(rd);var oue=le("
     );
   // Do not close ooe's class-extend inherit at `R(…9973,…8107);function
   // …sigD23F`. Child is nested inside `return ooe(parent)?ident=
@@ -1569,6 +1714,24 @@ function healIifeCommaAndExtraBrace(src, depth = 0) {
               start: i,
               end: afterArg + 1,
               to: "}}(Qv)"
+            });
+            return;
+          }
+          if (
+            arg &&
+            src[afterArg] === ")" &&
+            extra === 1 &&
+            ident === "fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigFE25" &&
+            arg === "mN" &&
+            src.startsWith(",rue=", afterArg + 1)
+          ) {
+            // Unique leftover: _N=function still open after cloneShallow.
+            // Replace `},FE25;}(mN)` with `}}(mN)` so rue is a sibling.
+            // Dropping the leftover nests rue through the barrel export.
+            splices.push({
+              start: i,
+              end: afterArg + 1,
+              to: "}}(mN)"
             });
             return;
           }

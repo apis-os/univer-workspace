@@ -1,0 +1,21 @@
+const e = {
+  "exchange-client": {
+    uploading: "Đang\x20tải\x20lên",
+    uploadSuccess: "Tải lên tệp thành công",
+    uploadSuccessTip: "{0} tệp đã được tải lên thành công",
+    downloading: "Đang tải xuống",
+    downloadSuccess: "Tải xuống thành công",
+    unknownMistake: "Lỗi\x20không\x20xác\x20định",
+    networkError: "Lỗi mạng",
+    tooLarge: "Luồng dữ liệu quá lớn",
+    internalError: "Lỗi không xác định bên trong",
+    interrupt:
+      "Kết\x20nối\x20mạng\x20bị\x20gián\x20đoạn,\x20tải\x20lên\x20tệp\x20thất\x20bại",
+    fileTypeError: "Tệp được chọn [{0}] không được hỗ trợ để tải lên",
+    wait: "Vui lòng đợi...",
+    cancel: "Hủy bỏ",
+    confirm: "Xác\x20nhận",
+    uploadAgain: "Tải\x20lên\x20lại",
+  },
+};
+export { e as default };
