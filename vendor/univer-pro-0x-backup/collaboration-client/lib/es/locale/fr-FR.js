@@ -1,0 +1,55 @@
+const e = {
+  "collaboration-client": {
+    collabClient: { tooltip: { reconnect: "Cliquez pour reconnecter" } },
+    collabStatus: {
+      fetchMiss: "Synchronisation des données du serveur...",
+      conflict: "Conflits de modification",
+      notCollab: "Fichier local",
+      synced: "Synchronisé",
+      syncing: "Synchronisation...",
+      offline:
+        "Hors\x20ligne,\x20les\x20modifications\x20seront\x20enregistrées\x20localement",
+    },
+    session: {
+      "connection-failed":
+        "Échec de la connexion. Veuillez vérifier votre réseau.",
+      "will-retry":
+        "Échec\x20de\x20la\x20connexion.\x20Une\x20nouvelle\x20tentative\x20aura\x20lieu\x20dans\x20un\x20instant.",
+      "room-full":
+        "Ce\x20document\x20a\x20atteint\x20sa\x20limite\x20de\x20collaboration.\x20Vos\x20modifications\x20seront\x20enregistrées\x20localement.",
+      "join-failed":
+        "Échec de la connexion à la collaboration. Veuillez réessayer plus tard. Vos modifications seront enregistrées localement.",
+      "room-not-exists":
+        "Échec de la connexion à la collaboration. Vos modifications seront enregistrées localement.",
+      "room-permission-denied":
+        "Aucune autorisation de collaboration. Vos modifications seront enregistrées localement.",
+      "room-cnt-exceeds":
+        "Le nombre de documents collaboratifs dépasse la limite. Vos modifications seront enregistrées localement.",
+      "collaboration-timeout":
+        "Le\x20serveur\x20ne\x20répond\x20pas\x20à\x20votre\x20demande\x20de\x20collaboration.\x20Vos\x20modifications\x20seront\x20enregistrées\x20localement.",
+    },
+    conflict: {
+      title: "Conflit de collaboration",
+      content:
+        "Il existe un conflit entre votre copie locale et la copie sur le serveur. Veuillez enregistrer vos modifications locales, car elles seront perdues lors du rechargement de la page.",
+    },
+    permission: {
+      title: "Erreur\x20d\x27authentification",
+      content:
+        "Vos\x20actions\x20entrent\x20en\x20conflit\x20avec\x20les\x20autorisations\x20du\x20serveur.\x20Veuillez\x20enregistrer\x20vos\x20modifications\x20locales\x20ailleurs,\x20car\x20elles\x20seront\x20supprimées\x20après\x20l\x27actualisation\x20de\x20la\x20page.",
+    },
+    collaboration: {
+      "single-unit": {
+        warning:
+          "Vous\x20avez\x20ouvert\x20le\x20même\x20fichier\x20dans\x20un\x20autre\x20onglet.\x20Pour\x20éviter\x20toute\x20perte\x20de\x20données,\x20vous\x20ne\x20pouvez\x20pas\x20modifier\x20dans\x20cet\x20onglet.",
+      },
+      closeRoom:
+        "Les privilèges d'édition ont été révoqués car la salle de collaboration a été fermée.",
+    },
+    auth: {
+      needGotoLoginAlert:
+        "Votre connexion a expiré. Cliquez sur OK pour vous reconnecter, ou sur Annuler pour enregistrer vos modifications locales.",
+    },
+  },
+};
+export { e as default };

@@ -1,0 +1,22 @@
+const e = {
+  "exchange-client": {
+    uploading: "Przesyłanie",
+    uploadSuccess: "Plik przesłany pomyślnie",
+    uploadSuccessTip: "Pomyślnie\x20przesłano\x20{0}\x20plik(ów)",
+    downloading: "Pobieranie",
+    downloadSuccess: "Pobieranie zakończone sukcesem",
+    unknownMistake: "Nieznany błąd",
+    networkError: "Błąd sieci",
+    tooLarge: "Dane\x20są\x20zbyt\x20duże",
+    internalError: "Wewnętrzny nieznany błąd",
+    interrupt:
+      "Połączenie sieciowe zostało przerwane i przesyłanie pliku nie powiodło się",
+    fileTypeError:
+      "Wybrany\x20plik\x20[{0}]\x20nie\x20jest\x20obsługiwany\x20do\x20przesyłania",
+    wait: "Proszę czekać...",
+    cancel: "Anuluj",
+    confirm: "Potwierdź",
+    uploadAgain: "Prześlij ponownie",
+  },
+};
+export { e as default };

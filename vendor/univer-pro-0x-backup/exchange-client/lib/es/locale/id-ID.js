@@ -1,0 +1,20 @@
+const e = {
+  "exchange-client": {
+    uploading: "Mengunggah",
+    uploadSuccess: "File berhasil diunggah",
+    uploadSuccessTip: "{0} file berhasil diunggah",
+    downloading: "Mengunduh",
+    downloadSuccess: "Unduhan berhasil",
+    unknownMistake: "Kesalahan tidak diketahui",
+    networkError: "Kesalahan jaringan",
+    tooLarge: "Data\x20terlalu\x20besar",
+    internalError: "Kesalahan\x20internal\x20tidak\x20diketahui",
+    interrupt: "Koneksi jaringan terputus dan unggahan file gagal",
+    fileTypeError: "File yang dipilih [{0}] tidak didukung untuk diunggah",
+    wait: "Harap tunggu...",
+    cancel: "Batal",
+    confirm: "Konfirmasi",
+    uploadAgain: "Unggah ulang",
+  },
+};
+export { e as default };

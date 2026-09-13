@@ -1,0 +1,8 @@
+const e = {
+  "slides-exchange-client": {
+    file: "Plik",
+    upload: "Otwórz (plik)",
+    download: "Zapisz jako",
+  },
+};
+export { e as default };

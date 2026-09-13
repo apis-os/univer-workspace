@@ -1,0 +1,7 @@
+import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,ThemeService,Tools,UniverInstanceType,generateRandomId,merge,sequenceExecute,touchDependencies}from'@univerjs/core';
+import{AddSlideElementMutation,ISlideDrawingService,PageElementTypeEnum,PageTypeEnum,RemoveSlideElementMutation,UpdateSlideElementMutation,getSlideCommandTarget,plainTextToSlideDocumentData}from'@univerjs-pro/slides';
+import{Subject}from'rxjs';
+import{UniverLicensePlugin}from'@univerjs-pro/license';
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46911){return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46911)?Math.max(0,Math.floor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46911)):0;}
+
+export { fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1 };

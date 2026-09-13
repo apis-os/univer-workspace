@@ -1,0 +1,150 @@
+const e = {
+  "boards-chart-ui": {
+    dataEditor: {
+      unavailable: "Die Diagrammdaten sind nicht verfügbar.",
+      updateFailed: "Die Diagrammdaten konnten nicht aktualisiert werden.",
+    },
+    common: {
+      editChart: "Diagramm-Editor",
+      deleteChart: "Diagramm\x20löschen",
+      editData: "Daten bearbeiten",
+      insertChartFailed: "Diagramm konnte nicht eingefügt werden",
+      data: "Daten",
+      cancel: "Abbrechen",
+      insert: "Einfügen",
+      setup: "Einrichten",
+      customize: "Anpassen",
+      switchRowColumn: "Zu\x20Zeile/Spalte\x20wechseln",
+      duplicate: "Duplizieren",
+      apply: "Anwenden",
+      chartAndAxisTitles: "Diagramm- und Achsentitel",
+      chartStyle: "Diagrammstil",
+      heatmap: "Heatmap",
+      horizontalAxis: "Horizontale\x20Achse",
+      legend: "Legende",
+      rightVerticalAxis: "Rechte vertikale Achse",
+      series: "Datenreihe",
+      trendline: "Trendlinie",
+      verticalAxis: "Vertikale\x20Achse",
+      tableDataEmpty: "Tabellendaten sind leer",
+      category: "Kategorie",
+      label: "Etikett",
+      value: "Wert",
+      valueField: "Wertfeld",
+      chartType: "Diagrammtyp",
+    },
+    chartTypes: {
+      line: "Liniendiagramm",
+      column: "Säulendiagramm",
+      columnStacked: "Stapeln · Säulendiagramm",
+      columnPercentStacked: "Prozentstapel · Säulendiagramm",
+      bar: "Balkendiagramm",
+      barStacked: "Gestapeltes Balkendiagramm",
+      barPercentStacked: "Prozent gestapeltes Balkendiagramm",
+      pie: "Kreisdiagramm",
+      donut: "Ringdiagramm",
+      pieOfPie: "Kreis-aus-Kreis-Diagramm",
+      barOfPie: "Balken-aus-Kreis-Diagramm",
+      area: "Flächendiagramm",
+      areaStacked: "Gestapeltes Flächendiagramm",
+      areaPercentStacked: "Prozent gestapeltes Flächendiagramm",
+      radar: "Netzdiagramm",
+      scatter: "Streudiagramm",
+      combination: "Kombinationsdiagramm",
+      wordCloud: "Wortwolkendiagramm",
+      funnel: "Trichterdiagramm",
+      bubble: "Blasendiagramm",
+      relation: "Beziehungsdiagramm",
+      waterfall: "Wasserfalldiagramm",
+      pareto: "Pareto-Diagramm",
+      sankey: "Sankey-Diagramm",
+      heatmap: "Heatmap",
+      boxplot: "Box-Plot-Diagramm",
+      candlestick: "Candlestick-Diagramm",
+      histogram: "Histogramm",
+      treemap: "Treemap-Diagramm",
+      sunburst: "Sunburst-Diagramm",
+      gauge: "Tachometerdiagramm",
+      chord: "Akkorddiagramm",
+    },
+    section: {
+      candlestick: "Candlestick-Diagramm",
+      chord: "Akkordtabelle",
+      funnel: "Trichterdiagramm",
+      gauge: "Gauge-Diagramm",
+      gridlinesAndTicks: "Gitternetzlinien und Teilstriche",
+      histogram: "Histogramm-Diagramm",
+      indicatorLine: "Indikatorlinie",
+      lineAndArea: "Liniendiagramm / Flächendiagramm",
+      paretoBar: "Balkendiagramm-Datenreihe",
+      paretoLine: "Kumulierte\x20Prozent-Datenreihe",
+      pie: "Kreisdiagramm",
+      radar: "Netzdiagramm",
+      relation: "Beziehungsdiagramm",
+      sunburst: "Sunburst-Diagramm",
+      treemap: "Baumkartendiagramm",
+      waterfall: "Wasserfalldiagramm",
+      wordCloud: "Wortwolke",
+    },
+    candlestick: {
+      columnsError:
+        "Kerzendiagrammdaten benötigen die Spalten Kategorie, Eröffnung, Hoch, Tief und Schluss.",
+      close: "Schluss",
+      high: "Hoch",
+      low: "Tief",
+      open: "Eröffnung",
+      series: "OHLC-Reihe",
+    },
+    chord: {
+      source: "Quelle",
+      target: "Ziel",
+      emptyDiagnostic:
+        "Ein Sehnendiagramm benötigt mindestens eine positiv gewichtete Beziehung zwischen zwei verschiedenen Knoten.",
+      mappingDiagnostic:
+        "Ein Sehnendiagramm benötigt unterschiedliche Quell- und Zielfelder sowie optional ein davon verschiedenes Wertefeld.",
+      configDiagnostic:
+        "Die Konfiguration des Sehnendiagramms ist ungültig. Prüfen Sie Winkel, Radien, Deckkraft und Größen.",
+      count: "Anzahl der Beziehungen",
+      associatedValue: "Zugeordneter Wert",
+    },
+    sunburst: {
+      hierarchy: "Hierarchie",
+      ownValue: "Eigener Wert",
+      children: "Untergeordnete Elemente",
+      diagnostic:
+        "Ein Sunburst-Diagramm benötigt mindestens ein Hierarchiefeld und ein numerisches Wertefeld.",
+    },
+    histogram: { frequency: "Häufigkeit" },
+    pie: { aggregateOther: "Sonstige", aggregateMembers: "Elemente" },
+    treemap: {
+      hierarchy: "Hierarchiefelder",
+      ownValue: "Eigener\x20Wert",
+      children: "Untergeordnete Elemente",
+      diagnostic:
+        "Ein Treemap-Diagramm benötigt mindestens ein Hierarchiefeld und ein numerisches Wertefeld.",
+    },
+    gauge: {
+      emptyDiagnostic:
+        "Ein Tachometerdiagramm benötigt mindestens einen endlichen numerischen Wert.",
+      mappingDiagnostic:
+        "Ein Tachometerdiagramm benötigt ein Beschriftungsfeld und genau ein Wertefeld.",
+      configDiagnostic:
+        "Die\x20Konfiguration\x20des\x20Tachometerdiagramms\x20ist\x20ungültig.\x20Prüfen\x20Sie\x20Skala,\x20Bereiche,\x20Verhältnisse\x20und\x20Größen.",
+    },
+    chartField: {
+      missingCategoryFields:
+        "Dieses Diagramm benötigt weitere Beschriftungsfelder.",
+      missingSeriesFields:
+        "Dieses Diagramm benötigt weitere numerische Wertefelder.",
+      invalidFieldIndex:
+        "Ein\x20ausgewähltes\x20Diagrammfeld\x20ist\x20nicht\x20mehr\x20verfügbar.",
+      invalidValueFieldType:
+        "Das ausgewählte Wertefeld enthält keine numerischen Daten.",
+      invalidDataStructure:
+        "Die ausgewählten Felder bilden keine gültige Datenstruktur für dieses Diagramm.",
+      unsupportedChartType:
+        "Für diesen Diagrammtyp gibt es keine Richtlinie zur Feldverwendung.",
+    },
+  },
+};
+module.exports = e;

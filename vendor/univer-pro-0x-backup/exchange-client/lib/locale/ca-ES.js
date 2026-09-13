@@ -1,0 +1,21 @@
+const e = {
+  "exchange-client": {
+    uploading: "Pujant",
+    uploadSuccess: "Fitxer\x20pujat\x20correctament",
+    uploadSuccessTip: "{0} fitxer(s) pujat(s) correctament",
+    downloading: "Descarregant",
+    downloadSuccess: "Descàrrega correcta",
+    unknownMistake: "Error\x20desconegut",
+    networkError: "Error\x20de\x20xarxa",
+    tooLarge: "Les dades són massa grans",
+    internalError: "Error intern desconegut",
+    interrupt:
+      "La connexió de xarxa s'ha interromput i la pujada del fitxer ha fallat",
+    fileTypeError: "El fitxer seleccionat [{0}] no és compatible per pujar",
+    wait: "Espereu...",
+    cancel: "Cancel·lar",
+    confirm: "Confirmar",
+    uploadAgain: "Tornar\x20a\x20pujar",
+  },
+};
+export { e as default };

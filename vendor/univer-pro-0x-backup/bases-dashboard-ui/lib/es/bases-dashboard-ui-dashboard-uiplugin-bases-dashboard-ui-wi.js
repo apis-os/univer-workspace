@@ -1,0 +1,3484 @@
+import { BASES_DASHBOARD_DEFAULT_ROW_HEIGHT, BASES_DASHBOARD_GRID_COLUMNS, BaseChartRuntimeService, BaseDashboardResourceService, BaseDashboardWidgetType, CreateBaseDashboardCommand, DeleteBaseDashboardCommand, RemoveBaseDashboardWidgetCommand, UniverBaseDashboardPlugin, UpdateBaseDashboardCommand, UpdateBasePivotViewCommand, UpsertBaseDashboardWidgetCommand, canEditBaseDashboard, canEditBasePivotView, createBasePivotTable, resolveBasePivotChartRowDirection } from "@univerjs-pro/bases-dashboard";
+import { ActivateBaseViewOperation, BaseUnitCollaborationStatus, FormulaEditorPanel, IBaseDashboardUIExtensionRegistryService, IBaseViewUIRegistryService, UniverBasesUIPlugin, formulaToEditorFormula, normalizeEditorFormulaForConfig, toFormulaMenuTables, toMenuFields } from "@univerjs-pro/bases-ui";
+import { CHART_TYPE_CATALOG, ChartAxisSection, ChartColorField, ChartCommonDataMappingSection, ChartEditBlockTitle, ChartEditPanel, ChartEditPanelSection, ChartEditPanelTab, ChartEditPanelTabs, ChartEditorCapability, ChartEditorProvider, ChartFunnelStyleSection, ChartGradientFillField, ChartGridlinesAndTicksSection, ChartHeatmapStyleSection, ChartHostAdapter, ChartIndicatorLineSection, ChartLegendSection, ChartLineAndAreaSection, ChartNumberFormatAtom, ChartParetoSeriesSection, ChartPieStyleSection, ChartRadarStyleSection, ChartRelationStyleSection, ChartSectionAccordion, ChartSectionAccordionContent, ChartSectionAccordionItem, ChartSectionAccordionTrigger, ChartSeriesSection, ChartStackField, ChartStyleSection, ChartThemeField, ChartTitlesSection, ChartTrendlineSection, ChartTypeField, ChartTypeSpecificDataSection, ChartTypeSpecificSetupSection, ChartTypeSpecificStyleSection, ChartUIService, ChartViewStateRegistry, ChartWaterfallSetupFields, ChartWaterfallStyleSection, ChartWordCloudStyleSection, DEFAULT_CHART_AXIS_VALUES, DEFAULT_CHART_FUNNEL_VALUES, DEFAULT_CHART_HEATMAP_VALUES, DEFAULT_CHART_INDICATOR_LINE_VALUES, DEFAULT_CHART_LEGEND_VALUES, DEFAULT_CHART_LINE_AND_AREA_VALUES, DEFAULT_CHART_PARETO_VALUES, DEFAULT_CHART_PIE_VALUES, DEFAULT_CHART_RADAR_VALUES, DEFAULT_CHART_RELATION_VALUES, DEFAULT_CHART_SERIES_VALUES, DEFAULT_CHART_STYLE_VALUES, DEFAULT_CHART_TITLE_VALUES, DEFAULT_CHART_TRENDLINE_VALUES, DEFAULT_CHART_WATERFALL_SETUP_VALUES, DEFAULT_CHART_WATERFALL_STYLE_VALUES, DEFAULT_CHART_WORD_CLOUD_VALUES, UniverChartUIPlugin, buildChartTypeSelectOptions, chartTypeSupportsCapability, chartTypeSupportsLineAndAreaStyle, useChartEditorChartType, useChartEditorHasRightAxis } from "@univerjs-pro/chart-ui";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { ShapeFormulaService, UniverShapeEditorPlugin, createFormulaShapeData } from "@univerjs-pro/shape-editor";
+import { BaseFieldType, BaseFilterConjunction, BaseFilterOperator, BaseViewType, DependentOn, Disposable, ICommandService, IConfigService, IImageIoService, ILogService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, LocaleService, Plugin, RedoCommand, ThemeService, UndoCommand, UniverInstanceType, createParagraphId, dateKit, generateRandomId, merge, numfmt, touchDependencies } from "@univerjs/core";
+import { UniverDocsUIPlugin } from "@univerjs/docs-ui";
+import { AscendingIcon, CalendarIcon, ChartIcon, CloseIcon, DeleteIcon, DescendingIcon, ExpandIcon, FilterIcon, GripVerticalIcon, IncreaseIcon, MoreDownIcon, MoreHorizontalIcon, NumberIcon, PenIcon, PivotTableIcon, RedoIcon, SearchIcon, TextIcon, UndoIcon } from "@univerjs/icons";
+import { combineLatest, map, merge as mergeLocal, skip } from "rxjs";
+import { IAttachmentIoService } from "@univerjs-pro/collaboration-client";
+import { ShapeFillEnum, ShapeLineTypeEnum, ShapeTypeEnum } from "@univerjs-pro/engine-shape";
+import { Button, Checkbox, DatePicker, Dialog, DropdownMenu, Input, InputNumber, MultipleSelect, Segmented, Select, Textarea, Tooltip, borderClassName, clsx, scrollbarClassName } from "@univerjs/design";
+import { useDependency, useObservable } from "@univerjs/ui";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { CHART_DATA_UPDATE_ANIMATION_DURATION, ChartRenderMode, ChartThemeService, ChartTypeBits, ChartWaterfallStyleTarget, IChartRenderModelManagerService, RTLChartStyle, chartBitsUtils, chartTypeCanUseTrendLine, resolveChartRuntimeStyle, resolveDefaultChartHostFrameStyle, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { PivotCellStyleTypeEnum, PivotDataFieldDataTypeEnum, PivotDataFieldSortOperatorEnum, PivotFilterTypeEnum, PivotLayoutTypeEnum, PivotSubtotalPositionEnum, PivotSubtotalTypeEnum, PivotTableFiledAreaEnum, PivotTableValuePositionEnum, isErrorValue, isPrefixValue } from "@univerjs-pro/engine-pivot";
+import { br } from "./bases-dashboard-ui-dashboard-uiplugin-bases-dashboard-ui-br.js";
+import { vr } from "./bases-dashboard-ui-dashboard-uiplugin-bases-dashboard-ui-vr.js";
+import { ri } from "./bases-dashboard-ui-dashboard-uiplugin-bases-dashboard-ui-ri.js";
+function Kn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46600, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46601) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46602 = useDependency(IPermissionService);
+  return useObservable(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46602.permissionPointUpdate$["pipe"](map(() => canEditBaseDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46602, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46600, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46601))), canEditBaseDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46602, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46600, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46601), false, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46601, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46602, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46600]);
+}
+function qn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46606, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46607, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46608) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46609 = useDependency(IPermissionService);
+  return useObservable(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46609.permissionPointUpdate$["pipe"](map(() => canEditBasePivotView(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46609, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46606, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46607, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46608))), canEditBasePivotView(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46609, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46606, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46607, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46608), false, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46609, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46607, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46606, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46608]);
+}
+function Jn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46614, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46615 = "cover") {
+  return {
+    backgroundImage: "url(" + JSON.stringify(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46614) + ")",
+    backgroundPosition: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46615 === "repeat" ? "0 0" : "center",
+    backgroundRepeat: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46615 === "repeat" ? "repeat" : "no-repeat",
+    backgroundSize: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46615 === "cover" ? "cover" : "auto"
+  };
+}
+const Yn = {
+    alignment: "left",
+    currency: "USD",
+    decimalPlaces: 0,
+    fontSize: 40,
+    fontSizeMode: "auto",
+    numberFormat: "general"
+  },
+  Xn = {
+    CNY: "¥",
+    EUR: "€",
+    USD: "$"
+  };
+function Zn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46618) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46619;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46620 = tr(((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46619 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46618.shapeData["formulaBinding"]) == null || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46619 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46619.numberFormat) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46619.pattern) ?? "");
+  return {
+    ...Yn,
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46620,
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46618.appearance
+  };
+}
+function Qn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46624, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46625) {
+  let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB21 = {
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46624.appearance,
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46625
+    },
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46626 = Zn({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46624,
+      appearance: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB21
+    }),
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46624.shapeData["formulaBinding"] ?? {
+      formula: ""
+    };
+  return {
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46624,
+    appearance: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB21,
+    shapeData: {
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46624.shapeData,
+      formulaBinding: {
+        ...var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22,
+        numberFormat: {
+          pattern: fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46626.numberFormat, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46626.decimalPlaces, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46626.currency)
+        }
+      }
+    }
+  };
+}
+function fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46630, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46631, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46632) {
+  let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D31 = Math.max(0, Math.min(8, Math.round(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46631))),
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB16 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D31 ? "." + "0"["repeat"](var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D31) : "";
+  switch (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46630) {
+    case "number":
+      return "0" + var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB16;
+    case "percent":
+      return "0" + var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB16 + "%";
+    case "currency":
+      return (Xn[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46632] ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46632) + "#,##0" + var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB16;
+    case "grouped":
+      return "#,##0" + var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB16;
+    case "compact":
+    case "general":
+      return "General";
+  }
+}
+function er(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46636, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46637, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46638) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46638.numberFormat !== "compact" || typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46637 != "number" || !Number.isFinite(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46637) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46636 : new Intl["NumberFormat"](undefined, {
+    notation: "compact",
+    minimumFractionDigits: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46638.decimalPlaces ?? 0,
+    maximumFractionDigits: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46638.decimalPlaces ?? 0
+  }).format(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46637);
+}
+function tr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46642) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46643, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46644;
+  if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46642 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46642 === "General") return {};
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46645 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46642.match(/\.([0#]+)/),
+    var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D33 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46645 == null || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46643 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46645[1]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46643.length) ?? 0;
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46642.includes("%")) return {
+    decimalPlaces: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D33,
+    numberFormat: "percent"
+  };
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46646 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46644 = Object.entries(Xn).find(([, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46241]) => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46642.includes(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46241))) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46644[0];
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46646 ? {
+    currency: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46646,
+    decimalPlaces: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D33,
+    numberFormat: "currency"
+  } : {
+    decimalPlaces: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D33,
+    numberFormat: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46642.includes(",") ? "grouped" : "number"
+  };
+}
+const nr = {
+  center: "center",
+  left: "flex-start",
+  right: "flex-end"
+};
+function rr({
+  dashboardId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46652,
+  unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46653,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654
+}) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46655, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46656, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46657, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46658, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46659, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46660, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46661, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46662, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46663;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46664 = useDependency(ShapeFormulaService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46665 = useDependency(IImageIoService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46666 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46667 = useMemo(() => ({
+      hostType: UniverInstanceType.UNIVER_BASE,
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46653,
+      subUnitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46652,
+      shapeId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.id
+    }), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46652, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46653, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.id]),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46668, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46669] = useState(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46664.getPresentation(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46667)),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46670, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46671] = useState(() => {
+      var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46242;
+      return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46242 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46664.getResult(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46667)) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46242.value;
+    }),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46672, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46673] = useState(),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46674 = useRef(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46675 = useRef(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676 = Zn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654);
+  useEffect(() => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46244 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46664.presentationChanged$["subscribe"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632 => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632.unitId === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46653 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632.subUnitId === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46652 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632.shapeId === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.id && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46669(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632.presentation), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46671(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632.result["value"]));
+    });
+    return () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46244.unsubscribe();
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46652, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46664, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46667, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46653, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.id]), useEffect(() => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46246 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.backgroundImage;
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46246 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46246.sourceType !== ImageSourceType.UUID) return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46247 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46665.getImageSourceCache(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46246.source, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46246.sourceType);
+    if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46247 != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46247.src) return;
+    let var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2 = true;
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46665.getImage(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46246.source).then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634 => {
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46673({
+        source: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46246.source,
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634
+      });
+    }).catch(() => undefined), () => {
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2 = false;
+    };
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.backgroundImage, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46665]);
+  let var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB18 = ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46655 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.backgroundImage) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46655.sourceType) === ImageSourceType.UUID ? ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46656 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46665.getImageSourceCache(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.backgroundImage["source"], var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.backgroundImage["sourceType"])) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46656.src) ?? ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46672 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46672.source) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.backgroundImage["source"] ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46672.value : "") : ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46657 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.backgroundImage) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46657.source) ?? "",
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46677 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.shapeData["shapeText"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46678 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46677 && "dataModel" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46677 ? (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46658 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46677.dataModel) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46658.doc : undefined,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46679 = er((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46668 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46668.text) ?? "", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46670, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46680 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.shapeData["fill"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46681 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.shapeData["stroke"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46682 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46678 == null || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46659 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46678.documentStyle) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46659.textStyle,
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB19 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.description ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.title ?? "";
+  return useEffect(() => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46250 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46674.current,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46251 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46675.current;
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46250 || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46251) return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46252 = () => {
+      if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.fontSizeMode === "custom" || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46250.clientWidth || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46250.clientHeight) {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46251.style["fontSize"] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.fontSize + "px";
+        return;
+      }
+      let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D5 = 1,
+        var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 = 72,
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D5;
+      for (; var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D5 <= var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D6;) {
+        let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D = Math.floor((var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D5 + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D6) / 2);
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46251.style["fontSize"] = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D + "px", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46251.scrollWidth <= var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46250.clientWidth && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46251.scrollHeight <= var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46250.clientHeight ? (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D, var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D5 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D + 1) : var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D6 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D - 1;
+      }
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46251.style["fontSize"] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636 + "px";
+    };
+    if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46252(), typeof ResizeObserver > "u") return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46253 = new ResizeObserver(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46252);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46253.observe(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46250), () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46253.disconnect();
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.fontSize, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.fontSizeMode, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46679]), jsxs("div", {
+    "data-dashboard-formula-shape": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.id,
+    className: "univer-relative\x20univer-box-border\x20univer-flex\x20univer-h-full\x20univer-w-full\x20univer-flex-col\x20univer-justify-center\x20univer-overflow-hidden\x20univer-bg-gray-0\x20univer-p-4\x20univer-text-gray-1000\x20dark:!univer-bg-gray-900\x20dark:!univer-text-gray-50",
+    style: {
+      backgroundColor: ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46660 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.appearance) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46660.backgroundColor) ?? ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46680 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46680.fillType) === ShapeFillEnum.SolidFill ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46680.color ?? undefined : undefined),
+      border: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46681 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46681.lineStrokeType) === ShapeLineTypeEnum.SolidLine ? (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46681.width ?? 1) + "px solid " + (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46681.color ?? "currentColor") : undefined,
+      borderRadius: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.shapeType === ShapeTypeEnum.RoundRect ? 12 : undefined,
+      color: ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46661 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46654.appearance) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46661.textColor) ?? (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46668 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46668.color) ?? (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46682 == null || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46662 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46682.cl) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46662.rgb) ?? undefined,
+      fontWeight: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46682 != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46682.bl ? 600 : undefined,
+      textAlign: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.alignment
+    },
+    children: [var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB18 && jsx("img", {
+      src: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB18,
+      alt: "",
+      "aria-hidden": "true",
+      className: "univer-pointer-events-none univer-absolute univer-inset-0 univer-h-full univer-w-full",
+      style: {
+        objectFit: ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46663 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.backgroundImage) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46663.fit) ?? "cover"
+      }
+    }), jsxs("div", {
+      className: "univer-relative univer-z-10 univer-flex univer-min-h-0 univer-w-full univer-flex-1",
+      children: [var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB19 && jsx("div", {
+        "data-dashboard-formula-description": true,
+        className: "univer-absolute univer-inset-x-0 univer-top-0 univer-w-full univer-truncate univer-text-sm univer-font-medium univer-opacity-80",
+        children: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB19
+      }), jsx("div", {
+        ref: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46674,
+        "data-dashboard-formula-value": true,
+        "aria-label": var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB19 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46666.t("bases-dashboard-ui.dashboard.formulaShape"),
+        className: "univer-flex univer-h-full univer-min-h-0 univer-w-full univer-flex-1 univer-items-center univer-overflow-hidden",
+        style: {
+          justifyContent: nr[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.alignment]
+        },
+        children: jsx("span", {
+          ref: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46675,
+          "data-dashboard-formula-value-text": true,
+          "data-font-size-mode": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46676.fontSizeMode,
+          className: "univer-inline-block univer-max-w-full univer-whitespace-nowrap univer-leading-none",
+          children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46679
+        })
+      })]
+    })]
+  });
+}
+function ir(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46715, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46716, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46717) {
+  let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25 = {
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714
+  };
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46715.includes("w")) {
+    let var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.column + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.columnSpan;
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25.column = Math.max(0, Math.min(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4 - 1, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.column + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46716)), var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25.columnSpan = var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4 - var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25.column;
+  } else var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46715.includes("e") && (var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25.columnSpan = Math.max(1, Math.min(BASES_DASHBOARD_GRID_COLUMNS - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.column, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.columnSpan + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46716)));
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46715.includes("n")) {
+    let var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB5 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.row + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.rowSpan;
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25.row = Math.max(0, Math.min(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB5 - 1, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.row + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46717)), var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25.rowSpan = var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB5 - var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25.row;
+  } else var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46715.includes("s") && (var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25.rowSpan = Math.max(1, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46714.rowSpan + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46717));
+  return var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25;
+}
+function ar(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46722) {
+  let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D35 = Math.max(1, Math.min(BASES_DASHBOARD_GRID_COLUMNS, Math.round(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46722.columnSpan)));
+  return {
+    column: Math.max(0, Math.min(BASES_DASHBOARD_GRID_COLUMNS - var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D35, Math.round(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46722.column))),
+    row: Math.max(0, Math.round(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46722.row)),
+    columnSpan: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D35,
+    rowSpan: Math.max(1, Math.round(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46722.rowSpan))
+  };
+}
+function or(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46724, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46725, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46726) {
+  let var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B592 = new Map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46724),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46727 = ar(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46726);
+  var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B592.set(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46725, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46727);
+  let var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A4 = [[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46725, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46727]];
+  for (let [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46259] of var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B592) {
+    if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46258 === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46725) continue;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638 = ar(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46259);
+    for (; var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A4.some(([, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D462]) => cr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D462));) var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638 = {
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638,
+      row: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638.row + 1
+    };
+    for (; var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638.row > 0;) {
+      let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB = {
+        ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638,
+        row: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638.row - 1
+      };
+      if (var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A4.some(([, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46]) => cr(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46))) break;
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638 = var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB;
+    }
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A4.push([var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638]), var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B592.set(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46258, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638);
+  }
+  return var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B592;
+}
+function sr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46732, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46733, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46734, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46735 = 56, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46736 = 22) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46732 < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46733 + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46735 ? -Math.ceil(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46736 * (1 - Math.max(0, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46732 - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46733) / var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46735)) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46732 > var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46734 - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46735 ? Math.ceil(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46736 * (1 - Math.max(0, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46734 - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46732) / var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46735)) : 0;
+}
+function cr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46742, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46743) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46742.column < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46743.column + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46743.columnSpan && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46742.column + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46742.columnSpan > var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46743.column && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46742.row < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46743.row + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46743.rowSpan && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46742.row + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46742.rowSpan > var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46743.row;
+}
+const lr = [{
+  direction: "nw",
+  className: "univer-left-px\x20univer-top-px\x20-univer-translate-x-1/2\x20-univer-translate-y-1/2\x20univer-cursor-nwse-resize"
+}, {
+  direction: "n",
+  className: "-univer-top-1\x20univer-left-2\x20univer-right-2\x20univer-h-2\x20univer-cursor-ns-resize"
+}, {
+  direction: "ne",
+  className: "univer-right-px\x20univer-top-px\x20univer-translate-x-1/2\x20-univer-translate-y-1/2\x20univer-cursor-nesw-resize"
+}, {
+  direction: "e",
+  className: "-univer-right-1 univer-bottom-2 univer-top-2 univer-w-2 univer-cursor-ew-resize"
+}, {
+  direction: "se",
+  className: "univer-bottom-px univer-right-px univer-translate-x-1/2 univer-translate-y-1/2 univer-cursor-nwse-resize"
+}, {
+  direction: "s",
+  className: "-univer-bottom-1 univer-left-2 univer-right-2 univer-h-2 univer-cursor-ns-resize"
+}, {
+  direction: "sw",
+  className: "univer-bottom-px univer-left-px -univer-translate-x-1/2 univer-translate-y-1/2 univer-cursor-nesw-resize"
+}, {
+  direction: "w",
+  className: "-univer-left-1 univer-bottom-2 univer-top-2 univer-w-2 univer-cursor-ew-resize"
+}];
+function ur({
+  dashboard: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46746,
+  dragLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46747,
+  editable: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 = true,
+  onLayoutsCommit: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46748,
+  onSelectWidget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46749,
+  renderWidget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46750,
+  renderWidgetActions: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46751,
+  resizeLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46752,
+  selectedWidgetId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46753,
+  widgetLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46754
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46756 = useRef(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757 = useRef(null),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46758, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46759] = useState(false),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46760 = useMemo(() => new Map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46746.widgetOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639 => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4640 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46746.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639];
+      return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4640 ? [[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4640.layout]] : [];
+    })), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46746]),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46761, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46762] = useState(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46760);
+  useEffect(() => {
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46762(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46760);
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46760]), useEffect(() => {
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46758) return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46260 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643 => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46756.current;
+        if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644) return null;
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4645 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644.getBoundingClientRect(),
+          var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D9 = Math.max(1, (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4645.width - 8 * (BASES_DASHBOARD_GRID_COLUMNS - 1)) / BASES_DASHBOARD_GRID_COLUMNS),
+          var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D10 = Math.round((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644.scrollTop - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.startScrollTop) / (BASES_DASHBOARD_DEFAULT_ROW_HEIGHT + 8)),
+          var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D11 = Math.round((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.pointerX - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.startX) / (var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D9 + 8)),
+          var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB = Math.round((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.pointerY - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.startY) / (BASES_DASHBOARD_DEFAULT_ROW_HEIGHT + 8)) + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D10,
+          var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB1 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.mode === "move" ? {
+            ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.initial,
+            column: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.initial["column"] + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D11,
+            row: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.initial["row"] + var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB
+          } : ir(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.initial, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.resizeDirection ?? "se", var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D11, var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB),
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4646 = or(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.initialLayouts, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643.id, var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB1);
+        return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46762(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4646), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4646;
+      },
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46261 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4651 => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4652 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current;
+        if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4652) return;
+        let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB3 = {
+          ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4652,
+          pointerX: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4651.clientX,
+          pointerY: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4651.clientY
+        };
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current = var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB3;
+      },
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46262 = () => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4655 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current,
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4655 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46260(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4655) : null;
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current = null, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46759(false), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46748(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656);
+      },
+      var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D25 = 0,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46263 = () => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4659 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46756.current,
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current;
+        if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4659 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660) {
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4659.getBoundingClientRect(),
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D467 = sr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660.pointerY, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466.top, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466.bottom);
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D467 !== 0 && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4659.scrollTop += var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D467), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46260(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660), var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D25 = requestAnimationFrame(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46263);
+        }
+      };
+    return var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D25 = requestAnimationFrame(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46263), window.addEventListener("pointermove", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46261), window.addEventListener("pointerup", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46262), () => {
+      cancelAnimationFrame(var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D25), window.removeEventListener("pointermove", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46261), window.removeEventListener("pointerup", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46262);
+    };
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46758, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46748]);
+  let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D37 = Math.max(8, ...Array.from(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46761.values()).map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46268 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46268.row + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46268.rowSpan)),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46763 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46269, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46270, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46271, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46272) => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46269.preventDefault(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46269.stopPropagation();
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46273 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46756.current,
+        var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB7 = {
+          id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46270.id,
+          mode: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46271,
+          pointerX: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46269.clientX,
+          pointerY: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46269.clientY,
+          startX: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46269.clientX,
+          startY: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46269.clientY,
+          startScrollTop: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46273 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46273.scrollTop) ?? 0,
+          initial: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46761.get(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46270.id) ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46270.layout,
+          initialLayouts: new Map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46761),
+          resizeDirection: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46272
+        };
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current = var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB7, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46759(true);
+    };
+  return jsx("div", {
+    ref: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46756,
+    "data-dashboard-scroll-container": true,
+    className: clsx("univer-h-full univer-min-h-0 univer-overflow-auto univer-bg-gray-100 univer-p-3 dark:!univer-bg-gray-950", scrollbarClassName),
+    onClick: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46279 => {
+      if (!(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46279.target instanceof Node) || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46279.currentTarget["contains"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46279.target)) return;
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46280 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46279.target instanceof Element ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46279.target : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46279.target["parentElement"];
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46280 != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46280.closest("[data-dashboard-widget]") || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46749 == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46749();
+    } : undefined,
+    children: jsx("div", {
+      "data-dashboard-grid": true,
+      className: "univer-grid univer-grid-cols-12 univer-pb-6",
+      style: {
+        gap: 8,
+        gridAutoRows: BASES_DASHBOARD_DEFAULT_ROW_HEIGHT,
+        minHeight: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D37 * (BASES_DASHBOARD_DEFAULT_ROW_HEIGHT + 8)
+      },
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46746.widgetOrder["map"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46283 => {
+        var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46284;
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46746.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46283],
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46286 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46761.get(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46283);
+        return !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285 || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46286 ? null : jsxs("article", {
+          "data-dashboard-widget": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.id,
+          "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.title ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46754(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285),
+          className: clsx("univer-group univer-relative univer-flex univer-min-h-0 univer-flex-col univer-overflow-visible univer-rounded-lg univer-border univer-shadow-sm univer-transition-shadow", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.type === BaseDashboardWidgetType.Image || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.type === BaseDashboardWidgetType.FormulaShape ? "univer-bg-transparent dark:!univer-bg-transparent" : "univer-bg-gray-0 dark:!univer-bg-gray-900", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46753 === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.id ? "univer-z-10\x20univer-border-primary-500\x20univer-ring-1\x20univer-ring-primary-500" : "univer-border-gray-200\x20dark:!univer-border-gray-700"),
+          style: {
+            gridColumn: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46286.column + 1 + " / span " + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46286.columnSpan,
+            gridRow: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46286.row + 1 + "\x20/\x20span\x20" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46286.rowSpan
+          },
+          tabIndex: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 ? 0 : undefined,
+          onClick: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 ? () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46749 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46749(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.id) : undefined,
+          onFocus: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 ? () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46749 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46749(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.id) : undefined,
+          children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 && jsx("button", {
+            type: "button",
+            "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46747,
+            "data-dashboard-drag-handle": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.id,
+            className: clsx("univer-pointer-events-none univer-absolute univer-left-1/2 univer-top-1 univer-z-20 univer-flex univer-h-5 univer-w-8 -univer-translate-x-1/2 univer-appearance-none univer-items-center univer-justify-center univer-border-0 univer-bg-transparent univer-p-0 univer-text-gray-400 univer-opacity-0 univer-shadow-none univer-outline-none univer-transition-opacity group-hover:univer-pointer-events-auto group-hover:univer-opacity-100 focus:univer-pointer-events-auto focus:univer-opacity-100 [@media(hover:none)]:univer-pointer-events-auto [@media(hover:none)]:univer-opacity-100", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46758 && ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46284 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46284.id) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.id && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46757.current["mode"] === "move" ? "univer-cursor-grabbing" : "univer-cursor-grab"),
+            onPointerDown: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4663 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46763(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4663, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285, "move"),
+            children: jsx(GripVerticalIcon, {
+              className: "univer-size-5 univer-rotate-90",
+              "aria-hidden": "true"
+            })
+          }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 && jsx("div", {
+            className: "univer-pointer-events-none univer-absolute univer-right-1 univer-top-1 univer-z-20 univer-flex univer-items-center univer-opacity-0 univer-transition-opacity focus-within:univer-pointer-events-auto focus-within:univer-opacity-100 group-hover:univer-pointer-events-auto group-hover:univer-opacity-100 [@media(hover:none)]:univer-pointer-events-auto [@media(hover:none)]:univer-opacity-100",
+            children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46751 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46751(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285)
+          }), jsx("div", {
+            className: "univer-relative\x20univer-min-h-0\x20univer-flex-1\x20univer-overflow-hidden\x20univer-rounded-lg",
+            children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46750(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285)
+          }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46755 && lr.map(({
+            className: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4664,
+            direction: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4665
+          }) => {
+            let var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4665.length === 2;
+            return jsx("button", {
+              type: "button",
+              "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46752,
+              "data-dashboard-resize-handle": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4665,
+              "data-dashboard-resize-control": var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4665 : undefined,
+              "data-dashboard-resize-edge": var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4665,
+              className: clsx("univer-pointer-events-none\x20univer-absolute\x20univer-z-30\x20univer-appearance-none\x20univer-p-0\x20univer-opacity-0\x20!univer-shadow-none\x20univer-outline-none\x20univer-transition-opacity\x20group-hover:univer-pointer-events-auto\x20group-hover:univer-opacity-100\x20focus:univer-pointer-events-auto\x20focus:univer-opacity-100\x20[@media(hover:none)]:univer-pointer-events-auto\x20[@media(hover:none)]:univer-opacity-100", var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A ? "univer-box-content\x20univer-size-1.5\x20univer-rounded-full\x20!univer-border-2\x20!univer-border-solid\x20!univer-border-white\x20!univer-bg-primary-600" : "univer-border-0\x20univer-bg-transparent", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4664, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46753 === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.id && "univer-pointer-events-auto univer-opacity-100"),
+              onPointerDown: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D468 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46763(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D468, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285, "resize", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4665)
+            }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4665);
+          })]
+        }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46285.id);
+      })
+    })
+  });
+}
+const dr = {
+  alignment: "left",
+  fontSize: 18,
+  fontSizeMode: "auto"
+};
+function fr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46782) {
+  return {
+    ...dr,
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46782.appearance
+  };
+}
+function pr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46784) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46785;
+  return ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46785 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46784.body) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46785.dataStream["replace"](/\r\n$/, "").replace(/\r/g, "\x0a")) ?? "";
+}
+function mr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46788, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46789) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46790;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46791 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46789.replace(/\r\n|\r/g, "\x0a").split("\x0a"),
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB22 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46791.join("\x0d") + "\x0d\x0a",
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6 = ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46790 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46788.body) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46790.paragraphs) ?? [],
+    var_L0_db_endo_itemsSet_pure_O1_zalloc_nothrow_sig9299 = new Set(var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46291 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46291.paragraphId)),
+    var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D39 = 0,
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46791.map((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46292, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46293) => {
+      var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D39 += var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46292.length;
+      let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB9 = {
+        ...(var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A6[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46293] ?? {
+          startIndex: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D39,
+          paragraphId: createParagraphId(var_L0_db_endo_itemsSet_pure_O1_zalloc_nothrow_sig9299)
+        }),
+        startIndex: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D39
+      };
+      return var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D39 += 1, var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB9;
+    });
+  return {
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46788,
+    body: {
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46788.body,
+      dataStream: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB22,
+      paragraphs: var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7,
+      textRuns: []
+    }
+  };
+}
+var xr;
+const Z = {
+    axis: {
+      ...DEFAULT_CHART_AXIS_VALUES,
+      primaryGridLineVisible: false,
+      secondaryGridLineVisible: true
+    },
+    funnel: DEFAULT_CHART_FUNNEL_VALUES,
+    heatmap: DEFAULT_CHART_HEATMAP_VALUES,
+    indicatorLine: DEFAULT_CHART_INDICATOR_LINE_VALUES,
+    legend: DEFAULT_CHART_LEGEND_VALUES,
+    lineAndArea: DEFAULT_CHART_LINE_AND_AREA_VALUES,
+    pareto: DEFAULT_CHART_PARETO_VALUES,
+    pie: DEFAULT_CHART_PIE_VALUES,
+    radar: DEFAULT_CHART_RADAR_VALUES,
+    relation: {
+      ...DEFAULT_CHART_RELATION_VALUES,
+      useValueAsSymbolSize: true
+    },
+    series: {
+      ...DEFAULT_CHART_SERIES_VALUES,
+      radarFillOpacity: 0.2,
+      rightAxis: {
+        ltr: false,
+        rtl: ((xr = RTLChartStyle.allSeriesStyle) == null ? undefined : xr.rightYAxis) ?? false
+      }
+    },
+    style: DEFAULT_CHART_STYLE_VALUES,
+    titles: DEFAULT_CHART_TITLE_VALUES,
+    trendline: DEFAULT_CHART_TRENDLINE_VALUES,
+    waterfall: {
+      ...DEFAULT_CHART_WATERFALL_SETUP_VALUES,
+      useSubtotal: true
+    },
+    waterfallStyle: DEFAULT_CHART_WATERFALL_STYLE_VALUES,
+    wordCloud: DEFAULT_CHART_WORD_CLOUD_VALUES
+  },
+  Sr = [ChartTypeBits.Line, ChartTypeBits.Radar, ChartTypeBits.WordCloud, ChartTypeBits.Scatter, ChartTypeBits.Funnel, ChartTypeBits.Relation, ChartTypeBits.Sankey, ChartTypeBits.Heatmap, ChartTypeBits.Boxplot, ChartTypeBits.Candlestick, ChartTypeBits.Histogram, ChartTypeBits.Treemap, ChartTypeBits.Sunburst, ChartTypeBits.Gauge, ChartTypeBits.Chord];
+function Cr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46834) {
+  let {
+      config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46835,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46836,
+      runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46837,
+      tableName: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46838
+    } = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46834,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46839 = useDependency(br),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840 = useDependency(LocaleService),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46841, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46842] = useState(ChartEditPanelTab.Data),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46843 = useMemo(() => new ChartHostAdapter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46837.model, {
+      commit: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668 => {
+        var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669;
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46837.model,
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671 = toChartModelUpdate(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668, {
+            series: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670.config) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669.series,
+            currentChartType: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670.chartType,
+            currentStyle: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670.style,
+            currentContext: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670.context,
+            currentDataAggregation: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670.dataAggregation
+          });
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46836({
+          chart: wr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46835.chart, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671)
+        });
+      }
+    }), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46835.chart, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46836, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46837]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46844 = useMemo(() => buildChartTypeSelectOptions(CHART_TYPE_CATALOG.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676 => ({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t(Or(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676.labelId))
+    }))), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840]);
+  return jsx(ChartEditorProvider, {
+    chartUIService: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46839,
+    hostAdapter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46843,
+    children: jsxs("div", {
+      className: "univer-flex univer-min-h-full univer-flex-col univer-bg-gray-0 dark:!univer-bg-gray-900",
+      children: [jsx(ChartEditPanelTabs, {
+        ariaLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.chart.common.editChart"),
+        className: "univer-shrink-0 univer-px-3",
+        items: [{
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.chart.common.setup"),
+          panelId: "base-pivot-chart-setup",
+          value: ChartEditPanelTab.Data
+        }, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.chart.common.customize"),
+          panelId: "base-pivot-chart-style",
+          value: ChartEditPanelTab.Style
+        }],
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46841,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46842
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46841 === ChartEditPanelTab.Data ? jsx(ChartEditPanel, {
+        id: "base-pivot-chart-setup",
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.chart.common.setup"),
+        children: jsxs("div", {
+          className: "univer-flex univer-flex-col univer-gap-3 univer-px-4 univer-pb-5",
+          children: [jsx(ChartTypeField, {
+            options: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46844
+          }), jsx(ChartTypeSpecificSetupSection, {}), jsx(ChartThemeField, {}), jsx(Tr, {}), jsx(ChartStackField, {}), jsxs("div", {
+            children: [jsx(ChartEditBlockTitle, {
+              title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.pivot.dataSource")
+            }), jsx(Input, {
+              disabled: true,
+              value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46838
+            })]
+          }), jsx(ChartCommonDataMappingSection, {
+            orientationControl: jsx(Button, {
+              size: "small",
+              onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46836({
+                chart: {
+                  ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46835.chart,
+                  orient: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46835.chart["orient"] === "row" ? "column" : "row"
+                }
+              }),
+              children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.chart.common.switchRowColumn")
+            })
+          }), jsx(ChartTypeSpecificDataSection, {}), jsx(ChartWaterfallSetupFields, {
+            defaultValues: Z.waterfall
+          }), jsxs("div", {
+            children: [jsx(ChartEditBlockTitle, {
+              title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.pivot.display")
+            }), jsx(Select, {
+              value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46835.displayMode,
+              options: [{
+                value: "chart-and-table",
+                label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.pivot.chartAndTable")
+              }, {
+                value: "chart",
+                label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.pivot.chartOnly")
+              }, {
+                value: "table",
+                label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.pivot.tableOnly")
+              }],
+              onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46308 => {
+                (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46308 === "chart-and-table" || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46308 === "chart" || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46308 === "table") && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46836({
+                  displayMode: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46308
+                });
+              }
+            })]
+          })]
+        })
+      }) : jsx(ChartEditPanel, {
+        id: "base-pivot-chart-style",
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46840.t("bases-dashboard-ui.chart.common.customize"),
+        children: jsx(Er, {})
+      })]
+    })
+  });
+}
+function wr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46856, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46857) {
+  return {
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46856,
+    type: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46857.chartType ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46856.type,
+    style: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46857.style ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46856.style,
+    context: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46857.context ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46856.context,
+    dataAggregation: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46857.dataAggregation ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46856.dataAggregation
+  };
+}
+function Tr() {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46860 = useChartEditorChartType();
+  return jsx(ChartGradientFillField, {
+    visible: Sr.every(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46310 => !chartBitsUtils.baseOn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46860, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46310))
+  });
+}
+function Q(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46862) {
+  return jsxs(ChartSectionAccordionItem, {
+    id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46862.id,
+    children: [jsx(ChartSectionAccordionTrigger, {
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46862.label
+    }), jsx(ChartSectionAccordionContent, {
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46862.children
+    })]
+  });
+}
+function Er() {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46864 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865 = useChartEditorChartType(),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46866 = useChartEditorHasRightAxis(),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46867, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46868] = useState(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46869 = chartBitsUtils.baseOn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865, ChartTypeBits.Pie),
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A17 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865 === ChartTypeBits.Radar,
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A18 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865 === ChartTypeBits.WordCloud,
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A19 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865 === ChartTypeBits.Funnel,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46870 = chartBitsUtils.baseOn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865, ChartTypeBits.Bubble),
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A20 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865 === ChartTypeBits.Relation,
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A21 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865 === ChartTypeBits.Waterfall,
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A22 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865 === ChartTypeBits.Pareto,
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A23 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865 === ChartTypeBits.Heatmap,
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A24 = chartTypeSupportsCapability(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865, ChartEditorCapability.GeneralSeries) && !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46870 && !var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A22,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46871 = Dr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46864),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46311 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46864.t("bases-dashboard-ui.chart." + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46311);
+  return jsxs(ChartSectionAccordion, {
+    value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46867,
+    onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46868,
+    children: [jsx(Q, {
+      id: ChartEditPanelSection.ChartStyle,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.chartStyle"),
+      children: jsx(ChartStyleSection, {
+        defaultValues: Z.style
+      })
+    }), jsx(Q, {
+      id: ChartEditPanelSection.ChartAndAxisTitles,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.chartAndAxisTitles"),
+      children: jsx(ChartTitlesSection, {
+        commitMode: "blur",
+        defaultValues: Z.titles
+      })
+    }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A24 && jsx(Q, {
+      id: ChartEditPanelSection.Series,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.series"),
+      children: jsx(ChartSeriesSection, {
+        defaultValues: Z.series,
+        NumberFormatField: ChartNumberFormatAtom
+      })
+    }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A21 && jsx(Q, {
+      id: ChartEditPanelSection.WaterfallSeries,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.waterfall"),
+      children: jsx(ChartWaterfallStyleSection, {
+        defaultValues: Z.waterfallStyle,
+        getDefaultBucketName: ({
+          seriesName: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46312,
+          target: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46313
+        }) => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46313 === ChartWaterfallStyleTarget.Subtotal ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("waterfall.subtotal") : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46312 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46312 + "-(" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46313 === ChartWaterfallStyleTarget.Positive ? "waterfall.positive" : "waterfall.negative") + ")" : "",
+        NumberFormatField: ChartNumberFormatAtom
+      })
+    }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A22 && jsxs(Fragment, {
+      children: [jsx(Q, {
+        id: ChartEditPanelSection.ParetoBarSeries,
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.paretoBar"),
+        children: jsx(ChartParetoSeriesSection, {
+          defaultValues: Z.pareto,
+          NumberFormatField: ChartNumberFormatAtom,
+          showDataPointEditor: true,
+          target: "barStyle"
+        })
+      }), jsx(Q, {
+        id: ChartEditPanelSection.ParetoLineSeries,
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.paretoLine"),
+        children: jsx(ChartParetoSeriesSection, {
+          defaultValues: Z.pareto,
+          NumberFormatField: ChartNumberFormatAtom,
+          showDataPointEditor: false,
+          target: "cumulativeLineStyle"
+        })
+      })]
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46869 && jsx(Q, {
+      id: ChartEditPanelSection.PieStyle,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.pie"),
+      children: jsx(ChartPieStyleSection, {
+        defaultValues: Z.pie,
+        NumberFormatField: ChartNumberFormatAtom
+      })
+    }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A18 && jsx(Q, {
+      id: ChartEditPanelSection.WordCloud,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.wordCloud"),
+      children: jsx(ChartWordCloudStyleSection, {
+        defaultValues: Z.wordCloud
+      })
+    }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A17 && jsx(Q, {
+      id: ChartEditPanelSection.Radar,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.radar"),
+      children: jsx(ChartRadarStyleSection, {
+        defaultValues: Z.radar
+      })
+    }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A19 && jsx(Q, {
+      id: ChartEditPanelSection.Funnel,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.funnel"),
+      children: jsx(ChartFunnelStyleSection, {
+        defaultValues: Z.funnel,
+        gapControl: "select"
+      })
+    }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A23 && jsx(Q, {
+      id: ChartEditPanelSection.Heatmap,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.heatmap"),
+      children: jsx(ChartHeatmapStyleSection, {
+        defaultValues: Z.heatmap
+      })
+    }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A20 && jsx(Q, {
+      id: ChartEditPanelSection.Relation,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.relation"),
+      children: jsx(ChartRelationStyleSection, {
+        defaultValues: Z.relation
+      })
+    }), chartTypeSupportsLineAndAreaStyle(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865) && jsx(Q, {
+      id: ChartEditPanelSection.LineAndArea,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.lineAndArea"),
+      children: jsx(ChartLineAndAreaSection, {
+        defaultValues: Z.lineAndArea,
+        lineStyleControl: "segmented"
+      })
+    }), chartTypeSupportsCapability(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865, ChartEditorCapability.Legend) && jsx(Q, {
+      id: ChartEditPanelSection.Legend,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.legend"),
+      children: jsx(ChartLegendSection, {
+        defaultValues: Z.legend
+      })
+    }), chartTypeSupportsCapability(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865, ChartEditorCapability.Axes) && jsxs(Fragment, {
+      children: [jsx(Q, {
+        id: ChartEditPanelSection.HorizontalAxis,
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.horizontalAxis"),
+        children: jsx(ChartAxisSection, {
+          axis: "x",
+          defaultValues: Z.axis,
+          NumberFormatField: ChartNumberFormatAtom
+        })
+      }), jsx(Q, {
+        id: ChartEditPanelSection.VerticalAxis,
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.verticalAxis"),
+        children: jsx(ChartAxisSection, {
+          axis: "y",
+          defaultValues: Z.axis,
+          NumberFormatField: ChartNumberFormatAtom
+        })
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46866 && jsx(Q, {
+        id: ChartEditPanelSection.RightVerticalAxis,
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.rightVerticalAxis"),
+        children: jsx(ChartAxisSection, {
+          axis: "rightY",
+          defaultValues: Z.axis,
+          NumberFormatField: ChartNumberFormatAtom
+        })
+      }), jsx(Q, {
+        id: ChartEditPanelSection.GridlinesAndTicks,
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.gridlinesAndTicks"),
+        children: jsx(ChartGridlinesAndTicksSection, {
+          defaultValues: Z.axis
+        })
+      })]
+    }), chartTypeSupportsCapability(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865, ChartEditorCapability.IndicatorLine) && jsx(Q, {
+      id: ChartEditPanelSection.IndicatorLine,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("section.indicatorLine"),
+      children: jsx(ChartIndicatorLineSection, {
+        defaultValues: Z.indicatorLine
+      })
+    }), chartTypeCanUseTrendLine(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46865) && jsx(Q, {
+      id: ChartEditPanelSection.Trendline,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46872("common.trendline"),
+      children: jsx(ChartTrendlineSection, {
+        defaultValues: Z.trendline
+      })
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46871 && jsx(Q, {
+      id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46871.id,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46871.label,
+      children: jsx(ChartTypeSpecificStyleSection, {})
+    })]
+  });
+}
+function Dr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46882, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46883) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46884 = {
+    [ChartTypeBits.Candlestick]: {
+      id: ChartEditPanelSection.Candlestick,
+      localeKey: "bases-dashboard-ui.chart.section.candlestick"
+    },
+    [ChartTypeBits.Histogram]: {
+      id: ChartEditPanelSection.Histogram,
+      localeKey: "bases-dashboard-ui.chart.section.histogram"
+    },
+    [ChartTypeBits.Treemap]: {
+      id: ChartEditPanelSection.Treemap,
+      localeKey: "bases-dashboard-ui.chart.section.treemap"
+    },
+    [ChartTypeBits.Sunburst]: {
+      id: ChartEditPanelSection.Sunburst,
+      localeKey: "bases-dashboard-ui.chart.section.sunburst"
+    },
+    [ChartTypeBits.Gauge]: {
+      id: ChartEditPanelSection.Gauge,
+      localeKey: "bases-dashboard-ui.chart.section.gauge"
+    },
+    [ChartTypeBits.Chord]: {
+      id: ChartEditPanelSection.Chord,
+      localeKey: "bases-dashboard-ui.chart.section.chord"
+    }
+  }[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46882];
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46884 ? {
+    id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46884.id,
+    label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46883.t(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46884.localeKey)
+  } : null;
+}
+function Or(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46888) {
+  return "bases-dashboard-ui.chart.chartTypes." + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46888;
+}
+function kr({
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46890,
+  onEditData: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46891,
+  runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46892,
+  sourceChart: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46893,
+  sourceName: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46894,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46895
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46896 = useDependency(br),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897 = useDependency(LocaleService),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46898, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46899] = useState(ChartEditPanelTab.Data),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46900 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46895.chart ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46893,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46901 = useMemo(() => new ChartHostAdapter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46892.model, {
+      commit: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4677 => {
+        var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678;
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4679 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46892.model,
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4680 = toChartModelUpdate(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4677, {
+            series: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4679.config) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678.series,
+            currentChartType: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4679.chartType,
+            currentStyle: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4679.style,
+            currentContext: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4679.context,
+            currentDataAggregation: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4679.dataAggregation
+          });
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46890({
+          ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46895,
+          chart: wr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46900, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4680)
+        }).catch(() => undefined);
+      }
+    }), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46900, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46890, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46892, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46895]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46902 = useMemo(() => buildChartTypeSelectOptions(CHART_TYPE_CATALOG.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4685 => ({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4685,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897.t(Ar(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4685.labelId))
+    }))), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46903 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46314 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897.t("bases-dashboard-ui.dashboardInspector." + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46314);
+  return jsx(ChartEditorProvider, {
+    chartUIService: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46896,
+    hostAdapter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46901,
+    children: jsxs("div", {
+      "data-dashboard-chart-inspector": true,
+      className: "univer-flex\x20univer-min-h-0\x20univer-flex-1\x20univer-flex-col",
+      children: [jsx(ChartEditPanelTabs, {
+        ariaLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897.t("bases-dashboard-ui.chart.common.editChart"),
+        className: "univer-shrink-0 univer-px-3",
+        items: [{
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897.t("bases-dashboard-ui.chart.common.setup"),
+          panelId: "dashboard-chart-setup",
+          value: ChartEditPanelTab.Data
+        }, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897.t("bases-dashboard-ui.chart.common.customize"),
+          panelId: "dashboard-chart-style",
+          value: ChartEditPanelTab.Style
+        }],
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46898,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46899
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46898 === ChartEditPanelTab.Data ? jsx(ChartEditPanel, {
+        id: "dashboard-chart-setup",
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897.t("bases-dashboard-ui.chart.common.setup"),
+        children: jsxs("div", {
+          className: "univer-flex univer-flex-col univer-gap-3 univer-px-4 univer-pb-5",
+          children: [jsx(ChartTypeField, {
+            options: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46902
+          }), jsx(ChartTypeSpecificSetupSection, {}), jsx(ChartThemeField, {}), jsx(Tr, {}), jsx(ChartStackField, {}), jsxs("div", {
+            children: [jsx(ChartEditBlockTitle, {
+              title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46903("dataSource")
+            }), jsx(Input, {
+              disabled: true,
+              value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46894
+            }), jsx(Button, {
+              className: "univer-mt-2 univer-w-full",
+              onClick: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46891,
+              children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46903("editData")
+            })]
+          })]
+        })
+      }) : jsx(ChartEditPanel, {
+        id: "dashboard-chart-style",
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46897.t("bases-dashboard-ui.chart.common.customize"),
+        children: jsx(Er, {})
+      })]
+    })
+  });
+}
+function Ar(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46918) {
+  return "bases-dashboard-ui.chart.chartTypes." + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46918;
+}
+const jr = ["general", "number", "percent", "currency", "grouped", "compact"];
+function Mr({
+  base: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46920,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46921,
+  onSelectBackgroundImage: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46922,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923
+}) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46924;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46925 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46926 = useDependency(ThemeService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46927 = useObservable(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46926.currentTheme$, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46926.getCurrentTheme(), false, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46926]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46928 = useObservable(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46926.darkMode$, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46926.darkMode, false, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46926]),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46929, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46930] = useState("data"),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46931, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46932] = useState(false),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933 = Zn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46315 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46925.t("bases-dashboard-ui.dashboardInspector." + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46315),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46920.getSnapshot().tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923.tableId],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46936 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935.viewOrder["find"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46316 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46316]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46937 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46936 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46936] : undefined,
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A10 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46937 ? toFormulaMenuTables(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46920.getSnapshot(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46937).map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46317 => ({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46317,
+      current: false
+    })) : [],
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB24 = ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46924 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923.shapeData["formulaBinding"]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46924.formula) ?? "",
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46318 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46921(Qn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46318)).catch(() => undefined),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46939 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46319 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46921({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923,
+      description: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46319
+    }).catch(() => undefined);
+  return jsxs("div", {
+    "data-dashboard-formula-inspector": true,
+    className: "univer-flex univer-min-h-0 univer-flex-1 univer-flex-col",
+    children: [jsx(Segmented, {
+      className: "univer-m-3",
+      items: [{
+        value: "data",
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("data")
+      }, {
+        value: "style",
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("style")
+      }],
+      value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46929,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46930
+    }), jsx("div", {
+      className: "univer-min-h-0 univer-flex-1 univer-overflow-y-auto univer-p-4",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46929 === "data" ? jsxs("div", {
+        className: "univer-grid univer-gap-4",
+        children: [jsx(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("description"),
+          children: jsx(Input, {
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923.description ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923.title ?? "",
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46939,
+            onBlur: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46320 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46939(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46320.target["value"])
+          })
+        }), jsx(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("dataSource"),
+          children: jsx(Input, {
+            disabled: true,
+            value: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46935.name) ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("sourceUnavailable")
+          })
+        }), jsxs(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("formula"),
+          children: [jsx(Input, {
+            disabled: true,
+            value: formulaToEditorFormula(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB24, var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A10)
+          }), jsx(Button, {
+            className: "univer-mt-2\x20univer-w-full",
+            onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46932(true),
+            children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("editFormula")
+          })]
+        })]
+      }) : jsxs("div", {
+        className: "univer-grid univer-gap-4",
+        children: [jsx(ChartColorField, {
+          emptyLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("backgroundColor"),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("backgroundColor"),
+          pickerFallbackValue: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46928 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46927.gray[900] : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46927.gray[0],
+          resetLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("reset"),
+          value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.backgroundColor ?? null,
+          onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46321 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+            backgroundColor: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46321 ?? undefined
+          })
+        }), jsxs(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("backgroundImage"),
+          children: [jsxs("div", {
+            className: "univer-flex\x20univer-gap-2",
+            children: [jsxs(Button, {
+              className: "univer-flex-1",
+              onClick: () => {
+                var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46922().then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4686 => {
+                  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4686) {
+                    var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4687;
+                    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+                      backgroundImage: {
+                        ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4686,
+                        fit: ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4687 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.backgroundImage) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4687.fit) ?? "cover"
+                      }
+                    });
+                  }
+                }).catch(() => undefined);
+              },
+              children: [jsx(IncreaseIcon, {}), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.backgroundImage ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("replaceImage") : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("uploadImage")]
+            }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.backgroundImage && jsx(Button, {
+              "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("removeImage"),
+              title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("removeImage"),
+              onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+                backgroundImage: undefined
+              }),
+              children: jsx(DeleteIcon, {})
+            })]
+          }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.backgroundImage && jsx(Segmented, {
+            className: "univer-mt-2",
+            items: [{
+              value: "cover",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("cover")
+            }, {
+              value: "contain",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("contain")
+            }],
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.backgroundImage["fit"],
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46322 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+              backgroundImage: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.backgroundImage ? {
+                ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.backgroundImage,
+                fit: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46322
+              } : undefined
+            })
+          })]
+        }), jsx(ChartColorField, {
+          emptyLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("textColor"),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("textColor"),
+          pickerFallbackValue: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46928 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46927.gray[50] : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46927.gray[1000],
+          resetLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("reset"),
+          value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.textColor ?? null,
+          onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46323 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+            textColor: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46323 ?? undefined
+          })
+        }), jsx(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("alignment"),
+          children: jsx(Segmented, {
+            items: [{
+              value: "left",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("left")
+            }, {
+              value: "center",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("center")
+            }, {
+              value: "right",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("right")
+            }],
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.alignment,
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46324 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+              alignment: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46324
+            })
+          })
+        }), jsxs(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("textSize"),
+          children: [jsx(Segmented, {
+            items: [{
+              value: "auto",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("autoFit")
+            }, {
+              value: "custom",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("custom")
+            }],
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.fontSizeMode,
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46325 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+              fontSizeMode: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46325
+            })
+          }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.fontSizeMode === "custom" && jsx(InputNumber, {
+            className: "univer-mt-2",
+            min: 12,
+            max: 120,
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.fontSize,
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46326 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+              fontSize: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46326 ?? 40,
+              fontSizeMode: "custom"
+            })
+          })]
+        }), jsx(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("numberFormat"),
+          children: jsx(Select, {
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.numberFormat,
+            options: [{
+              value: "general",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("general")
+            }, {
+              value: "number",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("number")
+            }, {
+              value: "percent",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("percent")
+            }, {
+              value: "currency",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("currency")
+            }, {
+              value: "grouped",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("grouped")
+            }, {
+              value: "compact",
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("compact")
+            }],
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46327 => {
+              let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46328 = jr.find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4690 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4690 === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46327);
+              var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46328 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+                numberFormat: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46328
+              });
+            }
+          })
+        }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.numberFormat === "currency" && jsx(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("currencyCode"),
+          children: jsx(Input, {
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.currency,
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46331 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+              currency: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46331.slice(0, 3).toUpperCase()
+            })
+          })
+        }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.numberFormat !== "general" && jsx(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2, {
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46934("decimalPlaces"),
+          children: jsx(InputNumber, {
+            min: 0,
+            max: 8,
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46933.decimalPlaces,
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46332 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46938({
+              decimalPlaces: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46332 ?? 0
+            })
+          })
+        })]
+      })
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46931 && jsx(Dialog, {
+      open: true,
+      width: 760,
+      footer: null,
+      closable: false,
+      maskClosable: false,
+      children: jsx(FormulaEditorPanel, {
+        tables: var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A10,
+        formula: formulaToEditorFormula(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB24, var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A10),
+        onCancel: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46932(false),
+        onSave: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46333 => {
+          let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB11 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923.shapeData["formulaBinding"] ?? {
+            formula: ""
+          };
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46921({
+            ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923,
+            shapeData: {
+              ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46923.shapeData,
+              formulaBinding: {
+                ...var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB11,
+                formula: normalizeEditorFormulaForConfig(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46333, var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A10)
+              }
+            }
+          }).then(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46932(false)).catch(() => undefined);
+        }
+      })
+    })]
+  });
+}
+function fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F2({
+  children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46960,
+  label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46961
+}) {
+  return jsxs("div", {
+    role: "group",
+    "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46961,
+    className: "univer-grid\x20univer-gap-2\x20univer-text-sm\x20univer-font-medium\x20univer-text-gray-700\x20dark:!univer-text-gray-200",
+    children: [jsx("span", {
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46961
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46960]
+  });
+}
+const Nr = {
+  [BaseFilterOperator.IS]: "bases-dashboard-ui.operators.is",
+  [BaseFilterOperator.IS_NOT]: "bases-dashboard-ui.operators.isNot",
+  [BaseFilterOperator.CONTAINS]: "bases-dashboard-ui.operators.contains",
+  [BaseFilterOperator.NOT_CONTAINS]: "bases-dashboard-ui.operators.notContains",
+  [BaseFilterOperator.IS_EMPTY]: "bases-dashboard-ui.operators.isEmpty",
+  [BaseFilterOperator.IS_NOT_EMPTY]: "bases-dashboard-ui.operators.isNotEmpty",
+  [BaseFilterOperator.GREATER_THAN]: "bases-dashboard-ui.operators.greaterThan",
+  [BaseFilterOperator.GREATER_THAN_OR_EQUAL]: "bases-dashboard-ui.operators.greaterThanOrEqual",
+  [BaseFilterOperator.LESS_THAN]: "bases-dashboard-ui.operators.lessThan",
+  [BaseFilterOperator.LESS_THAN_OR_EQUAL]: "bases-dashboard-ui.operators.lessThanOrEqual",
+  [BaseFilterOperator.BEFORE]: "bases-dashboard-ui.operators.before",
+  [BaseFilterOperator.AFTER]: "bases-dashboard-ui.operators.after"
+};
+function Pr({
+  disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46964,
+  fields: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46965,
+  filter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46966,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46967
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46968 = useDependency(LocaleService),
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A12 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46966 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46966.conditions) ?? [];
+  return var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A12.length ? jsx("div", {
+    className: "univer-grid univer-h-full univer-content-start univer-gap-2 univer-overflow-auto univer-p-3",
+    children: var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A12.map((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46336) => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46337 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46965.find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4691 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4691.id === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335.fieldId);
+      return jsxs("div", {
+        className: "univer-bg-gray-50/80 dark:!univer-bg-gray-800/70 univer-grid univer-gap-2 univer-rounded-xl univer-border univer-border-gray-200 univer-p-3 dark:!univer-border-gray-700",
+        children: [jsxs("div", {
+          className: "univer-flex\x20univer-min-w-0\x20univer-items-center\x20univer-gap-2",
+          children: [jsx("span", {
+            className: "univer-min-w-0 univer-flex-1 univer-truncate univer-text-sm univer-font-medium",
+            children: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46337 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46337.name) ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335.fieldId
+          }), jsx("span", {
+            className: "univer-shrink-0\x20univer-rounded-full\x20univer-bg-gray-200\x20univer-px-2\x20univer-py-0.5\x20univer-text-xs\x20univer-text-gray-600\x20dark:!univer-bg-gray-700\x20dark:!univer-text-gray-300",
+            children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46968.t(Nr[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335.operator])
+          })]
+        }), Hr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335.operator) && jsx(Ir, {
+          disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46964,
+          field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46337,
+          value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335.operand,
+          onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4692 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46967(zr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46966, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46336, {
+            operand: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4692
+          }))
+        })]
+      }, Gr(var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A12, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46335, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46336));
+    })
+  }) : jsxs("div", {
+    className: "univer-grid univer-h-full univer-place-content-center univer-gap-2 univer-text-center univer-text-gray-400",
+    children: [jsx(FilterIcon, {
+      className: "univer-mx-auto\x20univer-size-6"
+    }), jsx("span", {
+      className: "univer-text-sm",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46968.t("bases-dashboard-ui.dashboard.tableFilter")
+    })]
+  });
+}
+function Fr({
+  fields: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46974,
+  filter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46975,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46976,
+  onClear: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46977
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46978 = useDependency(LocaleService),
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A14 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46975 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46975.conditions) ?? [];
+  return jsxs("div", {
+    "data-dashboard-filter-inspector": true,
+    className: "univer-grid univer-min-h-0 univer-flex-1 univer-content-start univer-gap-3 univer-overflow-auto univer-p-4",
+    children: [var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A14.map((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46341, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46342) => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46343 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46974.find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4693 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4693.id === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46341.fieldId) ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46974[0],
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46344 = Br(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46343);
+      return jsxs("section", {
+        className: "univer-grid\x20univer-gap-3\x20univer-rounded-xl\x20univer-border\x20univer-border-gray-200\x20univer-bg-gray-50\x20univer-p-3\x20dark:!univer-border-gray-700\x20dark:!univer-bg-gray-800",
+        children: [jsxs("div", {
+          className: "univer-grid univer-grid-cols-[minmax(0,1fr)_32px] univer-gap-2",
+          children: [jsx(Select, {
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46341.fieldId,
+            options: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46974.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4694 => ({
+              value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4694.id,
+              label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4694.name
+            })),
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4695 => {
+              let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4696 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46974.find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D469 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D469.id === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4695);
+              if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4696) return;
+              let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4697 = Br(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4696)[0];
+              var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46976(zr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46975, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46342, Rr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4696, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4697)));
+            }
+          }), jsx(Button, {
+            type: "button",
+            variant: "text",
+            "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46978.t("bases-dashboard-ui.dashboardInspector.delete"),
+            className: "univer-size-8\x20univer-p-0\x20univer-text-red-500",
+            onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46976(Lr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46975, var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A14.filter((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4610, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4611) => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4611 !== var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46342))),
+            children: jsx(CloseIcon, {})
+          })]
+        }), jsx(Select, {
+          value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46341.operator,
+          options: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46344.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46101 => ({
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46101,
+            label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46978.t(Nr[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46101])
+          })),
+          onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46102 => {
+            let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46103 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46344.find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612 === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46102);
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46103 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46976(zr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46975, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46342, {
+              operator: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46103,
+              operand: Vr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46343)
+            }));
+          }
+        }), Hr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46341.operator) && jsx(Ir, {
+          field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46343,
+          value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46341.operand,
+          onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46106 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46976(zr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46975, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46342, {
+            operand: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46106
+          }))
+        })]
+      }, Gr(var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A14, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46341, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46342));
+    }), jsxs(Button, {
+      type: "button",
+      variant: "text",
+      className: "univer-w-full\x20univer-justify-start\x20univer-text-primary-600",
+      disabled: !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46974.length,
+      onClick: () => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46349 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46974[0];
+        if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46349) return;
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46350 = Br(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46349)[0];
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46976(Lr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46975, [...var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A14, Rr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46349, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46350)]));
+      },
+      children: [jsx(IncreaseIcon, {}), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46978.t("bases-dashboard-ui.dashboardInspector.newCondition")]
+    }), var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A14.length > 0 && jsx(Button, {
+      type: "button",
+      variant: "text",
+      className: "univer-w-full",
+      onClick: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46977,
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46978.t("bases-dashboard-ui.dashboardInspector.clear")
+    })]
+  });
+}
+function Ir({
+  disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46984,
+  field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46985,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46986,
+  value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46988 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46989 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46985 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46985.type;
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46989 === BaseFieldType.Checkbox) {
+    let var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987 === true || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987 === "true";
+    return jsxs(Button, {
+      type: "button",
+      variant: "default",
+      disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46984,
+      className: "univer-w-full univer-justify-start",
+      onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46986(!var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4),
+      children: [jsx(Checkbox, {
+        checked: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4,
+        disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46984,
+        onChange: () => undefined
+      }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46988.t("bases-dashboard-ui.dashboardInspector.checked") : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46988.t("bases-dashboard-ui.dashboardInspector.unchecked")]
+    });
+  }
+  return Kr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46989) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46984 ? jsx(Button, {
+    type: "button",
+    variant: "default",
+    className: "univer-w-full",
+    disabled: true,
+    children: dateKit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987 == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987 === "" ? undefined : String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987)).format("YYYY-MM-DD")
+  }) : jsx(DatePicker, {
+    className: "univer-w-full",
+    value: dateKit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987 == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987 === "" ? undefined : String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987)).toDate(),
+    onValueChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46353 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46986(dateKit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46353).format("YYYY-MM-DD"))
+  }) : Jr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46985) ? jsx(MultipleSelect, {
+    className: "univer-w-full",
+    disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46984,
+    value: Array.isArray(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987.map(String) : [],
+    options: Ur(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46985),
+    onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46986
+  }) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46989 === BaseFieldType.SingleSelect || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46989 === BaseFieldType.Group || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46989 === BaseFieldType.Person ? jsx(Select, {
+    className: "univer-w-full",
+    disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46984,
+    value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987 ?? ""),
+    options: [{
+      value: "",
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46988.t("bases-dashboard-ui.dashboardInspector.selectOption")
+    }, ...Ur(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46985)],
+    onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46986
+  }) : qr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46989) ? jsx(InputNumber, {
+    className: "univer-w-full",
+    allowEmpty: true,
+    disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46984,
+    value: Number.isFinite(Number(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987)) ? Number(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987) : null,
+    onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46354 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46986(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46354 ?? "")
+  }) : jsx(Input, {
+    disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46984,
+    value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46987 ?? ""),
+    placeholder: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46988.t("bases-dashboard-ui.dashboardInspector.enterValue"),
+    onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46986
+  });
+}
+function Lr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46996, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46997) {
+  return {
+    conjunction: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46996 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46996.conjunction) ?? BaseFilterConjunction.AND,
+    conditions: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46997
+  };
+}
+function Rr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461000, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461001) {
+  return Hr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461001) ? {
+    fieldId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461000.id,
+    operator: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461001,
+    operand: Vr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461000)
+  } : {
+    fieldId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461000.id,
+    operator: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461001
+  };
+}
+function zr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461004, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461005, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461006) {
+  return Lr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461004, ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461004 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461004.conditions) ?? []).map((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46355, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46356) => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46356 === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461005 ? {
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46355,
+    ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461006
+  } : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46355));
+}
+function Br(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461010) {
+  let var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A16 = [BaseFilterOperator.IS_EMPTY, BaseFilterOperator.IS_NOT_EMPTY];
+  switch (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461010 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461010.type) {
+    case BaseFieldType.Number:
+    case BaseFieldType.Currency:
+    case BaseFieldType.Progress:
+    case BaseFieldType.Rating:
+      return [BaseFilterOperator.IS, BaseFilterOperator.IS_NOT, BaseFilterOperator.GREATER_THAN, BaseFilterOperator.LESS_THAN, ...var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A16];
+    case BaseFieldType.Date:
+    case BaseFieldType.CreatedAt:
+    case BaseFieldType.UpdatedAt:
+      return [BaseFilterOperator.IS, BaseFilterOperator.IS_NOT, BaseFilterOperator.BEFORE, BaseFilterOperator.AFTER, ...var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A16];
+    case BaseFieldType.Checkbox:
+      return [BaseFilterOperator.IS, BaseFilterOperator.IS_NOT];
+    default:
+      return [BaseFilterOperator.IS, BaseFilterOperator.IS_NOT, BaseFilterOperator.CONTAINS, BaseFilterOperator.NOT_CONTAINS, ...var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A16];
+  }
+}
+function Vr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461012) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461012 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461012.type === BaseFieldType.Checkbox ? false : Kr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461012.type) ? dateKit().format("YYYY-MM-DD") : Jr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461012) ? [] : "" : "";
+}
+function Hr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461014) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461014 !== BaseFilterOperator.IS_EMPTY && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461014 !== BaseFilterOperator.IS_NOT_EMPTY;
+}
+function Ur(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461016) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461017;
+  return (Array.isArray(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461016 == null || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461017 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461016.config) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461017.options) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461016.config["options"] : []).map((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46357, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46358) => {
+    if (typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46357 == "string") return {
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46357,
+      value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46357
+    };
+    if (!Wr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46357)) return {
+      label: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46358 + 1),
+      value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46358 + 1)
+    };
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46359 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46357,
+      var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB6 = String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46359.name ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46359.id ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46358 + 1),
+      var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB7 = String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46359.id ?? var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB6);
+    return {
+      label: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB6,
+      value: /^opt-\d+$/["test"](var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB7) ? var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB6 : var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB7
+    };
+  });
+}
+function Wr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461020) {
+  return typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461020 == "object" && !!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461020;
+}
+function Gr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461022, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461023, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461024) {
+  let var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB26 = JSON.stringify(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461023);
+  return var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB26 + "-" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461022.slice(0, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461024).filter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46363 => JSON.stringify(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46363) === var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB26).length;
+}
+function Kr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461028) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461028 === BaseFieldType.Date || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461028 === BaseFieldType.CreatedAt || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461028 === BaseFieldType.UpdatedAt;
+}
+function qr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461030) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461030 === BaseFieldType.Number || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461030 === BaseFieldType.Currency || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461030 === BaseFieldType.Progress || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461030 === BaseFieldType.Rating;
+}
+function Jr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461032) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461033;
+  return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461032 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461032.type) === BaseFieldType.MultiSelect || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461032 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461032.type) === BaseFieldType.Group || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461032 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461032.type) === BaseFieldType.Person && ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461033 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461032.config) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461033.allowMultiple) === true;
+}
+function Yr({
+  base: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461036,
+  chartRuntime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461037,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461038,
+  onClose: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461039,
+  onSelectBackgroundImage: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461040,
+  onSelectImage: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461041,
+  unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461042,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461044 = useDependency(ICommandService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461045 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461046 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461036.getSnapshot(),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461047 = "tableId" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461046.tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.tableId] : undefined,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461048 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.type === BaseDashboardWidgetType.PivotChart ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461047 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461047.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.pivotViewId] : undefined,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461049 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461045.t(ni(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043)),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461050 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46364 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461045.t("bases-dashboard-ui.dashboardInspector." + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46364);
+  return jsxs("aside", {
+    "data-dashboard-inspector": true,
+    className: "univer-flex\x20univer-h-full\x20univer-w-[380px]\x20univer-shrink-0\x20univer-flex-col\x20univer-border-l\x20univer-border-gray-200\x20univer-bg-gray-0\x20dark:!univer-border-gray-700\x20dark:!univer-bg-gray-900",
+    children: [jsxs("header", {
+      className: "univer-flex\x20univer-h-12\x20univer-shrink-0\x20univer-items-center\x20univer-border-b\x20univer-border-gray-200\x20univer-px-4\x20dark:!univer-border-gray-700",
+      children: [jsx("h3", {
+        className: "univer-m-0 univer-min-w-0 univer-flex-1 univer-truncate univer-text-base univer-font-semibold",
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461049
+      }), jsx(Button, {
+        type: "button",
+        size: "small",
+        variant: "text",
+        "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461050("close"),
+        onClick: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461039,
+        children: jsx(CloseIcon, {})
+      })]
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.type === BaseDashboardWidgetType.PivotChart && (ti(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461048) && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461037 ? jsx(kr, {
+      runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461037,
+      sourceChart: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461048.config["chart"],
+      sourceName: ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461047 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461047.name) ?? "") + " / " + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461048.name,
+      widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461038,
+      onEditData: () => {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461044.executeCommand(ActivateBaseViewOperation.id, {
+          unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461042,
+          tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.tableId,
+          viewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.pivotViewId
+        }).catch(() => undefined);
+      }
+    }) : jsx(fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F3, {
+      message: ti(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461048) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461050("loading") : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461050("sourceUnavailable")
+    })), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.type === BaseDashboardWidgetType.FormulaShape && jsx(Mr, {
+      base: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461036,
+      widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461038,
+      onSelectBackgroundImage: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461040
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.type === BaseDashboardWidgetType.TableFilter && jsx(Zr, {
+      base: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461036,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461038,
+      widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.type === BaseDashboardWidgetType.Text && jsx(Qr, {
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461050,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461038,
+      widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043.type === BaseDashboardWidgetType.Image && jsx(Xr, {
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461050,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461038,
+      onSelectImage: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461041,
+      widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461043
+    })]
+  });
+}
+function Xr({
+  label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461066,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461067,
+  onSelectImage: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461068,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461069
+}) {
+  return jsxs("div", {
+    className: "univer-grid univer-gap-4 univer-p-4",
+    children: [jsxs(Button, {
+      className: "univer-w-full",
+      onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461068().then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46107 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46107 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461067({
+        ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461069,
+        source: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46107.source,
+        sourceType: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46107.sourceType,
+        alt: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46107.name
+      })).catch(() => undefined),
+      children: [jsx(IncreaseIcon, {}), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461066("replaceImage")]
+    }), jsxs("label", {
+      className: "univer-grid univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700 dark:!univer-text-gray-200",
+      children: [jsx("span", {
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461066("backgroundImage")
+      }), jsx(Segmented, {
+        items: [{
+          value: "cover",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461066("cover")
+        }, {
+          value: "repeat",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461066("repeat")
+        }, {
+          value: "original",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461066("originalSize")
+        }],
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461069.displayMode ?? "cover",
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46365 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461067({
+          ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461069,
+          displayMode: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46365
+        }).catch(() => undefined)
+      })]
+    })]
+  });
+}
+function Zr({
+  base: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461074,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461075,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461076
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461077 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461074.getSnapshot().tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461076.tableId],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461078 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461077 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461077.viewOrder["find"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46366 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461077.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46366]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461079 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461078 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461077 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461077.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461078] : undefined;
+  return jsx(Fr, {
+    fields: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461077 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461079 ? toMenuFields(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461077, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461079) : [],
+    filter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461076.filter,
+    onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46367 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461075({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461076,
+      filter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46367
+    }).catch(() => undefined),
+    onClear: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461075({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461076,
+      filter: null
+    }).catch(() => undefined)
+  });
+}
+function Qr({
+  label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461087,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461088
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461089 = useDependency(ThemeService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461090 = useObservable(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461089.currentTheme$, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461089.getCurrentTheme(), false, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461089]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461091 = fr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461088),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461092 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46368 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461087({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461088,
+      appearance: {
+        ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461091,
+        ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46368
+      }
+    }).catch(() => undefined);
+  return jsxs("div", {
+    className: "univer-grid univer-gap-4 univer-overflow-y-auto univer-p-4",
+    children: [jsx(Textarea, {
+      defaultValue: pr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461088.document),
+      rows: 8,
+      onBlur: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46369 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461087({
+        ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461088,
+        document: mr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461088.document, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46369.target["value"])
+      }).catch(() => undefined)
+    }), jsx(ChartColorField, {
+      emptyLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("backgroundColor"),
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("backgroundColor"),
+      pickerFallbackValue: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461090.gray[0],
+      resetLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("reset"),
+      value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461091.backgroundColor ?? null,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46370 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461092({
+        backgroundColor: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46370 ?? undefined
+      })
+    }), jsx(ChartColorField, {
+      emptyLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("textColor"),
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("textColor"),
+      pickerFallbackValue: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461090.gray[1000],
+      resetLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("reset"),
+      value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461091.textColor ?? null,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46371 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461092({
+        textColor: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46371 ?? undefined
+      })
+    }), jsx(ei, {
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("alignment"),
+      children: jsx(Segmented, {
+        items: [{
+          value: "left",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("left")
+        }, {
+          value: "center",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("center")
+        }, {
+          value: "right",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("right")
+        }],
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461091.alignment,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46372 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461092({
+          alignment: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46372
+        })
+      })
+    }), jsxs(ei, {
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("textSize"),
+      children: [jsx(Segmented, {
+        items: [{
+          value: "auto",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("autoFit")
+        }, {
+          value: "custom",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461086("custom")
+        }],
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461091.fontSizeMode,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46373 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461092({
+          fontSizeMode: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46373
+        })
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461091.fontSizeMode === "custom" && jsx(InputNumber, {
+        className: "univer-mt-2",
+        min: 10,
+        max: 120,
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461091.fontSize,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46374 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461092({
+          fontSize: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46374 ?? 18,
+          fontSizeMode: "custom"
+        })
+      })]
+    })]
+  });
+}
+function fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F3({
+  message: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461100
+}) {
+  return jsx("div", {
+    className: "univer-grid univer-min-h-40 univer-place-items-center univer-p-4 univer-text-sm univer-text-gray-500",
+    children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461100
+  });
+}
+function ei({
+  children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461102,
+  label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461103
+}) {
+  return jsxs("div", {
+    role: "group",
+    "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461103,
+    className: "univer-grid univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700 dark:!univer-text-gray-200",
+    children: [jsx("span", {
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461103
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461102]
+  });
+}
+function ti(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461106) {
+  return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461106 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461106.type) === BaseViewType.Pivot && typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461106.config == "object" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461106.config !== null && "pivot" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461106.config && "chart" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461106.config;
+}
+function ni(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461108) {
+  switch (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461108.type) {
+    case BaseDashboardWidgetType.PivotChart:
+      return "bases-dashboard-ui.dashboard.pivotChart";
+    case BaseDashboardWidgetType.TableFilter:
+      return "bases-dashboard-ui.dashboard.tableFilter";
+    case BaseDashboardWidgetType.Text:
+      return "bases-dashboard-ui.dashboard.text";
+    case BaseDashboardWidgetType.Image:
+      return "bases-dashboard-ui.dashboard.image";
+    case BaseDashboardWidgetType.FormulaShape:
+      return "bases-dashboard-ui.dashboard.formulaShape";
+  }
+}
+function ii(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461110, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461111) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461112;
+  var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461110.style["backgroundColor"] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461111.fill ?? "transparent", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461110.style["border"] = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461112 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461111.border) != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461112.color && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461111.border["width"] ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461111.border["width"] + "px solid " + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461111.border["color"] : "", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461110.style["borderRadius"] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461111.radius ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461111.radius + "px" : "", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461110.style["overflow"] = "hidden", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461110.style["boxSizing"] = "border-box";
+}
+var ai = class extends Disposable {
+  constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46387, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46388) {
+    super(), this.chartId = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46387, this._element = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46388, vr(this, "mode", ChartRenderMode.Dom);
+  }
+  getRect() {
+    return {
+      width: Math.max(1, this._element["clientWidth"]),
+      height: Math.max(1, this._element["clientHeight"])
+    };
+  }
+  setStyle(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46391) {
+    ii(this._element, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46391);
+  }
+  async ensureMount() {
+    return this._element;
+  }
+  checkMounted() {
+    return this._element["isConnected"];
+  }
+  syncLayout() {}
+  markReady() {}
+  markNotReady() {}
+};
+function oi({
+  isRowDirection: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461116,
+  runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461117
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461118 = useRef(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461119 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461120 = useDependency(ILogService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461121 = useDependency(ri),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461122 = useDependency(ThemeService);
+  return useEffect(() => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461118.current;
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393) return;
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.replaceChildren();
+    let {
+        chartId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46394,
+        model: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46395
+      } = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461117,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46396 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46395.dataSource,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46397 = new ai(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46394, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393),
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461121.createDomChartInstance(),
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A5 = false,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399 = null,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400 = null,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401 = null,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402 = null,
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A6 = false,
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A7 = false,
+      var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10 = Promise.resolve();
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398.bind(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46397);
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46403 = () => {
+        var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46110, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113;
+        if (document.visibilityState === "hidden" || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46110 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111 = window).matchMedia) != null && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46110 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46110.call(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111, "(prefers-reduced-motion:\x20reduce)")) != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46110.matches || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113 = window).matchMedia) != null && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.call(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113, "print")) != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.matches || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.isConnected) return false;
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.getBoundingClientRect();
+        return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.width > 0 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.height > 0 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.right > 0 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.bottom > 0 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.left < window.innerWidth && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.top < window.innerHeight;
+      },
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46404 = () => {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400 !== null && clearTimeout(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["baseChartDataAnimation"] = "true", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["baseChartDataAnimationDuration"] = String(CHART_DATA_UPDATE_ANIMATION_DURATION), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400 = setTimeout(() => {
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400 = null, delete var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["baseChartDataAnimation"], delete var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["baseChartDataAnimationDuration"];
+        }, CHART_DATA_UPDATE_ANIMATION_DURATION);
+      },
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46405 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120 => {
+        if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399 !== null && (clearTimeout(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399 = null), !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46395.config) {
+          var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A7 ||= var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120;
+          return;
+        }
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["chartType"] = String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46395.chartType), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["chartRowDirection"] = String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461116);
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461121.createRenderInput(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461117),
+          var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB5 = {
+            chartId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46394,
+            config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.config,
+            style: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.style
+          };
+        var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10 = var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB10.then(async () => {
+          var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A5 || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["renderRevision"] = String(Number(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["renderRevision"] ?? 0) + 1), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398.renderTransition && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46403() ? (await var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398.renderTransition(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401, var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB5, {
+            duration: CHART_DATA_UPDATE_ANIMATION_DURATION
+          }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46404()) : await var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398.render(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB5), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46401 = var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB5);
+        }).catch(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461120.error("[BasePivotChart] Failed to render chart.", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614));
+      },
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46406 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46124 = false) => {
+        var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A7 ||= var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46124, !var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A6 && (var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A6 = true, queueMicrotask(() => {
+          var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A6 = false;
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4615 = var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A7;
+          var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A7 = false, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46405(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4615);
+        }));
+      },
+      var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A2 = [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46396.data$["subscribe"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46126 => {
+        let var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB2 = JSON.stringify(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46126);
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402 != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402 !== var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB2 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46406(true), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46402 = var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB2;
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46395.config$["subscribe"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46128 => {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46128 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46406();
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46395.style$["subscribe"](() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46406()), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461119.direction$["subscribe"](() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46406()), combineLatest([var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461122.currentTheme$, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461122.darkMode$]).pipe(skip(1)).subscribe(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46406())],
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46407 = typeof ResizeObserver > "u" ? null : new ResizeObserver(() => {
+        var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A5 || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46397.syncLayout(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399 !== null && clearTimeout(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399 = setTimeout(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46406(), 100));
+      });
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46407 == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46407.observe(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393), () => {
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A5 = true, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399 !== null && clearTimeout(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46399), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400 !== null && clearTimeout(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46400), delete var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["baseChartDataAnimation"], delete var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.dataset["baseChartDataAnimationDuration"], var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46407 == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46407.disconnect(), var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A2.forEach(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4617 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4617.unsubscribe()), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46398.dispose(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46397.dispose(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46393.replaceChildren();
+    };
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461116, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461119, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461120, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461121, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461117, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461122]), jsx("div", {
+    ref: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461118,
+    "data-u-comp": "base-pivot-chart",
+    className: "univer-absolute univer-inset-0 univer-overflow-hidden"
+  });
+}
+function si({
+  filters: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461130,
+  onRuntimeChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461131,
+  unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461134 = useDependency(IUniverInstanceService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461135 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461136 = useDependency(ILogService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461137 = useDependency(BaseChartRuntimeService),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461138, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461139] = useState(null),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461140, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461141] = useState(false),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461142, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461143] = useState(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461144 = useRef("base-dashboard-pivot-chart-" + generateRandomId(8)),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461145 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461134.getUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132, UniverInstanceType.UNIVER_BASE),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461146 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461145 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461145.getSnapshot().tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.tableId],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461147 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461146 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461146.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.pivotViewId],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461148 = ci(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461147);
+  if (useEffect(() => {
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461148) return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46423 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461144.current;
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461137.acquireChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46423, {
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132,
+      tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.tableId,
+      viewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.pivotViewId,
+      filters: []
+    }), () => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461137.releaseChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46423), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461131 == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461131(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.id, null);
+    };
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461148, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461131, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461137, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.id, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.pivotViewId, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.tableId]), useEffect(() => {
+    if (!ci(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461147)) return;
+    let var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A11 = true,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46425 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.chart ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461147.config["chart"],
+      var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB13 = {
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132,
+        tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.tableId,
+        viewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.pivotViewId,
+        filters: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461147.filter ?? null, ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461130]
+      };
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461137.refreshChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461144.current, var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB13, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46425).then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46130 => {
+      if (!var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A11 || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46130) return;
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461137.getChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461144.current) ?? null;
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461139(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46130), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461143(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461141(false), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461131 == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461131(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.id, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131);
+    }).catch(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46134 => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461136.error("[DashboardPivotChartWidget] Failed to calculate the pivot result.", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46134), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A11 && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461139(null), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461141(true));
+    }), () => {
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A11 = false;
+    };
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461130, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461136, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461131, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461137, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461147, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.chart, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.id, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.pivotViewId, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.tableId]), !ci(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461147)) return jsx("div", {
+    className: "univer-grid univer-h-full univer-place-items-center univer-text-xs univer-text-gray-500",
+    children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461135.t("bases-dashboard-ui.dashboardInspector.sourceUnavailable")
+  });
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461149 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461137.getChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461132, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461144.current) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461142 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461142 : null;
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461138 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461149 ? jsx(oi, {
+    isRowDirection: resolveBasePivotChartRowDirection((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461133.chart ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461147.config["chart"]).orient),
+    runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461149
+  }) : jsx("div", {
+    className: "univer-grid\x20univer-h-full\x20univer-place-items-center\x20univer-text-xs\x20univer-text-gray-500",
+    children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461135.t(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461140 ? "bases-dashboard-ui.pivot.calculationFailed" : "bases-dashboard-ui.pivot.calculating")
+  });
+}
+function ci(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461170) {
+  return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461170 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461170.type) === BaseViewType.Pivot && typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461170.config == "object" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461170.config !== null && "pivot" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461170.config && "chart" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461170.config;
+}
+function li({
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461172
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461173 = useDependency(ThemeService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461174 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461175 = useObservable(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461173.currentTheme$, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461173.getCurrentTheme(), false, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461173]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461176 = useRef(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461177 = useRef(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178 = fr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461172),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461179 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178.backgroundColor ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461175.gray[0],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461180 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178.textColor ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461175.gray[1000],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461181 = pr(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461172.document);
+  return useEffect(() => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46427 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461176.current,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46428 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461177.current;
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46427 || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46428) return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46429 = () => {
+      if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178.fontSizeMode === "custom" || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46427.clientWidth || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46427.clientHeight) {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46428.style["fontSize"] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178.fontSize + "px";
+        return;
+      }
+      let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D15 = 8,
+        var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D16 = 72,
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D15;
+      for (; var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D15 <= var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D16;) {
+        let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1 = Math.floor((var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D15 + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D16) / 2);
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46428.style["fontSize"] = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1 + "px", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46428.scrollWidth <= var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46427.clientWidth && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46428.scrollHeight <= var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46427.clientHeight ? (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1, var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D15 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1 + 1) : var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D16 = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1 - 1;
+      }
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46428.style["fontSize"] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136 + "px";
+    };
+    if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46429(), typeof ResizeObserver > "u") return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46430 = new ResizeObserver(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46429);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46430.observe(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46427), () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46430.disconnect();
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178.fontSize, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178.fontSizeMode, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461181]), jsx("div", {
+    "data-dashboard-text-widget": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461172.id,
+    className: "univer-box-border\x20univer-flex\x20univer-h-full\x20univer-w-full\x20univer-items-center\x20univer-overflow-hidden\x20univer-p-4",
+    style: {
+      backgroundColor: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461179,
+      color: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461180
+    },
+    children: jsx("div", {
+      ref: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461176,
+      "data-dashboard-text-content": true,
+      "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461174.t("bases-dashboard-ui.dashboard.text"),
+      className: "univer-flex univer-h-full univer-min-h-0 univer-w-full univer-items-center univer-overflow-hidden",
+      children: jsx("div", {
+        ref: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461177,
+        "data-dashboard-text-value": true,
+        "data-font-size-mode": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178.fontSizeMode,
+        className: "univer-w-full\x20univer-whitespace-pre-wrap\x20univer-break-words\x20univer-leading-normal",
+        style: {
+          textAlign: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461178.alignment
+        },
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461181
+      })
+    })
+  });
+}
+function ui({
+  onDelete: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461192,
+  onEdit: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461193
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461194 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461195 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461194.t("bases-dashboard-ui.dashboard.editWidget"),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461196 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461194.t("bases-dashboard-ui.dashboard.deleteWidget"),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461197 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461194.t("bases-dashboard-ui.dashboard.widgetActions");
+  return jsx(DropdownMenu, {
+    items: [{
+      type: "item",
+      children: jsxs("span", {
+        className: "univer-flex\x20univer-items-center\x20univer-gap-2",
+        children: [jsx(PenIcon, {
+          className: "univer-size-4",
+          "aria-hidden": "true"
+        }), jsx("span", {
+          children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461195
+        })]
+      }),
+      onSelect: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461193
+    }, {
+      type: "separator"
+    }, {
+      type: "item",
+      variant: "destructive",
+      children: jsxs("span", {
+        className: "univer-flex univer-items-center univer-gap-2",
+        children: [jsx(DeleteIcon, {
+          className: "univer-size-4",
+          "aria-hidden": "true"
+        }), jsx("span", {
+          children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461196
+        })]
+      }),
+      onSelect: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461192
+    }],
+    children: jsx(Button, {
+      type: "button",
+      size: "small",
+      variant: "text",
+      title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461197,
+      "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461197,
+      className: "univer-size-6 !univer-border !univer-border-solid !univer-border-gray-200 !univer-bg-gray-0 univer-p-0 !univer-shadow-none hover:!univer-bg-gray-100 dark:!univer-border-gray-700 dark:!univer-bg-gray-900 dark:hover:!univer-bg-gray-800",
+      children: jsx(MoreHorizontalIcon, {
+        className: "univer-size-4",
+        "aria-hidden": "true"
+      })
+    })
+  });
+}
+function di({
+  dashboardId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461204,
+  presentation: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461206 = false,
+  unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461207 = useDependency(ICommandService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461208 = useDependency(IAttachmentIoService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461209 = useDependency(IImageIoService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461210 = useDependency(IUniverInstanceService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461212 = useDependency(BaseDashboardResourceService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461213 = useDependency(IUndoRedoService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461214 = useRef(null),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461215, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461216] = useState(false),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461217, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461218] = useState(),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461219, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461220] = useState(false),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461221, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461222] = useState(() => new Map()),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461223 = useCallback((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46435, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46436) => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461222(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138 => {
+        let var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59 = new Map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138);
+        return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46436 ? var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59.set(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46435, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46436) : var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59.delete(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46435), var_L0_db_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59;
+      });
+    }, []),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224 = useObservable(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461212.change$["pipe"](map(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461212.getDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461204))), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461212.getDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461204), false, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461204, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461212, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461225 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461210.getUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205, UniverInstanceType.UNIVER_BASE),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461226 = useObservable(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461213.undoRedoStatus$, {
+      undos: 0,
+      redos: 0
+    }, false, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461213]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461227 = Kn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461204);
+  if (useEffect(() => {
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461210.setCurrentUnitForType(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461210.focusUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205);
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461210, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205]), useEffect(() => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46439 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461214.current,
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46440 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46439 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46439.ownerDocument;
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46439 || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46440) return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46441 = () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461220(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46440.fullscreenElement === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46440.documentElement),
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46442 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46140 => {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46140.key === "Escape" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461220(false);
+      };
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46440.addEventListener("fullscreenchange", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46441), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46440.addEventListener("keydown", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46442), () => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46440.removeEventListener("fullscreenchange", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46441), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46440.removeEventListener("keydown", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46442);
+    };
+  }, []), !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224 || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461225) return null;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461228 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46447 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461207.executeCommand(UpsertBaseDashboardWidgetCommand.id, {
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205,
+      dashboardId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461204,
+      widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46447
+    }).catch(() => undefined),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461229 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46448, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46449, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46450) => {
+      let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D27 = Math.max(0, ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224.widgetOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46142 => {
+          var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46143;
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46144 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46143 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46142]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46143.layout;
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46144 ? [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46144.row + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46144.rowSpan] : [];
+        })),
+        var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB12 = "dashboard-widget-" + generateRandomId(8),
+        var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB15 = {
+          column: 0,
+          row: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D27,
+          columnSpan: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46449,
+          rowSpan: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46450
+        };
+      switch (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46448.type) {
+        case BaseDashboardWidgetType.PivotChart:
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461228({
+            ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46448,
+            id: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB12,
+            layout: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB15
+          });
+        case BaseDashboardWidgetType.TableFilter:
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461228({
+            ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46448,
+            id: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB12,
+            layout: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB15
+          });
+        case BaseDashboardWidgetType.Text:
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461228({
+            ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46448,
+            id: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB12,
+            layout: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB15
+          });
+        case BaseDashboardWidgetType.Image:
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461228({
+            ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46448,
+            id: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB12,
+            layout: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB15
+          });
+        case BaseDashboardWidgetType.FormulaShape:
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461228({
+            ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46448,
+            id: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB12,
+            layout: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB15
+          });
+      }
+    },
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461230 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461225.getSnapshot(),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461231 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461230.tableOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46454 => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46455 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461230.tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46454];
+      if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46455) return [];
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46456 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46455.viewOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46148 => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46149 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46455.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46148];
+        return yi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46149) ? [{
+          type: "item",
+          children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46149.name,
+          onSelect: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461229({
+            type: BaseDashboardWidgetType.PivotChart,
+            tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46454,
+            pivotViewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46148,
+            chart: {
+              ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46149.config["chart"]
+            }
+          }, 6, 10)
+        }] : [];
+      });
+      return [{
+        type: "subItem",
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46455.name,
+        options: [...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46456, ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46456.length ? [{
+          type: "separator"
+        }] : []), {
+          type: "item",
+          children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.tableFilter"),
+          onSelect: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461229({
+            type: BaseDashboardWidgetType.TableFilter,
+            tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46454,
+            filter: null
+          }, 6, 8)
+        }]
+      }];
+    }),
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18 = [...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461231, ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461231.length ? [{
+      type: "separator"
+    }] : []), {
+      type: "item",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.text"),
+      onSelect: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461229({
+        type: BaseDashboardWidgetType.Text,
+        document: hi()
+      }, 4, 6)
+    }, {
+      type: "item",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.image"),
+      onSelect: () => gi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461208).then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46152 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46152 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461229({
+        type: BaseDashboardWidgetType.Image,
+        source: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46152.source,
+        sourceType: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46152.sourceType,
+        alt: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46152.name,
+        displayMode: "cover"
+      }, 4, 6))
+    }, {
+      type: "item",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.formulaShape"),
+      onSelect: () => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46460 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461230.tableOrder["find"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46153 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461230.tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46153]);
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46460 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461229({
+          type: BaseDashboardWidgetType.FormulaShape,
+          tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46460,
+          shapeType: ShapeTypeEnum.RoundRect,
+          shapeData: createFormulaShapeData(),
+          description: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.formulaShape")
+        }, 4, 6);
+      }
+    }],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461232 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461217 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461217] : undefined,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461233 = async () => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46462 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461214.current;
+      if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46462) return;
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46463 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46462.ownerDocument;
+      if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46463.fullscreenElement === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46463.documentElement) {
+        await var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46463.exitFullscreen();
+        return;
+      }
+      await var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46463.documentElement["requestFullscreen"]();
+    },
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461234 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461206 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461219,
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461227 && !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461234;
+  return jsxs("div", {
+    ref: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461214,
+    className: "\n univer-flex univer-h-full univer-min-h-0 univer-flex-col univer-bg-gray-0\n dark:!univer-bg-gray-900\n " + (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461219 ? "univer-fixed\x20univer-inset-0\x20univer-z-[1000]" : "univer-relative univer-z-10") + "\n ",
+    children: [!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461234 && jsxs("header", {
+      className: "univer-flex univer-h-12 univer-shrink-0 univer-items-center univer-gap-3 univer-border-b univer-border-gray-200 univer-bg-gray-0 univer-px-4 dark:!univer-border-gray-700 dark:!univer-bg-gray-900",
+      children: [jsx(ChartIcon, {
+        className: "univer-size-5 univer-text-primary-600"
+      }), jsx("h2", {
+        className: "univer-m-0\x20univer-min-w-0\x20univer-flex-1\x20univer-truncate\x20univer-text-base\x20univer-font-semibold",
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224.name
+      }), jsx(BaseUnitCollaborationStatus, {
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205
+      }), jsx(Button, {
+        type: "button",
+        size: "small",
+        variant: "text",
+        "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.undo"),
+        disabled: !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461227 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461226.undos === 0,
+        onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461207.executeCommand(UndoCommand.id).catch(() => undefined),
+        children: jsx(UndoIcon, {})
+      }), jsx(Button, {
+        type: "button",
+        size: "small",
+        variant: "text",
+        "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.redo"),
+        disabled: !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461227 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461226.redos === 0,
+        onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461207.executeCommand(RedoCommand.id).catch(() => undefined),
+        children: jsx(RedoIcon, {})
+      }), jsx(Button, {
+        type: "button",
+        size: "small",
+        variant: "text",
+        "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.fullScreen"),
+        onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461233().catch(() => undefined),
+        children: jsx(ExpandIcon, {})
+      }), jsx(DropdownMenu, {
+        items: var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18,
+        children: jsxs(Button, {
+          variant: "primary",
+          disabled: !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461227,
+          children: [jsx(IncreaseIcon, {}), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.addWidget")]
+        })
+      })]
+    }), jsxs("div", {
+      className: "univer-flex univer-min-h-0 univer-flex-1",
+      children: [jsx("div", {
+        className: "univer-min-w-0 univer-flex-1",
+        children: jsx(ur, {
+          dashboard: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224,
+          dragLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboardInspector.dragWidget"),
+          editable: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33,
+          resizeLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t("bases-dashboard-ui.dashboard.resizeWidget"),
+          widgetLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46466 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461211.t(vi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46466.type)),
+          selectedWidgetId: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461217 : undefined,
+          onSelectWidget: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46467 => {
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461218(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46467), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46467 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461216(false);
+          } : undefined,
+          onLayoutsCommit: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46469 => {
+            let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB17 = {
+              ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224.widgets
+            };
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46469.forEach((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46154, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46155) => {
+              let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46156 = var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB17[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46155];
+              var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46156 && (var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB17[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46155] = {
+                ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46156,
+                layout: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46154
+              });
+            }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461207.executeCommand(UpdateBaseDashboardCommand.id, {
+              unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205,
+              dashboard: {
+                ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224,
+                widgets: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB17
+              }
+            }).catch(() => undefined);
+          },
+          renderWidget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46471 => jsx(fi, {
+            base: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461225,
+            dashboard: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461224,
+            unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205,
+            widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46471,
+            editable: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461227,
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461228,
+            onChartRuntimeChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461223
+          }),
+          renderWidgetActions: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46472 => jsx(ui, {
+            onEdit: () => {
+              var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461218(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46472.id), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461216(true);
+            },
+            onDelete: () => {
+              var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461217 === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46472.id && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461218(undefined), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461216(false)), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461207.executeCommand(RemoveBaseDashboardWidgetCommand.id, {
+                unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205,
+                dashboardId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461204,
+                widgetId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46472.id
+              }).catch(() => undefined);
+            }
+          })
+        })
+      }), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A33 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461215 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461232 && jsx(Yr, {
+        base: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461225,
+        chartRuntime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461221.get(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461232.id),
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461205,
+        widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461232,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461228,
+        onClose: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461216(false),
+        onSelectBackgroundImage: () => fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F4(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461209),
+        onSelectImage: () => gi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461208)
+      })]
+    })]
+  });
+}
+function fi({
+  base: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461266,
+  dashboard: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461267,
+  editable: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461268,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461269,
+  onChartRuntimeChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461270,
+  unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461271,
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461273 = useMemo(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461267.widgetOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46160 => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46161 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461267.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46160];
+    return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46161 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46161.type) === BaseDashboardWidgetType.TableFilter && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46161.tableId === ("tableId" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272.tableId : "") && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46161.filter ? [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46161.filter] : [];
+  }), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461267, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272]);
+  switch (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272.type) {
+    case BaseDashboardWidgetType.PivotChart:
+      return jsx(si, {
+        filters: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461273,
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461271,
+        widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272,
+        onRuntimeChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461270
+      });
+    case BaseDashboardWidgetType.TableFilter:
+      return jsx(Pr, {
+        disabled: !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461268,
+        fields: pi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461266, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272.tableId),
+        filter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272.filter,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46164 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461269({
+          ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272,
+          filter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46164
+        }).catch(() => undefined)
+      });
+    case BaseDashboardWidgetType.Text:
+      return jsx(li, {
+        widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272
+      });
+    case BaseDashboardWidgetType.Image:
+      return jsx(mi, {
+        widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272
+      });
+    case BaseDashboardWidgetType.FormulaShape:
+      return jsx(rr, {
+        dashboardId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461267.id,
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461271,
+        widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461272
+      });
+  }
+}
+function pi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461282, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461283) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461284 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461282.getSnapshot().tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461283],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461285 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461284 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461284.viewOrder["find"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46473 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461284.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46473]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461286 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461285 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461284 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461284.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461285] : undefined;
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461284 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461286 ? toMenuFields(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461284, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461286) : [];
+}
+function mi({
+  widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461293 = useDependency(IAttachmentIoService),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461294, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461295] = useState(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.sourceType === ImageSourceType.UUID ? "" : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.source);
+  return useEffect(() => {
+    let var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A13 = true;
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461293.getAttachmentUrl(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.source, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.sourceType).then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46165 => {
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A13 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461295(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46165);
+    }).catch(() => undefined), () => {
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A13 = false;
+    };
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461293, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.source, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.sourceType]), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461294 ? jsx("div", {
+    role: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.alt ? "img" : undefined,
+    "aria-label": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.alt || undefined,
+    "data-dashboard-image": var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.id,
+    className: "univer-h-full univer-w-full univer-bg-transparent",
+    style: Jn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461294, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461292.displayMode)
+  }) : null;
+}
+function hi() {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461300 = createParagraphId(new Set());
+  return {
+    id: "dashboard-text-" + generateRandomId(8),
+    body: {
+      dataStream: "\x0d\x0a",
+      textRuns: [],
+      paragraphs: [{
+        startIndex: 0,
+        paragraphId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461300
+      }]
+    },
+    documentStyle: {}
+  };
+}
+function gi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461302) {
+  return new Promise(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46474 => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46475 = document.createElement("input");
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46475.type = "file", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46475.accept = "image/*", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46475.addEventListener("change", () => {
+      var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46167;
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46168 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46167 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46475.files) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46167[0];
+      if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46168) {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46474(null);
+        return;
+      }
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461302.saveAttachment(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46168).then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618 => {
+        if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618.source || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618.sourceType === undefined) {
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46474(null);
+          return;
+        }
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46474({
+          name: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618.name,
+          source: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618.source,
+          sourceType: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618.sourceType
+        });
+      }).catch(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46474(null));
+    }, {
+      once: true
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46475.click();
+  });
+}
+function fn_L0_db_endo_routine_pure_O1_zalloc_nothrow_sigD23F4(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461304) {
+  return new Promise(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46478 => {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46479 = document.createElement("input");
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46479.type = "file", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46479.accept = "image/*", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46479.addEventListener("change", () => {
+      var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46171;
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46172 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46171 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46479.files) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46171[0];
+      if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46172) {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46478(null);
+        return;
+      }
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461304.saveImage(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46172).then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620 => {
+        if (!(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620 != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620.source)) {
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46478(null);
+          return;
+        }
+        if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620.base64Cache) {
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463 = new Image();
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463.src = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620.base64Cache, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461304.addImageSourceCache(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620.source, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620.imageSourceType, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463);
+        }
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46478({
+          source: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620.source,
+          sourceType: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620.imageSourceType
+        });
+      }).catch(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46478(null));
+    }, {
+      once: true
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46479.click();
+  });
+}
+function vi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461306) {
+  switch (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461306) {
+    case BaseDashboardWidgetType.PivotChart:
+      return "bases-dashboard-ui.dashboard.pivotChart";
+    case BaseDashboardWidgetType.TableFilter:
+      return "bases-dashboard-ui.dashboard.tableFilter";
+    case BaseDashboardWidgetType.Text:
+      return "bases-dashboard-ui.dashboard.text";
+    case BaseDashboardWidgetType.Image:
+      return "bases-dashboard-ui.dashboard.image";
+    case BaseDashboardWidgetType.FormulaShape:
+      return "bases-dashboard-ui.dashboard.formulaShape";
+  }
+}
+function yi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461308) {
+  return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461308 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461308.type) === BaseViewType.Pivot && typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461308.config == "object" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461308.config !== null && "pivot" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461308.config && "chart" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461308.config;
+}
+const bi = [{
+    area: PivotTableFiledAreaEnum.Filter,
+    key: "filterFields",
+    label: "bases-dashboard-ui.pivot.filters"
+  }, {
+    area: PivotTableFiledAreaEnum.Column,
+    key: "columnFields",
+    label: "bases-dashboard-ui.pivot.columns"
+  }, {
+    area: PivotTableFiledAreaEnum.Row,
+    key: "rowFields",
+    label: "bases-dashboard-ui.pivot.rows"
+  }, {
+    area: PivotTableFiledAreaEnum.Value,
+    key: "valueFields",
+    label: "bases-dashboard-ui.pivot.values"
+  }],
+  xi = [{
+    value: PivotSubtotalTypeEnum.sum,
+    localeKey: "bases-dashboard-ui.pivot.sum"
+  }, {
+    value: PivotSubtotalTypeEnum.count,
+    localeKey: "bases-dashboard-ui.pivot.count"
+  }, {
+    value: PivotSubtotalTypeEnum.countNums,
+    localeKey: "bases-dashboard-ui.pivot.countNumbers"
+  }, {
+    value: PivotSubtotalTypeEnum.average,
+    localeKey: "bases-dashboard-ui.pivot.average"
+  }, {
+    value: PivotSubtotalTypeEnum.max,
+    localeKey: "bases-dashboard-ui.pivot.max"
+  }, {
+    value: PivotSubtotalTypeEnum.min,
+    localeKey: "bases-dashboard-ui.pivot.min"
+  }, {
+    value: PivotSubtotalTypeEnum.product,
+    localeKey: "bases-dashboard-ui.pivot.product"
+  }, {
+    value: PivotSubtotalTypeEnum.stdDev,
+    localeKey: "bases-dashboard-ui.pivot.stdDev"
+  }, {
+    value: PivotSubtotalTypeEnum.stdDevp,
+    localeKey: "bases-dashboard-ui.pivot.stdDevPopulation"
+  }, {
+    value: PivotSubtotalTypeEnum.var,
+    localeKey: "bases-dashboard-ui.pivot.variance"
+  }, {
+    value: PivotSubtotalTypeEnum.varp,
+    localeKey: "bases-dashboard-ui.pivot.variancePopulation"
+  }];
+function Si(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461310) {
+  let {
+      config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461311,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461312,
+      table: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461313
+    } = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461310,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461314 = useDependency(LocaleService),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461315, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461316] = useState("fields"),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461317, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461318] = useState(""),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461319, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461320] = useState(null),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461321, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461322] = useState(null),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461323, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461324] = useState(null),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461325, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461326] = useState(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461327 = useRef(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461328 = useMemo(() => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461313.fieldOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46175 => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46176 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461313.fields[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46175];
+      return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46176 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46176.system !== true && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46176.type !== BaseFieldType.RecordId ? [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46176] : [];
+    }).filter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46179 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46179.name["toLocaleLowerCase"]().includes(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461317.trim().toLocaleLowerCase())), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461317, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461313]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461329 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46482 => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46483 = createBasePivotTable(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461313, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461311.pivot);
+      try {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46482(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46483), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461312({
+          pivot: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46483.toJSON()
+        });
+      } finally {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46483.dispose();
+      }
+    },
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461330 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46486, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46487) => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461319 && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461329(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46180 => {
+        if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461319.kind === "field") {
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4622 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46180.getFieldPositionInfoById(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461319.id),
+            var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D2 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4622.area === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46486 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4622.index < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46487 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46487 - 1 : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46487;
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46180.updateFieldPosition(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461319.id, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46486, var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D2);
+          return;
+        }
+        Ai(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46180, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461319.id, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46486, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46487);
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461320(null), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461322(null));
+    };
+  return jsxs("div", {
+    className: "univer-flex univer-min-h-full univer-flex-col",
+    children: [jsx(ChartEditPanelTabs, {
+      ariaLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461314.t("bases-dashboard-ui.pivot.pivotConfiguration"),
+      className: "univer-shrink-0 univer-px-3",
+      items: [{
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461314.t("bases-dashboard-ui.pivot.fields"),
+        panelId: "base-pivot-fields",
+        value: "fields"
+      }, {
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461314.t("bases-dashboard-ui.pivot.options"),
+        panelId: "base-pivot-options",
+        value: "options"
+      }],
+      value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461315,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461316
+    }), jsx("div", {
+      ref: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461327,
+      className: clsx("univer-min-h-0 univer-flex-1 univer-overflow-y-auto univer-p-3", scrollbarClassName),
+      onDragOver: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46490 => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46491 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461327.current;
+        if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46491) return;
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46492 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46491.getBoundingClientRect();
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46490.clientY < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46492.top + 48 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46491.scrollTop -= 16 : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46490.clientY > var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46492.bottom - 48 && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46491.scrollTop += 16);
+      },
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461315 === "options" ? jsx(ki, {
+        config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461311,
+        commit: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461329
+      }) : jsxs("div", {
+        className: "univer-flex univer-flex-col univer-gap-4",
+        children: [jsxs("div", {
+          children: [jsx("div", {
+            className: "univer-mb-2 univer-text-sm univer-font-medium univer-text-gray-700 dark:!univer-text-gray-200",
+            children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461314.t("bases-dashboard-ui.pivot.sourceFields")
+          }), jsx(Input, {
+            allowClear: true,
+            slot: jsx(SearchIcon, {}),
+            value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461317,
+            placeholder: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461314.t("bases-dashboard-ui.pivot.searchFields"),
+            onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461318
+          }), jsx("div", {
+            className: "univer-mt-2 univer-flex univer-max-h-60 univer-flex-col univer-overflow-y-auto",
+            children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461328.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46496 => jsx(Ci, {
+              config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461311,
+              field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46496,
+              onAdd: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46182 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461329(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4623 => Ai(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4623, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46496.id, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46182, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4623.getFieldCountByArea(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46182))),
+              onCheckedChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46183 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461329(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624 => {
+                let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4625 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624.getTableFieldsByDataFieldId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46496.id);
+                if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46183) {
+                  var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4625.forEach(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624.removeField(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461.getId()));
+                  return;
+                }
+                if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4625.length === 0) {
+                  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464 = Mi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46496) ? PivotTableFiledAreaEnum.Value : PivotTableFiledAreaEnum.Row;
+                  var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624.addFieldWithSourceId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46496.id, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464);
+                }
+              }),
+              onDragStart: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461320({
+                kind: "source",
+                id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46496.id
+              })
+            }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46496.id))
+          })]
+        }), jsx("div", {
+          className: "univer-grid univer-grid-cols-2 univer-gap-3",
+          children: bi.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46497 => jsx(Ti, {
+            area: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46497.area,
+            dropTarget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461321,
+            fields: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461311.pivot[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46497.key],
+            label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461314.t(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46497.label),
+            snapshot: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461311.pivot,
+            onDragEnd: () => {
+              var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461320(null), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461322(null);
+            },
+            onDragStart: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46184 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461320({
+              kind: "field",
+              id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46184,
+              area: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46497.area
+            }),
+            onDragOver: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46185 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461322({
+              area: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46497.area,
+              index: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46185
+            }),
+            onDrop: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46186 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461330(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46497.area, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46186),
+            onFilter: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461324,
+            onRemove: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46187 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461329(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4628 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4628.removeField(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46187)),
+            onSettings: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461326
+          }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46497.area))
+        }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461323 && jsx(Di, {
+          fieldId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461323,
+          snapshot: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461311.pivot,
+          table: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461313,
+          onCancel: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461324(null),
+          onCommit: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46498, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46499) => {
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461329(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46188 => {
+              let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46189 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46188.getDataFieldByTableId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461323),
+                var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46189 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46189.items) ?? [];
+              var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46188.setLabelFilterInfo(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461323, {
+                type: PivotFilterTypeEnum.ManualFilter,
+                list: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46498,
+                isAll: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46498.length === var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A.length
+              }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46188.setSortInfo(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461323, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46499 === undefined ? undefined : {
+                type: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46499
+              });
+            }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461324(null);
+          }
+        }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461323), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461325 && jsx(Oi, {
+          field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461311.pivot["measure"][var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461325],
+          onCancel: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461326(null),
+          onCommit: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46502, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46503, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46504) => {
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461329(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46192 => {
+              var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46192.renameField(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461325, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46502), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46192.setSubtotalType(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461325, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46503), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46192.setFieldFormat(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461325, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46504 || undefined);
+            }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461326(null);
+          }
+        }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461325)]
+      })
+    })]
+  });
+}
+function Ci(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461352) {
+  let {
+      config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461353,
+      field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461354,
+      onAdd: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461355,
+      onCheckedChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461356,
+      onDragStart: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461357
+    } = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461352,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461358 = useDependency(LocaleService),
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A35 = [...Object.values(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461353.pivot["dimension"]), ...Object.values(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461353.pivot["measure"])].some(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46508 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46508.dataFieldId === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461354.id),
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20 = bi.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46509 => ({
+      type: "item",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461358.t(Ni(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46509.area)),
+      onSelect: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461355(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46509.area)
+    }));
+  return jsxs("div", {
+    draggable: true,
+    className: "univer-group\x20univer-flex\x20univer-h-8\x20univer-items-center\x20univer-gap-2\x20univer-rounded-md\x20univer-px-1\x20hover:univer-bg-gray-100\x20dark:hover:!univer-bg-gray-700",
+    onDragStart: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461357,
+    children: [jsx(GripVerticalIcon, {
+      className: "univer-text-gray-400"
+    }), jsx(Checkbox, {
+      checked: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A35,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46510 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461356(!!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46510)
+    }), jsx(wi, {
+      field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461354
+    }), jsx("span", {
+      className: "univer-min-w-0 univer-flex-1 univer-truncate univer-text-xs",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461354.name
+    }), jsx(DropdownMenu, {
+      align: "end",
+      items: var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20,
+      children: jsx("span", {
+        className: "univer-flex univer-size-5 univer-cursor-pointer univer-items-center univer-justify-center",
+        children: jsx(MoreDownIcon, {})
+      })
+    })]
+  });
+}
+function wi({
+  field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461366
+}) {
+  return Mi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461366) ? jsx(NumberIcon, {
+    className: "univer-text-gray-400"
+  }) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461366.type === BaseFieldType.Date || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461366.type === BaseFieldType.CreatedAt || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461366.type === BaseFieldType.UpdatedAt ? jsx(CalendarIcon, {
+    className: "univer-text-gray-400"
+  }) : jsx(TextIcon, {
+    className: "univer-text-gray-400"
+  });
+}
+function Ti(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368) {
+  let {
+      area: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461369,
+      dropTarget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370,
+      fields: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461371,
+      label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461372,
+      snapshot: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461373
+    } = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461374 = useDependency(LocaleService);
+  return jsxs("section", {
+    className: clsx("univer-min-h-32\x20univer-rounded-lg\x20univer-border\x20univer-bg-gray-50\x20univer-p-2\x20dark:!univer-bg-gray-800", borderClassName),
+    onDragOver: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46511 => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46511.preventDefault(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onDragOver(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461371.length);
+    },
+    onDrop: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46513 => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46513.preventDefault(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onDrop((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370.area) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461369 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370.index : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461371.length);
+    },
+    children: [jsx("div", {
+      className: "univer-mb-2 univer-text-xs univer-font-medium univer-text-gray-600 dark:!univer-text-gray-300",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461372
+    }), jsxs("div", {
+      className: "univer-flex univer-flex-col",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461371.map((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46515, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46516) => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46517 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461373.dimension[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46515] ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461373.measure[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46515];
+        return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46517 ? jsxs("div", {
+          onDragOver: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46194 => {
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46194.preventDefault(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46194.stopPropagation();
+            let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46195 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46194.currentTarget["getBoundingClientRect"]();
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onDragOver(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46516 + +(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46194.clientY > var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46195.top + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46195.height / 2));
+          },
+          onDrop: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46198 => {
+            var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46198.preventDefault(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46198.stopPropagation(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onDrop((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370.area) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461369 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370.index : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46516);
+          },
+          children: [(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370.area) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461369 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370.index === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46516 && jsx("div", {
+            className: "univer-h-0.5 univer-rounded univer-bg-primary-600"
+          }), jsx(Ei, {
+            area: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461369,
+            field: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46517,
+            onDragEnd: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onDragEnd,
+            onDragStart: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onDragStart(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46515),
+            onFilter: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onFilter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46515),
+            onRemove: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onRemove(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46515),
+            onSettings: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461368.onSettings(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46515)
+          })]
+        }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46515) : null;
+      }), (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370.area) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461369 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461370.index === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461371.length && jsx("div", {
+        className: "univer-h-0.5 univer-rounded univer-bg-primary-600"
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461371.length === 0 && jsx("div", {
+        className: "univer-grid univer-h-20 univer-place-items-center univer-text-center univer-text-xs univer-text-gray-400",
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461374.t("bases-dashboard-ui.pivot.dropFieldsHere")
+      })]
+    })]
+  });
+}
+function Ei(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461383 = useDependency(LocaleService),
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A37 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382.area === PivotTableFiledAreaEnum.Value,
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22 = [{
+      type: "item",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461383.t("bases-dashboard-ui.pivot.removeField"),
+      onSelect: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382.onRemove
+    }, {
+      type: "item",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461383.t(var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A37 ? "bases-dashboard-ui.pivot.fieldSettings" : "bases-dashboard-ui.pivot.filterField"),
+      onSelect: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A37 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382.onSettings : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382.onFilter
+    }];
+  return jsxs("div", {
+    draggable: true,
+    className: "univer-my-1 univer-flex univer-h-8 univer-items-center univer-gap-2 univer-rounded-md univer-border univer-border-gray-200 univer-bg-gray-0 univer-px-2 dark:!univer-border-gray-700 dark:!univer-bg-gray-900",
+    onDragEnd: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382.onDragEnd,
+    onDragStart: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382.onDragStart,
+    children: [jsx(GripVerticalIcon, {
+      className: "univer-text-gray-400"
+    }), jsx(Tooltip, {
+      title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382.field["displayName"],
+      children: jsx("span", {
+        className: "univer-min-w-0\x20univer-flex-1\x20univer-truncate\x20univer-text-xs",
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461382.field["displayName"]
+      })
+    }), jsx(DropdownMenu, {
+      align: "end",
+      items: var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22,
+      children: jsx("span", {
+        className: "univer-flex univer-size-5 univer-cursor-pointer univer-items-center univer-justify-center",
+        children: jsx(MoreDownIcon, {})
+      })
+    })]
+  });
+}
+function Di(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461387, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461388;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389 = useDependency(LocaleService),
+    {
+      format: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461390,
+      items: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461391,
+      itemTypes: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461392
+    } = useMemo(() => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46521 = createBasePivotTable(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.table, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.snapshot);
+      try {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46200 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46521.getDataFieldByTableId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.fieldId);
+        return {
+          format: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46200 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46200.format,
+          items: [...((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46200 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46200.items) ?? [])],
+          itemTypes: [...((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46200 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46200.itemTypes) ?? [])]
+        };
+      } finally {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46521.dispose();
+      }
+    }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.fieldId, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.snapshot, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.table]),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461393 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461387 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.snapshot["dimension"][var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.fieldId]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461387.filterInfo,
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461394, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461395] = useState((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461393 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461393.type) === PivotFilterTypeEnum.ManualFilter ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461393.list : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461391),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461396, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461397] = useState((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461388 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.snapshot["dimension"][var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.fieldId]) == null || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461388 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461388.sortInfo) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461388.type),
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A39 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461394.length === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461391.length;
+  return jsxs("section", {
+    className: clsx("univer-rounded-lg univer-border univer-bg-gray-0 univer-p-3 dark:!univer-bg-gray-900", borderClassName),
+    children: [jsx("div", {
+      className: "univer-mb-3 univer-text-sm univer-font-medium",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389.t("bases-dashboard-ui.pivot.filterField")
+    }), jsxs("div", {
+      className: "univer-flex",
+      children: [jsxs(Button, {
+        className: "univer-flex-1",
+        variant: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461396 === PivotDataFieldSortOperatorEnum.ascending ? "primary" : "default",
+        onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461397(PivotDataFieldSortOperatorEnum.ascending),
+        children: [jsx(AscendingIcon, {}), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389.t("bases-dashboard-ui.pivot.ascending")]
+      }), jsxs(Button, {
+        className: "univer-flex-1",
+        variant: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461396 === PivotDataFieldSortOperatorEnum.descending ? "primary" : "default",
+        onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461397(PivotDataFieldSortOperatorEnum.descending),
+        children: [jsx(DescendingIcon, {}), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389.t("bases-dashboard-ui.pivot.descending")]
+      })]
+    }), jsxs("div", {
+      className: "univer-my-3\x20univer-max-h-64\x20univer-overflow-y-auto",
+      children: [jsxs("label", {
+        className: "univer-flex\x20univer-h-7\x20univer-items-center\x20univer-gap-2\x20univer-text-sm",
+        children: [jsx(Checkbox, {
+          checked: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A39,
+          indeterminate: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461394.length > 0 && !var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A39,
+          onChange: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461395(var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A39 ? [] : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461391)
+        }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389.t("bases-dashboard-ui.pivot.selectAll")]
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461391.map((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46523, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46524) => jsxs("label", {
+        className: "univer-flex\x20univer-h-7\x20univer-items-center\x20univer-gap-2\x20univer-text-sm",
+        children: [jsx(Checkbox, {
+          checked: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461394.includes(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46523),
+          onChange: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461395(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4629 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4629.includes(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46523) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4629.filter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465 !== var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46523) : [...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4629, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46523])
+        }), jsx("span", {
+          className: "univer-truncate",
+          children: ji(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46523, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461392[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46524], var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461390, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389.t("bases-dashboard-ui.pivot.blank"))
+        })]
+      }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46523))]
+    }), jsxs("div", {
+      className: "univer-flex\x20univer-items-center\x20univer-justify-between\x20univer-gap-2",
+      children: [jsx(Button, {
+        variant: "link",
+        onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.onCommit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461391, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461396),
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389.t("bases-dashboard-ui.pivot.clearFilter")
+      }), jsxs("div", {
+        className: "univer-flex\x20univer-gap-2",
+        children: [jsx(Button, {
+          onClick: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.onCancel,
+          children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389.t("bases-dashboard-ui.pivot.cancel")
+        }), jsx(Button, {
+          variant: "primary",
+          disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461394.length === 0,
+          onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461386.onCommit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461394, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461396),
+          children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461389.t("bases-dashboard-ui.pivot.confirm")
+        })]
+      })]
+    })]
+  });
+}
+function Oi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461410) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461411, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461412, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461413;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461414 = useDependency(LocaleService),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461415, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461416] = useState(((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461411 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461410.field) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461411.displayName) ?? ""),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461417, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461418] = useState(((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461412 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461410.field) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461412.subtotal) ?? PivotSubtotalTypeEnum.sum),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461419, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461420] = useState(((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461413 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461410.field) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461413.format) ?? "");
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461410.field ? jsxs("section", {
+    className: clsx("univer-flex univer-flex-col univer-gap-3 univer-rounded-lg univer-border univer-bg-gray-0 univer-p-3 dark:!univer-bg-gray-900", borderClassName),
+    children: [jsx("div", {
+      className: "univer-text-sm univer-font-medium",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461414.t("bases-dashboard-ui.pivot.fieldSettings")
+    }), jsxs("label", {
+      className: "univer-flex univer-flex-col univer-gap-1 univer-text-xs",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461414.t("bases-dashboard-ui.pivot.displayName"), jsx(Input, {
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461415,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461416
+      })]
+    }), jsxs("label", {
+      className: "univer-flex univer-flex-col univer-gap-1 univer-text-xs",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461414.t("bases-dashboard-ui.pivot.summarizeBy"), jsx(Select, {
+        value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461417),
+        options: xi.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46525 => ({
+          value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46525.value),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461414.t(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46525.localeKey)
+        })),
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46526 => {
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46527 = xi.find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46201 => String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46201.value) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46526);
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46527 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461418(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46527.value);
+        }
+      })]
+    }), jsxs("label", {
+      className: "univer-flex univer-flex-col univer-gap-1 univer-text-xs",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461414.t("bases-dashboard-ui.pivot.numberFormat"), jsx(Input, {
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461419,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461420
+      })]
+    }), jsxs("div", {
+      className: "univer-flex univer-justify-end univer-gap-2",
+      children: [jsx(Button, {
+        onClick: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461410.onCancel,
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461414.t("bases-dashboard-ui.pivot.cancel")
+      }), jsx(Button, {
+        variant: "primary",
+        disabled: !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461415.trim(),
+        onClick: () => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461410.onCommit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461415.trim(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461417, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461419),
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461414.t("bases-dashboard-ui.pivot.confirm")
+      })]
+    })]
+  }) : null;
+}
+function ki(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461432) {
+  let {
+      config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461433,
+      commit: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461434
+    } = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461432,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461436 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461433.pivot["options"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461437 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46530 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461434(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46202 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46202.setOptions({
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46202.getOptions(),
+      ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46530
+    }));
+  return jsxs("div", {
+    className: "univer-flex univer-flex-col univer-gap-4",
+    children: [jsxs("label", {
+      className: "univer-flex univer-items-center univer-justify-between univer-gap-2 univer-text-sm",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.layout"), jsx(Select, {
+        className: "univer-w-36",
+        value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461433.pivot["layout"]),
+        options: [{
+          value: String(PivotLayoutTypeEnum.tabular),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.layoutTabular")
+        }, {
+          value: String(PivotLayoutTypeEnum.compact),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.layoutCompact")
+        }, {
+          value: String(PivotLayoutTypeEnum.outline),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.layoutOutline")
+        }],
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46531 => {
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46532 = [PivotLayoutTypeEnum.tabular, PivotLayoutTypeEnum.compact, PivotLayoutTypeEnum.outline].find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46203 => String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46203) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46531);
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46532 !== undefined && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461434(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46204 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46204.setLayout(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46532));
+        }
+      })]
+    }), [{
+      key: "repeatRowLabels",
+      label: "bases-dashboard-ui.pivot.repeatRowLabels",
+      defaultValue: false
+    }, {
+      key: "repeatColLabels",
+      label: "bases-dashboard-ui.pivot.repeatColumnLabels",
+      defaultValue: false
+    }, {
+      key: "showRowSubtotal",
+      label: "bases-dashboard-ui.pivot.showRowSubtotal",
+      defaultValue: true
+    }, {
+      key: "showRowGrandTotal",
+      label: "bases-dashboard-ui.pivot.showRowGrandTotal",
+      defaultValue: true
+    }, {
+      key: "showColSubtotal",
+      label: "bases-dashboard-ui.pivot.showColumnSubtotal",
+      defaultValue: true
+    }, {
+      key: "showColGrandTotal",
+      label: "bases-dashboard-ui.pivot.showColumnGrandTotal",
+      defaultValue: true
+    }].map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46535 => jsxs("label", {
+      className: "univer-flex univer-items-center univer-gap-2 univer-text-sm",
+      children: [jsx(Checkbox, {
+        checked: !!(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461436[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46535.key] ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46535.defaultValue),
+        disabled: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46535.key === "repeatRowLabels" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461433.pivot["layout"] === PivotLayoutTypeEnum.compact,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46205 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461437({
+          [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46535.key]: !!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46205
+        })
+      }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46535.label)]
+    }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46535.key)), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461433.pivot["layout"] === PivotLayoutTypeEnum.outline && jsxs("label", {
+      className: "univer-flex univer-items-center univer-justify-between univer-gap-2 univer-text-sm",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.rowSubtotalPosition"), jsx(Select, {
+        className: "univer-w-36",
+        value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461436.rowSubtotalPosition ?? PivotSubtotalPositionEnum.top),
+        options: [{
+          value: String(PivotSubtotalPositionEnum.top),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.top")
+        }, {
+          value: String(PivotSubtotalPositionEnum.bottom),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.bottom")
+        }],
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46536 => {
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46537 = [PivotSubtotalPositionEnum.top, PivotSubtotalPositionEnum.bottom].find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46206 => String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46206) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46536);
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46537 !== undefined && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461437({
+            rowSubtotalPosition: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46537
+          });
+        }
+      })]
+    }), jsxs("label", {
+      className: "univer-flex univer-items-center univer-justify-between univer-gap-2 univer-text-sm",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.valuePosition"), jsx(Select, {
+        className: "univer-w-36",
+        value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461433.pivot["valuePosition"] === PivotTableValuePositionEnum.None ? PivotTableValuePositionEnum.Column : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461433.pivot["valuePosition"]),
+        options: [{
+          value: String(PivotTableValuePositionEnum.Column),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.columns")
+        }, {
+          value: String(PivotTableValuePositionEnum.Row),
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.rows")
+        }],
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46540 => {
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46541 = [PivotTableValuePositionEnum.Column, PivotTableValuePositionEnum.Row].find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46207 => String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46207) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46540);
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46541 !== undefined && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461434(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46208 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46208.updateValuePosition(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46541, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46208.getValueIndex() < 0 ? 0 : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46208.getValueIndex()));
+        }
+      })]
+    }), jsxs("label", {
+      className: "univer-flex univer-items-center univer-justify-between univer-gap-2 univer-text-sm",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.pageWrap"), jsx(InputNumber, {
+        className: "univer-w-24",
+        min: 1,
+        max: 20,
+        value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461436.pageWrap ?? 1,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46544 => {
+          let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D29 = Number(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46544);
+          Number.isFinite(var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D29) && var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D29 >= 1 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461437({
+            pageWrap: var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D29
+          });
+        }
+      })]
+    }), jsxs("label", {
+      className: "univer-flex univer-items-center univer-justify-between univer-gap-2 univer-text-sm",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.pageDirection"), jsx(Select, {
+        className: "univer-w-36",
+        value: String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461436.pageOverThenDown ?? false),
+        options: [{
+          value: "false",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.downThenAcross")
+        }, {
+          value: "true",
+          label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461435.t("bases-dashboard-ui.pivot.acrossThenDown")
+        }],
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46546 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461437({
+          pageOverThenDown: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46546 === "true"
+        })
+      })]
+    })]
+  });
+}
+function Ai(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461444, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461445, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461446, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461447) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461448 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461444.getTableFieldsByDataFieldId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461445).find(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46547 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461444.getFieldPositionInfoById(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46547.getId()).area !== PivotTableFiledAreaEnum.Value);
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461446 !== PivotTableFiledAreaEnum.Value && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461448) {
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461444.updateFieldPosition(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461448.getId(), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461446, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461447);
+    return;
+  }
+  var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461444.addFieldWithSourceId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461445, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461446, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461447);
+}
+function ji(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461454, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461455, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461456, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461457) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461455 === PivotDataFieldDataTypeEnum.blank ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461457 : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461455 === PivotDataFieldDataTypeEnum.date && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461456 ? numfmt.format(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461456, Number(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461454)) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461454;
+}
+function Mi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461462) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461462.type === BaseFieldType.Number || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461462.type === BaseFieldType.Currency || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461462.type === BaseFieldType.Progress || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461462.type === BaseFieldType.Rating;
+}
+function Ni(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461464) {
+  switch (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461464) {
+    case PivotTableFiledAreaEnum.Row:
+      return "bases-dashboard-ui.pivot.addToRow";
+    case PivotTableFiledAreaEnum.Column:
+      return "bases-dashboard-ui.pivot.addToColumn";
+    case PivotTableFiledAreaEnum.Value:
+      return "bases-dashboard-ui.pivot.addToValue";
+    default:
+      return "bases-dashboard-ui.pivot.addToFilter";
+  }
+}
+function Pi({
+  config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461466,
+  onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461467,
+  runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461468,
+  table: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461469
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461470 = useDependency(LocaleService),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461471, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461472] = useState("chart");
+  return jsxs("aside", {
+    className: "univer-flex univer-h-full univer-min-h-0 univer-w-96 univer-shrink-0 univer-flex-col univer-border-l univer-border-gray-200 univer-bg-gray-0 dark:!univer-border-gray-700 dark:!univer-bg-gray-900",
+    children: [jsx(ChartEditPanelTabs, {
+      ariaLabel: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461470.t("bases-dashboard-ui.pivot.name"),
+      className: "univer-mx-auto univer-mt-4 univer-shrink-0",
+      items: [{
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461470.t("bases-dashboard-ui.pivot.chartConfiguration"),
+        panelId: "base-pivot-chart-configuration",
+        value: "chart"
+      }, {
+        label: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461470.t("bases-dashboard-ui.pivot.pivotConfiguration"),
+        panelId: "base-pivot-table-configuration",
+        value: "pivot"
+      }],
+      value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461471,
+      variant: "segmented",
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461472
+    }), jsx("div", {
+      className: "univer-min-h-0\x20univer-flex-1\x20univer-overflow-auto",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461471 === "chart" ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461468 && jsx(Cr, {
+        config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461466,
+        runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461468,
+        tableName: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461469.name,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461467
+      }) : jsx(Si, {
+        config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461466,
+        table: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461469,
+        onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461467
+      })
+    })]
+  });
+}
+function Fi({
+  pivot: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461480,
+  view: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461481
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461482 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461483 = useMemo(() => Ii(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461481, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461480, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461482.t("bases-dashboard-ui.pivot.grandTotal")), [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461482, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461480, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461481]);
+  return jsxs("div", {
+    className: "univer-h-full univer-overflow-auto univer-bg-gray-0 univer-p-2 dark:!univer-bg-gray-900",
+    children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461483.pageRows["length"] > 0 && jsx("table", {
+      className: "univer-mb-2\x20univer-border-collapse\x20univer-text-sm",
+      children: jsx("tbody", {
+        children: Li(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461483.pageRows)
+      })
+    }), jsxs("table", {
+      className: "univer-min-w-full univer-border-collapse univer-text-sm",
+      children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461483.headerRowCount > 0 && jsx("thead", {
+        className: "univer-sticky\x20univer-top-0\x20univer-z-10\x20univer-bg-gray-50\x20dark:!univer-bg-gray-800",
+        children: Li(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461483.rows["slice"](0, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461483.headerRowCount))
+      }), jsx("tbody", {
+        children: Li(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461483.rows["slice"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461483.headerRowCount))
+      })]
+    })]
+  });
+}
+function Ii(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461489, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461490) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461491 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.colView["rowCount"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461492 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.rowView["colCount"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461493 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.dataView["rowCount"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461494 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.dataView["colCount"],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461495 = Array.from({
+      length: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461491 + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461493
+    }, (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46548, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549) => Array.from({
+      length: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461492 + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461494
+    }, (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46209, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210) => {
+      var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46211, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46212;
+      if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549 < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461491 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210 < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461492) return Ri(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.cornerView, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210, undefined, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461490, true, false, "corner:" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549 + ":" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210);
+      if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549 < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461491) {
+        var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46213;
+        let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D3 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210 - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461492,
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46213 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.colView["headerMap"][var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46213.tableFieldId;
+        return Ri(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.colView, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549, var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D3, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.formatMap[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630] : undefined, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461490, true, Vi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.colView["info"][var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D3]), "column:" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549 + ":" + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D3);
+      }
+      if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210 < var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461492) {
+        var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46214;
+        let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549 - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461491,
+          var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46214 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.rowView["headerMap"][var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46214.tableFieldId;
+        return Ri(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.rowView, var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D4, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.formatMap[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631] : undefined, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461490, true, Vi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.rowView["info"][var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D4]), "row:" + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 + ":" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210);
+      }
+      let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D19 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46549 - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461491,
+        var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D20 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46210 - var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461492,
+        var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D21 = Math.max(((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46211 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.rowView["info"][var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D19]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46211.valueIndex) ?? -1, ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46212 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.colView["info"][var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D20]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46212.valueIndex) ?? -1),
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46215 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461489.valueFields[var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D21 < 0 ? 0 : var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D21];
+      return Ri(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.dataView, var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D19, var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D20, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46215 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.formatMap[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46215] : undefined, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461490, false, Vi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.rowView["info"][var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D19]) || Vi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.colView["info"][var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D20]), "data:" + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D19 + ":" + var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D20);
+    }));
+  return {
+    headerColumnCount: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461492,
+    headerRowCount: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461491,
+    pageRows: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.pageView["lastRow"] < 0 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.pageView["lastCol"] < 0 ? [] : Array.from({
+      length: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.pageView["lastRow"] + 1
+    }, (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46550, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551) => Array.from({
+      length: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.pageView["lastCol"] + 1
+    }, (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46223, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46224) => Ri(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461488.pageView, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46224, undefined, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461490, true, false, "page:" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46551 + ":" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46224))),
+    rows: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461495
+  };
+}
+function Li(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461504) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461504.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46552 => {
+    var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46553;
+    return jsx("tr", {
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46552.map(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46225 => jsx(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46225.isHeader ? "th" : "td", {
+        className: "\n univer-whitespace-nowrap univer-border univer-border-gray-200 univer-px-3 univer-py-2\n univer-text-left\n dark:!univer-border-gray-700\n " + (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46225.isTotal ? "\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20univer-bg-gray-50\x20univer-font-semibold\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20dark:!univer-bg-gray-800\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20" : "") + "\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20" + (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46225.isHeader ? "" : "univer-text-right") + "\n ",
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46225.value
+      }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46225.key))
+    }, (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46553 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46552[0]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46553.key);
+  });
+}
+function Ri(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461506, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461507, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461508, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461509, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461510, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461511, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461512, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461513) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461514;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461515 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461514 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461506.data[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461507]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461514[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461508],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461516 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461515 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461515.s,
+    var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A41 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461512 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461516 === PivotCellStyleTypeEnum.GrandTotal || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461516 === PivotCellStyleTypeEnum.MultipleGrandTotal;
+  return {
+    isHeader: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461511,
+    isTotal: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A41 || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461516 === PivotCellStyleTypeEnum.Subtotal,
+    key: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461513,
+    style: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461516,
+    value: var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A41 && Bi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461515 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461515.v) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461510 : zi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461515, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461509)
+  };
+}
+function zi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461528, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461529) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461528 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461528.v;
+  return isPrefixValue(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530) ? String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530.value ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530.prefix ?? "") : isErrorValue(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530) ? "#" + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530.errorType : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461529 && typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530 == "number" ? numfmt.format(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461529, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530) : String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461530 ?? "");
+}
+function Bi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461534) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461534 === undefined || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461534 === "";
+}
+function Vi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536) {
+  return !!(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536 != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536.isBottomTotal || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536 != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536.isTopTotal || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536 != null && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536.isSubtotal || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461536.rowType) === "grandTotal");
+}
+function Hi({
+  tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461538,
+  unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539,
+  viewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461540
+}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461541 = useDependency(ICommandService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461542 = useDependency(IUniverInstanceService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461543 = useDependency(ILogService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461544 = useDependency(LocaleService),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461545 = useDependency(BaseChartRuntimeService),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461546, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461547] = useState(null),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461548, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461549] = useState(null),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461550 = useRef("base-pivot-chart-" + generateRandomId(8)),
+    [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461551, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461552] = useState(false),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461553 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461542.getUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539, UniverInstanceType.UNIVER_BASE),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461554 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461553 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461553.getSnapshot().tables[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461538],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461554 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461554.views[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461540],
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461556 = Ui(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555),
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461557 = qn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461538, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461540);
+  if (useEffect(() => {
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461556) return;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46556 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461550.current;
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461545.acquireChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46556, {
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539,
+      tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461538,
+      viewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461540,
+      filters: []
+    }), () => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461545.releaseChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46556);
+    };
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461556, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461545, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461538, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461540]), useEffect(() => {
+    if (!Ui(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555)) return;
+    let var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A15 = true,
+      var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB19 = {
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539,
+        tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461538,
+        viewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461540,
+        filters: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555.filter ?? null]
+      };
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461545.refreshChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461550.current, var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB19).then(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46226 => {
+      !var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A15 || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46226 || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461547(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46226), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461549(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461545.getChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461550.current) ?? null), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461552(false));
+    }).catch(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46228 => {
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461543.error("[BasePivotView] Failed to calculate the pivot result.", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46228), var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A15 && (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461547(null), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461552(true));
+    }), () => {
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A15 = false;
+    };
+  }, [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461543, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461545, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461538, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461540]), !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461554 || !Ui(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555)) return null;
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461558 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461545.getChartRuntime(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461550.current) === var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461548 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461548 : null;
+  return jsxs("div", {
+    className: "univer-flex\x20univer-h-full\x20univer-min-h-0\x20univer-w-full\x20univer-bg-gray-50\x20dark:!univer-bg-gray-950",
+    children: [jsx("div", {
+      className: "univer-min-h-0 univer-min-w-0 univer-flex-1",
+      children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461546 ? jsxs("div", {
+        className: "univer-grid\x20univer-h-full\x20univer-min-h-0\x20univer-gap-2\x20univer-p-2",
+        style: {
+          gridTemplateRows: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555.config["displayMode"] === "chart-and-table" ? "minmax(240px, 3fr) minmax(180px, 2fr)" : "minmax(0,\x201fr)"
+        },
+        children: [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555.config["displayMode"] !== "table" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461558 && jsx("div", {
+          className: "univer-relative univer-min-h-0 univer-overflow-hidden univer-rounded-lg univer-border univer-border-gray-200 dark:!univer-border-gray-700",
+          children: jsx(oi, {
+            isRowDirection: resolveBasePivotChartRowDirection(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555.config["chart"].orient),
+            runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461558
+          })
+        }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555.config["displayMode"] !== "chart" && jsx("div", {
+          className: "univer-min-h-0 univer-overflow-hidden univer-rounded-lg univer-border univer-border-gray-200 dark:!univer-border-gray-700",
+          children: jsx(Fi, {
+            pivot: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555.config["pivot"],
+            view: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461546.view
+          })
+        })]
+      }) : jsx("div", {
+        className: "univer-grid univer-h-full univer-place-items-center univer-text-sm univer-text-gray-500",
+        children: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461551 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461544.t("bases-dashboard-ui.pivot.calculationFailed") : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461544.t("bases-dashboard-ui.pivot.calculating")
+      })
+    }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461557 && jsx(Pi, {
+      config: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461555.config,
+      runtime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461558,
+      table: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461554,
+      onChange: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46558 => {
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461541.executeCommand(UpdateBasePivotViewCommand.id, {
+          unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461539,
+          tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461538,
+          viewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461540,
+          patch: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46558
+        }).catch(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46230 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461543.error("[BasePivotView]\x20Failed\x20to\x20update\x20the\x20pivot\x20view.", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46230));
+      }
+    })]
+  });
+}
+function Ui(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461580) {
+  return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461580 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461580.type) === BaseViewType.Pivot && typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461580.config == "object" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461580.config !== null && "pivot" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461580.config && "chart" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461580.config && "displayMode" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461580.config;
+}
+let Wi = class extends Disposable {
+  constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46560, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46561, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46562, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46563, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46565) {
+    super(), this.disposeWithMe(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46561.register({
+      type: BaseViewType.Pivot,
+      renderMode: "dom",
+      icon: PivotTableIcon,
+      component: Hi,
+      menu: {
+        get label() {
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46565.t("bases-dashboard-ui.pivot.name");
+        },
+        get description() {
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46565.t("bases-dashboard-ui.pivot.description");
+        },
+        get defaultName() {
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46565.t("bases-dashboard-ui.pivot.defaultName");
+        }
+      }
+    })), this.disposeWithMe(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46560.register(Gi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46562, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46563, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46565)));
+  }
+};
+function Gi(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461582, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461583, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461584, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585) {
+  return {
+    change$: mergeLocal(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461582.change$, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461584.permissionPointUpdate$),
+    component: di,
+    get labels() {
+      return {
+        add: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585.t("bases-dashboard-ui.dashboard.add"),
+        configure: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46231 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585.t("bases-dashboard-ui.dashboard.configure", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46231),
+        delete: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585.t("bases-dashboard-ui.dashboard.delete"),
+        new: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585.t("bases-dashboard-ui.dashboard.new"),
+        rename: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585.t("bases-dashboard-ui.dashboard.rename"),
+        search: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585.t("bases-dashboard-ui.dashboard.search"),
+        section: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585.t("bases-dashboard-ui.dashboard.section")
+      };
+    },
+    getItems: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46572 => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46573 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461582.getResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46572);
+      return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46573.dashboardOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46232 => {
+        let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46233 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46573.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46232];
+        return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46233 ? [{
+          id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46233.id,
+          name: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46233.name,
+          readonly: !canEditBaseDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461584, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46572, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46233.id)
+        }] : [];
+      });
+    },
+    create: async var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46576 => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46577 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461582.getResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46576),
+        var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB14 = "dashboard-" + generateRandomId(8),
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46578 = Ki(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46577.dashboardOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46236 => {
+          let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46237 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46577.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46236];
+          return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46237 ? [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46237.name] : [];
+        }), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46240 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461585.t("bases-dashboard-ui.dashboard.defaultName", String(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46240)));
+      return (await var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461583.executeCommand(CreateBaseDashboardCommand.id, {
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46576,
+        dashboard: {
+          id: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB14,
+          name: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46578,
+          widgetOrder: [],
+          widgets: {}
+        }
+      })) ? var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB14 : null;
+    },
+    rename: async (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46582, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46583, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46584) => {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46585 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461582.getDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46582, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46583);
+      return !!(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46585 && (await var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461583.executeCommand(UpdateBaseDashboardCommand.id, {
+        unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46582,
+        dashboard: {
+          ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46585,
+          name: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46584
+        }
+      })));
+    },
+    remove: (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46590, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46591) => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461583.executeCommand(DeleteBaseDashboardCommand.id, {
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46590,
+      dashboardId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46591
+    })
+  };
+}
+function Ki(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461590, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461591) {
+  let var_L0_db_endo_itemsSet_pure_O1_zalloc_nothrow_sig92992 = new Set(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461590),
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB28 = var_L0_db_endo_itemsSet_pure_O1_zalloc_nothrow_sig92992.size + 1,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461592 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461591(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB28);
+  for (; var_L0_db_endo_itemsSet_pure_O1_zalloc_nothrow_sig92992.has(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461592);) var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB28 += 1, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461592 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461591(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB28);
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461592;
+}
+export { Wi };

@@ -1,0 +1,14 @@
+const e = {
+  "boards-print": {
+    menu: { print: "Imprimer", exportPng: "PNG", exportJpeg: "JPEG" },
+    loading: {
+      print: "Préparation de l’impression…",
+      image: "Exportation de l’image…",
+    },
+    errors: {
+      printFailed: "Impossible d’imprimer ce tableau.",
+      exportFailed: "Impossible d’exporter l’image de ce tableau.",
+    },
+  },
+};
+module.exports = e;

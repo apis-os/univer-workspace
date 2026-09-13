@@ -1,0 +1,17 @@
+import{BooleanNumber,CommandType,DependentOn,Disposable,DrawingTypeEnum,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,ObjectMatrix,Plugin,Rectangle,Tools,UniverInstanceType,createBaseFormulaTableNameMap,createIdentifier,getOriginCellValue,merge,sequenceExecute,toDisposable,touchDependencies}from"@univerjs/core";
+import{InsertColMutation,InsertRowMutation,InsertSheetMutation,RemoveColMutation,RemoveRowMutation,RemoveSheetMutation,ReorderRangeMutation,SetRangeValuesMutation,SheetSkeletonService}from"@univerjs/sheets";
+import{DrawingApplyType,ISheetDrawingService,SetDrawingApplyMutation,SheetDrawingAnchorType,applySheetDrawingPlacement,getSheetDrawingPlacement}from"@univerjs/sheets-drawing";
+import{IFormulaReferenceDataProviderRegistry,createUnavailableReferenceDataResponse}from"@univerjs-pro/engine-formula";
+import{UniverLicensePlugin}from"@univerjs-pro/license";
+import{AddBoardElementMutation,IBoardElementService,RemoveBoardElementMutation,UpdateBoardElementMutation,collectBoardElementIdsForRemoveWithBoundConnectors,createEmbedBoardsFloatingElement,isEmbedBoardsFloatingElement}from"@univerjs-pro/boards";
+import{AddSlideElementMutation,AddSlidePageMutation,ISlideDrawingService,RemoveSlideElementMutation,RemoveSlidePageMutation,UpdateSlideElementMutation,createEmbedSlidesFloatingElement,createEmbedSlidesPage,getEmbedSlidesFloatingCustomData,resolvedSlideLayersToDrawingMap}from"@univerjs-pro/slides";
+import{IDrawingManagerService}from"@univerjs/drawing";
+import{ApplyBaseJson1Mutation,BaseJson1OpApplier,createEmbedBasesTable,createEmbedBasesTableAddMutation,createEmbedBasesTableRemoveMutation,ensureBaseTableCellLayout,getBaseCellFormulaValue}from"@univerjs-pro/bases";
+import{createDocsCustomBlockInsertMutation,createDocsCustomBlockRemoveMutation}from"@univerjs/docs";
+import{BehaviorSubject}from"rxjs";
+import { U } from "./embed-model.js";
+const zn={id:"embed.mutation.set-descriptor",type:CommandType.MUTATION,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461613,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461614)=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461614?(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461613.get(U).applyDescriptorMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461614.unitId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461614.descriptor),true):false},Bn={id:"embed.mutation.soft-delete-descriptor",type:CommandType.MUTATION,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461615,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461616)=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461616?(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461615.get(U).softDeleteDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461616.unitId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461616.embedId),true):false},Vn=new WeakMap(),Hn=new Map([["sheets-sheet-tab","sheet-tab"],["bases-table-list-block","table-list"],["slides-page-list-block","slide-page-list"]]);
+
+export { zn as SetEmbedDescriptorMutation, Bn as SoftDeleteEmbedDescriptorMutation };
+
+export { Vn, Hn };

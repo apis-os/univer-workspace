@@ -1,0 +1,66 @@
+const e = {
+  bases: {
+    fieldType: {
+      text: "متن",
+      singleSelect: "گزینه تکی",
+      multiSelect: "گزینه‌های چندگانه",
+      person: "شخص",
+      group: "گروه",
+      date: "تاریخ",
+      attachment: "پیوست",
+      number: "عدد",
+      checkbox: "چک باکس",
+      link: "لینک",
+      formula: "فرمول",
+      lookup: "جستجو",
+      flow: "جریان",
+      button: "دکمه",
+      numbering: "شماره‌گذاری",
+      phone: "شماره تلفن",
+      email: "ایمیل",
+      location: "موقعیت",
+      barcode: "بارکد",
+      progress: "پیشرفت",
+      currency: "ارز",
+      rating: "امتیاز",
+      recordLink: "پیوند به رکورد",
+      recordId: "شناسه رکورد",
+      createdBy: "ایجاد شده توسط",
+      updatedBy: "به‌روزرسانی شده توسط",
+      createdAt: "زمان ایجاد",
+      updatedAt: "زمان به‌روزرسانی",
+      summary: "خلاصه",
+    },
+    fieldConfig: {
+      textPlaceholder: "محتوا را وارد کنید",
+      linkPlaceholder:
+        "یک URL وارد کنید (مثلاً univer.ai یا https://univer.ai/skills).",
+    },
+    viewType: {
+      grid: "شبکه",
+      kanban: "کانبان",
+      calendar: "تقویم",
+      gantt: "گانت",
+      gallery: "گالری",
+    },
+    error: {
+      fieldNameRequired: "عنوان\x20فیلد\x20الزامی\x20است",
+      invalidFieldType: "نوع فیلد نامعتبر است",
+      invalidCellValue: "مقدار سلول نامعتبر است",
+      invalidKanbanGroupField:
+        "کانبان\x20به\x20فیلد\x20قابل\x20گروه‌بندی\x20نیاز\x20دارد",
+      invalidCalendarDateField: "تقویم به فیلد تاریخ نیاز دارد",
+      invalidGanttDateField:
+        "گانت\x20به\x20فیلدهای\x20تاریخ\x20شروع\x20و\x20پایان\x20نیاز\x20دارد",
+    },
+    command: {
+      updateCell: "به‌روزرسانی سلول",
+      createField: "ایجاد\x20فیلد",
+      deleteField: "حذف فیلد",
+      createRecord: "ایجاد رکورد",
+      deleteRecord: "حذف\x20رکورد",
+      updateViewConfig: "به‌روزرسانی تنظیمات نمایش",
+    },
+  },
+};
+module.exports = e;

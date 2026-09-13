@@ -1,0 +1,66 @@
+const e = {
+  bases: {
+    fieldType: {
+      text: "Teks",
+      singleSelect: "Opsi Tunggal",
+      multiSelect: "Opsi Ganda",
+      person: "Orang",
+      group: "Grup",
+      date: "Tanggal",
+      attachment: "Lampiran",
+      number: "Angka",
+      checkbox: "Kotak Centang",
+      link: "Tautan",
+      formula: "Rumus",
+      lookup: "Pencarian",
+      flow: "Alur",
+      button: "Tombol",
+      numbering: "Penomoran",
+      phone: "Nomor Telepon",
+      email: "Email",
+      location: "Lokasi",
+      barcode: "Kode\x20Batang",
+      progress: "Kemajuan",
+      currency: "Mata Uang",
+      rating: "Penilaian",
+      recordLink: "Tautan Rekaman",
+      recordId: "ID Rekaman",
+      createdBy: "Dibuat Oleh",
+      updatedBy: "Diperbarui Oleh",
+      createdAt: "Waktu Dibuat",
+      updatedAt: "Waktu Diperbarui",
+      summary: "Ringkasan",
+    },
+    fieldConfig: {
+      textPlaceholder: "Masukkan konten",
+      linkPlaceholder:
+        "Masukkan URL (mis. univer.ai atau https://univer.ai/skills).",
+    },
+    viewType: {
+      grid: "Grid",
+      kanban: "Kanban",
+      calendar: "Kalender",
+      gantt: "Gantt",
+      gallery: "Galeri",
+    },
+    error: {
+      fieldNameRequired: "Judul\x20bidang\x20wajib\x20diisi",
+      invalidFieldType: "Jenis\x20bidang\x20tidak\x20valid",
+      invalidCellValue: "Nilai\x20sel\x20tidak\x20valid",
+      invalidKanbanGroupField:
+        "Kanban memerlukan bidang yang dapat dikelompokkan",
+      invalidCalendarDateField: "Kalender\x20memerlukan\x20bidang\x20tanggal",
+      invalidGanttDateField:
+        "Gantt\x20memerlukan\x20bidang\x20tanggal\x20mulai\x20dan\x20selesai",
+    },
+    command: {
+      updateCell: "Perbarui sel",
+      createField: "Buat\x20bidang",
+      deleteField: "Hapus bidang",
+      createRecord: "Buat rekaman",
+      deleteRecord: "Hapus rekaman",
+      updateViewConfig: "Perbarui pengaturan tampilan",
+    },
+  },
+};
+module.exports = e;

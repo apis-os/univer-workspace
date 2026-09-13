@@ -1,0 +1,38 @@
+const e = {
+  "slides-print": {
+    menu: "印刷",
+    header: {
+      pages: "全\x20{0}\x20ページ",
+      cancel: "キャンセル",
+      next: "次へ",
+      printing: "印刷中…",
+    },
+    settings: {
+      range: "印刷範囲",
+      rangePlaceholder: "すべてのスライド、または 1-3,5",
+      rangeInvalid:
+        "プレゼンテーション内のスライド番号を入力してください（例: 1-3,5）。",
+      layout: "印刷レイアウト",
+      fullPage: "フルページサイズのスライド",
+      notesPage: "ノート",
+      handout: "配布資料",
+      slidesPerPage: "1 ページあたりのスライド数",
+      order: "ページ順序",
+      horizontal: "横方向",
+      vertical: "縦方向",
+      paperSize: "用紙サイズ",
+      orientation: "印刷の向き",
+      portrait: "縦",
+      landscape: "横",
+      margin: "余白",
+      normal: "標準",
+      narrow: "狭い",
+      wide: "広い",
+      none: "なし",
+      formatting: "書式",
+      frameSlides: "スライドに枠を付ける",
+      slideNumber: "スライド番号を印刷する",
+    },
+  },
+};
+module.exports = e;

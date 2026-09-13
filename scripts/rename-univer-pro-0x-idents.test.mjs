@@ -2466,6 +2466,149 @@ test("keeps engine-chart PE }() and drops leftover ,0AE7;}()) before FE", () => 
   parseStrict(healed);
 });
 
+test("closes leftover BA inherit after Child constructor before TA then strict-parses", () => {
+  const original =
+    "function R(a,b){return a;}\n" +
+    "function FA(x){return x;}\n" +
+    "var rd=function(){};\n" +
+    "var BA=function(p){R(fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig2A64,p);" +
+    "function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig2A64(){" +
+    "var var_core_value_sigF835=this;var_core_value_sigF835._api=FA(var_core_value_sigF835);}TA=ox30ef83,EA=function(){return 1;};" +
+    "function Next(){return 2;}\n" +
+    "export { Next as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /FA\(var_core_value_sigF835\);\}return fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig2A64;}\(rd\);TA=ox30ef83/);
+  assert.doesNotMatch(healed, /FA\(var_core_value_sigF835\);}TA=ox30ef83/);
+  parseStrict(healed);
+});
+
+test("closes engine-chart BA inherit after FA(_api) before sibling TA=ox30ef83", () => {
+  const vendor = readFileSync(path.join(ROOT, "vendor/univer-pro/engine-chart/lib/es/index.js"), "utf8");
+  const mark = "FA(var_core_value_sigF835);}TA=ox30ef83";
+  const at = vendor.indexOf(mark);
+  assert.ok(at >= 0, "BA leftover before TA=ox30ef83 must exist");
+  const ba = vendor.lastIndexOf("BA=function", at);
+  const next = vendor.indexOf("function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig92F8(", at);
+  assert.ok(ba >= 0 && next > at, "BA wrapper and sig92F8 sibling must exist");
+  const original =
+    "function R(a,b){return a;}\n" +
+    "function FA(x){return x;}\n" +
+    "var rd=function(){};\n" +
+    `var ${vendor.slice(ba, next)}function Next(){return 1;}\n` +
+    "export { Next as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /FA\(var_core_value_sigF835\);\}return fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig2A64;}\(rd\);TA=ox30ef83/);
+  assert.doesNotMatch(healed, /FA\(var_core_value_sigF835\);}TA=ox30ef83/);
+  parseStrict(healed);
+});
+
+test("unique-ifies duplicate top-level inferred function decls then strict-parses", () => {
+  const dup = "fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig92F8";
+  const original =
+    `function ${dup}(targetObj20){targetObj20.clearColorPalette();}\n` +
+    `function ${dup}(targetObj){targetObj.useStates([]);}\n` +
+    `export { ${dup} as publicApi };\n`;
+  const healed = healForParse(original);
+  const names = [...healed.matchAll(/function\s+(fn_[A-Za-z0-9_]+)/g)].map((m) => m[1]);
+  assert.equal(new Set(names).size, names.length);
+  assert.ok(names.includes(dup));
+  assert.ok(names.some((n) => n.startsWith(`${dup}_`)));
+  parseStrict(healed);
+});
+
+test("drops leftover return chart;} before sibling function $A then strict-parses", () => {
+  const original =
+    "var var_core_value_sig77FF=new BA(1,2,3);return var_core_value_sig77FF.id='ec_1',var_core_value_sig77FF;};function $A(id){return XA[id];}\n" +
+    "export { $A as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /var_core_value_sig77FF;function \$A\b/);
+  assert.doesNotMatch(healed, /var_core_value_sig77FF;};function \$A/);
+  assert.doesNotMatch(healed, /var_core_value_sig77FF;;function \$A/);
+  parseStrict(healed);
+});
+
+test("drops engine-chart leftover return 77FF;} before sibling function $A", () => {
+  const vendor = readFileSync(path.join(ROOT, "vendor/univer-pro/engine-chart/lib/es/index.js"), "utf8");
+  const mark = ",var_core_value_sig77FF;};function $A";
+  const at = vendor.indexOf(mark);
+  assert.ok(at >= 0, "77FF leftover before function $A must exist");
+  const init = vendor.lastIndexOf("var var_core_value_sig77FF=new BA", at);
+  assert.ok(init >= 0, "new BA init must exist");
+  const original =
+    "var XA={},QA='echarts';\n" +
+    `${vendor.slice(init, at + mark.length)}(id){return XA[id];}\n` +
+    "export { $A as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /var_core_value_sig77FF;function \$A\b/);
+  assert.doesNotMatch(healed, /var_core_value_sig77FF;\}+;function \$A/);
+  parseStrict(healed);
+});
+
+test("closes leftover _N },FE25;}(mN),rue= after cloneShallow then strict-parses", () => {
+  const original =
+    "var mN=function(){};var rue;" +
+    "var _N=function(p){R(fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigFE25,p);" +
+    "function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigFE25(){this.x=1;}" +
+    "fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigFE25.prototype.cloneShallow=function(){return this;},fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigFE25;}(mN),rue=function(){return 2;};\n" +
+    "export { rue as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /}}\(mN\),rue=/);
+  assert.doesNotMatch(healed, /sigFE25;}\(mN\)/);
+  parseStrict(healed);
+});
+
+test("closes engine-chart _N },FE25;}(mN),rue= inherit at remaining depth", () => {
+  const vendor = readFileSync(path.join(ROOT, "vendor/univer-pro/engine-chart/lib/es/index.js"), "utf8");
+  const mark = "},fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigFE25;}(mN),rue=";
+  const at = vendor.indexOf(mark);
+  assert.ok(at >= 0, "FE25 inherit leftover before rue must exist");
+  const n = vendor.lastIndexOf("_N=function", at);
+  assert.ok(n >= 0, "_N inherit wrapper must exist");
+  const original =
+    "function R(a,b){return a;}\n" +
+    `var mN=function(){};var ${vendor.slice(n, at + mark.length)}function(){return 1;};\n` +
+    "export { rue as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /}}\(mN\),rue=/);
+  assert.doesNotMatch(healed, /sigFE25;}\(mN\)/);
+  parseStrict(healed);
+});
+
+test("closes leftover rue inherit after aue before var oue then strict-parses", () => {
+  const original =
+    "function R(a,b){return a;}\n" +
+    "function H(fn){return fn();}\n" +
+    "var rd=function(){};\n" +
+    "rue=function(ox25805d){R(ox26cade,ox25805d);function aue(){H(function(){return var_core_value_sig8278;});}var oue=le({'MAX_SAFE_INTEGER':()=>1});\n" +
+    "function SN(){return 2;}\n" +
+    "export { SN as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /var_core_value_sig8278;}\);\}return ox26cade;}\(rd\);var oue=le\(/);
+  assert.doesNotMatch(healed, /sig8278;}\);\}var oue=le\(/);
+  assert.match(healed, /^function SN\(/m);
+  parseStrict(healed);
+});
+
+test("closes engine-chart rue inherit after aue before sibling var oue=le", () => {
+  const vendor = readFileSync(path.join(ROOT, "vendor/univer-pro/engine-chart/lib/es/index.js"), "utf8");
+  const mark = "var_core_value_sig8278;});}var oue=le(";
+  const at = vendor.indexOf(mark);
+  assert.ok(at >= 0, "rue leftover before var oue=le must exist");
+  const rue = vendor.lastIndexOf("rue=function", at);
+  const sn = vendor.indexOf("function SN(", at);
+  assert.ok(rue >= 0 && sn > at, "rue wrapper and SN sibling must exist");
+  const original =
+    "function R(a,b){return a;}\n" +
+    "var rd=function(){};\n" +
+    `${vendor.slice(rue, sn)}function SN(){return 1;}\n` +
+    "export { SN as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /var_core_value_sig8278;}\);\}return ox26cade;}\(rd\);var oue=le\(/);
+  assert.doesNotMatch(healed, /sig8278;}\);\}var oue=le\(/);
+  assert.match(healed, /;function SN\(/);
+  parseStrict(healed);
+});
+
 test("keeps E03B class IIFE })() before sibling function zv then strict-parses", () => {
   const original =
     "var ev=(function(){function Inner(){}" +

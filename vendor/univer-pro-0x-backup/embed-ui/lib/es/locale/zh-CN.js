@@ -1,0 +1,65 @@
+const e = {
+  "embed-ui": {
+    deleteBlock: "删除嵌入块",
+    fullscreen: { enter: "进入全屏", exit: "退出全屏" },
+    slidesFloating: {
+      previousSlide: "上一页",
+      nextSlide: "下一张幻灯片",
+      selectSlide: "幻灯片缩略图",
+    },
+    boardsFloating: {
+      fitContent: "适应内容",
+      zoomOut: "缩小",
+      resetZoom: "重置缩放",
+      zoomIn: "放大",
+      delete: "删除",
+    },
+    basesFloating: {
+      copySuffix: "副本",
+      delete: "删除",
+      confirmDelete: {
+        viewTitle: "删除这个视图？",
+        viewDescription: "这个视图将被删除。",
+        tableTitle: "删除这个表？",
+        tableDescription: "这个表和其中的记录将被删除。",
+      },
+      tableSidebar: { defaultTableName: "表\x20{0}" },
+      duplicateTable: { copyName: "{0} 副本" },
+      viewSettings: {
+        title: "视图设置",
+        addView: "添加视图",
+        configureView: "配置视图",
+        deleteView: "删除视图",
+      },
+    },
+    sheetsFloating: {
+      toolbar: {
+        formatPainter: "格式刷",
+        font: "字体",
+        fontSize: "字号",
+        numberFormat: "数字格式",
+        bold: "粗体",
+        filter: "筛选",
+        resetColor: "重置颜色",
+        textColor: { main: "文本颜色" },
+        fillColor: { main: "单元格颜色" },
+        border: { main: "边框" },
+        mergeCell: { main: "合并单元格" },
+        horizontalAlignMode: { main: "水平对齐" },
+        verticalAlignMode: { main: "垂直对齐" },
+        textWrapMode: { main: "文本换行" },
+      },
+      align: {
+        left: "左对齐",
+        center: "中间对齐",
+        right: "右对齐",
+        top: "顶部对齐",
+        middle: "居中对齐",
+        bottom: "底部对齐",
+      },
+      borderLine: { borderColor: "边框颜色", borderSize: "边框粗细" },
+      textWrap: { overflow: "溢出", wrap: "自动换行", clip: "截断" },
+    },
+  },
+};
+export { e as default };
