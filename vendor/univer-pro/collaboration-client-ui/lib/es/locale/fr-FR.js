@@ -1,62 +1,53 @@
 const e = {
   "collaboration-client-ui": {
-    collabClient: { tooltip: { reconnect: "Cliquez\x20pour\x20reconnecter" } },
+    collabClient: {
+      tooltip: {
+        reconnect: "Cliquez\x20pour\x20reconnecter"
+      }
+    },
     collabStatus: {
       fetchMiss: "Synchronisation\x20des\x20données\x20du\x20serveur...",
       conflict: "Conflits de modification",
       notCollab: "Fichier local",
       synced: "Synchronisé",
       syncing: "Synchronisation...",
-      offline: "Hors ligne, les modifications seront enregistrées localement",
+      offline: "Hors ligne, les modifications seront enregistrées localement"
     },
     snapshotLoading: {
-      timeout:
-        "Le\x20chargement\x20des\x20données\x20est\x20bloqué\x20à\x20{0}/{1}.\x20Actualisez\x20la\x20page\x20pour\x20réessayer.",
-      refresh: "Actualiser la page",
+      timeout: "Le\x20chargement\x20des\x20données\x20est\x20bloqué\x20à\x20{0}/{1}.\x20Actualisez\x20la\x20page\x20pour\x20réessayer.",
+      refresh: "Actualiser la page"
     },
     session: {
-      "connection-failed":
-        "Échec de la connexion, veuillez vérifier votre réseau.",
-      "will-retry":
-        "Échec de la connexion, une nouvelle tentative aura lieu dans un instant.",
-      "room-full":
-        "La salle de collaboration est pleine. Vos modifications seront enregistrées localement.",
-      "collaboration-timeout":
-        "Le serveur ne répond pas à votre demande de collaboration. Vos modifications seront enregistrées localement.",
+      "connection-failed": "Échec de la connexion, veuillez vérifier votre réseau.",
+      "will-retry": "Échec de la connexion, une nouvelle tentative aura lieu dans un instant.",
+      "room-full": "La salle de collaboration est pleine. Vos modifications seront enregistrées localement.",
+      "collaboration-timeout": "Le serveur ne répond pas à votre demande de collaboration. Vos modifications seront enregistrées localement."
     },
     conflict: {
       title: "Conflit de collaboration",
-      content:
-        "Il existe un conflit entre votre copie locale et la copie sur le serveur. Veuillez enregistrer vos modifications locales, car elles seront perdues lors du rechargement de la page.",
+      content: "Il existe un conflit entre votre copie locale et la copie sur le serveur. Veuillez enregistrer vos modifications locales, car elles seront perdues lors du rechargement de la page."
     },
     permission: {
       title: "Erreur d'authentification",
-      content:
-        "Vos\x20actions\x20entrent\x20en\x20conflit\x20avec\x20les\x20autorisations\x20du\x20serveur.\x20Veuillez\x20enregistrer\x20vos\x20modifications\x20locales\x20ailleurs,\x20car\x20elles\x20seront\x20supprimées\x20après\x20l\x27actualisation\x20de\x20la\x20page.",
+      content: "Vos\x20actions\x20entrent\x20en\x20conflit\x20avec\x20les\x20autorisations\x20du\x20serveur.\x20Veuillez\x20enregistrer\x20vos\x20modifications\x20locales\x20ailleurs,\x20car\x20elles\x20seront\x20supprimées\x20après\x20l\x27actualisation\x20de\x20la\x20page."
     },
     collaboration: {
-      "offline-data-not-saved":
-        "Vous avez des modifications hors ligne qui n'ont pas été enregistrées sur le serveur. Veuillez vérifier votre réseau et réessayer.",
+      "offline-data-not-saved": "Vous avez des modifications hors ligne qui n'ont pas été enregistrées sur le serveur. Veuillez vérifier votre réseau et réessayer.",
       "single-unit": {
-        warning:
-          "Vous avez ouvert le même fichier dans un autre onglet. Pour éviter toute perte de données, vous ne pouvez pas modifier dans cet onglet.",
+        warning: "Vous avez ouvert le même fichier dans un autre onglet. Pour éviter toute perte de données, vous ne pouvez pas modifier dans cet onglet."
       },
-      closeRoom:
-        "Les privilèges d'édition ont été révoqués car la salle de collaboration a été fermée.",
+      closeRoom: "Les privilèges d'édition ont été révoqués car la salle de collaboration a été fermée."
     },
     auth: {
-      needGotoLoginAlert:
-        "Votre\x20connexion\x20a\x20expiré.\x20Cliquez\x20sur\x20OK\x20pour\x20vous\x20reconnecter,\x20ou\x20sur\x20Annuler\x20pour\x20enregistrer\x20vos\x20modifications\x20locales.",
+      needGotoLoginAlert: "Votre\x20connexion\x20a\x20expiré.\x20Cliquez\x20sur\x20OK\x20pour\x20vous\x20reconnecter,\x20ou\x20sur\x20Annuler\x20pour\x20enregistrer\x20vos\x20modifications\x20locales."
     },
     formula: {
       calculation: {
         started: "Le\x20calcul\x20des\x20formules\x20a\x20commencé.",
-        waiting:
-          "La file d'attente de calcul des formules est pleine, en attente d'un emplacement disponible...",
-        unable:
-          "Impossible d'effectuer le calcul des formules pour le moment. Veuillez réessayer plus tard.",
-      },
-    },
-  },
+        waiting: "La file d'attente de calcul des formules est pleine, en attente d'un emplacement disponible...",
+        unable: "Impossible d'effectuer le calcul des formules pour le moment. Veuillez réessayer plus tard."
+      }
+    }
+  }
 };
 export { e as default };

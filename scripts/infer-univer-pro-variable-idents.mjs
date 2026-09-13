@@ -23,7 +23,7 @@ const PRO_NM = [
   path.join(ROOT, "apps/workspace/node_modules/@univerjs-pro"),
   path.join(ROOT, "packages/dsh-univer-workspace-plugin/node_modules/@univerjs-pro")
 ];
-const SKIP_PKGS = new Set(["collaboration-client-ui"]);
+const SKIP_PKGS = new Set();
 const CRYPTIC = /^(?:v\d+|ox[0-9a-f]+)$/i;
 const BUILTIN = new Set([
   "undefined",

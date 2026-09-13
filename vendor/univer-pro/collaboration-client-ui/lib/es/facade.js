@@ -1,1 +1,9 @@
-import{RemoteUniscriptService as v4}from"@univerjs-pro/collaboration-client-ui";import{FUniver as v5}from"@univerjs/core/facade";var n=class extends v5{runOnServer(v1,v2,...v3){return this._injector["get"](v4).runOnServer(v1,v2,{},...v3);}};v5.extend(n);export{};
+import { RemoteUniscriptService as remoteUniscriptService } from "@univerjs-pro/collaboration-client-ui";
+import { FUniver as fUniver } from "@univerjs/core/facade";
+var n = class extends fUniver {
+  runOnServer(var_core_value_sig7524, var_core_value_sig2AD8, ...var_core_value_sig2AD0) {
+    return this._injector["get"](remoteUniscriptService).runOnServer(var_core_value_sig7524, var_core_value_sig2AD8, {}, ...var_core_value_sig2AD0);
+  }
+};
+fUniver.extend(n);
+export {};
